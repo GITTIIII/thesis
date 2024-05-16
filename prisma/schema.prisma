@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["fullTextIndex", "fullTextSearch"]
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role{
+  STUDENT
+  COMMOTTEE
+  ADMIN
+  SUPER_ADMIN
+}
+
+enum FormStatus{
+  APPROVED
+  NOT_APPROVED
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  firstName String
+  lastName String
+  username String @unique
+  password String
+  school String
+  institute String
+  role Role @default(STUDENT)
+  sex String
+  phone String
+  email String  @unique
+
+  supervisorId Int?  @unique
+  supervisor   User?    @relation("Supervisor", fields: [supervisorId], references: [id])
+  students     User[]   @relation("Supervisor")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+}
