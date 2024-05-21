@@ -13,6 +13,10 @@ import {
     FormLabel, 
     FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { signIn } from "next-auth/react";
+import { useRouter } from 'next/navigation';
+import { authOptions } from '@/lib/auth'
+import { getServerSession } from 'next-auth'
 
 const formSchema = z.object({
     username: z.string()
@@ -22,7 +26,8 @@ const formSchema = z.object({
     password: z.string().min(1,{message: "กรุณากรอกรหัสผ่าน"})
 })
 
-export default function LoginPage(){
+const LoginPage = () => {
+    const router = useRouter();
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues:{
@@ -32,13 +37,17 @@ export default function LoginPage(){
     });
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
-        // try{
-        //     const res = await login(values);
-        //     console.log(res);
-        //     form.reset();
-        // } catch (error){
-        //     console.log(error);
-        // }
+        const signInData = await signIn("credentials", {
+                username: values.username,
+                password: values.password,
+                redirect: false,
+        });
+
+        if (signInData?.error) {
+            console.log(signInData.error);
+        }else{
+            console.log("Login successful");
+        }
     }
 
     return(
@@ -111,3 +120,5 @@ export default function LoginPage(){
         </>
     );
 }
+
+export default LoginPage;

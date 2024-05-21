@@ -1,4 +1,4 @@
-import Navbar from "../../components/navbar/navbar"
+import Navbar from "@/components/navbar/navbar"
 const menu = [
   { menuItem: "Menu Item 1", path: "" },
   { menuItem: "Menu Item 2", path: "" },

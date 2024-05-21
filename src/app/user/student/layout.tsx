@@ -1,4 +1,4 @@
-import Navbar from "../../components/navbar/navbar"
+import Navbar from "@/components/navbar/navbar"
 const menu = [
   { menuItem: "Menu Item", path: "" },
   { menuItem: "Menu Item", path: "" },
@@ -7,7 +7,7 @@ const menu = [
 const StudentLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      <Navbar menu={menu} notification={true} />
+      {/* <Navbar menu={menu} notification={true} /> */}
       <div>{children}</div>
     </>
   )
