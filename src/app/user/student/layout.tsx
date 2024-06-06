@@ -7,7 +7,7 @@ const menu = [
 const StudentLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      {/* <Navbar menu={menu} notification={true} /> */}
+      <Navbar menu={menu}/>
       <div>{children}</div>
     </>
   )
