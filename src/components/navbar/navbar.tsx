@@ -49,7 +49,7 @@ const Navbar: React.FC<Props> = ({ menu, notification = false }) => {
   }, [])
   return (
     <>
-      <nav className="flex absolute px-6 h-16 w-full bg-white justify-between items-center shadow z-40">
+      <nav className="flex  px-6 h-16 w-full bg-white justify-between items-center shadow z-40">
         <ul className="flex gap-16 h-full items-center">
           <li>
             <Link href="">
@@ -100,7 +100,7 @@ const Navbar: React.FC<Props> = ({ menu, notification = false }) => {
         </ul>
       </nav>
       {isComponentVisible && (
-        <div ref={ref} className=" absolute text-gray-700 bg-white w-full z-50">
+        <div ref={ref} className=" absolute text-gray-700 bg-white w-full z-40">
           {menu.map((e, index) => (
             <Link
               key={index}
