@@ -72,6 +72,7 @@ function AdminTable() {
                     </TableBody>
                 </Table>
             </div>
+            
         </>
     )
 }
