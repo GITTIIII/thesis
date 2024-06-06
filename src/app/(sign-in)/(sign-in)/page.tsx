@@ -19,7 +19,7 @@ const LoginPage = () => {
                         <div className='w-full h-[0.2px] bg-[#F26522] my-6 '/>
                         <label className='text-[#F26522] mb-8'>กรุณาเข้าสู่ระบบ</label>
                         <SignInForm/>
-                </div>  
+                </div> 
             </div>
         </>
     );
