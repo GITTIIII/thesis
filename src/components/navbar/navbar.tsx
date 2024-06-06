@@ -49,7 +49,7 @@ const Navbar: React.FC<Props> = ({ menu, notification = false }) => {
   }, [])
   return (
     <>
-      <nav className=" flex px-6 h-16 bg-white justify-between items-center shadow">
+      <nav className="flex absolute px-6 h-16 w-full bg-white justify-between items-center shadow z-50">
         <ul className="flex gap-16 h-full items-center">
           <li>
             <Link href="">

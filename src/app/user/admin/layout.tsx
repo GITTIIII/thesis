@@ -1,3 +1,4 @@
+import Background from "@/components/background/background"
 import Navbar from "@/components/navbar/navbar"
 const menu = [
   { menuItem: "Menu Item 1", path: "" },
@@ -7,8 +8,11 @@ const menu = [
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      <Navbar menu={menu} />
-      <div>{children}</div>
+      <Navbar menu={menu}/>
+      <Background/>
+      <div className="h-full w-full flex absolute top-0 items-center justify-center z-10">
+        {children}
+      </div>
     </>
   )
 }
