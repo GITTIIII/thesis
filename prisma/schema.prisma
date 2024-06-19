@@ -34,16 +34,30 @@ model User {
   password String
   school String
   institute String
+  position String
   role Role @default(STUDENT)
   sex String
   phone String
   email String  @unique
 
-  supervisorId Int?  @unique
-  supervisor   User?    @relation("Supervisor", fields: [supervisorId], references: [id])
-  students     User[]   @relation("Supervisor")
+
+  signatures Signature[] @relation("userSignatures")
+
+  advisorID Int?  @unique
+  advisor   User?    @relation("advisor", fields: [advisorID], references: [id])
+  students     User[]   @relation("advisor")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
 
+model Signature {
+  id Int @id @default(autoincrement())
+  signature String
+
+  userID Int
+  user User @relation(fields: [userID], references: [id], onDelete: Cascade, name: "userSignatures")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

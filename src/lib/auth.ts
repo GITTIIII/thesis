@@ -22,7 +22,7 @@ export const authOptions: NextAuthOptions = {
             },
             async authorize(credentials) {
                 if(!credentials?.username || !credentials?.password) {
-                    return null
+                    throw new Error('ไม่ได้ระบุ "ชื่อผู้ใช้" หรือ "รหัสผ่าน"');
                 }
                 
                 const existingUser = await db.user.findUnique({
@@ -30,13 +30,13 @@ export const authOptions: NextAuthOptions = {
                 })
 
                 if(!existingUser){
-                    return null
+                    throw new Error('ไม่พบชื่อผู้ใช้');
                 }
             
                 const passwordMatch = await compare(credentials.password, existingUser.password);
 
                 if(!passwordMatch){
-                    return null
+                    throw new Error('รหัสผ่านไม่ถูกต้อง');
                 }
 
                 return {

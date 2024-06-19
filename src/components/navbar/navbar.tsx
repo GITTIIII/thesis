@@ -4,6 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import Img from "../../../public/asset/images"
 import useComponentVisible from "../componentVisible/useComponentVisible"
+import { signOut } from "next-auth/react"
 interface Profile {
   Id: string
   Name: string
@@ -49,7 +50,7 @@ const Navbar: React.FC<Props> = ({ menu, notification = false }) => {
   }, [])
   return (
     <>
-      <nav className="flex  px-6 h-16 w-full bg-white justify-between items-center shadow z-40">
+      <nav className="flex absolute px-6 h-16 w-full bg-white justify-between items-center shadow z-40">
         <ul className="flex gap-16 h-full items-center">
           <li>
             <Link href="">
@@ -82,9 +83,10 @@ const Navbar: React.FC<Props> = ({ menu, notification = false }) => {
           <li className="hidden xl:block">
             <Link
               href="/"
-              onClick={() => {
-                // cookies().delete("NAME!!!");
-              }}
+              onClick={() => signOut({
+                redirect: true,
+                callbackUrl: `${window.location.origin}`
+              })}
             >
               <Logout />
             </Link>
@@ -118,9 +120,10 @@ const Navbar: React.FC<Props> = ({ menu, notification = false }) => {
           </Link>
           <Link
             href="/"
-            onClick={() => {
-              // cookies().delete("NAME!!!");
-            }}
+            onClick={() => signOut({
+              redirect: true,
+              callbackUrl: `${window.location.origin}`
+            })}
             className="block px-4 py-2  hover:bg-gray-100 border-b-2 text-center transition-colors duration-200"
           >
             Logout

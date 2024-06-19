@@ -4,6 +4,8 @@ import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { useToast } from "@/components/ui/use-toast"
 import { 
     Form, 
     FormControl, 
@@ -11,11 +13,7 @@ import {
     FormItem, 
     FormLabel, 
     FormMessage } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { currentUser } from "@/lib/current-user";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import { useSession } from "next-auth/react"
+
 
 const formSchema = z.object({
     username: z.string()
@@ -27,6 +25,7 @@ const formSchema = z.object({
 
 const SignInForm = () => {
     const router = useRouter();
+    const { toast } = useToast()
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues:{
@@ -43,14 +42,19 @@ const SignInForm = () => {
         });
 
         if (signInData?.error) {
-            console.log(signInData.error);
+            toast({
+                title: "Error",
+                description: signInData?.error,
+                variant: "destructive"
+            })
         }else{
             const session = getSession()
             session.then((result) => {
+                router.refresh();
                 if(result?.user.role == "STUDENT"){
                     router.push("/user/student");
                 }
-                else if(result?.user.role == "ADMIN"){
+                else if(result?.user.role == "ADMIN" || result?.user.role == "COMMOTTEE"){
                     router.push("/user/admin");
                 }
                 else if(result?.user.role == "SUPER_ADMIN"){
