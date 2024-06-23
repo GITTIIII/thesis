@@ -14,6 +14,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Position{
+  NONE
+  ADVISOR
+  HEAD_INSTITUTE
+  COMMOTTEE_OUTLINE
+  COMMOTTEE_INSTITUTE
+  COMMOTTEE_EXAMING
+}
+
 enum Role{
   STUDENT
   COMMOTTEE
@@ -21,7 +30,7 @@ enum Role{
   SUPER_ADMIN
 }
 
-enum FormStatus{
+enum Status{
   APPROVED
   NOT_APPROVED
 }
@@ -32,10 +41,11 @@ model User {
   lastName String
   username String @unique
   password String
+  education_level String
   school String
-  institute String
-  position String
-  role Role @default(STUDENT)
+  program String
+  position Position
+  role Role 
   sex String
   phone String
   email String  @unique
@@ -43,9 +53,19 @@ model User {
 
   signatures Signature[] @relation("userSignatures")
 
-  advisorID Int?  @unique
+  //นศ. อาจารย์ที่ปรึกษา
+  advisorID Int?
   advisor   User?    @relation("advisor", fields: [advisorID], references: [id])
+  
+  //อาจารย์ที่ปรึกษามี นศ. หลายคน
   students     User[]   @relation("advisor")
+
+  //นศ. สร้างฟอร์ม
+  form1             Form1[]     @relation("FormOwner")
+  //เป็นอาจารย์ที่ปรึกษา thesis
+  thesisAdvisor     Form1[]      @relation("ThesisAdvisor")
+  //เป็นอาจารย์ที่ปรึกษาร่วม thesis
+  thesisCoAdvisor   Form1[]      @relation("ThesisCoAdvisor")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -54,9 +74,45 @@ model User {
 model Signature {
   id Int @id @default(autoincrement())
   signature String
+  status Status
 
   userID Int
   user User @relation(fields: [userID], references: [id], onDelete: Cascade, name: "userSignatures")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Form1 {
+  id                            Int      @id @default(autoincrement())
+  date                          DateTime @default(now())
+  fullname                      String
+  username                      String
+  education_level               String
+  school                        String
+  program                       String
+  program_year                  String
+  thesisNameTH                  String
+  thesisNameEN                  String
+  advisorID                     Int
+  co_advisorID                  Int?
+  studentID                     Int
+  student_signature             String
+
+  committee_outline_status      String?
+  committee_outline_comment     String?
+  committee_outline_signature   String?
+  date_committee_outline_sign   DateTime @default(now())
+
+  committee_institute_status    String?
+  committee_institute_comment   String?
+  committee_institute_signature String?
+  date_committee_institute_sign DateTime @default(now())
+
+  // Relation fields
+  student   User @relation(fields: [studentID], references: [id], name: "FormOwner")
+  advisor   User @relation(fields: [advisorID], references: [id], name: "ThesisAdvisor")
+  coAdvisor User? @relation(fields: [co_advisorID], references: [id], name: "ThesisCoAdvisor")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

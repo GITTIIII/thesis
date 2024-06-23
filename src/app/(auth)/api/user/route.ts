@@ -1,5 +1,7 @@
+import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { hash } from "bcrypt"
+import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request){
@@ -10,8 +12,9 @@ export async function POST(req: Request){
             lastName,
             username, 
             password,
+            education_level,
             school,
-            institute,
+            program,
             position,
             role,
             sex,
@@ -43,8 +46,9 @@ export async function POST(req: Request){
                 lastName,
                 username,
                 password: hashedPassword,
+                education_level,
                 school,
-                institute,
+                program,
                 position,
                 role,
                 sex,
@@ -60,3 +64,21 @@ export async function POST(req: Request){
         return NextResponse.json({ message:"Something wrong!"}, {status: 500});
     }
 }
+
+export async function GET(){
+    const session = await getServerSession(authOptions);
+    const username = session?.user.username
+
+    if(!session) {
+        return null;
+    }
+
+    const user = await db.user.
+    findUnique({
+        where: {
+            username: username
+        }
+    });
+
+    return NextResponse.json(user);
+} 
