@@ -1,3 +1,10 @@
+## Environement File
+สร้างไฟล์ .env 
+มี url ของ Database เเละ Secret สำหรับการทำ Authentication
+```bash
+DATABASE_URL=
+NEXTAUTH_SECRET=
+```
 cd thesis
 ## Getting Started
 ```bash
