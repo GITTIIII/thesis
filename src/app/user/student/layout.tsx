@@ -9,10 +9,9 @@ const StudentLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <Navbar menu={menu} />
-      {/* <Background/> */}
-      <div className="h-full w-full">
+  
         {children}
-      </div>
+      
     </>
   )
 }

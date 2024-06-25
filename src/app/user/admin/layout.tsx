@@ -9,10 +9,7 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
       <Navbar menu={menu}/>
-      <Background/>
-      <div className="h-full w-full flex absolute top-0 items-center justify-center z-10">
-        {children}
-      </div>
+      {children}
     </>
   )
 }

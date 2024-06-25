@@ -5,8 +5,8 @@ import AdminTable from '@/components/adminTable/adminTable'
 const Admin = () => {
   return (
     <>
-    <div className='w-full h-full bg-transparent py-24 px-28'>
-      <div className='h-1/4 w-full flex items-center text-2xl '>
+    <div className='w-full h-full bg-transparent py-8 px-28'>
+      <div className='h-max w-full flex items-center text-2xl p-2'>
         <Image
         src={documentation}
         width={142}

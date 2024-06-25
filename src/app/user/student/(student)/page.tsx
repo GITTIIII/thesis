@@ -12,10 +12,7 @@ const procedure = [
 ]
 export default function Page() {
   return (
-    <div className=" relative bg-white overflow-clip ">
-      <div className="absolute 2xl:w-[750px] 2xl:h-[750px] md:w-[700px] md:h-[700px] md:block hidden  -left-[700px] -top-[350px] rounded-full blur-[250px] bg-[#F26522] " />
-      <div className="absolute 2xl:w-[350px] 2xl:h-[750px] md:w-[350px] md:h-[350px] md:block hidden  -right-96 top-[250px] rounded-full blur-[250px] bg-[#F26522]" />
-      <div className="absolute 2xl:w-[400px] 2xl:h-[200px] 2xl:block hidden  -left-[200px] bottom-0 rounded-full blur-[200px] bg-[#F26522] rotate-2" />
+    <div className=" relativ overflow-clip ">
       <div className="z-10">
         <div>
           <div className="flex w-full h-72 md:h-[600px] justify-center items-center">
