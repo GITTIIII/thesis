@@ -12,16 +12,19 @@ export async function POST(req: Request){
             lastName,
             username, 
             password,
+            email, 
+            phone,
+            sex,
             education_level,
             school,
             program,
             program_year,
-            formState,
             position,
             role,
-            sex,
-            phone,
-            email } = body;
+            formState,
+            signatureUrl,
+            profileUrl,
+        } = body;
 
         //check if username already exists
         const existUsername = await db.user.findUnique({
@@ -48,16 +51,18 @@ export async function POST(req: Request){
                 lastName,
                 username,
                 password: hashedPassword,
+                email, 
+                phone,
+                sex,
                 education_level,
                 school,
                 program,
                 program_year,
-                formState,
                 position,
                 role,
-                sex,
-                phone,
-                email,
+                formState,
+                signatureUrl,
+                profileUrl,
             }
         })
 
