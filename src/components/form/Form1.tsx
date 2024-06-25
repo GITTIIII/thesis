@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import Signature from '@/components/signature/signature';
 
 const Advisor = [
     {
@@ -87,6 +88,10 @@ const Form1 = () => {
             student_signature: "",
         }
     });
+
+    const onAddSignature = async (signature: string) => {
+        
+    }
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
         console.log(values);
@@ -346,6 +351,10 @@ const Form1 = () => {
                                 </div>
                             )}
                         />
+                        <div className='flex flex-col items-center mb-6 justify-center'>
+                            <FormLabel>ลายเซ็น / Signature</FormLabel>
+                            <Signature onAddSignature={onAddSignature}/>
+                        </div>
                     </div>
                 </div>
                 <div className='w-full flex px-20 lg:flex justify-center'>

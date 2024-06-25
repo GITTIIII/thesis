@@ -36,21 +36,23 @@ enum Status{
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  firstName String
-  lastName String
-  username String @unique
-  password String
+  id Int          @id @default(autoincrement())
+  firstName       String
+  lastName        String
+  username        String  @unique
+  password        String
+  email           String  @unique
+  phone           String?
+  sex             String
   education_level String
-  school String
-  program String
-  position Position
-  role Role 
-  sex String
-  phone String
-  email String  @unique
+  school          String
+  program         String
+  program_year    String?
+  position        Position
+  role            Role
+  formState       Int? 
 
-
+  //user มีหลายลายเซ็น
   signatures Signature[] @relation("userSignatures")
 
   //นศ. อาจารย์ที่ปรึกษา
@@ -72,47 +74,60 @@ model User {
 }
 
 model Signature {
-  id Int @id @default(autoincrement())
-  signature String
-  status Status
+  id         Int       @id @default(autoincrement())
+  signatureUrl  String
+  status     Status
 
-  userID Int
-  user User @relation(fields: [userID], references: [id], onDelete: Cascade, name: "userSignatures")
+  userID     Int
+  user       User      @relation(fields: [userID], references: [id], onDelete: Cascade, name: "userSignatures")
+  
+  studentSignature                Form1[]   @relation("StudentSignature")
+  committeeOutlineSignature       Form1[]   @relation("CommitteeOutlineSignature")
+  committeeInstituteSignature     Form1[]   @relation("CommitteeInstituteSignature")
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
 
+
 model Form1 {
-  id                            Int      @id @default(autoincrement())
-  date                          DateTime @default(now())
-  fullname                      String
-  username                      String
-  education_level               String
-  school                        String
-  program                       String
-  program_year                  String
-  thesisNameTH                  String
-  thesisNameEN                  String
-  advisorID                     Int
-  co_advisorID                  Int?
-  studentID                     Int
-  student_signature             String
+  id                           Int       @id @default(autoincrement())
+  date                         DateTime  @default(now())
+  fullname                     String
+  username                     String
+  education_level              String
+  school                       String
+  program                      String
+  program_year                 String
+  thesisNameTH                 String
+  thesisNameEN                 String
+  advisorID                    Int
+  co_advisorID                 Int?
+  studentID                    Int
 
-  committee_outline_status      String?
-  committee_outline_comment     String?
-  committee_outline_signature   String?
-  date_committee_outline_sign   DateTime @default(now())
+  student_signatureID          Int?
+  studentSignature             Signature? @relation(name:"StudentSignature", fields: [student_signatureID], references: [id])
 
-  committee_institute_status    String?
-  committee_institute_comment   String?
-  committee_institute_signature String?
-  date_committee_institute_sign DateTime @default(now())
+  //กรรมการโครงร่าง
+  committee_outline_status     String?
+  committee_outline_comment    String?
+
+  committee_outline_signatureID Int?
+  committeeOutlineSignature    Signature? @relation(name:"CommitteeOutlineSignature", fields: [committee_outline_signatureID], references: [id])
+  date_committee_outline_sign  DateTime  @default(now())
+
+  //กรรมการสำนัก
+  committee_institute_status   String?
+  committee_institute_comment  String?
+  
+  committee_institute_signatureID Int?
+  committeeInstituteSignature  Signature? @relation(name:"CommitteeInstituteSignature", fields: [committee_institute_signatureID], references: [id])
+  date_committee_institute_sign DateTime  @default(now())
 
   // Relation fields
-  student   User @relation(fields: [studentID], references: [id], name: "FormOwner")
-  advisor   User @relation(fields: [advisorID], references: [id], name: "ThesisAdvisor")
-  coAdvisor User? @relation(fields: [co_advisorID], references: [id], name: "ThesisCoAdvisor")
+  student        User @relation(fields: [studentID], references: [id], name: "FormOwner")
+  advisor        User @relation(fields: [advisorID], references: [id], name: "ThesisAdvisor")
+  coAdvisor      User? @relation(fields: [co_advisorID], references: [id], name: "ThesisCoAdvisor")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
