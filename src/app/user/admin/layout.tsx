@@ -1,9 +1,9 @@
 import Background from "@/components/background/background"
 import Navbar from "@/components/navbar/navbar"
 const menu = [
-  { menuItem: "Menu Item 1", path: "" },
-  { menuItem: "Menu Item 2", path: "" },
-  { menuItem: "Menu Item 3", path: "" },
+  { menuItem: "Student", path: "/user/student" },
+  { menuItem: "Admin", path: "/user/admin" },
+  { menuItem: "SuperAdmin", path: "/user/superAdmin" },
 ]
 const AdminLayout = ({ children }: { children: React.ReactNode }) => {
   return (
