@@ -64,12 +64,13 @@ const formSchema = z.object({
     advisorID: z.number(),
     co_advisorID: z.number(),
     studentID: z.number(),
-    student_signature: z.string(),
+    student_signatureID: z.number(),
 })
 
 const Form1 = () => {
     const router = useRouter();
     const [user, setUser] = useState<User|null>(null);
+    // console.log(user);
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues:{
@@ -85,7 +86,7 @@ const Form1 = () => {
             advisorID: 0,
             co_advisorID: 0,
             studentID: 0,
-            student_signature: "",
+            student_signatureID : 0,
         }
     });
 
@@ -109,6 +110,7 @@ const Form1 = () => {
                 school: `${user.school}`,
                 program: `${user.program}`,
                 program_year: `${user.program_year}`,
+                studentID: user.id,
             });
         }
     }, [user, reset]);
@@ -133,7 +135,7 @@ const Form1 = () => {
                                     <FormItem className='w-auto'>
                                     <FormLabel>วันที่ / DATE</FormLabel>
                                     <FormControl>
-                                    <Input type='date' className='text-sm p-2 w-max border-solid border-2 border-black rounded-lg'
+                                    <Input type='date' className='text-sm p-2 w-max  rounded-lg'
                                         {...field}
                                     />
                                     </FormControl>
@@ -150,7 +152,7 @@ const Form1 = () => {
                                     <FormItem className='w-auto'>
                                     <FormLabel>ชื่อ-นามสกุล / FullName</FormLabel>
                                     <FormControl>
-                                    <Input className='text-sm p-2 w-60 m-auto border-solid border-2 border-black rounded-lg'
+                                    <Input className='text-sm p-2 w-60 m-auto  rounded-lg'
                                         {...field}
                                     />
                                     </FormControl>
@@ -167,7 +169,7 @@ const Form1 = () => {
                                     <FormItem className='w-auto'>
                                     <FormLabel>รหัสนักศึกษา / Student-No.</FormLabel>
                                     <FormControl>
-                                    <Input className='text-sm p-2 w-60 m-auto border-solid border-2 border-black rounded-lg'
+                                    <Input className='text-sm p-2 w-60 m-auto  rounded-lg'
                                         {...field}
                                     />
                                     </FormControl>
@@ -221,7 +223,7 @@ const Form1 = () => {
                                     <FormItem className='w-auto'>
                                     <FormLabel>สาขาวิชา / School</FormLabel>
                                     <FormControl>
-                                    <Input className='text-sm p-2 w-60 m-auto border-solid border-2 border-black rounded-lg'
+                                    <Input className='text-sm p-2 w-60 m-auto  rounded-lg'
                                         {...field}
                                     />
                                     </FormControl>
@@ -238,7 +240,7 @@ const Form1 = () => {
                                     <FormItem className='w-auto'>
                                     <FormLabel>หลักสูตร / Program</FormLabel>
                                     <FormControl>
-                                    <Input className='text-sm p-2 w-60 m-auto border-solid border-2 border-black rounded-lg'
+                                    <Input className='text-sm p-2 w-60 m-auto  rounded-lg'
                                         {...field}
                                     />
                                     </FormControl>
@@ -255,7 +257,7 @@ const Form1 = () => {
                                     <FormItem className='w-auto'>
                                     <FormLabel>ปีหลักสูตร / ProgramYear</FormLabel>
                                     <FormControl>
-                                    <Input className='text-sm p-2 w-60 m-auto border-solid border-2 border-black rounded-lg'
+                                    <Input className='text-sm p-2 w-60 m-auto  rounded-lg'
                                         {...field}
                                     />
                                     </FormControl>
@@ -277,7 +279,7 @@ const Form1 = () => {
                                     <FormItem className='w-auto'>
                                     <FormLabel>ชื่อภาษาไทย / ThesisName(TH)</FormLabel>
                                     <FormControl>
-                                    <Input className='text-sm p-2 w-60 m-auto border-solid border-2 border-black rounded-lg'
+                                    <Input className='text-sm p-2 w-60 m-auto  rounded-lg'
                                         {...field}
                                     />
                                     </FormControl>
@@ -294,7 +296,7 @@ const Form1 = () => {
                                     <FormItem className='w-auto'>
                                     <FormLabel>ชื่อภาษาอังกฤษ / ThesisName(EN)</FormLabel>
                                     <FormControl>
-                                    <Input className='text-sm p-2 w-60 m-auto border-solid border-2 border-black rounded-lg'
+                                    <Input className='text-sm p-2 w-60 m-auto  rounded-lg'
                                         {...field}
                                     />
                                     </FormControl>
@@ -312,7 +314,7 @@ const Form1 = () => {
                                     <FormLabel>อาจารย์ที่ปรึกษา / Thesis Advisor</FormLabel>
                                     <Select onValueChange={(value) => field.onChange(parseInt(value, 10))}>
                                         <FormControl>
-                                        <SelectTrigger className='text-sm p-2 w-60 m-auto border-solid border-2 border-black rounded-lg'>
+                                        <SelectTrigger className='text-sm p-2 w-60 m-auto  rounded-lg'>
                                             <SelectValue placeholder="อาจารย์ที่ปรึกษา"  defaultValue=""/>
                                         </SelectTrigger>
                                         </FormControl>
@@ -336,7 +338,7 @@ const Form1 = () => {
                                     <FormLabel>อาจารย์ที่ปรึกษาร่วม(ถ้ามี) / Co-Thesis Advisor (if any)</FormLabel>
                                     <Select onValueChange={(value) => field.onChange(parseInt(value, 10))}>
                                         <FormControl>
-                                        <SelectTrigger className='text-sm p-2 w-60 m-auto border-solid border-2 border-black rounded-lg'>
+                                        <SelectTrigger className='text-sm p-2 w-60 m-auto  rounded-lg'>
                                             <SelectValue placeholder="อาจารย์ที่ปรึกษาร่วม"  defaultValue=""/>
                                         </SelectTrigger>
                                         </FormControl>

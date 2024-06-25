@@ -51,9 +51,8 @@ model User {
   position        Position
   role            Role
   formState       Int? 
-
-  //user มีหลายลายเซ็น
-  signatures Signature[] @relation("userSignatures")
+  signatureUrl    String?
+  profileUrl      String?
 
   //นศ. อาจารย์ที่ปรึกษา
   advisorID Int?
@@ -73,23 +72,6 @@ model User {
   updatedAt DateTime @updatedAt
 }
 
-model Signature {
-  id         Int       @id @default(autoincrement())
-  signatureUrl  String
-  status     Status
-
-  userID     Int
-  user       User      @relation(fields: [userID], references: [id], onDelete: Cascade, name: "userSignatures")
-  
-  studentSignature                Form1[]   @relation("StudentSignature")
-  committeeOutlineSignature       Form1[]   @relation("CommitteeOutlineSignature")
-  committeeInstituteSignature     Form1[]   @relation("CommitteeInstituteSignature")
-
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-}
-
-
 model Form1 {
   id                           Int       @id @default(autoincrement())
   date                         DateTime  @default(now())
@@ -104,24 +86,18 @@ model Form1 {
   advisorID                    Int
   co_advisorID                 Int?
   studentID                    Int
-
-  student_signatureID          Int?
-  studentSignature             Signature? @relation(name:"StudentSignature", fields: [student_signatureID], references: [id])
+  student_signature            String?
 
   //กรรมการโครงร่าง
   committee_outline_status     String?
   committee_outline_comment    String?
-
-  committee_outline_signatureID Int?
-  committeeOutlineSignature    Signature? @relation(name:"CommitteeOutlineSignature", fields: [committee_outline_signatureID], references: [id])
+  committee_outline_signature String?
   date_committee_outline_sign  DateTime  @default(now())
 
   //กรรมการสำนัก
   committee_institute_status   String?
   committee_institute_comment  String?
-  
-  committee_institute_signatureID Int?
-  committeeInstituteSignature  Signature? @relation(name:"CommitteeInstituteSignature", fields: [committee_institute_signatureID], references: [id])
+  committee_institute_signature String?
   date_committee_institute_sign DateTime  @default(now())
 
   // Relation fields

@@ -15,8 +15,6 @@ import {RadioGroup, Radio} from "@nextui-org/radio";
 export default function Signature({onAddSignature}:{onAddSignature: (signature: string) => void}) {
     const [popUp, setPopUp] = useState(false);
     const [active, setActive] = useState(1);
-    console.log(popUp);
-    console.log(active);
 
     const onSubmit = async () => {
         // create sig 
@@ -25,7 +23,7 @@ export default function Signature({onAddSignature}:{onAddSignature: (signature: 
 
     return (
         <>
-            <Button variant='outline' onClick={() => setPopUp(!popUp)} className="w-2/5 mt-4 h-max border-2 border-black">
+            <Button variant='outline' onClick={() => setPopUp(!popUp)} className="w-2/5 mt-4 h-max">
                 <Image
                     src={signature_head}
                     width={100}
@@ -130,6 +128,9 @@ export default function Signature({onAddSignature}:{onAddSignature: (signature: 
                                 </div>
                             )}
                         </div>
+                        <Button onClick={()=> setPopUp(!popUp)}>
+                            ปิด
+                        </Button>
                     </div>
                 </div>
             )}
