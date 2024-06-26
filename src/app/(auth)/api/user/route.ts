@@ -1,6 +1,6 @@
 import { authOptions } from "@/lib/auth";
-import { db } from "@/lib/db";
 import { hash } from "bcrypt"
+import { db } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
@@ -91,3 +91,73 @@ export async function GET(){
 
     return NextResponse.json(user);
 } 
+
+export async function PATCH(req: Request) {
+    try {
+        const body = await req.json();
+        const {
+            id,
+            firstName,
+            lastName,
+            username,
+            password,
+            email,
+            phone,
+            sex,
+            education_level,
+            school,
+            program,
+            program_year,
+            position,
+            role,
+            formState,
+            signatureUrl,
+            profileUrl,
+        } = body;
+        console.log(body)
+
+        if (!id) {
+            return NextResponse.json({ message: "User ID is required for update" }, { status: 400 });
+        }
+
+        const existingUser = await db.user.findUnique({
+            where: { id: id }
+        });
+
+        if (!existingUser) {
+            return NextResponse.json({ user: null, message: "User not found" }, { status: 404 });
+        }
+
+        const hashedPassword = password ? await hash(password, 10) : existingUser.password;
+
+        const updatedUser = await db.user.update({
+            where: { id: id },
+            data: {
+                firstName: firstName || existingUser.firstName,
+                lastName: lastName || existingUser.lastName,
+                username: username || existingUser.username,
+                password: hashedPassword,
+                email: email || existingUser.email,
+                phone: phone || existingUser.phone,
+                sex: sex || existingUser.sex,
+                education_level: education_level || existingUser.education_level,
+                school: school || existingUser.school,
+                program: program || existingUser.program,
+                program_year: program_year || existingUser.program_year,
+                position: position || existingUser.position,
+                role: role || existingUser.role,
+                formState: formState || existingUser.formState,
+                signatureUrl: signatureUrl || existingUser.signatureUrl,
+                profileUrl: profileUrl || existingUser.profileUrl,
+            }
+        });
+
+        const { password: updatedUserPassword, ...rest } = updatedUser;
+
+        return NextResponse.json({ user: rest, message: "User Updated" }, { status: 200 });
+    } catch (error) {
+        return NextResponse.json({ message: error }, { status: 500 });
+    }
+}
+
+

@@ -51,8 +51,8 @@ model User {
   position        Position
   role            Role
   formState       Int? 
-  signatureUrl    String?
-  profileUrl      String?
+  signatureUrl    String? @db.LongText
+  profileUrl      String? @db.LongText
 
   //นศ. อาจารย์ที่ปรึกษา
   advisorID Int?
@@ -74,7 +74,7 @@ model User {
 
 model Form1 {
   id                           Int       @id @default(autoincrement())
-  date                         DateTime  @default(now())
+  date                         String
   fullname                     String
   username                     String
   education_level              String
@@ -86,19 +86,19 @@ model Form1 {
   advisorID                    Int
   co_advisorID                 Int?
   studentID                    Int
-  student_signature            String?
+  student_signature            String? @db.LongText
 
   //กรรมการโครงร่าง
-  committee_outline_status     String?
-  committee_outline_comment    String?
-  committee_outline_signature String?
-  date_committee_outline_sign  DateTime  @default(now())
+  committee_outline_status      String?
+  committee_outline_comment     String?
+  committee_outline_signature   String? @db.LongText
+  date_committee_outline_sign   String?
 
   //กรรมการสำนัก
-  committee_institute_status   String?
-  committee_institute_comment  String?
-  committee_institute_signature String?
-  date_committee_institute_sign DateTime  @default(now())
+  committee_institute_status    String?
+  committee_institute_comment   String?
+  committee_institute_signature String? @db.LongText
+  date_committee_institute_sign String?
 
   // Relation fields
   student        User @relation(fields: [studentID], references: [id], name: "FormOwner")
