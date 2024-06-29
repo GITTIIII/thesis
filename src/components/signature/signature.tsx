@@ -1,6 +1,6 @@
 import { z } from "zod";
 import Image from "next/image";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
 import signature from "@/../../public/asset/signature.png";
 import folderOrange from "@../../../public/asset/folderOrange.png";
 import folderBlack from "@../../../public/asset/folderBlack.png";
@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import qs from "query-string";
 import { useToast } from "@/components/ui/use-toast";
+import SignatureCanvas from "react-signature-canvas";
 
 type User = {
 	id: number;
@@ -40,6 +41,14 @@ export default function Signature() {
 	const [user, setUser] = useState<User | null>(null);
 	const { toast } = useToast();
 	const router = useRouter();
+
+	const sigCanvas = useRef<SignatureCanvas>(null);
+	const clear = () => {
+		if (sigCanvas.current) {
+			sigCanvas.current.clear();
+		}
+	};
+
 	const form = useForm({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -63,9 +72,31 @@ export default function Signature() {
 		}
 	};
 
+	const handleDrawingSign = () => {
+		if (active == 2 && sigCanvas.current?.isEmpty()) {
+			toast({
+				title: "Error",
+				description: "กรุณาวาดลายเซ็น",
+				variant: "destructive",
+			});
+			return;
+		} else if (
+			active == 2 &&
+			sigCanvas.current &&
+			!sigCanvas.current.isEmpty()
+		) {
+			reset({
+				...form.getValues(),
+				signatureUrl: sigCanvas.current
+					.getTrimmedCanvas()
+					.toDataURL("image/png"),
+			});
+		}
+		onSubmit(form.getValues());
+	};
+
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		console.log(values);
-
 		const url = qs.stringifyUrl({
 			url: `/api/user`,
 		});
@@ -78,6 +109,9 @@ export default function Signature() {
 			});
 			form.reset();
 			router.refresh();
+			setTimeout(() => {
+				setActive(1);
+			}, 1000);
 		} else {
 			toast({
 				title: "Error",
@@ -98,10 +132,14 @@ export default function Signature() {
 		}
 	}, [user, reset]);
 
+	const getUser = async () => {
+		const res = await fetch("/api/user");
+		const data = await res.json();
+		setUser(data);
+	};
+
 	useEffect(() => {
-		fetch("/api/user")
-			.then((res) => res.json())
-			.then((data) => setUser(data));
+		getUser();
 	}, [active]);
 
 	return (
@@ -163,28 +201,70 @@ export default function Signature() {
 						<div className="bg-white-500 border-b border-black w-0  2xl:w-1/5 py-4"></div>
 						<div className="bg-white-500 border-b border-black w-0  2xl:w-1/5 py-4"></div>
 					</div>
-					
+
 					{/* main */}
-					<div className="w-full h-max">
+					<div className="w-full h-full">
 						{active == 1 && (
 							<div className="w-full h-full grid sm:grid-cols-3 2xl:grid-cols-5 gap-2 p-2">
-								<div className="w-full h-full flex justify-center border-2 p-4 rounded-md">
+								<div className="w-max h-max flex justify-center border-2 p-4 rounded-md">
 									<Image
 										src={user?.signatureUrl ? user?.signatureUrl : signature}
-										width={100}
-										height={100}
+										width={200}
+										height={200}
 										alt="signature"
 									/>
 								</div>
 							</div>
 						)}
-						{active == 2 && <div className="w-full h-max">2</div>}
+						{active == 2 && (
+							<div className="w-full h-full py-2 m-auto">
+								<Form {...form}>
+									<div className="w-full h-full flex justify-center mb-6">
+										<form
+											onSubmit={form.handleSubmit(onSubmit)}
+											className="w-full h-max flex flex-col justify-center border-2 border-dashed border-[#F26522] bg-[#f2642229] py-32"
+										>
+											<div className="w-full h-max flex justify-center mb-6">
+												<SignatureCanvas
+													ref={sigCanvas}
+													backgroundColor="white"
+													velocityFilterWeight={0.1}
+													canvasProps={{
+														width: 200,
+														height: 200,
+														className: "sigCanvas",
+													}}
+												/>
+											</div>
+											<div className="w-full h-full flex justify-center">
+												<Button
+													variant="outline"
+													type="button"
+													onClick={() => clear()}
+													className="bg-[#F26522] w-auto px-6 text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
+												>
+													ล้าง
+												</Button>
+												<Button
+													variant="outline"
+													type="button"
+													onClick={() => handleDrawingSign()}
+													className="bg-[#F26522] w-auto text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
+												>
+													ยืนยัน
+												</Button>
+											</div>
+										</form>
+									</div>
+								</Form>
+							</div>
+						)}
 						{active == 3 && (
 							<div className="w-full h-max 2xl:h-full py-2">
 								<Form {...form}>
 									<form
 										onSubmit={form.handleSubmit(onSubmit)}
-										className="w-full h-full flex flex-col justify-center bg-white border-2 border-dashed border-[#F26522] py-24 lg:py-28 2xl:py-48"
+										className="w-full h-max flex flex-col justify-center bg-[#f2642229] border-2 border-dashed border-[#F26522] py-48"
 									>
 										<div className="flex flex-col justify-center md:flex-row">
 											<div className="w-full sm:2/4">

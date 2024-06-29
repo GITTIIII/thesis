@@ -9,7 +9,7 @@ const Form1Page = () => {
     <>
       <div className="w-full h-max bg-transparent py-12 px-2 lg:px-28">
         <div className="w-full h-full p-4 flex justify-center items-center">
-          <Stepper step={4} />
+          <Stepper step={1} />
         </div>
         <div className="h-full w-full flex items-center text-2xl bg-white-500 py-8">
           <Image src={learning1} width={100} height={100} alt="leaning1" />
