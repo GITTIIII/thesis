@@ -10,26 +10,36 @@ export const POST = async (req: Request) => {
   const formData = await req.formData()
   const file = formData.get("file") as File
   const columnKey = formData.get("columnKey") as string
+  // Validate that a file was received
   if (!file) {
-    return NextResponse.json({ error: "No files received." }, { status: 400 })
+    return NextResponse.json({ Error: "No files received." }, { status: 400 })
   }
+  // Validate that a columnKey was received
   if (!columnKey) {
     return NextResponse.json(
-      { error: "No column key received." },
+      { Error: "No column key received." },
+      { status: 400 }
+    )
+  }
+  const filename = file.name.replaceAll(" ", "_")
+  var re = /(\.xlsx)$/i
+  // Validate the file format
+  if (!re.exec(filename)) {
+    return NextResponse.json(
+      { Error: "Invalid file format. Please upload a valid Excel file." },
       { status: 400 }
     )
   }
 
   const buffer = Buffer.from(await file.arrayBuffer())
-  const filename = file.name.replaceAll(" ", "_")
   const pathExcel = `src/app/(auth)/api/user/importExcel/excel/${filename}`
   try {
     await writeFile(path.join(process.cwd(), pathExcel), buffer)
     const result = excelFileToJson(pathExcel, JSON.parse(columnKey))
     await unlink(pathExcel)
-    return NextResponse.json({ Result: result, status: 200 })
+    return NextResponse.json({ Result: result }, { status: 200 })
   } catch (error) {
-    console.log("Error occured ", error)
-    return NextResponse.json({ Message: "Failed", status: 500 })
+    await unlink(pathExcel)
+    return NextResponse.json({ Error: error }, { status: 500 })
   }
 }
