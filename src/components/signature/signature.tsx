@@ -228,7 +228,7 @@ export default function Signature() {
 												<SignatureCanvas
 													ref={sigCanvas}
 													backgroundColor="white"
-													velocityFilterWeight={0.1}
+													throttle={8}
 													canvasProps={{
 														width: 200,
 														height: 200,

@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils"
 
-function Stepper({ step }: { step: number }) {
+function Stepper({ step }: { step: number}) {
   return (
     <div className=" items-center md:flex hidden">
       {Array.from(Array(7).keys(), (item) => item + 1).map((key) => (

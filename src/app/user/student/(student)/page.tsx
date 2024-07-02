@@ -1,5 +1,8 @@
+import { Button } from "@/components/ui/button";
 import Img from "../../../../../public/asset/images";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 const procedure = [
 	"จัดทำโครงร่างวิทยานิพนธ์ตามรูปแบบที่มหาวิทยาลัยกำหนดตามเอกสารหมายเลข 1",
 	"เสนอโครงร่างวิทยานิพนธ์ให้เป็นไปตามขั้นตอนที่มหาวิทยาลัยกำหนดตามเอกสารหมายเลข 2 และให้เป็นไปตามแบบ ทบ.20เอกสารหมายเลข 3",
@@ -24,7 +27,7 @@ export default function Page() {
 								x xxxx xxxxxxx xx xxxx xxxxxxxxxxxx xxxx xx xxxx xxxxx xxxx
 								xxxxxxxxxxxxxx xx xxxx xxxx
 							</p>
-							<div>เริ่มการส่งวิทยานิพนธ์</div>
+							<Link href="/user/student/table" className="text-[#F26522] hover:underline">เริ่มการส่งวิทยานิพนธ์</Link>
 						</div>
 						<Image
 							className="w-80 hidden md:block xl:w-[430px]"
