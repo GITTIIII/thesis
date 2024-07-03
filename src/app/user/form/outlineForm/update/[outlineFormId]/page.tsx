@@ -1,10 +1,11 @@
 "use client";
-import learning1 from "@/../../public/asset/learning1.png";
-import Form1 from "@/components/form/Form1Create";
-import Stepper from "@/components/stepper/stepper";
 import Image from "next/image";
+import learning1 from "@/../../public/asset/learning1.png";
+import OutlineFormUpdate from "@/components/form/outlineFormUpdate";
 
-const Form1Create = () => {
+
+export default function OutlineFormUpdatePage({ params }: { params: { outlineFormId: number }} ) {
+	const outlineFormId = params.outlineFormId
 	return (
 		<>
 			<div className="w-full h-max bg-transparent py-12 px-2 lg:px-28">
@@ -16,15 +17,10 @@ const Form1Create = () => {
 				</div>
 				<div className="h-full w-full flex items-center bg-[#EEEEEE] p-8 rounded-md">
 					<div className="w-full h-full">
-						<div className="p-2 flex justify-center bg-[#A67436] text-white text-lg">
-							กรุณากรอกข้อมูลให้ครบถ้วน และตรวจสอบความถูกต้องก่อนกดยืนยัน
-						</div>
-						<Form1 />
+						<OutlineFormUpdate formId={Number(outlineFormId)} />
 					</div>
 				</div>
 			</div>
 		</>
 	);
-};
-
-export default Form1Create;
+}

@@ -14,15 +14,46 @@ import { useRouter } from "next/navigation";
 
 type Form = {
 	id: number;
-	date: String;
+	date: string;
+	thesisNameTH: string;
+	thesisNameEN: string;
+
+	studentID: number;
+	student: User;
+	advisorID: number;
+	advisor: User;
+	coAdvisorID: number;
+	coAdvisor: User;
+
+	committeeOutlineID: number;
+	committeeOutline: User;
+	committeeOutlineStatus: string;
+	committee_outlineComment: string;
+	dateCommitteeOutlineSign: string;
+
+	committeeInstituteID: number;
+	committeeInstitute: User;
+	committeeInstituteStatus: string;
+	committeeInstituteComment: string;
+	dateCommitteeInstituteSign: string;
+};
+
+type User = {
+	id: number;
+	firstName: string;
+	lastName: string;
 	username: string;
-	fullname: string;
-	committee_outline_status: string;
-	committee_institute_status: string;
+	educationLevel: string;
+	school: string;
+	program: string;
+	programYear: string;
+	advisorID: number;
+	co_advisorID: number;
+	signatureUrl: string;
 };
 
 interface StudentTableProps {
-	formNumber: string | undefined;
+	formTypeNumber: string | undefined;
 	userId: number | undefined;
 }
 
@@ -33,18 +64,19 @@ const formTypeMap: Record<string, string> = {
 };
 
 export default function StudentTable({
-	formNumber,
+	formTypeNumber,
 	userId,
 }: StudentTableProps) {
-	const [form, setForm] = useState<Form[] | null>(null);
+	const [formData, setFormData] = useState<Form[] | null>(null);
 	const router = useRouter();
+	console.log(userId);
 	useEffect(() => {
-		if (formNumber == "1") {
-			fetch(`/api/getAllForm1/${userId}`)
+		if (formTypeNumber == "1" && userId) {
+			fetch(`/api/getAllOutlineFormByStdId/${userId}`)
 				.then((res) => res.json())
-				.then((data) => setForm(data));
+				.then((data) => setFormData(data));
 		}
-	}, []);
+	}, [userId]);
 
 	return (
 		<>
@@ -63,18 +95,18 @@ export default function StudentTable({
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{form?.map((form) => (
-							<TableRow key={form.id}>
-								<TableCell>{form.id}</TableCell>
-								<TableCell>{form.date}</TableCell>
-								<TableCell>{form.username}</TableCell>
-								<TableCell>{form.fullname}</TableCell>
+						{formData?.map((formData) => (
+							<TableRow key={formData.id}>
+								<TableCell>{formData.id}</TableCell>
+								<TableCell>{formData.date}</TableCell>
+								<TableCell>{formData?.student.username}</TableCell>
+								<TableCell>{`${formData?.student?.firstName} ${formData?.student?.lastName}`}</TableCell>
 								<TableCell>
-									{formNumber ? formTypeMap[formNumber] : ""}
+									{formTypeNumber ? formTypeMap[formTypeNumber] : ""}
 								</TableCell>
 								<TableCell>สถานะ</TableCell>
 								<TableCell className="text-[#F26522]">
-									<Link href={`/user/form/form1/${form.id}`}>
+									<Link href={`/user/form/outlineForm/${formData.id}`}>
 										คลิกเพื่อดูเพิ่มเติม
 									</Link>
 								</TableCell>

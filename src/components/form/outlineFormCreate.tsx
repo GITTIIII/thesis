@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useForm } from "react-hook-form";
 import {
 	Form,
 	FormControl,
@@ -26,38 +26,34 @@ import Image from "next/image";
 import axios from "axios";
 import qs from "query-string";
 import { useToast } from "@/components/ui/use-toast";
+import InputForm from "../inputForm/inputForm";
 
 type User = {
 	id: number;
 	firstName: string;
 	lastName: string;
 	username: string;
-	education_level: string;
+	educationLevel: string;
 	school: string;
 	program: string;
-	program_year: string;
+	programYear: string;
+	position: string;
+	role: string;
 	advisorID: number;
-	co_advisorID: number;
+	coAdvisorID: number;
 	signatureUrl: string;
 };
 
 const formSchema = z.object({
 	date: z.string(),
-	fullname: z.string(),
-	username: z.string(),
-	education_level: z.string(),
-	school: z.string(),
-	program: z.string(),
-	program_year: z.string(),
 	thesisNameTH: z.string(),
 	thesisNameEN: z.string(),
-	advisorID: z.number(),
-	co_advisorID: z.number(),
 	studentID: z.number(),
-	student_signature: z.string(),
+	advisorID: z.number(),
+	coAdvisorID: z.number(),
 });
 
-const Form1 = () => {
+const OutlineFormCreate = () => {
 	const router = useRouter();
 	const [user, setUser] = useState<User | null>(null);
 	const [allAdvisor, setAllAdvisor] = useState<User[] | null>(null);
@@ -67,26 +63,25 @@ const Form1 = () => {
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			date: "",
-			fullname: "",
-			username: "",
-			education_level: "",
-			school: "",
-			program: "",
-			program_year: "",
 			thesisNameTH: "",
 			thesisNameEN: "",
-			advisorID: 0,
-			co_advisorID: 0,
 			studentID: 0,
-			student_signature: "",
+			advisorID: 0,
+			coAdvisorID: 0,
 		},
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		console.log(values);
-
+		if(!user?.signatureUrl){
+			toast({
+				title: "Error",
+				description: "ไม่พบลายเซ็น",
+				variant: "destructive",
+			});
+			return
+		}
 		const url = qs.stringifyUrl({
-			url: `/api/form`,
+			url: `/api/outlineForm`,
 		});
 		const res = await axios.post(url, values);
 		if (res.status === 200) {
@@ -115,14 +110,7 @@ const Form1 = () => {
 		if (user) {
 			reset({
 				...form.getValues(),
-				fullname: `${user.firstName} ${user.lastName}`,
-				username: `${user.username}`,
-				education_level: `${user.education_level}`,
-				school: `${user.school}`,
-				program: `${user.program}`,
-				program_year: `${user.program_year}`,
 				studentID: user.id,
-				student_signature: `${user.signatureUrl}`,
 			});
 		}
 	}, [user, reset]);
@@ -164,138 +152,47 @@ const Form1 = () => {
 								</div>
 							)}
 						/>
-						<FormField
-							control={form.control}
-							name="fullname"
-							render={({ field }) => (
-								<div className="flex flex-row items-center mb-6 justify-center">
-									<FormItem className="w-auto">
-										<FormLabel>ชื่อ-นามสกุล / FullName</FormLabel>
-										<FormControl>
-											<Input
-												className="text-sm p-2 w-60 m-auto  rounded-lg"
-												{...field}
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								</div>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="username"
-							render={({ field }) => (
-								<div className="flex flex-row items-center mb-6 justify-center">
-									<FormItem className="w-auto">
-										<FormLabel>รหัสนักศึกษา / Student-No.</FormLabel>
-										<FormControl>
-											<Input
-												className="text-sm p-2 w-60 m-auto  rounded-lg"
-												{...field}
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								</div>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="education_level"
-							render={({ field }) => (
-								<div className="flex flex-row items-center mb-6 justify-center">
-									<FormItem className="w-auto">
-										<FormLabel>ระดับการศึกษา / Education-Level</FormLabel>
-										<FormControl>
-											<RadioGroup
-												onValueChange={field.onChange}
-												defaultValue={field.value}
-												className="flex flex-col space-y-1"
-											>
-												<FormItem className="flex items-center space-x-3 space-y-0">
-													<FormControl>
-														<RadioGroupItem
-															checked={user?.education_level === "Master"}
-															value="Master"
-														/>
-													</FormControl>
-													<FormLabel className="font-normal">
-														ปริญญาโท (Master Degree)
-													</FormLabel>
-												</FormItem>
 
-												<FormItem className="flex items-center space-x-3 space-y-0">
-													<FormControl>
-														<RadioGroupItem
-															checked={user?.education_level === "Doctoral"}
-															value="Doctoral"
-														/>
-													</FormControl>
-													<FormLabel className="font-normal">
-														ปริญญาเอก (Doctoral Degree)
-													</FormLabel>
-												</FormItem>
-											</RadioGroup>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								</div>
-							)}
+						<InputForm
+							value={`${user?.firstName} ${user?.lastName}`}
+							label="ชื่อ-นามสกุล / Fullname"
 						/>
-						<FormField
-							control={form.control}
-							name="school"
-							render={({ field }) => (
-								<div className="flex flex-row items-center mb-6 justify-center">
-									<FormItem className="w-auto">
-										<FormLabel>สาขาวิชา / School</FormLabel>
-										<FormControl>
-											<Input
-												className="text-sm p-2 w-60 m-auto  rounded-lg"
-												{...field}
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								</div>
-							)}
+						<InputForm
+							value={`${user?.username} `}
+							label="รหัสนักศึกษา / StudentID"
 						/>
-						<FormField
-							control={form.control}
-							name="program"
-							render={({ field }) => (
-								<div className="flex flex-row items-center mb-6 justify-center">
-									<FormItem className="w-auto">
-										<FormLabel>หลักสูตร / Program</FormLabel>
-										<FormControl>
-											<Input
-												className="text-sm p-2 w-60 m-auto  rounded-lg"
-												{...field}
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
+
+						<div className="flex flex-col items-center mb-6 justify-center">
+							<FormLabel className="font-normal">
+								ระดับการศึกษา / Education Level
+							</FormLabel>
+							<RadioGroup className="space-y-1 mt-2">
+								<div>
+									<RadioGroupItem
+										checked={user?.educationLevel === "Master"}
+										value="Master"
+									/>
+									<FormLabel className="ml-2 font-normal">
+										ปริญญาโท (Master Degree)
+									</FormLabel>
 								</div>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="program_year"
-							render={({ field }) => (
-								<div className="flex flex-row items-center mb-6 justify-center">
-									<FormItem className="w-auto">
-										<FormLabel>ปีหลักสูตร / ProgramYear</FormLabel>
-										<FormControl>
-											<Input
-												className="text-sm p-2 w-60 m-auto  rounded-lg"
-												{...field}
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
+								<div>
+									<RadioGroupItem
+										checked={user?.educationLevel === "Doctoral"}
+										value="Doctoral"
+									/>
+									<FormLabel className="ml-2 font-normal">
+										ปริญญาเอก (Doctoral Degree)
+									</FormLabel>
 								</div>
-							)}
+							</RadioGroup>
+						</div>
+
+						<InputForm value={`${user?.school}`} label="สำนักวิชา / School" />
+						<InputForm value={`${user?.program}`} label="หลักสูตร / Program" />
+						<InputForm
+							value={`${user?.programYear}`}
+							label="ปีหลักสูตร / Program Year"
 						/>
 					</div>
 
@@ -374,7 +271,7 @@ const Form1 = () => {
 						/>
 						<FormField
 							control={form.control}
-							name="co_advisorID"
+							name="coAdvisorID"
 							render={({ field }) => (
 								<div className="flex flex-row items-center mb-6 justify-center">
 									<FormItem className="w-auto">
@@ -395,6 +292,9 @@ const Form1 = () => {
 												</SelectTrigger>
 											</FormControl>
 											<SelectContent>
+												<SelectItem value={String(0)}>
+													ไม่มีอาจารย์ที่ปรึกษาร่วม
+												</SelectItem>
 												{allAdvisor?.map((advisor) => (
 													<SelectItem
 														key={advisor.id}
@@ -425,11 +325,13 @@ const Form1 = () => {
 						</div>
 					</div>
 				</div>
+
+
 				<div className="w-full flex px-20 lg:flex justify-center">
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push("/user/student/table")}
+						onClick={() => router.push(`/user/student/table`)}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436] md:ml-auto"
 					>
 						ยกเลิก
@@ -447,4 +349,4 @@ const Form1 = () => {
 	);
 };
 
-export default Form1;
+export default OutlineFormCreate;

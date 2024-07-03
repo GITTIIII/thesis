@@ -1,5 +1,5 @@
 "use client";
-import StudentTable from "@/components/studentTable/studentTable";
+import AdminTable from "@/components/adminTable/adminTable";
 import Image from "next/image";
 import studentFormPage from "@/../../public/asset/studentFormPage.png";
 import Stepper from "@/components/stepper/stepper";
@@ -12,7 +12,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { Button } from "../../../../../components/ui/button";
 
 type User = {
 	id: number;
@@ -20,7 +20,7 @@ type User = {
 	formState: number;
 };
 
-export default function StudentTablePage() {
+export default function AdminTablePage() {
 	const [user, setUser] = useState<User | null>(null);
 	const [selectedValue, setSelectedValue] = useState("1");
 	const router = useRouter();
@@ -38,9 +38,6 @@ export default function StudentTablePage() {
 	return (
 		<>
 			<div className="w-full h-full bg-transparent py-12 px-2 lg:px-28">
-				<div className="w-full h-max p-4 flex justify-center items-center">
-					<Stepper step={user?.formState ?? 0} />
-				</div>
 				<div className="h-max w-full flex items-center text-2xl p-2">
 					<Image
 						src={studentFormPage}
@@ -69,13 +66,10 @@ export default function StudentTablePage() {
 								</SelectItem>
 							</SelectContent>
 						</Select>
-						<Button type="button" variant='outline' onClick={() => router.push(`/user/form/outlineForm/create`)}>
-							เพิ่มฟอร์ม
-						</Button>
 					</div>
 				</div>
 				<div className="h-3/4 w-full flex items-center">
-					<StudentTable formTypeNumber={selectedValue} userId={user?.id} />
+					<AdminTable formTypeNumber={selectedValue} userId={user?.id} />
 				</div>
 			</div>
 		</>

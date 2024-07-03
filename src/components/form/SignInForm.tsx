@@ -55,7 +55,7 @@ const SignInForm = () => {
                 if(result?.user.role == "STUDENT"){
                     router.push("/user/student");
                 }
-                else if(result?.user.role == "ADMIN" || result?.user.role == "COMMOTTEE"){
+                else if(result?.user.role == "ADMIN" || result?.user.role == "COMMITTEE"){
                     router.push("/user/admin");
                 }
                 else if(result?.user.role == "SUPER_ADMIN"){

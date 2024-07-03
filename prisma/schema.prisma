@@ -18,14 +18,14 @@ enum Position{
   NONE
   ADVISOR
   HEAD_INSTITUTE
-  COMMOTTEE_OUTLINE
-  COMMOTTEE_INSTITUTE
-  COMMOTTEE_EXAMING
+  COMMITTEE_OUTLINE
+  COMMITTEE_INSTITUTE
+  COMMITTEE_EXAMING
 }
 
 enum Role{
   STUDENT
-  COMMOTTEE
+  COMMITTEE
   ADMIN
   SUPER_ADMIN
 }
@@ -44,10 +44,10 @@ model User {
   email           String  @unique
   phone           String?
   sex             String
-  education_level String
+  educationLevel String
   school          String
   program         String
-  program_year    String?
+  programYear    String?
   position        Position
   role            Role
   formState       Int? 
@@ -62,48 +62,48 @@ model User {
   students     User[]   @relation("advisor")
 
   //นศ. สร้างฟอร์ม
-  form1             Form1[]     @relation("FormOwner")
+  outlineForm             OutlineForm[]     @relation("formOwner")
   //เป็นอาจารย์ที่ปรึกษา thesis
-  thesisAdvisor     Form1[]      @relation("ThesisAdvisor")
+  thesisAdvisor     OutlineForm[]      @relation("thesisAdvisor")
   //เป็นอาจารย์ที่ปรึกษาร่วม thesis
-  thesisCoAdvisor   Form1[]      @relation("ThesisCoAdvisor")
+  thesisCoAdvisor   OutlineForm[]      @relation("thesisCoAdvisor")
+  //เป็นกรรมการโครงร่าง
+  committeeOutline   OutlineForm[]      @relation("committeeOutline")
+  //เป็นกรรมการโครงร่าง
+  committeeInstitute   OutlineForm[]      @relation("committeeInstitute")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
-model Form1 {
+model OutlineForm {
   id                           Int       @id @default(autoincrement())
   date                         String
-  fullname                     String
-  username                     String
-  education_level              String
-  school                       String
-  program                      String
-  program_year                 String
   thesisNameTH                 String
   thesisNameEN                 String
-  advisorID                    Int
-  co_advisorID                 Int?
-  studentID                    Int
-  student_signature            String? @db.LongText
 
   //กรรมการโครงร่าง
-  committee_outline_status      String?
-  committee_outline_comment     String?
-  committee_outline_signature   String? @db.LongText
-  date_committee_outline_sign   String?
+  committeeOutlineStatus      String?
+  committeeOutlineComment     String?
+  dateCommitteeOutlineSign    String?
+  committeeOutlineID Int?
+  committeeOutline       User? @relation(fields: [committeeOutlineID], references: [id], name: "committeeOutline")
 
   //กรรมการสำนัก
-  committee_institute_status    String?
-  committee_institute_comment   String?
-  committee_institute_signature String? @db.LongText
-  date_committee_institute_sign String?
+  committeeInstituteStatus      String?
+  committeeInstituteComment     String?
+  dateCommitteeInstituteSign    String?
+  committeeInstituteID Int?
+  committeeInstitute        User? @relation(fields: [committeeInstituteID], references: [id], name: "committeeInstitute")
 
-  // Relation fields
-  student        User @relation(fields: [studentID], references: [id], name: "FormOwner")
-  advisor        User @relation(fields: [advisorID], references: [id], name: "ThesisAdvisor")
-  coAdvisor      User? @relation(fields: [co_advisorID], references: [id], name: "ThesisCoAdvisor")
+  studentID                    Int
+  student        User @relation(fields: [studentID], references: [id], name: "formOwner")
+
+  advisorID                    Int
+  advisor        User @relation(fields: [advisorID], references: [id], name: "thesisAdvisor")
+
+  coAdvisorID                 Int?
+  coAdvisor      User? @relation(fields: [coAdvisorID], references: [id], name: "thesisCoAdvisor")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

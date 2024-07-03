@@ -13,7 +13,7 @@ const procedure = [
 	"รายงานผลการพิจารณา การสอบวิทยานิพนธ์ ตามแบบ ทบ. 23 เอกสารหมายเลข 7",
 	"นำส่งวิทยานิพนธ์ฉบับสมบูรณ์ ให้แก่ศูนย์บริการการศึกษา พร้อมอัปโหลดไฟล์วิทยานิพนธ์ เข้าฐานข้อมูลคลังปัญญา มหาวิทยาลัยเทคโนโลยีสุรนารี (SUTIR)",
 ];
-export default function Page() {
+export default function StudentPage() {
 	return (
 		<div className=" relativ overflow-clip ">
 			<div className="z-10">
