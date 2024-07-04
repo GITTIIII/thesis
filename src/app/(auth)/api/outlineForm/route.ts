@@ -19,6 +19,8 @@ export async function POST(req: Request) {
 			advisorID,
 			coAdvisorID,
 			studentID,
+			outlineCommitteeApprove,
+			instituteCommitteeApprove,
 		} = body;
 
 		const newForm = await db.outlineForm.create({
@@ -29,6 +31,8 @@ export async function POST(req: Request) {
 				advisorID: advisorID === 0 ? null : advisorID,
 				coAdvisorID: coAdvisorID === 0 ? null : coAdvisorID,
 				studentID: studentID === 0 ? null : studentID,
+				outlineCommitteeApprove,
+				instituteCommitteeApprove,
 			},
 		});
 
@@ -78,14 +82,14 @@ export async function PATCH(req: Request) {
 			advisorID,
 			coAdvisorID,
 			studentID,
-			committeeOutlineID,
-			committeeOutlineStatus,
-			committeeOutlineComment,
-			dateCommitteeOutlineSign,
-			committeeInstituteID,
-			committeeInstituteStatus,
-			committeeInstituteComment,
-			dateCommitteeInstituteSign,
+			outlineCommitteeID,
+			outlineCommitteeApprove,
+			outlineCommitteeComment,
+			dateOutlineCommitteeSign,
+			instituteCommitteeID,
+			instituteCommitteeApprove,
+			instituteCommitteeComment,
+			dateInstituteCommitteeSign,
 		} = body;
 
 		const newForm = await db.outlineForm.update({
@@ -97,14 +101,16 @@ export async function PATCH(req: Request) {
 				advisorID: advisorID === 0 ? null : advisorID,
 				coAdvisorID: coAdvisorID === 0 ? null : coAdvisorID,
 				studentID: studentID === 0 ? null : studentID,
-				committeeOutlineID: committeeOutlineID === 0 ? null : committeeOutlineID,
-				committeeOutlineStatus,
-				committeeOutlineComment,
-				dateCommitteeOutlineSign,
-				committeeInstituteID:  committeeInstituteID === 0 ? null : committeeInstituteID,
-				committeeInstituteStatus,
-				committeeInstituteComment,
-				dateCommitteeInstituteSign,
+				outlineCommitteeID:
+					outlineCommitteeID === 0 ? null : outlineCommitteeID,
+				outlineCommitteeApprove,
+				outlineCommitteeComment,
+				dateOutlineCommitteeSign,
+				instituteCommitteeID:
+					instituteCommitteeID === 0 ? null : instituteCommitteeID,
+				instituteCommitteeApprove,
+				instituteCommitteeComment,
+				dateInstituteCommitteeSign,
 			},
 		});
 

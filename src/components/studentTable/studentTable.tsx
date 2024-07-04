@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { error } from "console";
 
 type Form = {
 	id: number;
@@ -25,17 +26,17 @@ type Form = {
 	coAdvisorID: number;
 	coAdvisor: User;
 
-	committeeOutlineID: number;
-	committeeOutline: User;
-	committeeOutlineStatus: string;
+	outlineCommitteeID: number;
+	outlineCommittee: User;
+	outlineCommitteeApprove: string;
 	committee_outlineComment: string;
-	dateCommitteeOutlineSign: string;
+	dateOutlineCommitteeSign: string;
 
-	committeeInstituteID: number;
-	committeeInstitute: User;
-	committeeInstituteStatus: string;
-	committeeInstituteComment: string;
-	dateCommitteeInstituteSign: string;
+	instituteCommitteeID: number;
+	instituteCommittee: User;
+	instituteCommitteeApprove: string;
+	instituteCommitteeComment: string;
+	dateInstituteCommitteeSign: string;
 };
 
 type User = {
@@ -74,7 +75,8 @@ export default function StudentTable({
 		if (formTypeNumber == "1" && userId) {
 			fetch(`/api/getAllOutlineFormByStdId/${userId}`)
 				.then((res) => res.json())
-				.then((data) => setFormData(data));
+				.then((data) => setFormData(data))
+				.catch((error) => console.log(error));
 		}
 	}, [userId]);
 
