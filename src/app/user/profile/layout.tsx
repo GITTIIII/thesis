@@ -4,14 +4,15 @@ const menu = [
   { menuItem: "Student", path: "/user/student" },
   { menuItem: "Admin", path: "/user/admin" },
   { menuItem: "SuperAdmin", path: "/user/superAdmin" },
-  { menuItem: "Profile", path: "/user/profile" },
 ]
-const AdminLayout = ({ children }: { children: React.ReactNode }) => {
+const StudentLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <>
-      <Navbar menu={menu}/>
-      {children}
+      <Navbar menu={menu} />
+  
+        {children}
+      
     </>
   )
 }
-export default AdminLayout
+export default StudentLayout

@@ -6,8 +6,8 @@ import {
 	TableHead,
 	TableHeader,
 	TableRow,
-} from "../ui/table";
-import { Button } from "../ui/button";
+} from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -52,7 +52,7 @@ type User = {
 	signatureUrl: string;
 };
 
-interface AdminTableProps {
+interface StudentTableProps {
 	formTypeNumber: string | undefined;
 	userId: number | undefined;
 }
@@ -63,22 +63,21 @@ const formTypeMap: Record<string, string> = {
 	"3": "ทบ.20",
 };
 
-export default function AdminTable({
+export default function StudentTable({
 	formTypeNumber,
 	userId,
-}: AdminTableProps) {
+}: StudentTableProps) {
 	const [formData, setFormData] = useState<Form[] | null>(null);
 	const router = useRouter();
 	console.log(userId);
 	useEffect(() => {
-		if (formTypeNumber == "1") {
-			fetch(`/api/outlineForm`)
+		if (formTypeNumber == "1" && userId) {
+			fetch(`/api/getAllOutlineFormByStdId/${userId}`)
 				.then((res) => res.json())
 				.then((data) => setFormData(data));
 		}
-	}, []);
+	}, [userId]);
 
-	console.log(formData);
 	return (
 		<>
 			<div className="w-full h-full bg-white shadow-2xl rounded-md px-2">
@@ -92,6 +91,7 @@ export default function AdminTable({
 							<TableHead>ประเภทฟอร์ม</TableHead>
 							<TableHead>สถานะ</TableHead>
 							<TableHead>รายละเอียด</TableHead>
+							<TableHead>ดาวน์โหลดฟอร์ม</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
@@ -99,16 +99,21 @@ export default function AdminTable({
 							<TableRow key={formData.id}>
 								<TableCell>{formData.id}</TableCell>
 								<TableCell>{formData.date}</TableCell>
-								<TableCell>{formData?.student ? formData?.student.username : ""}</TableCell>
-								<TableCell>{formData?.student ? `${formData?.student?.firstName} ${formData?.student?.lastName}` : ""}</TableCell>
+								<TableCell>{formData?.student.username}</TableCell>
+								<TableCell>{`${formData?.student?.firstName} ${formData?.student?.lastName}`}</TableCell>
 								<TableCell>
 									{formTypeNumber ? formTypeMap[formTypeNumber] : ""}
 								</TableCell>
 								<TableCell>สถานะ</TableCell>
 								<TableCell className="text-[#F26522]">
-									<Link href={`/user/form/outlineForm/update/${formData.id}`}>
+									<Link href={`/user/form/outlineForm/${formData.id}`}>
 										คลิกเพื่อดูเพิ่มเติม
 									</Link>
+								</TableCell>
+								<TableCell>
+									<Button disabled={true} type="button" variant="outline">
+										ดาวน์โหลด
+									</Button>
 								</TableCell>
 							</TableRow>
 						))}

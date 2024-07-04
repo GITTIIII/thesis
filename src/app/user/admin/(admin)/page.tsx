@@ -1,26 +1,10 @@
-import Image from 'next/image'
-import documentation from "@/../../public/asset/documentation.png"
-import AdminTable from '@/components/adminTable/adminTable'
+import Link from "next/link";
+import React from "react";
 
-const Admin = () => {
-  return (
-    <>
-    <div className='w-full h-full bg-transparent py-8 px-28'>
-      <div className='h-max w-full flex items-center text-2xl p-2'>
-        <Image
-        src={documentation}
-        width={142}
-        height={142}
-        alt="documentation"
-        />
-        <label className='ml-5'>เอกสารที่ต้องอนุมัติ</label>
-      </div>
-      <div className='h-3/4 w-full flex items-center'>
-        <AdminTable/>
-      </div>
-    </div>
-    </>
-  )
+export default function AdminPage() {
+	return (
+		<div className="w-full h-full text-center  flex flex-col justify-center">
+			<Link href="/user/admin/table">Click Go to AdminTable</Link>
+		</div>
+	);
 }
-
-export default Admin

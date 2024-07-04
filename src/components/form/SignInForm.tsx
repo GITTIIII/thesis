@@ -35,6 +35,7 @@ const SignInForm = () => {
     });
 
     const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        
         const signInData = await signIn("credentials", {
                 username: values.username,
                 password: values.password,
@@ -54,7 +55,7 @@ const SignInForm = () => {
                 if(result?.user.role == "STUDENT"){
                     router.push("/user/student");
                 }
-                else if(result?.user.role == "ADMIN" || result?.user.role == "COMMOTTEE"){
+                else if(result?.user.role == "ADMIN" || result?.user.role == "COMMITTEE"){
                     router.push("/user/admin");
                 }
                 else if(result?.user.role == "SUPER_ADMIN"){
