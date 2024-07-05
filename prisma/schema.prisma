@@ -78,14 +78,14 @@ model OutlineForm {
   thesisNameEN                 String
 
   //กรรมการโครงร่าง
-  outlineCommitteeApprove      Boolean?
+  outlineCommitteeStatus      String?
   outlineCommitteeComment     String?
   dateOutlineCommitteeSign    String?
   outlineCommitteeID Int?
   outlineCommittee       User? @relation(fields: [outlineCommitteeID], references: [id], name: "outlineCommittee")
 
   //กรรมการสำนัก
-  instituteCommitteeApprove      Boolean?
+  instituteCommitteeStatus      String?
   instituteCommitteeComment     String?
   dateInstituteCommitteeSign    String?
   instituteCommitteeID Int?

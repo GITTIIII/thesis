@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import signature from "@/../../public/asset/signature.png";
 import InputForm from "@/components/inputForm/inputForm";
 import Image from "next/image";
+import { Textarea } from "../ui/textarea";
 
 type Form = {
 	id: number;
@@ -22,13 +23,13 @@ type Form = {
 
 	outlineCommitteeID: number;
 	outlineCommittee: User;
-	outlineCommitteeApprove: string;
-	committee_outlineComment: string;
+	outlineCommitteeStatus: string;
+	outlineCommitteeComment: string;
 	dateOutlineCommitteeSign: string;
 
 	instituteCommitteeID: number;
 	instituteCommittee: User;
-	instituteCommitteeApprove: string;
+	instituteCommitteeStatus: string;
 	instituteCommitteeComment: string;
 	dateInstituteCommitteeSign: string;
 };
@@ -40,6 +41,7 @@ type User = {
 	username: string;
 	educationLevel: string;
 	school: string;
+	role: string;
 	program: string;
 	programYear: string;
 	advisorID: number;
@@ -50,6 +52,7 @@ type User = {
 const OutlineFormRead = ({ formId }: { formId: number }) => {
 	const router = useRouter();
 	const [formData, setFormData] = useState<Form | null>(null);
+	const [user, setUser] = useState<User | null>(null);
 	console.log(formId);
 	useEffect(() => {
 		if (formId) {
@@ -59,6 +62,11 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 				.catch((error) => console.log(error));
 		}
 	}, [formId]);
+	useEffect(() => {
+		fetch("/api/user")
+			.then((res) => res.json())
+			.then((data) => setUser(data));
+	}, [user]);
 
 	return (
 		<>
@@ -67,7 +75,13 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push("/user/student/table")}
+						onClick={() =>
+							router.push(
+								user?.role == "COMMITTEE"
+									? `/user/admin/table`
+									: `/user/${user?.role.toLocaleLowerCase()}/table`
+							)
+						}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436]"
 					>
 						ย้อนกลับ
@@ -185,6 +199,36 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 								alt="signature"
 							/>
 						</Button>
+						<div className="flex flex-col items-center justify-center">
+							<RadioGroup className="flex my-6">
+								<div className="flex items-center justify-center">
+									<RadioGroupItem
+										checked={formData?.outlineCommitteeStatus == "NOT_APPROVED"}
+										value="NOT_APPROVED"
+									/>
+									<div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">
+										ไม่อนุมัติ
+									</div>
+								</div>
+								<div className="ml-4 mt-0 flex items-center justify-center">
+									<RadioGroupItem
+										checked={formData?.outlineCommitteeStatus == "APPROVED"}
+										value="APPROVED"
+									/>
+									<div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
+										อนุมัติ
+									</div>
+								</div>
+							</RadioGroup>
+						</div>
+						<div>
+							<Label>ความเห็นกรรมการสำนักวิชา</Label>
+							<Textarea
+								placeholder="ความเห็น..."
+								className="resize-none h-full text-md"
+								value={formData?.outlineCommitteeComment}
+							/>
+						</div>
 					</div>
 
 					<div className="flex flex-col justify-center items-center px-20">
@@ -202,6 +246,38 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 								alt="signature"
 							/>
 						</Button>
+						<div className="flex flex-col items-center justify-center">
+							<RadioGroup className="flex my-6">
+								<div className="flex items-center justify-center">
+									<RadioGroupItem
+										checked={
+											formData?.instituteCommitteeStatus == "NOT_APPROVED"
+										}
+										value="NOT_APPROVED"
+									/>
+									<div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">
+										ไม่อนุมัติ
+									</div>
+								</div>
+								<div className="ml-4 mt-0 flex items-center justify-center">
+									<RadioGroupItem
+										checked={formData?.instituteCommitteeStatus == "APPROVED"}
+										value="APPROVED"
+									/>
+									<div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
+										อนุมัติ
+									</div>
+								</div>
+							</RadioGroup>
+						</div>
+						<div>
+							<Label>ความเห็นกรรมการสำนักวิชา</Label>
+							<Textarea
+								placeholder="ความเห็น..."
+								className="resize-none h-full text-md"
+								value={formData?.instituteCommitteeComment}
+							/>
+						</div>
 					</div>
 				</div>
 			</div>

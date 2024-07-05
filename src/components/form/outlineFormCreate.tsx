@@ -51,8 +51,6 @@ const formSchema = z.object({
 	studentID: z.number(),
 	advisorID: z.number(),
 	coAdvisorID: z.number(),
-	outlineCommitteeApprove: z.boolean(),
-	instituteCommitteeApprove: z.boolean(),
 });
 
 const OutlineFormCreate = () => {
@@ -70,8 +68,6 @@ const OutlineFormCreate = () => {
 			studentID: 0,
 			advisorID: 0,
 			coAdvisorID: 0,
-			outlineCommitteeApprove: false,
-			instituteCommitteeApprove: false,
 		},
 	});
 

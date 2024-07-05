@@ -18,11 +18,12 @@ type User = {
 	id: number;
 	username: string;
 	formState: number;
+	role: string;
 };
 
 export default function AdminTablePage() {
 	const [user, setUser] = useState<User | null>(null);
-	const [selectedValue, setSelectedValue] = useState("1");
+	const [selectedValue, setSelectedValue] = useState("outlineForm");
 	const router = useRouter();
 
 	useEffect(() => {
@@ -51,17 +52,17 @@ export default function AdminTablePage() {
 							<SelectTrigger className="w-max">
 								<SelectValue
 									placeholder="แบบคำขออนุมัติโครงร่างวิทยานิพนธ์ (ทบ.20)"
-									defaultValue={"1"}
+									defaultValue={"outlineForm"}
 								/>
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem disabled={(user?.formState ?? 0) < 1} value="1">
+								<SelectItem disabled={user?.role =="STUDENT" && (user?.formState ?? 0) < 1} value="outlineForm">
 									แบบคำขออนุมัติโครงร่างวิทยานิพนธ์ (ทบ.20)
 								</SelectItem>
-								<SelectItem disabled={(user?.formState ?? 0) < 2} value="2">
+								<SelectItem disabled={user?.role =="STUDENT" && (user?.formState ?? 0) < 2} value="2">
 									form2
 								</SelectItem>
-								<SelectItem disabled={(user?.formState ?? 0) < 3} value="3">
+								<SelectItem disabled={user?.role =="STUDENT" && (user?.formState ?? 0) < 3} value="3">
 									form3
 								</SelectItem>
 							</SelectContent>
@@ -69,7 +70,7 @@ export default function AdminTablePage() {
 					</div>
 				</div>
 				<div className="h-3/4 w-full flex items-center">
-					<AdminTable formTypeNumber={selectedValue} userId={user?.id} />
+					<AdminTable formType={selectedValue} userId={user?.id} />
 				</div>
 			</div>
 		</>

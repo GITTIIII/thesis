@@ -27,13 +27,13 @@ type Form = {
 
 	outlineCommitteeID: number;
 	outlineCommittee: User;
-	outlineCommitteeApprove: string;
+	outlineCommitteeStatus: string;
 	committee_outlineComment: string;
 	dateOutlineCommitteeSign: string;
 
 	instituteCommitteeID: number;
 	instituteCommittee: User;
-	instituteCommitteeApprove: string;
+	instituteCommitteeStatus: string;
 	instituteCommitteeComment: string;
 	dateInstituteCommitteeSign: string;
 };
@@ -45,6 +45,7 @@ type User = {
 	username: string;
 	educationLevel: string;
 	school: string;
+	positions: string;
 	program: string;
 	programYear: string;
 	advisorID: number;
@@ -53,30 +54,81 @@ type User = {
 };
 
 interface AdminTableProps {
-	formTypeNumber: string | undefined;
+	formType: string | undefined;
 	userId: number | undefined;
 }
 
 const formTypeMap: Record<string, string> = {
-	"1": "ทบ.20",
+	outlineForm: "ทบ.20",
 	"2": "ทบ.20",
 	"3": "ทบ.20",
 };
 
-export default function AdminTable({
-	formTypeNumber,
-	userId,
-}: AdminTableProps) {
+const FindStatus = ({
+	formType,
+	formData,
+}: {
+	formType: String | undefined;
+	formData: Form;
+}) => {
+	let status = "";
+	if (formType === "outlineForm") {
+		if (
+			formData.outlineCommitteeStatus == "APPROVE" &&
+			formData.instituteCommitteeStatus == "APPROVE"
+		) {
+			status = "approve";
+		} else if (
+			formData.outlineCommitteeStatus == "NOT_APPROVE" ||
+			formData.instituteCommitteeStatus == "NOT_APPROVE"
+		) {
+			status = "notApprove";
+		} else if (
+			formData.outlineCommitteeStatus == "" ||
+			formData.instituteCommitteeStatus == ""
+		) {
+			status = "waiting";
+		}
+	} else if (formType === "form2") {
+		status = "approve";
+	}
+	return (
+		<>
+			{status === "approve" ? (
+				<div className="w-max text-green-500  rounded-xl border-2 border-green-400 px-4 py-2">
+					อนุมัติ
+				</div>
+			) : status === "waiting" ? (
+				<div className="w-max text-yellow-500  rounded-xl border-2 border-yellow-400 px-2 py-1">
+					รอดำเนินการ
+				</div>
+			) : status == "notApprove" ? (
+				<div className="w-max text-red-500  rounded-xl border-2 border-red-400 px-2 py-1">
+					ไม่อนุมัติ
+				</div>
+			) : null}
+		</>
+	);
+};
+
+export default function AdminTable({ formType, userId }: AdminTableProps) {
 	const [formData, setFormData] = useState<Form[] | null>(null);
+	const [user, setUser] = useState<User | null>(null);
 	const router = useRouter();
-	console.log(userId);
+
 	useEffect(() => {
-		if (formTypeNumber == "1") {
+		if (formType == "outlineForm") {
 			fetch(`/api/outlineForm`)
 				.then((res) => res.json())
 				.then((data) => setFormData(data))
 				.catch((error) => console.log(error));
 		}
+	}, []);
+
+	useEffect(() => {
+		fetch("/api/user")
+			.then((res) => res.json())
+			.then((data) => setUser(data));
 	}, []);
 
 	return (
@@ -107,17 +159,17 @@ export default function AdminTable({
 										? `${formData?.student?.firstName} ${formData?.student?.lastName}`
 										: ""}
 								</TableCell>
+								<TableCell>{formType ? formTypeMap[formType] : ""}</TableCell>
 								<TableCell>
-									{formTypeNumber ? formTypeMap[formTypeNumber] : ""}
+									<FindStatus formType={formType} formData={formData} />
 								</TableCell>
-								<TableCell>สถานะ</TableCell>
 								<TableCell className="text-[#F26522]">
 									<Link
 										href={
 											formData.outlineCommitteeID &&
-											formData.instituteCommitteeID == null
-												? `/user/form/outlineForm/${formData.id}`
-												: `/user/form/outlineForm/update/${formData.id}`
+											formData.instituteCommitteeID
+												? `/user/form/${formType}/${formData.id}`
+												: `/user/form/${formType}/update/${formData.id}`
 										}
 									>
 										คลิกเพื่อดูเพิ่มเติม

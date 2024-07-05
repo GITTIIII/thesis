@@ -19,8 +19,6 @@ export async function POST(req: Request) {
 			advisorID,
 			coAdvisorID,
 			studentID,
-			outlineCommitteeApprove,
-			instituteCommitteeApprove,
 		} = body;
 
 		const newForm = await db.outlineForm.create({
@@ -31,8 +29,6 @@ export async function POST(req: Request) {
 				advisorID: advisorID === 0 ? null : advisorID,
 				coAdvisorID: coAdvisorID === 0 ? null : coAdvisorID,
 				studentID: studentID === 0 ? null : studentID,
-				outlineCommitteeApprove,
-				instituteCommitteeApprove,
 			},
 		});
 
@@ -83,14 +79,32 @@ export async function PATCH(req: Request) {
 			coAdvisorID,
 			studentID,
 			outlineCommitteeID,
-			outlineCommitteeApprove,
+			outlineCommitteeStatus,
 			outlineCommitteeComment,
 			dateOutlineCommitteeSign,
 			instituteCommitteeID,
-			instituteCommitteeApprove,
+			instituteCommitteeStatus,
 			instituteCommitteeComment,
 			dateInstituteCommitteeSign,
 		} = body;
+
+		if (!id) {
+			return NextResponse.json(
+				{ message: "Form ID is required for update" },
+				{ status: 400 }
+			);
+		}
+
+		const existingOutlineForm = await db.outlineForm.findUnique({
+			where: { id: id },
+		});
+
+		if (!existingOutlineForm) {
+			return NextResponse.json(
+				{ user: null, message: "Form not found" },
+				{ status: 404 }
+			);
+		}
 
 		const newForm = await db.outlineForm.update({
 			where: { id: id },
@@ -101,16 +115,39 @@ export async function PATCH(req: Request) {
 				advisorID: advisorID === 0 ? null : advisorID,
 				coAdvisorID: coAdvisorID === 0 ? null : coAdvisorID,
 				studentID: studentID === 0 ? null : studentID,
+
 				outlineCommitteeID:
-					outlineCommitteeID === 0 ? null : outlineCommitteeID,
-				outlineCommitteeApprove,
-				outlineCommitteeComment,
-				dateOutlineCommitteeSign,
+					outlineCommitteeID == 0
+						? existingOutlineForm.outlineCommitteeID
+						: outlineCommitteeID,
+				outlineCommitteeStatus:
+					outlineCommitteeStatus == ""
+						? existingOutlineForm.outlineCommitteeStatus
+						: outlineCommitteeStatus,
+				outlineCommitteeComment:
+					outlineCommitteeComment == ""
+						? existingOutlineForm.outlineCommitteeComment
+						: outlineCommitteeComment,
+				dateOutlineCommitteeSign:
+					dateOutlineCommitteeSign == ""
+						? existingOutlineForm.dateOutlineCommitteeSign
+						: dateOutlineCommitteeSign,
 				instituteCommitteeID:
-					instituteCommitteeID === 0 ? null : instituteCommitteeID,
-				instituteCommitteeApprove,
-				instituteCommitteeComment,
-				dateInstituteCommitteeSign,
+					instituteCommitteeID == 0
+						? existingOutlineForm.instituteCommitteeID
+						: instituteCommitteeID,
+				instituteCommitteeStatus:
+					instituteCommitteeStatus == ""
+						? existingOutlineForm.instituteCommitteeStatus
+						: instituteCommitteeStatus,
+				instituteCommitteeComment:
+					instituteCommitteeComment == ""
+						? existingOutlineForm.instituteCommitteeComment
+						: instituteCommitteeComment,
+				dateInstituteCommitteeSign:
+					dateInstituteCommitteeSign == ""
+						? existingOutlineForm.dateInstituteCommitteeSign
+						: dateInstituteCommitteeSign,
 			},
 		});
 
