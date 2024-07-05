@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { error } from "console";
 
 type Form = {
 	id: number;
@@ -74,18 +73,18 @@ const FindStatus = ({
 	let status = "";
 	if (formType === "outlineForm") {
 		if (
-			formData?.outlineCommitteeStatus == "APPROVE" &&
-			formData?.instituteCommitteeStatus == "APPROVE"
+			formData?.outlineCommitteeStatus === "APPROVED" &&
+			formData?.instituteCommitteeStatus === "APPROVED"
 		) {
 			status = "approve";
 		} else if (
-			formData?.outlineCommitteeStatus == "NOT_APPROVE" ||
-			formData?.instituteCommitteeStatus == "NOT_APPROVE"
+			formData?.outlineCommitteeStatus === "NOT_APPROVED" ||
+			formData?.instituteCommitteeStatus === "NOT_APPROVED"
 		) {
 			status = "notApprove";
 		} else if (
-			formData?.outlineCommitteeStatus == "" ||
-			formData?.instituteCommitteeStatus == ""
+			formData?.outlineCommitteeStatus === null ||
+			formData?.instituteCommitteeStatus === null
 		) {
 			status = "waiting";
 		}
@@ -96,11 +95,11 @@ const FindStatus = ({
 	return (
 		<>
 			{status != "" && status === "approve" ? (
-				<div className="w-max text-green-500  rounded-xl border-2 border-green-400 px-4 py-2">
+				<div className="w-max text-green-500  rounded-xl border-2 border-green-400 px-4 py-1">
 					อนุมัติ
 				</div>
 			) : status === "waiting" ? (
-				<div className="w-max text-yellow-500  rounded-xl border-2 border-yellow-400 px-2 py-1">
+				<div className="w-max text-yellow-500  rounded-xl border-2 border-yellow-400 px-4 py-1">
 					รอดำเนินการ
 				</div>
 			) : status == "notApprove" ? (
@@ -143,7 +142,10 @@ export default function StudentTable({ formType, userId }: StudentTableProps) {
 					</TableHeader>
 					<TableBody>
 						{formData?.map((formData) => (
-							<TableRow key={formData.id}>
+							<TableRow
+								key={formData.id}
+								className={formData.id % 2 == 0 ? `bg-[#f0c38d3d]` : ""}
+							>
 								<TableCell>{formData.id}</TableCell>
 								<TableCell>{formData.date}</TableCell>
 								<TableCell>{formData?.student.username}</TableCell>
@@ -160,8 +162,10 @@ export default function StudentTable({ formType, userId }: StudentTableProps) {
 								<TableCell>
 									<Button
 										disabled={
-											formData.outlineCommitteeStatus != "APPROVED" &&
-											formData.instituteCommitteeStatus != "APPROVED"
+											formData?.outlineCommitteeStatus === "APPROVED" &&
+											formData?.instituteCommitteeStatus === "APPROVED"
+												? false
+												: true
 										}
 										type="button"
 										variant="outline"

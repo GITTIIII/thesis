@@ -66,7 +66,7 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 		fetch("/api/user")
 			.then((res) => res.json())
 			.then((data) => setUser(data));
-	}, [user]);
+	}, []);
 
 	return (
 		<>

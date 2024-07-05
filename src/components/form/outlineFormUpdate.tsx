@@ -394,8 +394,8 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 												placeholder="ความเห็น..."
 												className="resize-none h-full text-md"
 												value={
-													formData?.outlineCommitteeComment
-														? formData?.outlineCommitteeComment
+													formData?.instituteCommitteeComment
+														? formData?.instituteCommitteeComment
 														: field.value
 												}
 												onChange={field.onChange}
