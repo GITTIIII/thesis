@@ -51,6 +51,8 @@ const formSchema = z.object({
 	studentID: z.number(),
 	advisorID: z.number(),
 	coAdvisorID: z.number(),
+	outlineCommitteeApprove: z.boolean(),
+	instituteCommitteeApprove: z.boolean(),
 });
 
 const OutlineFormCreate = () => {
@@ -68,17 +70,20 @@ const OutlineFormCreate = () => {
 			studentID: 0,
 			advisorID: 0,
 			coAdvisorID: 0,
+			outlineCommitteeApprove: false,
+			instituteCommitteeApprove: false,
 		},
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		if(!user?.signatureUrl){
+		console.log(values);
+		if (!user?.signatureUrl) {
 			toast({
 				title: "Error",
 				description: "ไม่พบลายเซ็น",
 				variant: "destructive",
 			});
-			return
+			return;
 		}
 		const url = qs.stringifyUrl({
 			url: `/api/outlineForm`,
@@ -107,10 +112,16 @@ const OutlineFormCreate = () => {
 	const { reset } = form;
 
 	useEffect(() => {
+		const today = new Date();
+		const month = today.getMonth() + 1;
+		const year = today.getFullYear();
+		const date = today.getDate();
+		const currentDate = date + "/" + month + "/" + year;
 		if (user) {
 			reset({
 				...form.getValues(),
 				studentID: user.id,
+				date: currentDate,
 			});
 		}
 	}, [user, reset]);
@@ -133,26 +144,6 @@ const OutlineFormCreate = () => {
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
 					<div className="w-full sm:2/4">
-						<FormField
-							control={form.control}
-							name="date"
-							render={({ field }) => (
-								<div className="flex flex-row items-center mb-6 justify-center">
-									<FormItem className="w-auto">
-										<FormLabel>วันที่ / DATE</FormLabel>
-										<FormControl>
-											<Input
-												type="date"
-												className="text-sm p-2 w-60 rounded-lg"
-												{...field}
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								</div>
-							)}
-						/>
-
 						<InputForm
 							value={`${user?.firstName} ${user?.lastName}`}
 							label="ชื่อ-นามสกุล / Fullname"
@@ -325,7 +316,6 @@ const OutlineFormCreate = () => {
 						</div>
 					</div>
 				</div>
-
 
 				<div className="w-full flex px-20 lg:flex justify-center">
 					<Button

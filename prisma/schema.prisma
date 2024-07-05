@@ -30,11 +30,6 @@ enum Role{
   SUPER_ADMIN
 }
 
-enum Status{
-  APPROVED
-  NOT_APPROVED
-}
-
 model User {
   id Int          @id @default(autoincrement())
   firstName       String
@@ -68,9 +63,9 @@ model User {
   //เป็นอาจารย์ที่ปรึกษาร่วม thesis
   thesisCoAdvisor   OutlineForm[]      @relation("thesisCoAdvisor")
   //เป็นกรรมการโครงร่าง
-  committeeOutline   OutlineForm[]      @relation("committeeOutline")
+  outlineCommittee   OutlineForm[]      @relation("outlineCommittee")
   //เป็นกรรมการโครงร่าง
-  committeeInstitute   OutlineForm[]      @relation("committeeInstitute")
+  instituteCommittee   OutlineForm[]      @relation("instituteCommittee")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -83,18 +78,18 @@ model OutlineForm {
   thesisNameEN                 String
 
   //กรรมการโครงร่าง
-  committeeOutlineStatus      String?
-  committeeOutlineComment     String?
-  dateCommitteeOutlineSign    String?
-  committeeOutlineID Int?
-  committeeOutline       User? @relation(fields: [committeeOutlineID], references: [id], name: "committeeOutline")
+  outlineCommitteeApprove      Boolean?
+  outlineCommitteeComment     String?
+  dateOutlineCommitteeSign    String?
+  outlineCommitteeID Int?
+  outlineCommittee       User? @relation(fields: [outlineCommitteeID], references: [id], name: "outlineCommittee")
 
   //กรรมการสำนัก
-  committeeInstituteStatus      String?
-  committeeInstituteComment     String?
-  dateCommitteeInstituteSign    String?
-  committeeInstituteID Int?
-  committeeInstitute        User? @relation(fields: [committeeInstituteID], references: [id], name: "committeeInstitute")
+  instituteCommitteeApprove      Boolean?
+  instituteCommitteeComment     String?
+  dateInstituteCommitteeSign    String?
+  instituteCommitteeID Int?
+  instituteCommittee        User? @relation(fields: [instituteCommitteeID], references: [id], name: "instituteCommittee")
 
   studentID                    Int
   student        User @relation(fields: [studentID], references: [id], name: "formOwner")

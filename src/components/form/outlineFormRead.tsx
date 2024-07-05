@@ -20,17 +20,17 @@ type Form = {
 	coAdvisorID: number;
 	coAdvisor: User;
 
-	committeeOutlineID: number;
-	committeeOutline: User;
-	committeeOutlineStatus: string;
+	outlineCommitteeID: number;
+	outlineCommittee: User;
+	outlineCommitteeApprove: string;
 	committee_outlineComment: string;
-	dateCommitteeOutlineSign: string;
+	dateOutlineCommitteeSign: string;
 
-	committeeInstituteID: number;
-	committeeInstitute: User;
-	committeeInstituteStatus: string;
-	committeeInstituteComment: string;
-	dateCommitteeInstituteSign: string;
+	instituteCommitteeID: number;
+	instituteCommittee: User;
+	instituteCommitteeApprove: string;
+	instituteCommitteeComment: string;
+	dateInstituteCommitteeSign: string;
 };
 
 type User = {
@@ -55,7 +55,8 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 		if (formId) {
 			fetch(`/api/getOutlineFormById/${formId}`)
 				.then((res) => res.json())
-				.then((data) => setFormData(data));
+				.then((data) => setFormData(data))
+				.catch((error) => console.log(error));
 		}
 	}, [formId]);
 
@@ -175,8 +176,8 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 						<Button variant="outline" type="button" className="w-60 mt-4 h-max">
 							<Image
 								src={
-									formData?.committeeOutline
-										? formData?.committeeOutline.signatureUrl
+									formData?.outlineCommittee
+										? formData?.outlineCommittee.signatureUrl
 										: signature
 								}
 								width={100}
@@ -192,8 +193,8 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 						<Button variant="outline" type="button" className="w-60 mt-4 h-max">
 							<Image
 								src={
-									formData?.committeeInstitute
-										? formData?.committeeInstitute.signatureUrl
+									formData?.instituteCommittee
+										? formData?.instituteCommittee.signatureUrl
 										: signature
 								}
 								width={100}

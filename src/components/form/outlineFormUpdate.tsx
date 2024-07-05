@@ -3,9 +3,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useForm } from "react-hook-form";
+import { useToast } from "@/components/ui/use-toast";
+import { Textarea } from "@/components/ui/textarea";
 import {
 	Form,
 	FormControl,
@@ -14,19 +15,11 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
 import signature from "@/../../public/asset/signature.png";
 import Image from "next/image";
 import axios from "axios";
 import qs from "query-string";
-import { useToast } from "@/components/ui/use-toast";
-import InputForm from "../inputForm/inputForm";
+import InputForm from "@/components/inputForm/inputForm";
 
 type Form = {
 	id: number;
@@ -41,17 +34,17 @@ type Form = {
 	coAdvisorID: number;
 	coAdvisor: User;
 
-	committeeOutlineID: number;
-	committeeOutline: User;
-	committeeOutlineStatus: string;
-	committee_outlineComment: string;
-	dateCommitteeOutlineSign: string;
+	outlineCommitteeID: number;
+	outlineCommittee: User;
+	outlineCommitteeApprove: boolean;
+	outlineCommitteeComment: string;
+	dateOutlineCommitteeSign: string;
 
-	committeeInstituteID: number;
-	committeeInstitute: User;
-	committeeInstituteStatus: string;
-	committeeInstituteComment: string;
-	dateCommitteeInstituteSign: string;
+	instituteCommitteeID: number;
+	instituteCommittee: User;
+	instituteCommitteeApprove: boolean;
+	instituteCommitteeComment: string;
+	dateInstituteCommitteeSign: string;
 };
 
 type User = {
@@ -62,6 +55,7 @@ type User = {
 	educationLevel: string;
 	school: string;
 	position: string;
+	role: string;
 	program: string;
 	programYear: string;
 	advisorID: number;
@@ -70,14 +64,15 @@ type User = {
 };
 
 const formSchema = z.object({
-	date: z.string(),
-	thesisNameTH: z.string(),
-	thesisNameEN: z.string(),
-	studentID: z.number(),
-	advisorID: z.number(),
-	coAdvisorID: z.number(),
-	committeeOutlineID: z.number(),
-	committeeInstituteID: z.number(),
+	id: z.number(),
+	outlineCommitteeID: z.number(),
+	outlineCommitteeApprove: z.boolean(),
+	outlineCommitteeComment: z.string(),
+	dateOutlineCommitteeSign: z.string(),
+	instituteCommitteeID: z.number(),
+	instituteCommitteeApprove: z.boolean(),
+	instituteCommitteeComment: z.string(),
+	dateInstituteCommitteeSign: z.string(),
 });
 
 const OutlineFormUpdate = ({ formId }: { formId: number }) => {
@@ -89,18 +84,21 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 	const form = useForm({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			date: "",
-			thesisNameTH: "",
-			thesisNameEN: "",
-			studentID: 0,
-			advisorID: 0,
-			coAdvisorID: 0,
-			committeeOutlineID: 0,
-			committeeInstituteID: 0,
+			id: 0,
+			outlineCommitteeID: 0,
+			outlineCommitteeApprove: false,
+			outlineCommitteeComment: "",
+			dateOutlineCommitteeSign: "",
+
+			instituteCommitteeID: 0,
+			instituteCommitteeApprove: false,
+			instituteCommitteeComment: "",
+			dateInstituteCommitteeSign: "",
 		},
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		console.log(values);
 		if (!user?.signatureUrl) {
 			toast({
 				title: "Error",
@@ -136,16 +134,23 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 	const { reset } = form;
 
 	useEffect(() => {
+		const today = new Date();
+		const month = today.getMonth() + 1;
+		const year = today.getFullYear();
+		const date = today.getDate();
+		const currentDate = date + "/" + month + "/" + year;
 		if (user && user.position == "COMMITTEE_OUTLINE") {
 			reset({
 				...form.getValues(),
-				committeeOutlineID: user.id,
+				outlineCommitteeID: user.id,
+				dateOutlineCommitteeSign: currentDate,
 			});
 		}
 		if (user && user.position == "COMMITTEE_INSTITUTE") {
 			reset({
 				...form.getValues(),
-				committeeInstituteID: user.id,
+				instituteCommitteeID: user.id,
+				dateInstituteCommitteeSign: currentDate,
 			});
 		}
 	}, [user, reset]);
@@ -156,7 +161,12 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 			.then((data) => setUser(data));
 		fetch(`/api/getOutlineFormById/${formId}`)
 			.then((res) => res.json())
-			.then((data) => setFormData(data));
+			.then((data) => setFormData(data))
+			.catch((error) => console.log(error));
+		reset({
+			...form.getValues(),
+			id: formId,
+		});
 	}, []);
 
 	return (
@@ -264,11 +274,178 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 					</div>
 				</div>
 
-				<div className="w-full flex px-20 lg:flex justify-center">
+				<div className="w-full flex flex-col md:flex-row justify-center mt-4">
+					{/* กรรมการโครงร่าง */}
+					{user?.role == "COMMITTEE" && (
+						<div className="w-full h-max flex flex-col justify-center items-center">
+							<FormLabel className="text-lg font-bold">
+								กรรมการโครงร่าง
+							</FormLabel>
+							<FormLabel>ลายเซ็น / Signature</FormLabel>
+							<Button
+								variant="outline"
+								type="button"
+								className="w-60 mt-4 h-max"
+							>
+								<Image
+									src={
+										formData?.outlineCommittee?.signatureUrl
+											? formData?.outlineCommittee.signatureUrl
+											: user.position == "COMMITTEE_OUTLINE"
+											? user.signatureUrl
+											: signature
+									}
+									width={100}
+									height={100}
+									alt="signature"
+								/>
+							</Button>
+
+							<FormField
+								control={form.control}
+								name="outlineCommitteeApprove"
+								render={({ field }) => (
+									<FormItem>
+										<FormControl>
+											<RadioGroup
+												onValueChange={(value) =>
+													field.onChange(value === "true")
+												}
+												defaultValue={field.value.toString()}
+												className="flex my-4"
+											>
+												<FormItem className="flex items-center justify-center">
+													<RadioGroupItem className="mt-2" value="false" />
+													<div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">
+														ไม่อนุมัติ
+													</div>
+												</FormItem>
+												<FormItem className="ml-4 mt-0 flex items-center justify-center">
+													<RadioGroupItem className="mt-2" value="true" />
+													<div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
+														อนุมัติ
+													</div>
+												</FormItem>
+											</RadioGroup>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
+							<FormField
+								control={form.control}
+								name="outlineCommitteeComment"
+								render={({ field }) => (
+									<FormItem className="w-1/2">
+										<FormLabel>ความเห็นกรรมการโครงร่าง</FormLabel>
+										<FormControl>
+											<Textarea
+												placeholder="ความเห็น..."
+												className="resize-none h-full text-md"
+												value={
+													formData?.outlineCommitteeComment
+														? formData?.outlineCommitteeComment
+														: field.value
+												}
+												onChange={field.onChange}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</div>
+					)}
+
+					{/* กรรมการสำนักวิชา */}
+					{user?.position == "COMMITTEE_INSTITUTE" && (
+						<div className="w-full h-max flex flex-col justify-center items-center mt-10 md:mt-0">
+							<FormLabel className="text-lg font-bold">
+								กรรมการสำนักวิชา
+							</FormLabel>
+							<FormLabel>ลายเซ็น / Signature</FormLabel>
+							<Button
+								variant="outline"
+								type="button"
+								className="w-60 mt-4 h-max"
+							>
+								<Image
+									src={
+										formData?.instituteCommittee?.signatureUrl
+											? formData?.instituteCommittee.signatureUrl
+											: user.position == "COMMITTEE_INSTITUTE"
+											? user.signatureUrl
+											: signature
+									}
+									width={100}
+									height={100}
+									alt="signature"
+								/>
+							</Button>
+							<FormField
+								control={form.control}
+								name="instituteCommitteeApprove"
+								render={({ field }) => (
+									<FormItem>
+										<FormControl>
+											<RadioGroup
+												onValueChange={(value) =>
+													field.onChange(value === "true")
+												}
+												defaultValue={field.value.toString()}
+												className="flex my-4"
+											>
+												<FormItem className="flex items-center justify-center">
+													<RadioGroupItem className="mt-2" value="false" />
+													<div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">
+														ไม่อนุมัติ
+													</div>
+												</FormItem>
+												<FormItem className="ml-4 mt-0 flex items-center justify-center">
+													<RadioGroupItem className="mt-2" value="true" />
+													<div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
+														อนุมัติ
+													</div>
+												</FormItem>
+											</RadioGroup>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
+							<FormField
+								control={form.control}
+								name="instituteCommitteeComment"
+								render={({ field }) => (
+									<FormItem className="w-1/2">
+										<FormLabel>ความเห็นกรรมการสำนักวิชา</FormLabel>
+										<FormControl>
+											<Textarea
+												placeholder="ความเห็น..."
+												className="resize-none h-full text-md"
+												value={
+													formData?.instituteCommitteeComment
+														? formData?.instituteCommitteeComment
+														: field.value
+												}
+												onChange={field.onChange}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+						</div>
+					)}
+				</div>
+
+				<div className="w-full flex px-20 mt-4 lg:flex justify-center">
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push(`/user/admin/able`)}
+						onClick={() => router.push(`/user/admin/table`)}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436] md:ml-auto"
 					>
 						ยกเลิก

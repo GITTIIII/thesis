@@ -25,17 +25,17 @@ type Form = {
 	coAdvisorID: number;
 	coAdvisor: User;
 
-	committeeOutlineID: number;
-	committeeOutline: User;
-	committeeOutlineStatus: string;
+	outlineCommitteeID: number;
+	outlineCommittee: User;
+	outlineCommitteeApprove: string;
 	committee_outlineComment: string;
-	dateCommitteeOutlineSign: string;
+	dateOutlineCommitteeSign: string;
 
-	committeeInstituteID: number;
-	committeeInstitute: User;
-	committeeInstituteStatus: string;
-	committeeInstituteComment: string;
-	dateCommitteeInstituteSign: string;
+	instituteCommitteeID: number;
+	instituteCommittee: User;
+	instituteCommitteeApprove: string;
+	instituteCommitteeComment: string;
+	dateInstituteCommitteeSign: string;
 };
 
 type User = {
@@ -74,11 +74,11 @@ export default function AdminTable({
 		if (formTypeNumber == "1") {
 			fetch(`/api/outlineForm`)
 				.then((res) => res.json())
-				.then((data) => setFormData(data));
+				.then((data) => setFormData(data))
+				.catch((error) => console.log(error));
 		}
 	}, []);
 
-	console.log(formData);
 	return (
 		<>
 			<div className="w-full h-full bg-white shadow-2xl rounded-md px-2">
@@ -99,14 +99,27 @@ export default function AdminTable({
 							<TableRow key={formData.id}>
 								<TableCell>{formData.id}</TableCell>
 								<TableCell>{formData.date}</TableCell>
-								<TableCell>{formData?.student ? formData?.student.username : ""}</TableCell>
-								<TableCell>{formData?.student ? `${formData?.student?.firstName} ${formData?.student?.lastName}` : ""}</TableCell>
+								<TableCell>
+									{formData?.student ? formData?.student.username : ""}
+								</TableCell>
+								<TableCell>
+									{formData?.student
+										? `${formData?.student?.firstName} ${formData?.student?.lastName}`
+										: ""}
+								</TableCell>
 								<TableCell>
 									{formTypeNumber ? formTypeMap[formTypeNumber] : ""}
 								</TableCell>
 								<TableCell>สถานะ</TableCell>
 								<TableCell className="text-[#F26522]">
-									<Link href={`/user/form/outlineForm/update/${formData.id}`}>
+									<Link
+										href={
+											formData.outlineCommitteeID &&
+											formData.instituteCommitteeID == null
+												? `/user/form/outlineForm/${formData.id}`
+												: `/user/form/outlineForm/update/${formData.id}`
+										}
+									>
 										คลิกเพื่อดูเพิ่มเติม
 									</Link>
 								</TableCell>
