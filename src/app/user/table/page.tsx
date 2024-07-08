@@ -1,5 +1,4 @@
 "use client";
-import StudentTable from "@/components/studentTable/studentTable";
 import Image from "next/image";
 import studentFormPage from "@/../../public/asset/studentFormPage.png";
 import Stepper from "@/components/stepper/stepper";
@@ -13,16 +12,12 @@ import {
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { IUser } from "@/interface/user"
+import FormTable from "@/components/formTable/formTable";
 
-type User = {
-	id: number;
-	username: string;
-	formState: number;
-	role: string;
-};
 
 export default function StudentTablePage() {
-	const [user, setUser] = useState<User | null>(null);
+	const [user, setUser] = useState<IUser | null>(null);
 	const [selectedValue, setSelectedValue] = useState("outlineForm");
 	const router = useRouter();
 
@@ -39,9 +34,9 @@ export default function StudentTablePage() {
 	return (
 		<>
 			<div className="w-full h-full bg-transparent py-12 px-2 lg:px-28">
-				<div className="w-full h-max p-4 flex justify-center items-center">
+				{user?.role == "STUDENT" && (<div className="w-full h-max p-4 flex justify-center items-center">
 					<Stepper step={user?.formState ?? 0} />
-				</div>
+				</div>)}
 				<div className="h-max w-full flex items-center text-2xl p-2">
 					<Image
 						src={studentFormPage}
@@ -59,24 +54,46 @@ export default function StudentTablePage() {
 								/>
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem disabled={user?.role =="STUDENT" && (user?.formState ?? 0) < 1} value="outlineForm">
+								<SelectItem
+									disabled={
+										user?.role == "STUDENT" && (user?.formState ?? 0) < 1
+									}
+									value="outlineForm"
+								>
 									แบบคำขออนุมัติโครงร่างวิทยานิพนธ์ (ทบ.20)
 								</SelectItem>
-								<SelectItem disabled={user?.role =="STUDENT" && (user?.formState ?? 0) < 2} value="2">
+								<SelectItem
+									disabled={
+										user?.role == "STUDENT" && (user?.formState ?? 0) < 2
+									}
+									value="2"
+								>
 									form2
 								</SelectItem>
-								<SelectItem disabled={user?.role =="STUDENT" && (user?.formState ?? 0) < 3} value="3">
+								<SelectItem
+									disabled={
+										user?.role == "STUDENT" && (user?.formState ?? 0) < 3
+									}
+									value="3"
+								>
 									form3
 								</SelectItem>
 							</SelectContent>
 						</Select>
-						<Button type="button" variant='outline' onClick={() => router.push(`/user/form/outlineForm/create`)}>
-							เพิ่มฟอร์ม
-						</Button>
+						{user?.role == "STUDENT" && (
+							<Button
+								hidden
+								type="button"
+								variant="outline"
+								onClick={() => router.push(`/user/form/outlineForm/create`)}
+							>
+								เพิ่มฟอร์ม
+							</Button>
+						)}
 					</div>
 				</div>
-				<div className="h-3/4 w-full flex items-center">
-					<StudentTable formType={selectedValue} userId={user?.id} />
+				<div className="h-full w-full flex items-center py-4">
+					<FormTable formType={selectedValue} userId={user?.id} />
 				</div>
 			</div>
 		</>

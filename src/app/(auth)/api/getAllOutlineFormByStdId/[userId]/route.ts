@@ -4,8 +4,12 @@ import { NextApiRequest } from "next";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
-export async function GET(req: NextApiRequest) {
-	const userId = req.query;
+type Params = {
+	userId: number;
+};
+
+export async function GET(req: NextApiRequest, context: { params: Params }) {
+	const userId = context.params.userId;
 	const session = await getServerSession(authOptions);
 
 	if (!session) {
@@ -14,7 +18,7 @@ export async function GET(req: NextApiRequest) {
 
 	const outlineForm = await db.outlineForm.findMany({
 		where: {
-			studentID: userId,
+			studentID: Number(userId),
 		},
 		include: {
 			student: true,

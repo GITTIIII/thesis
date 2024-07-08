@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useForm } from "react-hook-form";
+import { useToast } from "@/components/ui/use-toast";
+import { IUser } from "@/interface/user";
 import {
 	Form,
 	FormControl,
@@ -25,24 +27,7 @@ import signature from "@/../../public/asset/signature.png";
 import Image from "next/image";
 import axios from "axios";
 import qs from "query-string";
-import { useToast } from "@/components/ui/use-toast";
 import InputForm from "../inputForm/inputForm";
-
-type User = {
-	id: number;
-	firstName: string;
-	lastName: string;
-	username: string;
-	educationLevel: string;
-	school: string;
-	program: string;
-	programYear: string;
-	position: string;
-	role: string;
-	advisorID: number;
-	coAdvisorID: number;
-	signatureUrl: string;
-};
 
 const formSchema = z.object({
 	date: z.string(),
@@ -55,8 +40,8 @@ const formSchema = z.object({
 
 const OutlineFormCreate = () => {
 	const router = useRouter();
-	const [user, setUser] = useState<User | null>(null);
-	const [allAdvisor, setAllAdvisor] = useState<User[] | null>(null);
+	const [user, setUser] = useState<IUser | null>(null);
+	const [allAdvisor, setAllAdvisor] = useState<IUser[] | null>(null);
 
 	const { toast } = useToast();
 	const form = useForm({
@@ -94,7 +79,7 @@ const OutlineFormCreate = () => {
 			setTimeout(() => {
 				form.reset();
 				router.refresh();
-				router.push("/user/student/table");
+				router.push("/user/table");
 			}, 1000);
 		} else {
 			toast({

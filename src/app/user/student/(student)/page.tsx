@@ -27,7 +27,7 @@ export default function StudentPage() {
 								x xxxx xxxxxxx xx xxxx xxxxxxxxxxxx xxxx xx xxxx xxxxx xxxx
 								xxxxxxxxxxxxxx xx xxxx xxxx
 							</p>
-							<Link href="/user/student/table" className="text-[#F26522] hover:underline">เริ่มการส่งวิทยานิพนธ์</Link>
+							<Link href="/user/table" className="text-[#F26522] hover:underline">เริ่มการส่งวิทยานิพนธ์</Link>
 						</div>
 						<Image
 							className="w-80 hidden md:block xl:w-[430px]"

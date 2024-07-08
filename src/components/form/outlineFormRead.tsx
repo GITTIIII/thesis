@@ -7,52 +7,13 @@ import signature from "@/../../public/asset/signature.png";
 import InputForm from "@/components/inputForm/inputForm";
 import Image from "next/image";
 import { Textarea } from "../ui/textarea";
-
-type Form = {
-	id: number;
-	date: string;
-	thesisNameTH: string;
-	thesisNameEN: string;
-
-	studentID: number;
-	student: User;
-	advisorID: number;
-	advisor: User;
-	coAdvisorID: number;
-	coAdvisor: User;
-
-	outlineCommitteeID: number;
-	outlineCommittee: User;
-	outlineCommitteeStatus: string;
-	outlineCommitteeComment: string;
-	dateOutlineCommitteeSign: string;
-
-	instituteCommitteeID: number;
-	instituteCommittee: User;
-	instituteCommitteeStatus: string;
-	instituteCommitteeComment: string;
-	dateInstituteCommitteeSign: string;
-};
-
-type User = {
-	id: number;
-	firstName: string;
-	lastName: string;
-	username: string;
-	educationLevel: string;
-	school: string;
-	role: string;
-	program: string;
-	programYear: string;
-	advisorID: number;
-	co_advisorID: number;
-	signatureUrl: string;
-};
+import { IUser } from "@/interface/user";
+import { IForm } from "@/interface/form";
 
 const OutlineFormRead = ({ formId }: { formId: number }) => {
 	const router = useRouter();
-	const [formData, setFormData] = useState<Form | null>(null);
-	const [user, setUser] = useState<User | null>(null);
+	const [formData, setFormData] = useState<IForm | null>(null);
+	const [user, setUser] = useState<IUser | null>(null);
 	console.log(formId);
 	useEffect(() => {
 		if (formId) {
@@ -75,13 +36,7 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() =>
-							router.push(
-								user?.role == "COMMITTEE"
-									? `/user/admin/table`
-									: `/user/${user?.role.toLocaleLowerCase()}/table`
-							)
-						}
+						onClick={() => router.push(`/user/table`)}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436]"
 					>
 						ย้อนกลับ

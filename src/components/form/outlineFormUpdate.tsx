@@ -20,48 +20,8 @@ import Image from "next/image";
 import axios from "axios";
 import qs from "query-string";
 import InputForm from "@/components/inputForm/inputForm";
-
-type Form = {
-	id: number;
-	date: string;
-	thesisNameTH: string;
-	thesisNameEN: string;
-
-	studentID: number;
-	student: User;
-	advisorID: number;
-	advisor: User;
-	coAdvisorID: number;
-	coAdvisor: User;
-
-	outlineCommitteeID: number;
-	outlineCommittee: User;
-	outlineCommitteeStatus: string;
-	outlineCommitteeComment: string;
-	dateOutlineCommitteeSign: string;
-
-	instituteCommitteeID: number;
-	instituteCommittee: User;
-	instituteCommitteeStatus: string;
-	instituteCommitteeComment: string;
-	dateInstituteCommitteeSign: string;
-};
-
-type User = {
-	id: number;
-	firstName: string;
-	lastName: string;
-	username: string;
-	educationLevel: string;
-	school: string;
-	position: string;
-	role: string;
-	program: string;
-	programYear: string;
-	advisorID: number;
-	co_advisorID: number;
-	signatureUrl: string;
-};
+import { IForm } from "@/interface/form";
+import { IUser } from "@/interface/user";
 
 const formSchema = z.object({
 	id: z.number(),
@@ -77,8 +37,8 @@ const formSchema = z.object({
 
 const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 	const router = useRouter();
-	const [user, setUser] = useState<User | null>(null);
-	const [formData, setFormData] = useState<Form | null>(null);
+	const [user, setUser] = useState<IUser | null>(null);
+	const [formData, setFormData] = useState<IForm | null>(null);
 
 	const { toast } = useToast();
 	const form = useForm({
@@ -120,7 +80,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 			setTimeout(() => {
 				form.reset();
 				router.refresh();
-				router.push("/user/admin/table");
+				router.push("/user/table");
 			}, 1000);
 		} else {
 			toast({
@@ -191,7 +151,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 						<Button
 							variant="outline"
 							type="reset"
-							onClick={() => router.push("/user/admin/table")}
+							onClick={() => router.push("/user/table")}
 							className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436]"
 						>
 							ย้อนกลับ
@@ -394,8 +354,8 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 												placeholder="ความเห็น..."
 												className="resize-none h-full text-md"
 												value={
-													formData?.instituteCommitteeComment
-														? formData?.instituteCommitteeComment
+													formData?.outlineCommitteeComment
+														? formData?.outlineCommitteeComment
 														: field.value
 												}
 												onChange={field.onChange}
