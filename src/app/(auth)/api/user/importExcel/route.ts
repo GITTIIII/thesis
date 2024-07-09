@@ -43,8 +43,6 @@ export const POST = async (req: Request) => {
   try {
     await writeFile(pathExcel, buffer)
     const users: User[] = await excelFileToJson(pathExcel, columnKey)
-    console.log(users)
-
     const result = await CreateMultipleStudent(users)
     return NextResponse.json(
       { message: "Users Created", result },
