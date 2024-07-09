@@ -9,10 +9,12 @@ export const POST = async (req: Request) => {
   const formData = await req.formData()
   const file = formData.get("file") as File
   const columnKey = formData.get("columnKey") as string
+
   // Validate that a file was received
   if (!file) {
     return NextResponse.json({ Error: "No files received." }, { status: 400 })
   }
+
   // Validate that a columnKey was received
   if (!columnKey) {
     return NextResponse.json(
