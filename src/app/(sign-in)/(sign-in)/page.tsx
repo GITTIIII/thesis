@@ -1,8 +1,7 @@
 "use client"
 import Image from 'next/image'
 import sutLogo from "@/../../public/asset/sutLogo.jpg"
-import SignInForm from '@/components/form/signInForm';
-
+import SignInForm from '@/components/form/signInForm'
 const LoginPage = () => {
     return(
         <>
