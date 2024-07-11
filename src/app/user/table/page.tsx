@@ -12,9 +12,8 @@ import {
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { IUser } from "@/interface/user"
+import { IUser } from "@/interface/user";
 import FormTable from "@/components/formTable/formTable";
-
 
 export default function StudentTablePage() {
 	const [user, setUser] = useState<IUser | null>(null);
@@ -22,7 +21,7 @@ export default function StudentTablePage() {
 	const router = useRouter();
 
 	useEffect(() => {
-		fetch("/api/user")
+		fetch("/api/getCurrentUser")
 			.then((res) => res.json())
 			.then((data) => setUser(data));
 	}, []);
@@ -34,9 +33,11 @@ export default function StudentTablePage() {
 	return (
 		<>
 			<div className="w-full h-full bg-transparent py-12 px-2 lg:px-28">
-				{user?.role == "STUDENT" && (<div className="w-full h-max p-4 flex justify-center items-center">
-					<Stepper step={user?.formState ?? 0} />
-				</div>)}
+				{user?.role == "STUDENT" && (
+					<div className="w-full h-max p-4 flex justify-center items-center">
+						<Stepper step={user?.formState ?? 0} />
+					</div>
+				)}
 				<div className="h-max w-full flex items-center text-2xl p-2">
 					<Image
 						src={studentFormPage}
@@ -62,18 +63,9 @@ export default function StudentTablePage() {
 								>
 									แบบคำขออนุมัติโครงร่างวิทยานิพนธ์ (ทบ.20)
 								</SelectItem>
-<<<<<<< HEAD:src/app/user/table/page.tsx
-								<SelectItem
-									disabled={
-										user?.role == "STUDENT" && (user?.formState ?? 0) < 2
-									}
-									value="2"
-								>
-									form2
-=======
+
 								<SelectItem disabled={(user?.formState ?? 0) < 2} value="2">
-									รายงานความคืบหน้าวิทยานิพนธิ์ 
->>>>>>> 2189d06c9a90352cfefd3833f84899e6f356d6b8:src/app/user/student/(student)/table/page.tsx
+									รายงานความคืบหน้าวิทยานิพนธิ์
 								</SelectItem>
 								<SelectItem
 									disabled={

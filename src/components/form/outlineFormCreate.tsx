@@ -109,7 +109,7 @@ const OutlineFormCreate = () => {
 	}, [user, reset]);
 
 	useEffect(() => {
-		fetch("/api/user")
+		fetch("/api/getCurrentUser")
 			.then((res) => res.json())
 			.then((data) => setUser(data));
 		fetch("/api/getAdvisor")
@@ -126,7 +126,7 @@ const OutlineFormCreate = () => {
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
 					<div className="w-full sm:2/4">
-					<div className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</div>
+						<div className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</div>
 						<InputForm
 							value={`${user?.firstName} ${user?.lastName}`}
 							label="ชื่อ-นามสกุล / Fullname"
@@ -172,7 +172,9 @@ const OutlineFormCreate = () => {
 
 					{/* ฝั่งขวา */}
 					<div className="w-full sm:2/4">
-						<div className="text-center font-semibold mb-2">ชื่อโครงร่างวิทยานิพนธ์</div>
+						<div className="text-center font-semibold mb-2">
+							ชื่อโครงร่างวิทยานิพนธ์
+						</div>
 						<FormField
 							control={form.control}
 							name="thesisNameTH"
