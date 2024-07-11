@@ -212,25 +212,6 @@ export default function SuperAdmin() {
               </nav>
             </SheetContent>
           </Sheet>
-          <Breadcrumb className="hidden md:flex">
-            <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href="#">Dashboard</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbLink asChild>
-                  <Link href="#">Products</Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-              <BreadcrumbSeparator />
-              <BreadcrumbItem>
-                <BreadcrumbPage>All Products</BreadcrumbPage>
-              </BreadcrumbItem>
-            </BreadcrumbList>
-          </Breadcrumb>
           <div className="relative ml-auto flex-1 md:grow-0">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -269,11 +250,11 @@ export default function SuperAdmin() {
           <Tabs defaultValue="all">
             <div className="flex items-center">
               <TabsList>
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="active">Active</TabsTrigger>
-                <TabsTrigger value="draft">Draft</TabsTrigger>
+                <TabsTrigger value="all">ทั้งหมด</TabsTrigger>
+                <TabsTrigger value="active">001</TabsTrigger>
+                <TabsTrigger value="draft">002</TabsTrigger>
                 <TabsTrigger value="archived" className="hidden sm:flex">
-                  Archived
+                  003
                 </TabsTrigger>
               </TabsList>
               <div className="ml-auto flex items-center gap-2">
@@ -316,9 +297,9 @@ export default function SuperAdmin() {
               <Card x-chunk="dashboard-06-chunk-0">
                 <CardHeader>
                   <CardTitle>รายชื่อนักศึกษาบัณฑิตศึกษา</CardTitle>
-                  <CardDescription>
+                  {/* <CardDescription>
                     Manage your products and view their sales performance.
-                  </CardDescription>
+                  </CardDescription> */}
                 </CardHeader>
                 <CardContent>
                   <SuperAdminTable />
