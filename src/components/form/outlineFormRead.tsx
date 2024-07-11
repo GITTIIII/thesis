@@ -45,7 +45,8 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
 					<div className="w-full sm:2/4">
-						<InputForm value={`${formData?.date}`} label="วันที่สร้าง / Date" />
+						<div className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</div>
+						
 						<InputForm
 							value={`${formData?.student.firstName} ${formData?.student.lastName}`}
 							label="ชื่อ-นามสกุล / Fullname"
@@ -96,7 +97,7 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 
 					{/* ฝั่งขวา */}
 					<div className="w-full sm:2/4">
-						<div className="text-center">ชื่อโครงร่างวิทยานิพนธ์</div>
+						<div className="text-center font-semibold mb-2">ชื่อโครงร่างวิทยานิพนธ์</div>
 						<InputForm
 							value={`${formData?.thesisNameTH}`}
 							label="ชื่อภาษาไทย / ThesisName(TH)"
