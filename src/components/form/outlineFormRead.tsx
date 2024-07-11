@@ -7,27 +7,22 @@ import signature from "@/../../public/asset/signature.png";
 import InputForm from "@/components/inputForm/inputForm";
 import Image from "next/image";
 import { Textarea } from "../ui/textarea";
-import { IUser } from "@/interface/user";
-import { IForm } from "@/interface/form";
 
-const OutlineFormRead = ({ formId }: { formId: number }) => {
+async function getCurrentUser() {
+	const res = await fetch("/api/getCurrentUser")
+	
+	return res.json();
+}
+
+async function getOutlineFormById(formId: number) {
+	const res = await fetch(`/api/getOutlineFormById/${formId}`)
+	return res.json();
+}
+
+export default async function OutlineFormRead ({ formId }: { formId: number }){
 	const router = useRouter();
-	const [formData, setFormData] = useState<IForm | null>(null);
-	const [user, setUser] = useState<IUser | null>(null);
-	console.log(formId);
-	useEffect(() => {
-		if (formId) {
-			fetch(`/api/getOutlineFormById/${formId}`)
-				.then((res) => res.json())
-				.then((data) => setFormData(data))
-				.catch((error) => console.log(error));
-		}
-	}, [formId]);
-	useEffect(() => {
-		fetch("/api/getCurrentUser")
-			.then((res) => res.json())
-			.then((data) => setUser(data));
-	}, []);
+	const formData = await getOutlineFormById(formId);
+	const user = await getCurrentUser();
 
 	return (
 		<>
@@ -243,4 +238,4 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 	);
 };
 
-export default OutlineFormRead;
+// export default OutlineFormRead;
