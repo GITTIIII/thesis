@@ -460,9 +460,9 @@ const ThesisProgressFormCreate = () => {
 
 							<TableBody>
 								{Array.from({ length: 14 }).map((_, rowIndex) => (
-									<TableRow key={rowIndex}>
+									<TableRow  key={rowIndex}>
 										{Array.from({ length: 13 }).map((_, colIndex) => (
-											<TableCell key={colIndex}>
+											<TableCell className="  item-center" key={colIndex}>
 												{rowIndex === 0 && colIndex === 0 || (rowIndex >= 6 && rowIndex <= 13 && colIndex === 0) ? (
 													<span className="text-formal">
 														{fixedText[rowIndex >= 6 ? rowIndex - 6 : rowIndex]}
@@ -475,14 +475,17 @@ const ThesisProgressFormCreate = () => {
 															handleInputChange(rowIndex, colIndex, e.target.value)
 														}
 													/>
-												) : (
+												) :  rowIndex >= 10  && colIndex > 0 ? (
+													<Input type = "number" className="w-14 h-10"/>
+												) : 
+												(
 													<Input
 														type="checkbox"
 														checked={checkData[rowIndex][colIndex]}
 														onChange={() =>
 															handleCheckboxChange(rowIndex, colIndex)
 														}
-														className="w-4 h-4"
+														className="w-12 h-4"
 													/>
 												)}
 											</TableCell>
