@@ -96,7 +96,7 @@ export default function FormTable({ formType, userId }: FormTableProps) {
 	}, [userId]);
 
 	useEffect(() => {
-		fetch(`/api/user`)
+		fetch("/api/getCurrentUser")
 			.then((res) => res.json())
 			.then((data) => setUser(data))
 			.catch((error) => console.log(error));
@@ -127,7 +127,7 @@ export default function FormTable({ formType, userId }: FormTableProps) {
 						{formData?.map((formData, index) => (
 							<TableRow
 								key={formData.id}
-								className={formData.id % 2 == 0 ? `bg-[#f0c38d3d]` : ""}
+								className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}
 							>
 								<TableCell className="text-center">{index + 1}</TableCell>
 								<TableCell className="text-center">{formData.date}</TableCell>
