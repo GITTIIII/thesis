@@ -124,7 +124,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 	}, [user, formData, reset]);
 
 	useEffect(() => {
-		fetch("/api/user")
+		fetch("/api/getCurrentUser")
 			.then((res) => res.json())
 			.then((data) => setUser(data));
 		fetch(`/api/getOutlineFormById/${formId}`)

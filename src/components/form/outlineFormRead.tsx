@@ -24,7 +24,7 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 		}
 	}, [formId]);
 	useEffect(() => {
-		fetch("/api/user")
+		fetch("/api/getCurrentUser")
 			.then((res) => res.json())
 			.then((data) => setUser(data));
 	}, []);
@@ -46,7 +46,7 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 					{/* ฝั่งซ้าย */}
 					<div className="w-full sm:2/4">
 						<div className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</div>
-						
+
 						<InputForm
 							value={`${formData?.student.firstName} ${formData?.student.lastName}`}
 							label="ชื่อ-นามสกุล / Fullname"
@@ -97,7 +97,9 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 
 					{/* ฝั่งขวา */}
 					<div className="w-full sm:2/4">
-						<div className="text-center font-semibold mb-2">ชื่อโครงร่างวิทยานิพนธ์</div>
+						<div className="text-center font-semibold mb-2">
+							ชื่อโครงร่างวิทยานิพนธ์
+						</div>
 						<InputForm
 							value={`${formData?.thesisNameTH}`}
 							label="ชื่อภาษาไทย / ThesisName(TH)"

@@ -1,12 +1,19 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {  FormEvent, useEffect, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useForm } from "react-hook-form";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableHead,
+	TableHeader,
+	TableRow,
+} from "@/components/ui/table";
 import {
 	Form,
 	FormControl,
@@ -22,7 +29,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea"
+import { Textarea } from "@/components/ui/textarea";
 import signature from "@/../../public/asset/signature.png";
 import Image from "next/image";
 import axios from "axios";
@@ -76,13 +83,13 @@ const ThesisProgressFormCreate = () => {
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		if(!user?.signatureUrl){
+		if (!user?.signatureUrl) {
 			toast({
 				title: "Error",
 				description: "ไม่พบลายเซ็น",
 				variant: "destructive",
 			});
-			return
+			return;
 		}
 		const url = qs.stringifyUrl({
 			url: `/api/outlineForm`,
@@ -120,7 +127,7 @@ const ThesisProgressFormCreate = () => {
 	}, [user, reset]);
 
 	useEffect(() => {
-		fetch("/api/user")
+		fetch("/api/getCurrentUser")
 			.then((res) => res.json())
 			.then((data) => setUser(data));
 		fetch("/api/getAdvisor")
@@ -128,46 +135,55 @@ const ThesisProgressFormCreate = () => {
 			.then((data) => setAllAdvisor(data));
 	}, []);
 
+	const [inputData, setInputData] = useState<string[][]>(
+		Array(14).fill(Array(13).fill(""))
+	);
+	const [checkData, setCheckData] = useState<boolean[][]>(
+		Array(14).fill(Array(13).fill(false))
+	);
 
-
-	const [inputData, setInputData] = useState<string[][]>(Array(14).fill(Array(13).fill("")));
-	const [checkData, setCheckData] = useState<boolean[][]>(Array(14).fill(Array(13).fill(false)));
-
-	const handleInputChange = (rowIndex: number, colIndex: number, value: string) => {
+	const handleInputChange = (
+		rowIndex: number,
+		colIndex: number,
+		value: string
+	) => {
 		const updatedInputData = inputData.map((row, rIndex) =>
-			rIndex === rowIndex ? row.map((col, cIndex) => (cIndex === colIndex ? value : col)) : row
+			rIndex === rowIndex
+				? row.map((col, cIndex) => (cIndex === colIndex ? value : col))
+				: row
 		);
 		setInputData(updatedInputData);
 	};
 
 	const handleCheckboxChange = (rowIndex: number, colIndex: number) => {
 		const updatedCheckData = checkData.map((row, rIndex) =>
-			rIndex === rowIndex ? row.map((col, cIndex) => (cIndex === colIndex ? !col : col)) : row
+			rIndex === rowIndex
+				? row.map((col, cIndex) => (cIndex === colIndex ? !col : col))
+				: row
 		);
 		setCheckData(updatedCheckData);
 	};
 
-	const fixedText = ["ทบทวนการศึกษา รวบรวมข้อมูลรวมทั้งสำรวจปริทัศน์วรรณกรรม และงานวิจัยที่เกี่ยวข้อง", 
-		"ทบทวนการศึกษา รวบรวมข้อมูลรวมทั้งสำรวจปริทัศน์วรรณกรรม และงานวิจัยที่เกี่ยวข้อง", 
-		"จัดทำวิทยานิพนธ์", 
-		"สอบวิทยานิพนธ์", 
-		"ปริมาณงานที่วางแผนไว้ (%)", 
-		"ปริมาณงานที่ทำได้จริง (%)", 
+	const fixedText = [
+		"ทบทวนการศึกษา รวบรวมข้อมูลรวมทั้งสำรวจปริทัศน์วรรณกรรม และงานวิจัยที่เกี่ยวข้อง",
+		"ทบทวนการศึกษา รวบรวมข้อมูลรวมทั้งสำรวจปริทัศน์วรรณกรรม และงานวิจัยที่เกี่ยวข้อง",
+		"จัดทำวิทยานิพนธ์",
+		"สอบวิทยานิพนธ์",
+		"ปริมาณงานที่วางแผนไว้ (%)",
+		"ปริมาณงานที่ทำได้จริง (%)",
 		"งานสะสมที่วางแผนไว้ (%)",
-		"งานสะสมที่ทำได้จริง (%)"];
+		"งานสะสมที่ทำได้จริง (%)",
+	];
 
+	const [isDisabled, setIsDisabled] = useState(false);
 
-		const [isDisabled, setIsDisabled] = useState(false);
-
-		const handleRadioChange = (value: string) => {
-			if (value === "Adjustments") {
-				setIsDisabled(true);
-			} else {
-				setIsDisabled(false);
-			}
-		};
-		  
-		
+	const handleRadioChange = (value: string) => {
+		if (value === "Adjustments") {
+			setIsDisabled(true);
+		} else {
+			setIsDisabled(false);
+		}
+	};
 
 	return (
 		<Form {...form}>
@@ -177,7 +193,7 @@ const ThesisProgressFormCreate = () => {
 			>
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
-					
+
 					<div className="w-full sm:2/4 ">
 						<FormField
 							control={form.control}
@@ -198,7 +214,7 @@ const ThesisProgressFormCreate = () => {
 								</div>
 							)}
 						/>
-						
+
 						<div>
 							<FormField
 								control={form.control}
@@ -217,8 +233,8 @@ const ThesisProgressFormCreate = () => {
 											<FormMessage />
 										</FormItem>
 									</div>
-							)}
-						/>
+								)}
+							/>
 						</div>
 						<InputForm
 							value={`${user?.firstName} ${user?.lastName}`}
@@ -262,50 +278,49 @@ const ThesisProgressFormCreate = () => {
 							label="ปีหลักสูตร / Program Year"
 						/>
 						<div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
-						<div className="text-center mb-5">ชื่อโครงร่างวิทยานิพนธ์</div>
-						<FormField
-							control={form.control}
-							name="thesisNameTH"
-							render={({ field }) => (
-								<div className="flex flex-row items-center mb-6 justify-center">
-									<FormItem className="w-auto">
-										<FormLabel >ชื่อภาษาไทย / ThesisName(TH)</FormLabel>
-										<FormControl>
-											<Input
-												className="text-sm p-2 w-[300px] m-auto  rounded-lg"
-												{...field}
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								</div>
-							)}
-						/>
-						<FormField
-							control={form.control}
-							name="thesisNameEN"
-							render={({ field }) => (
-								<div className="flex flex-row items-center mb-6 justify-center">
-									<FormItem className="w-auto">
-										<FormLabel>ชื่อภาษาอังกฤษ / ThesisName(EN)</FormLabel>
-										<FormControl>
-											<Input
-												className="text-sm p-2 w-[300px] m-auto  rounded-lg"
-												{...field}
-											/>
-										</FormControl>
-										<FormMessage />
-									</FormItem>
-								</div>
-							)}
-						/>
-					</div>
+							<div className="text-center mb-5">ชื่อโครงร่างวิทยานิพนธ์</div>
+							<FormField
+								control={form.control}
+								name="thesisNameTH"
+								render={({ field }) => (
+									<div className="flex flex-row items-center mb-6 justify-center">
+										<FormItem className="w-auto">
+											<FormLabel>ชื่อภาษาไทย / ThesisName(TH)</FormLabel>
+											<FormControl>
+												<Input
+													className="text-sm p-2 w-[300px] m-auto  rounded-lg"
+													{...field}
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									</div>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="thesisNameEN"
+								render={({ field }) => (
+									<div className="flex flex-row items-center mb-6 justify-center">
+										<FormItem className="w-auto">
+											<FormLabel>ชื่อภาษาอังกฤษ / ThesisName(EN)</FormLabel>
+											<FormControl>
+												<Input
+													className="text-sm p-2 w-[300px] m-auto  rounded-lg"
+													{...field}
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									</div>
+								)}
+							/>
+						</div>
 					</div>
 					<div className="border-l border-[#eeee]"></div>
 
 					{/* ฝั่งขวา */}
 					<div className="w-full sm:2/4">
-						
 						<FormField
 							control={form.control}
 							name="advisorID"
@@ -340,40 +355,46 @@ const ThesisProgressFormCreate = () => {
 								</div>
 							)}
 						/>
-						<div className="flex justify-center my-8 bg-[#ffff]  text-[#000] underline rounded-lg">					
-							ขอรายงานความคืบหน้าวิทยานิพนธ์ดังนี้		
+						<div className="flex justify-center my-8 bg-[#ffff]  text-[#000] underline rounded-lg">
+							ขอรายงานความคืบหน้าวิทยานิพนธ์ดังนี้
 						</div>
 						<div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
 							<div className="font-normal text-center mb-5">
 								1. ระดับการดำเนินงาน
 							</div>
-						
-							<RadioGroup className="space-y-1 mt-2 justify-center" onValueChange={handleRadioChange}>
-							<div className="w-[300px]">
-								<RadioGroupItem value="AsPlaned" />
-								<FormLabel className="ml-2 font-normal">
-									เป็นไปตามแผนที่วางไว้ทุกประการ
-								</FormLabel>
-							</div>
-							<div>
-								<RadioGroupItem value="Adjustments" />
-								<FormLabel className="ml-2 font-normal mb-6">
-									มีการเปลี่ยนแผนที่วางไว้ 
-								</FormLabel>
-								<Textarea className="mt-2" placeholder="มีการเปลี่ยนแปลงดังนี้..." disabled={!isDisabled} />
-							</div>
-						</RadioGroup>
-							</div>
-							<div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
-								<div className="w-full text-center font-normal mb-6">
-									2. ผลการดำเนินงานที่ผ่านมาในครั้งนี้
+
+							<RadioGroup
+								className="space-y-1 mt-2 justify-center"
+								onValueChange={handleRadioChange}
+							>
+								<div className="w-[300px]">
+									<RadioGroupItem value="AsPlaned" />
+									<FormLabel className="ml-2 font-normal">
+										เป็นไปตามแผนที่วางไว้ทุกประการ
+									</FormLabel>
 								</div>
+								<div>
+									<RadioGroupItem value="Adjustments" />
+									<FormLabel className="ml-2 font-normal mb-6">
+										มีการเปลี่ยนแผนที่วางไว้
+									</FormLabel>
+									<Textarea
+										className="mt-2"
+										placeholder="มีการเปลี่ยนแปลงดังนี้..."
+										disabled={!isDisabled}
+									/>
+								</div>
+							</RadioGroup>
+						</div>
+						<div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
+							<div className="w-full text-center font-normal mb-6">
+								2. ผลการดำเนินงานที่ผ่านมาในครั้งนี้
+							</div>
 							<FormField
 								control={form.control}
 								name="trimester"
 								render={({ field }) => (
 									<div className="flex flex-row items-center mb-6 justify-center">
-										
 										<FormItem className="w-auto">
 											<FormLabel>คิดเป็นร้อยละการทำงานของเป้าหมาย</FormLabel>
 											<FormControl>
@@ -386,45 +407,48 @@ const ThesisProgressFormCreate = () => {
 											<FormMessage />
 										</FormItem>
 									</div>
-							)}
-						/>
-						<FormField
+								)}
+							/>
+							<FormField
 								control={form.control}
 								name="trimester"
 								render={({ field }) => (
 									<div className="flex flex-row items-center mb-6 justify-center">
-										
 										<FormItem className="w-auto">
 											<FormLabel>โดยสรุปผลได้ดังนี้</FormLabel>
 											<FormControl>
-												<Textarea className="text-sm p-2 w-[300px] m-auto  rounded-lg" placeholder="Type your message here." />
+												<Textarea
+													className="text-sm p-2 w-[300px] m-auto  rounded-lg"
+													placeholder="Type your message here."
+												/>
 											</FormControl>
 											<FormMessage />
 										</FormItem>
 									</div>
-							)}
-						/>
+								)}
+							/>
 						</div>
 						<div className="mt-6 w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
-								<div className="w-full text-center font-normal mb-6">
-									3. ปัญหา อุปสรรค และแนวทางแก้ไข
-								</div>
-						<FormField
+							<div className="w-full text-center font-normal mb-6">
+								3. ปัญหา อุปสรรค และแนวทางแก้ไข
+							</div>
+							<FormField
 								control={form.control}
 								name="trimester"
 								render={({ field }) => (
 									<div className="flex flex-row items-center mb-6 justify-center">
-										
 										<FormItem className="w-auto">
-											
 											<FormControl>
-												<Textarea className="text-sm p-2 w-60 m-auto  rounded-lg" placeholder="Type your message here." />
+												<Textarea
+													className="text-sm p-2 w-60 m-auto  rounded-lg"
+													placeholder="Type your message here."
+												/>
 											</FormControl>
 											<FormMessage />
 										</FormItem>
 									</div>
-							)}
-						/>
+								)}
+							/>
 						</div>
 						<div className="flex flex-col items-center mt-6 mb-6 justify-center">
 							<FormLabel>ลายเซ็น / Signature</FormLabel>
@@ -441,60 +465,59 @@ const ThesisProgressFormCreate = () => {
 								/>
 							</Button>
 						</div>
-
 					</div>
 				</div>
 				<hr className="่่justify-center mx-auto w-3/4 my-5 border-t-2 border-[#eeee]" />
-
 
 				<Table>
 					<TableHeader>
 						<TableRow>
 							{Array.from({ length: 13 }).map((_, index) => (
-								<TableHead key={index} className="text-center text-[14px] p-2">  
-									{index === 0 ? "กิจกรรม / ขั้นตอนการดำเนินงาน" : "เดือนที่" + index}
+								<TableHead key={index} className="text-center text-[14px] p-2">
+									{index === 0
+										? "กิจกรรม / ขั้นตอนการดำเนินงาน"
+										: "เดือนที่" + index}
 								</TableHead>
 							))}
 						</TableRow>
 					</TableHeader>
 
-							<TableBody>
-								{Array.from({ length: 14 }).map((_, rowIndex) => (
-									<TableRow  key={rowIndex}>
-										{Array.from({ length: 13 }).map((_, colIndex) => (
-											<TableCell className="  item-center" key={colIndex}>
-												{rowIndex === 0 && colIndex === 0 || (rowIndex >= 6 && rowIndex <= 13 && colIndex === 0) ? (
-													<span className="text-formal">
-														{fixedText[rowIndex >= 6 ? rowIndex - 6 : rowIndex]}
-													</span>
-												) : rowIndex >= 1 && rowIndex <= 5 && colIndex === 0 ? (
-													<Input
-														className="text-formal"
-														value={inputData[rowIndex][colIndex]}
-														onChange={(e) =>
-															handleInputChange(rowIndex, colIndex, e.target.value)
-														}
-													/>
-												) :  rowIndex >= 10  && colIndex > 0 ? (
-													<Input type = "number" className="w-14 h-10"/>
-												) : 
-												(
-													<Input
-														type="checkbox"
-														checked={checkData[rowIndex][colIndex]}
-														onChange={() =>
-															handleCheckboxChange(rowIndex, colIndex)
-														}
-														className="w-12 h-4"
-													/>
-												)}
-											</TableCell>
-										))}
-									</TableRow>
+					<TableBody>
+						{Array.from({ length: 14 }).map((_, rowIndex) => (
+							<TableRow key={rowIndex}>
+								{Array.from({ length: 13 }).map((_, colIndex) => (
+									<TableCell className="  item-center" key={colIndex}>
+										{(rowIndex === 0 && colIndex === 0) ||
+										(rowIndex >= 6 && rowIndex <= 13 && colIndex === 0) ? (
+											<span className="text-formal">
+												{fixedText[rowIndex >= 6 ? rowIndex - 6 : rowIndex]}
+											</span>
+										) : rowIndex >= 1 && rowIndex <= 5 && colIndex === 0 ? (
+											<Input
+												className="text-formal"
+												value={inputData[rowIndex][colIndex]}
+												onChange={(e) =>
+													handleInputChange(rowIndex, colIndex, e.target.value)
+												}
+											/>
+										) : rowIndex >= 10 && colIndex > 0 ? (
+											<Input type="number" className="w-14 h-10" />
+										) : (
+											<Input
+												type="checkbox"
+												checked={checkData[rowIndex][colIndex]}
+												onChange={() =>
+													handleCheckboxChange(rowIndex, colIndex)
+												}
+												className="w-12 h-4"
+											/>
+										)}
+									</TableCell>
 								))}
-							</TableBody>
-						</Table>
-
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
 
 				<div className="w-full flex px-20 lg:flex justify-center">
 					<Button

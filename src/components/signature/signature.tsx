@@ -133,7 +133,7 @@ export default function Signature() {
 	}, [user, reset]);
 
 	const getUser = async () => {
-		const res = await fetch("/api/user");
+		const res = await fetch("/api/getCurrentUser");
 		const data = await res.json();
 		setUser(data);
 	};

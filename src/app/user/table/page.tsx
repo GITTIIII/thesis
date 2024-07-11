@@ -21,7 +21,7 @@ export default function StudentTablePage() {
   const router = useRouter();
 
   useEffect(() => {
-    fetch("/api/user")
+    fetch("/api/getCurrentUser")
       .then((res) => res.json())
       .then((data) => setUser(data));
   }, []);
@@ -63,6 +63,7 @@ export default function StudentTablePage() {
                 >
                   แบบคำขออนุมัติโครงร่างวิทยานิพนธ์ (ทบ.20)
                 </SelectItem>
+
                 <SelectItem disabled={(user?.formState ?? 0) < 2} value="2">
                   รายงานความคืบหน้าวิทยานิพนธิ์
                 </SelectItem>
