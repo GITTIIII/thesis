@@ -62,7 +62,7 @@ export default function StudentTablePage() {
 									แบบคำขออนุมัติโครงร่างวิทยานิพนธ์ (ทบ.20)
 								</SelectItem>
 								<SelectItem disabled={(user?.formState ?? 0) < 2} value="2">
-									form2
+									รายงานความคืบหน้าวิทยานิพนธิ์ 
 								</SelectItem>
 								<SelectItem disabled={(user?.formState ?? 0) < 3} value="3">
 									form3
