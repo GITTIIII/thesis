@@ -49,15 +49,15 @@ export default function SuperAdminTable() {
               width="64"
             />
           </TableCell> */}
-          <TableCell className="font-medium">Laser Lemonade Machine</TableCell>
+          <TableCell className="font-medium">ณฐพล ศักดิ์วิบูลย์เดชา</TableCell>
           <TableCell>
-            <Badge variant="outline">Draft</Badge>
+            <Badge variant="outline">paulxpon58@gmail.com</Badge>
           </TableCell>
-          <TableCell>$499.99</TableCell>
-          <TableCell className="hidden md:table-cell">25</TableCell>
+          <TableCell>091-1234567</TableCell>
           <TableCell className="hidden md:table-cell">
-            2023-07-12 10:42 AM
+            วิศวกรรมคอมพิวเตอร์
           </TableCell>
+          <TableCell className="hidden md:table-cell">1</TableCell>
           <TableCell>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
