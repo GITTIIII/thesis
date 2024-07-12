@@ -3,7 +3,7 @@ import { NextResponse } from "next/server"
 import path from "path"
 import { User } from "../../../../../interface/user"
 import { writeFile, unlink } from "fs/promises"
-import { excelFileToJson } from "./excelFileToJSON"
+import { excelFileToJson } from "../../../../../lib/excelFileToJSON"
 
 export const POST = async (req: Request) => {
   const formData = await req.formData()
@@ -14,7 +14,6 @@ export const POST = async (req: Request) => {
   if (!file) {
     return NextResponse.json({ Error: "No files received." }, { status: 400 })
   }
-
   // Validate that a columnKey was received
   if (!columnKey) {
     return NextResponse.json(
@@ -35,10 +34,7 @@ export const POST = async (req: Request) => {
   }
 
   const buffer = Buffer.from(await file.arrayBuffer())
-  const pathExcel = path.join(
-    process.cwd(),
-    `src/app/(auth)/api/user/importExcel/excel/${filename}`
-  )
+  const pathExcel = path.join(process.cwd(), `public/asset/${filename}`)
 
   try {
     await writeFile(pathExcel, buffer)
@@ -63,6 +59,7 @@ const CreateMultipleStudent = async (users: any) => {
   try {
     const newUsers = await db.user.createMany({
       data: [...users],
+      skipDuplicates: true,
     })
     return newUsers
   } catch (error) {

@@ -1,4 +1,4 @@
-import { User } from "../../../../../interface/user"
+import { User } from "../interface/user"
 const excelToJson = require("convert-excel-to-json")
 import { hash } from "bcrypt"
 
@@ -11,6 +11,7 @@ export const excelFileToJson = async (
     sourceFile: path,
     columnToKey: columnKey_,
   })
+
   return await convertToUsers(result.Sheet1)
 }
 
