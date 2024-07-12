@@ -1,6 +1,6 @@
 import {IUser} from "./user"
 
-export type IForm ={
+export type IOutlineForm ={
     id: number;
 	date: string;
 	thesisNameTH: string;

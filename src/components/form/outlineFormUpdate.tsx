@@ -20,7 +20,7 @@ import Image from "next/image";
 import axios from "axios";
 import qs from "query-string";
 import InputForm from "@/components/inputForm/inputForm";
-import { IForm } from "@/interface/form";
+import { IOutlineForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 
 const formSchema = z.object({
@@ -38,7 +38,7 @@ const formSchema = z.object({
 const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 	const router = useRouter();
 	const [user, setUser] = useState<IUser | null>(null);
-	const [formData, setFormData] = useState<IForm | null>(null);
+	const [formData, setFormData] = useState<IOutlineForm | null>(null);
 
 	const { toast } = useToast();
 	const form = useForm({
@@ -124,7 +124,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 	}, [user, formData, reset]);
 
 	useEffect(() => {
-		fetch("/api/user")
+		fetch("/api/getCurrentUser")
 			.then((res) => res.json())
 			.then((data) => setUser(data));
 		fetch(`/api/getOutlineFormById/${formId}`)
@@ -490,7 +490,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 						<Button
 							variant="outline"
 							type="reset"
-							onClick={() => router.push(`/user/admin/table`)}
+							onClick={() => router.push(`/user/table`)}
 							className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436] md:ml-auto"
 						>
 							ยกเลิก

@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -7,27 +6,15 @@ import signature from "@/../../public/asset/signature.png";
 import InputForm from "@/components/inputForm/inputForm";
 import Image from "next/image";
 import { Textarea } from "../ui/textarea";
-import { IUser } from "@/interface/user";
-import { IForm } from "@/interface/form";
 
-const OutlineFormRead = ({ formId }: { formId: number }) => {
+async function getOutlineFormById(formId: number) {
+	const res = await fetch(`/api/getOutlineFormById/${formId}`);
+	return res.json();
+}
+
+export default async function OutlineFormRead({ formId }: { formId: number }) {
 	const router = useRouter();
-	const [formData, setFormData] = useState<IForm | null>(null);
-	const [user, setUser] = useState<IUser | null>(null);
-	console.log(formId);
-	useEffect(() => {
-		if (formId) {
-			fetch(`/api/getOutlineFormById/${formId}`)
-				.then((res) => res.json())
-				.then((data) => setFormData(data))
-				.catch((error) => console.log(error));
-		}
-	}, [formId]);
-	useEffect(() => {
-		fetch("/api/user")
-			.then((res) => res.json())
-			.then((data) => setUser(data));
-	}, []);
+	const formData = await getOutlineFormById(formId);
 
 	return (
 		<>
@@ -45,7 +32,8 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
 					<div className="w-full sm:2/4">
-						<InputForm value={`${formData?.date}`} label="วันที่สร้าง / Date" />
+						<div className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</div>
+
 						<InputForm
 							value={`${formData?.student.firstName} ${formData?.student.lastName}`}
 							label="ชื่อ-นามสกุล / Fullname"
@@ -96,7 +84,9 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 
 					{/* ฝั่งขวา */}
 					<div className="w-full sm:2/4">
-						<div className="text-center">ชื่อโครงร่างวิทยานิพนธ์</div>
+						<div className="text-center font-semibold mb-2">
+							ชื่อโครงร่างวิทยานิพนธ์
+						</div>
 						<InputForm
 							value={`${formData?.thesisNameTH}`}
 							label="ชื่อภาษาไทย / ThesisName(TH)"
@@ -238,6 +228,6 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 			</div>
 		</>
 	);
-};
+}
 
-export default OutlineFormRead;
+// export default OutlineFormRead;

@@ -1,3 +1,4 @@
+"use client";
 import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
@@ -50,7 +51,6 @@ const SignInForm = () => {
 			});
 		} else {
 			const session = await getSession();
-            console.log(session);
 			if (session?.user.role == "STUDENT") {
 				router.push("/user/student");
 			} else if (

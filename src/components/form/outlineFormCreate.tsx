@@ -28,11 +28,12 @@ import Image from "next/image";
 import axios from "axios";
 import qs from "query-string";
 import InputForm from "../inputForm/inputForm";
+import { Label } from "../ui/label";
 
 const formSchema = z.object({
 	date: z.string(),
 	thesisNameTH: z.string(),
-	thesisNameEN: z.string(),
+	thesisNameEN: z.string().toUpperCase(),
 	studentID: z.number(),
 	advisorID: z.number(),
 	coAdvisorID: z.number(),
@@ -108,7 +109,7 @@ const OutlineFormCreate = () => {
 	}, [user, reset]);
 
 	useEffect(() => {
-		fetch("/api/user")
+		fetch("/api/getCurrentUser")
 			.then((res) => res.json())
 			.then((data) => setUser(data));
 		fetch("/api/getAdvisor")
@@ -125,13 +126,14 @@ const OutlineFormCreate = () => {
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
 					<div className="w-full sm:2/4">
+						<div className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</div>
 						<InputForm
 							value={`${user?.firstName} ${user?.lastName}`}
-							label="ชื่อ-นามสกุล / Fullname"
+							label="ชื่อ-นามสกุล / Full Name"
 						/>
 						<InputForm
 							value={`${user?.username} `}
-							label="รหัสนักศึกษา / StudentID"
+							label="รหัสนักศึกษา / Student ID"
 						/>
 
 						<div className="flex flex-col items-center mb-6 justify-center">
@@ -160,7 +162,7 @@ const OutlineFormCreate = () => {
 							</RadioGroup>
 						</div>
 
-						<InputForm value={`${user?.school}`} label="สำนักวิชา / School" />
+						<InputForm value={`${user?.school}`} label="สาขาวิชา / School" />
 						<InputForm value={`${user?.program}`} label="หลักสูตร / Program" />
 						<InputForm
 							value={`${user?.programYear}`}
@@ -170,14 +172,16 @@ const OutlineFormCreate = () => {
 
 					{/* ฝั่งขวา */}
 					<div className="w-full sm:2/4">
-						<div className="text-center">ชื่อโครงร่างวิทยานิพนธ์</div>
+						<div className="text-center font-semibold mb-2">
+							ชื่อโครงร่างวิทยานิพนธ์
+						</div>
 						<FormField
 							control={form.control}
 							name="thesisNameTH"
 							render={({ field }) => (
 								<div className="flex flex-row items-center mb-6 justify-center">
 									<FormItem className="w-auto">
-										<FormLabel>ชื่อภาษาไทย / ThesisName(TH)</FormLabel>
+										<Label>ชื่อภาษาไทย / ThesisName(TH)</Label>
 										<FormControl>
 											<Input
 												className="text-sm p-2 w-60 m-auto  rounded-lg"
@@ -302,7 +306,7 @@ const OutlineFormCreate = () => {
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push(`/user/student/table`)}
+						onClick={() => router.push(`/user/table`)}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436] md:ml-auto"
 					>
 						ยกเลิก
