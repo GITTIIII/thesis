@@ -33,7 +33,7 @@ import { Label } from "../ui/label";
 const formSchema = z.object({
 	date: z.string(),
 	thesisNameTH: z.string(),
-	thesisNameEN: z.string(),
+	thesisNameEN: z.string().toUpperCase(),
 	studentID: z.number(),
 	advisorID: z.number(),
 	coAdvisorID: z.number(),
@@ -129,11 +129,11 @@ const OutlineFormCreate = () => {
 						<div className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</div>
 						<InputForm
 							value={`${user?.firstName} ${user?.lastName}`}
-							label="ชื่อ-นามสกุล / Fullname"
+							label="ชื่อ-นามสกุล / Full Name"
 						/>
 						<InputForm
 							value={`${user?.username} `}
-							label="รหัสนักศึกษา / StudentID"
+							label="รหัสนักศึกษา / Student ID"
 						/>
 
 						<div className="flex flex-col items-center mb-6 justify-center">
@@ -162,7 +162,7 @@ const OutlineFormCreate = () => {
 							</RadioGroup>
 						</div>
 
-						<InputForm value={`${user?.school}`} label="สำนักวิชา / School" />
+						<InputForm value={`${user?.school}`} label="สาขาวิชา / School" />
 						<InputForm value={`${user?.program}`} label="หลักสูตร / Program" />
 						<InputForm
 							value={`${user?.programYear}`}

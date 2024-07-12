@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -8,21 +7,14 @@ import InputForm from "@/components/inputForm/inputForm";
 import Image from "next/image";
 import { Textarea } from "../ui/textarea";
 
-async function getCurrentUser() {
-	const res = await fetch("/api/getCurrentUser")
-	
-	return res.json();
-}
-
 async function getOutlineFormById(formId: number) {
-	const res = await fetch(`/api/getOutlineFormById/${formId}`)
+	const res = await fetch(`/api/getOutlineFormById/${formId}`);
 	return res.json();
 }
 
-export default async function OutlineFormRead ({ formId }: { formId: number }){
+export default async function OutlineFormRead({ formId }: { formId: number }) {
 	const router = useRouter();
 	const formData = await getOutlineFormById(formId);
-	const user = await getCurrentUser();
 
 	return (
 		<>
@@ -236,6 +228,6 @@ export default async function OutlineFormRead ({ formId }: { formId: number }){
 			</div>
 		</>
 	);
-};
+}
 
 // export default OutlineFormRead;

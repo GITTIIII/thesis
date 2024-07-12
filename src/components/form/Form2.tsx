@@ -403,7 +403,7 @@ const Form1 = () => {
                         />
                         <div className='flex flex-col  mb-6 justify-left'>
                             <FormLabel>ลายเซ็น / Signature</FormLabel>
-                            <Signature onAddSignature={onAddSignature}/>
+                            {/* <Signature onAddSignature={onAddSignature}/> */}
                         </div>
                     </div>
                 </div>
