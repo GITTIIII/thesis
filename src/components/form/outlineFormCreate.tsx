@@ -29,6 +29,17 @@ import axios from "axios";
 import qs from "query-string";
 import InputForm from "../inputForm/inputForm";
 import { Label } from "../ui/label";
+import { cn } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
+import {
+	Command,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+} from "../ui/command";
 
 const formSchema = z.object({
 	date: z.string(),
@@ -57,6 +68,7 @@ const OutlineFormCreate = () => {
 		},
 	});
 
+	console.log(allAdvisor);
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		console.log(values);
 		if (!user?.signatureUrl) {
@@ -143,7 +155,7 @@ const OutlineFormCreate = () => {
 							<RadioGroup className="space-y-1 mt-2">
 								<div>
 									<RadioGroupItem
-										checked={user?.educationLevel === "Master"}
+										checked={user?.degree === "Master"}
 										value="Master"
 									/>
 									<FormLabel className="ml-2 font-normal">
@@ -152,7 +164,7 @@ const OutlineFormCreate = () => {
 								</div>
 								<div>
 									<RadioGroupItem
-										checked={user?.educationLevel === "Doctoral"}
+										checked={user?.degree === "Doctoral"}
 										value="Doctoral"
 									/>
 									<FormLabel className="ml-2 font-normal">
@@ -216,30 +228,63 @@ const OutlineFormCreate = () => {
 							name="advisorID"
 							render={({ field }) => (
 								<div className="flex flex-row items-center mb-6 justify-center">
-									<FormItem className="w-auto">
+									<FormItem className="w-auto flex flex-col">
 										<FormLabel>อาจารย์ที่ปรึกษา / Thesis Advisor</FormLabel>
-										<Select
-											onValueChange={(value) =>
-												field.onChange(parseInt(value, 10))
-											}
-										>
-											<FormControl>
-												<SelectTrigger className="text-sm p-2 w-60 m-auto  rounded-lg">
-													<SelectValue
-														placeholder="อาจารย์ที่ปรึกษา"
-														defaultValue=""
-													/>
-												</SelectTrigger>
-											</FormControl>
-											<SelectContent>
-												{allAdvisor?.map((advisor) => (
-													<SelectItem
-														key={advisor.id}
-														value={String(advisor.id)}
-													>{`${advisor.firstName} ${advisor.lastName}`}</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
+										<Popover>
+											<PopoverTrigger asChild>
+												<FormControl>
+													<Button
+														variant="outline"
+														role="combobox"
+														className={cn(
+															"w-[200px] justify-between",
+															!field.value && "text-muted-foreground"
+														)}
+													>
+														{field.value
+															? `${
+																	allAdvisor?.find(
+																		(advisor) => advisor.id === field.value
+																	)?.firstName
+															  } ${
+																	allAdvisor?.find(
+																		(advisor) => advisor.id === field.value
+																	)?.lastName
+															  }`
+															: "เลือกอาจารย์ที่ปรึกษา"}
+														<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+													</Button>
+												</FormControl>
+											</PopoverTrigger>
+											<PopoverContent className="w-[200px] p-0">
+												<Command>
+													<CommandInput placeholder="ค้นหาชื่ออาจารย์ที่ปรึกษา" />
+													<CommandList>
+														<CommandEmpty>ไม่พบอาจารย์ที่ปรึกษา</CommandEmpty>
+														{allAdvisor?.map((advisor) => (
+															<CommandItem
+																value={`${advisor.firstName} ${advisor.lastName}`}
+																key={advisor.id}
+																onSelect={() => {
+																	form.setValue("advisorID", advisor.id);
+																}}
+															>
+																<Check
+																	className={cn(
+																		"mr-2 h-4 w-4",
+																		field.value === advisor.id
+																			? "opacity-100"
+																			: "opacity-0"
+																	)}
+																/>
+																{`${advisor.firstName} ${advisor.lastName}`}
+															</CommandItem>
+														))}
+													</CommandList>
+												</Command>
+											</PopoverContent>
+										</Popover>
+
 										<FormMessage />
 									</FormItem>
 								</div>
@@ -250,35 +295,64 @@ const OutlineFormCreate = () => {
 							name="coAdvisorID"
 							render={({ field }) => (
 								<div className="flex flex-row items-center mb-6 justify-center">
-									<FormItem className="w-auto">
+									<FormItem className="w-auto flex flex-col items-center">
 										<FormLabel>
 											อาจารย์ที่ปรึกษาร่วม(ถ้ามี) / Co-Thesis Advisor (if any)
 										</FormLabel>
-										<Select
-											onValueChange={(value) =>
-												field.onChange(parseInt(value, 10))
-											}
-										>
-											<FormControl>
-												<SelectTrigger className="text-sm p-2 w-60 m-auto  rounded-lg">
-													<SelectValue
-														placeholder="อาจารย์ที่ปรึกษาร่วม"
-														defaultValue=""
-													/>
-												</SelectTrigger>
-											</FormControl>
-											<SelectContent>
-												<SelectItem value={String(0)}>
-													ไม่มีอาจารย์ที่ปรึกษาร่วม
-												</SelectItem>
-												{allAdvisor?.map((advisor) => (
-													<SelectItem
-														key={advisor.id}
-														value={String(advisor.id)}
-													>{`${advisor.firstName} ${advisor.lastName}`}</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
+										<Popover>
+											<PopoverTrigger asChild>
+												<FormControl>
+													<Button
+														variant="outline"
+														role="combobox"
+														className={cn(
+															"w-[200px] justify-between",
+															!field.value && "text-muted-foreground"
+														)}
+													>
+														{field.value
+															? `${
+																	allAdvisor?.find(
+																		(advisor) => advisor.id === field.value
+																	)?.firstName
+															  } ${
+																	allAdvisor?.find(
+																		(advisor) => advisor.id === field.value
+																	)?.lastName
+															  }`
+															: "เลือกอาจารย์ที่ปรึกษาร่วม"}
+														<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+													</Button>
+												</FormControl>
+											</PopoverTrigger>
+											<PopoverContent className="w-[200px] p-0">
+												<Command>
+													<CommandInput placeholder="ค้นหาชื่ออาจารย์ที่ปรึกษา" />
+													<CommandList>
+														<CommandEmpty>ไม่พบอาจารย์ที่ปรึกษา</CommandEmpty>
+														{allAdvisor?.map((advisor) => (
+															<CommandItem
+																value={`${advisor.firstName} ${advisor.lastName}`}
+																key={advisor.id}
+																onSelect={() => {
+																	form.setValue("coAdvisorID", advisor.id);
+																}}
+															>
+																<Check
+																	className={cn(
+																		"mr-2 h-4 w-4",
+																		field.value === advisor.id
+																			? "opacity-100"
+																			: "opacity-0"
+																	)}
+																/>
+																{`${advisor.firstName} ${advisor.lastName}`}
+															</CommandItem>
+														))}
+													</CommandList>
+												</Command>
+											</PopoverContent>
+										</Popover>
 										<FormMessage />
 									</FormItem>
 								</div>

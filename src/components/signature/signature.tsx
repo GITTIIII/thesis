@@ -166,7 +166,7 @@ export default function Signature() {
 								className="w-8 h-8 md:w-16 md:h-16"
 								alt="signature"
 							/>
-							<label className="ml-2">ลายเซ็นของคุณ</label>
+							<label className="ml-2">ลายเซ็นของคุณที่มีในระบบ</label>
 						</button>
 						<button
 							onClick={() => setActive(2)}

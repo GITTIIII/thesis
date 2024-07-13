@@ -8,6 +8,7 @@ export async function POST(req: Request) {
 	try {
 		const body = await req.json();
 		const {
+			prefix,
 			firstName,
 			lastName,
 			username,
@@ -15,7 +16,8 @@ export async function POST(req: Request) {
 			email,
 			phone,
 			sex,
-			educationLevel,
+			degree,
+			institute,
 			school,
 			program,
 			programYear,
@@ -53,6 +55,7 @@ export async function POST(req: Request) {
 		const hashedPassword = await hash(password, 10);
 		const newUser = await db.user.create({
 			data: {
+				prefix,
 				firstName,
 				lastName,
 				username,
@@ -60,7 +63,8 @@ export async function POST(req: Request) {
 				email,
 				phone,
 				sex,
-				educationLevel,
+				degree,
+				institute,
 				school,
 				program,
 				programYear,
@@ -100,6 +104,7 @@ export async function PATCH(req: Request) {
 		const body = await req.json();
 		const {
 			id,
+			prefix,
 			firstName,
 			lastName,
 			username,
@@ -107,7 +112,8 @@ export async function PATCH(req: Request) {
 			email,
 			phone,
 			sex,
-			educationLevel,
+			degree,
+			institute,
 			school,
 			program,
 			programYear,
@@ -144,6 +150,7 @@ export async function PATCH(req: Request) {
 		const updatedUser = await db.user.update({
 			where: { id: id },
 			data: {
+				prefix: prefix || existingUser.prefix,
 				firstName: firstName || existingUser.firstName,
 				lastName: lastName || existingUser.lastName,
 				username: username || existingUser.username,
@@ -151,7 +158,8 @@ export async function PATCH(req: Request) {
 				email: email || existingUser.email,
 				phone: phone || existingUser.phone,
 				sex: sex || existingUser.sex,
-				educationLevel: educationLevel || existingUser.educationLevel,
+				institute: institute || existingUser.institute,
+				degree: degree || existingUser.degree,
 				school: school || existingUser.school,
 				program: program || existingUser.program,
 				programYear: programYear || existingUser.programYear,

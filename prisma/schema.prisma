@@ -32,17 +32,19 @@ enum Role{
 
 model User {
   id Int          @id @default(autoincrement())
+  prefix          String
   firstName       String
   lastName        String
   username        String  @unique
   password        String
   email           String  @unique
-  phone           String?
+  phone           String
   sex             String
-  educationLevel String
+  degree          String?
+  institute       String?
   school          String
-  program         String
-  programYear    String?
+  program         String?
+  programYear     String?
   position        Position
   role            Role
   formState       Int? 
@@ -76,10 +78,13 @@ model OutlineForm {
   date                         String
   thesisNameTH                 String
   thesisNameEN                 String
+  abstract                     String
+  processPlan                  Json?
 
   //กรรมการโครงร่าง
   outlineCommitteeStatus      String?
   outlineCommitteeComment     String?
+  outlineCommitteeSignUrl     String? @db.LongText
   dateOutlineCommitteeSign    String?
   outlineCommitteeID Int?
   outlineCommittee       User? @relation(fields: [outlineCommitteeID], references: [id], name: "outlineCommittee")
@@ -87,6 +92,7 @@ model OutlineForm {
   //กรรมการสำนัก
   instituteCommitteeStatus      String?
   instituteCommitteeComment     String?
+  instituteCommitteeSignUrl     String? @db.LongText
   dateInstituteCommitteeSign    String?
   instituteCommitteeID Int?
   instituteCommittee        User? @relation(fields: [instituteCommitteeID], references: [id], name: "instituteCommittee")

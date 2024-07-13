@@ -17,7 +17,7 @@ const OutlineFormCreatePage = () => {
 				<div className="h-full w-full flex items-center bg-[#EEEEEE] p-8 rounded-md">
 					<div className="w-full h-full">
 						<div className="p-2 flex justify-center bg-[#A67436] text-white text-lg">
-							กรุณากรอกข้อมูลให้ครบถ้วน และตรวจสอบความถูกต้องก่อนกดยืนยัน
+							กรุณากรอกข้อมูลให้ครบถ้วน และตรวจสอบความถูกต้อง
 						</div>
 						<OutlineFormCreate />
 					</div>

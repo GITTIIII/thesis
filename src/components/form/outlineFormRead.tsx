@@ -46,10 +46,10 @@ export default async function OutlineFormRead({ formId }: { formId: number }) {
 							<Label className="font-normal">
 								ระดับการศึกษา / Education Level
 							</Label>
-							<RadioGroup className="space-y-1 mt-2">
+							<RadioGroup disabled className="space-y-1 mt-2">
 								<div>
 									<RadioGroupItem
-										checked={formData?.student?.educationLevel === "Master"}
+										checked={formData?.student?.degree === "Master"}
 										value="Master"
 									/>
 									<Label className="ml-2 font-normal">
@@ -58,7 +58,7 @@ export default async function OutlineFormRead({ formId }: { formId: number }) {
 								</div>
 								<div>
 									<RadioGroupItem
-										checked={formData?.student?.educationLevel === "Doctoral"}
+										checked={formData?.student?.degree === "Doctoral"}
 										value="Doctoral"
 									/>
 									<Label className="ml-2 font-normal">
@@ -145,7 +145,7 @@ export default async function OutlineFormRead({ formId }: { formId: number }) {
 							/>
 						</Button>
 						<div className="flex flex-col items-center justify-center">
-							<RadioGroup className="flex my-6">
+							<RadioGroup disabled className="flex my-6">
 								<div className="flex items-center justify-center">
 									<RadioGroupItem
 										checked={formData?.outlineCommitteeStatus == "NOT_APPROVED"}
@@ -169,6 +169,7 @@ export default async function OutlineFormRead({ formId }: { formId: number }) {
 						<div>
 							<Label>ความเห็นกรรมการสำนักวิชา</Label>
 							<Textarea
+								disabled
 								placeholder="ความเห็น..."
 								className="resize-none h-full text-md"
 								value={formData?.outlineCommitteeComment}
@@ -192,7 +193,7 @@ export default async function OutlineFormRead({ formId }: { formId: number }) {
 							/>
 						</Button>
 						<div className="flex flex-col items-center justify-center">
-							<RadioGroup className="flex my-6">
+							<RadioGroup disabled className="flex my-6">
 								<div className="flex items-center justify-center">
 									<RadioGroupItem
 										checked={
@@ -218,6 +219,7 @@ export default async function OutlineFormRead({ formId }: { formId: number }) {
 						<div>
 							<Label>ความเห็นกรรมการสำนักวิชา</Label>
 							<Textarea
+								disabled
 								placeholder="ความเห็น..."
 								className="resize-none h-full text-md"
 								value={formData?.instituteCommitteeComment}

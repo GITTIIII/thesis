@@ -179,7 +179,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 							<RadioGroup className="space-y-1 mt-2">
 								<div>
 									<RadioGroupItem
-										checked={formData?.student.educationLevel === "Master"}
+										checked={formData?.student.degree === "Master"}
 										value="Master"
 									/>
 									<FormLabel className="ml-2 font-normal">
@@ -188,7 +188,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 								</div>
 								<div>
 									<RadioGroupItem
-										checked={formData?.student.educationLevel === "Doctoral"}
+										checked={formData?.student.degree === "Doctoral"}
 										value="Doctoral"
 									/>
 									<FormLabel className="ml-2 font-normal">
