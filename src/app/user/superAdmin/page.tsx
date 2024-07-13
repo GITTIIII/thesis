@@ -279,7 +279,7 @@ export default function SuperAdmin() {
                   </CardDescription> */}
                 </CardHeader>
                 <CardContent>
-                  <SuperAdminTable />
+                  <SuperAdminTable filterRole="STUDENT" />
                 </CardContent>
                 <CardFooter>
                   <div className="text-xs text-muted-foreground">
@@ -297,7 +297,7 @@ export default function SuperAdmin() {
                   </CardDescription> */}
                 </CardHeader>
                 <CardContent>
-                  <SuperAdminTable />
+                  <SuperAdminTable filterRole="ADMIN" />
                 </CardContent>
                 <CardFooter>
                   <div className="text-xs text-muted-foreground">

@@ -1,3 +1,7 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { User } from "@/interface/user";
 import Image from "next/image";
 import { MoreHorizontal } from "lucide-react";
 
@@ -19,7 +23,27 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export default function SuperAdminTable() {
+export default function SuperAdminTable({
+  filterRole,
+}: {
+  filterRole: string;
+}) {
+  const [userData, setUserData] = useState<User[]>([]);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("/api/user");
+        const data = await response.json();
+        setUserData(data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
   return (
     <Table>
       <TableHeader>
@@ -39,8 +63,16 @@ export default function SuperAdminTable() {
         </TableRow>
       </TableHeader>
       <TableBody>
-        <TableRow>
-          {/* <TableCell className="hidden sm:table-cell">
+        {userData
+          .filter((userData) =>
+            filterRole == "STUDENT"
+              ? userData?.role.toString() === "STUDENT"
+              : userData?.role.toString() === "ADMIN" ||
+                userData?.role.toString() === "COMMITTEE"
+          )
+          .map((user, index) => (
+            <TableRow key={index}>
+              {/* <TableCell className="hidden sm:table-cell">
             <Image
               alt="Product image"
               className="aspect-square rounded-md object-cover"
@@ -49,31 +81,34 @@ export default function SuperAdminTable() {
               width="64"
             />
           </TableCell> */}
-          <TableCell className="font-medium">ณฐพล ศักดิ์วิบูลย์เดชา</TableCell>
-          <TableCell>
-            <Badge variant="outline">paulxpon58@gmail.com</Badge>
-          </TableCell>
-          <TableCell>091-1234567</TableCell>
-          <TableCell className="hidden md:table-cell">
-            วิศวกรรมคอมพิวเตอร์
-          </TableCell>
-          <TableCell className="hidden md:table-cell">1</TableCell>
-          <TableCell>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button aria-haspopup="true" size="icon" variant="ghost">
-                  <MoreHorizontal className="h-4 w-4" />
-                  <span className="sr-only">Toggle menu</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>ตัวเลือก</DropdownMenuLabel>
-                <DropdownMenuItem>แก้ไข</DropdownMenuItem>
-                <DropdownMenuItem>ลบข้อมูล</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </TableCell>
-        </TableRow>
+              <TableCell className="font-medium">{user.firstName}</TableCell>
+              <TableCell>
+                <Badge variant="outline">{user.email}</Badge>
+              </TableCell>
+              <TableCell>{user.phone}</TableCell>
+              <TableCell className="hidden md:table-cell">
+                {user.program}
+              </TableCell>
+              <TableCell className="hidden md:table-cell">
+                {user.educationLevel}
+              </TableCell>
+              <TableCell>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button aria-haspopup="true" size="icon" variant="ghost">
+                      <MoreHorizontal className="h-4 w-4" />
+                      <span className="sr-only">Toggle menu</span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuLabel>ตัวเลือก</DropdownMenuLabel>
+                    <DropdownMenuItem>แก้ไข</DropdownMenuItem>
+                    <DropdownMenuItem>ลบข้อมูล</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </TableCell>
+            </TableRow>
+          ))}
       </TableBody>
     </Table>
   );
