@@ -2,7 +2,7 @@
 import Image from "next/image";
 import studentFormPage from "@/../../public/asset/studentFormPage.png";
 import Stepper from "@/components/stepper/stepper";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import {
 	Select,
 	SelectContent,
@@ -19,16 +19,17 @@ import ThesisProgressFormTable from "@/components/formTable/thesisProgressFormTa
 import OutlineExamCommitteeFormTable from "@/components/formTable/outlineExamCommitteeFormTable";
 import ThesisExamCommitteeFormTable from "@/components/formTable/thesisExamCommitteeFormTable";
 
+async function getUser() {
+	const res = await fetch("/api/getCurrentUser");
+	return res.json();
+}
+
+const userPromise = getUser();
+
 export default function StudentTablePage() {
-	const [user, setUser] = useState<IUser | null>(null);
+	const user: IUser = use(userPromise);
 	const [formType, setFormType] = useState("outlineForm");
 	const router = useRouter();
-
-	useEffect(() => {
-		fetch("/api/getCurrentUser")
-			.then((res) => res.json())
-			.then((data) => setUser(data));
-	}, []);
 
 	const handleSelect = (value: String) => {
 		setFormType(value.toString());

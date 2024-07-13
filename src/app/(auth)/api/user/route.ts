@@ -96,7 +96,10 @@ export async function GET() {
 
 	const user = await db.user.findMany({});
 
-	return NextResponse.json(user);
+	const usersWithoutPassword = user.map(({ password, ...rest }) => rest);
+
+	return NextResponse.json(usersWithoutPassword);
+
 }
 
 export async function PATCH(req: Request) {

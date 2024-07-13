@@ -42,7 +42,7 @@ model User {
   sex             String
   degree          String?
   institute       String?
-  school          String
+  school          String?
   program         String?
   programYear     String?
   position        Position
