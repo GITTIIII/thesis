@@ -3,16 +3,19 @@ export type IUser = {
 	firstName: string;
 	lastName: string;
 	username: string;
+	email: string;
 	degree: string;
+	institute: string;
 	school: string;
-	role: string;
-	formState: number;
-	position: string;
 	program: string;
 	programYear: string;
+	role: string;
+	position: string;
+	formState: number;
 	advisorID: number;
 	co_advisorID: number;
 	signatureUrl: string;
+	profileUrl: string;
 };
 
 export interface User {

@@ -58,24 +58,24 @@ const FindStatus = ({ formData }: { formData: IOutlineForm }) => {
 	);
 };
 
-async function getFormData() {
-	const res = await fetch(`/api/outlineForm`);
-	return res.json();
-}
+// async function getFormData() {
+// 	const res = await fetch(`/api/outlineForm`);
+// 	return res.json();
+// }
 
-async function getCurrentUser() {
-	const res = await fetch("/api/getCurrentUser");
-	return res.json();
-}
+// async function getCurrentUser() {
+// 	const res = await fetch("/api/getCurrentUser");
+// 	return res.json();
+// }
 
-const userPromise = getCurrentUser();
-const formDataPromise = getFormData();
+// const userPromise = getCurrentUser();
+// const formDataPromise = getFormData();
 
 export default function ExamAppointmentFormTable({
 	userId,
 }: OutlineFormTableProps) {
-	const formData: IOutlineForm[] = use(formDataPromise);
-	const user: IUser = use(userPromise);
+	// const formData: IOutlineForm[] = use(formDataPromise);
+	// const user: IUser = use(userPromise);
 	return (
 		<>
 			<div className="w-full h-full bg-white shadow-2xl rounded-md p-2 ">

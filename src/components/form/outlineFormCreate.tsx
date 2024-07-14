@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -40,20 +40,44 @@ import {
 	CommandItem,
 	CommandList,
 } from "../ui/command";
+import { Textarea } from "../ui/textarea";
 
 const formSchema = z.object({
 	date: z.string(),
-	thesisNameTH: z.string(),
-	thesisNameEN: z.string().toUpperCase(),
+	thesisNameTH: z
+		.string()
+		.min(1, { message: "กรุณากรอกชื่อวิทยานิพนธ์ / Thesis name requierd" }),
+	thesisNameEN: z
+		.string()
+		.toUpperCase()
+		.min(1, { message: "กรุณากรอกชื่อวิทยานิพนธ์ / Thesis name requierd" }),
+	abstract: z
+		.string()
+		.min(1, { message: "กรุณากรอกบทคัดย่อ / Abstract requierd" }),
 	studentID: z.number(),
-	advisorID: z.number(),
+	advisorID: z
+		.number()
+		.min(1, { message: "กรุณาเลือกอาจารย์ที่ปรึกษา / Advisor requierd" }),
 	coAdvisorID: z.number(),
 });
 
+async function getUser() {
+	const res = await fetch("/api/getCurrentUser");
+	return res.json();
+}
+
+async function getAllAdvisor() {
+	const res = await fetch("/api/getAdvisor");
+	return res.json();
+}
+
+const userPromise = getUser();
+const allAdvisorPromise = getAllAdvisor();
+
 const OutlineFormCreate = () => {
 	const router = useRouter();
-	const [user, setUser] = useState<IUser | null>(null);
-	const [allAdvisor, setAllAdvisor] = useState<IUser[] | null>(null);
+	const user: IUser = use(userPromise);
+	const allAdvisor: IUser[] = use(allAdvisorPromise);
 
 	const { toast } = useToast();
 	const form = useForm({
@@ -62,13 +86,13 @@ const OutlineFormCreate = () => {
 			date: "",
 			thesisNameTH: "",
 			thesisNameEN: "",
+			abstract: "",
 			studentID: 0,
 			advisorID: 0,
 			coAdvisorID: 0,
 		},
 	});
 
-	console.log(allAdvisor);
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		console.log(values);
 		if (!user?.signatureUrl) {
@@ -120,15 +144,6 @@ const OutlineFormCreate = () => {
 		}
 	}, [user, reset]);
 
-	useEffect(() => {
-		fetch("/api/getCurrentUser")
-			.then((res) => res.json())
-			.then((data) => setUser(data));
-		fetch("/api/getAdvisor")
-			.then((res) => res.json())
-			.then((data) => setAllAdvisor(data));
-	}, []);
-
 	return (
 		<Form {...form}>
 			<form
@@ -152,7 +167,7 @@ const OutlineFormCreate = () => {
 							<FormLabel className="font-normal">
 								ระดับการศึกษา / Education Level
 							</FormLabel>
-							<RadioGroup className="space-y-1 mt-2">
+							<RadioGroup disabled className="space-y-1 mt-2">
 								<div>
 									<RadioGroupItem
 										checked={user?.degree === "Master"}
@@ -193,10 +208,10 @@ const OutlineFormCreate = () => {
 							render={({ field }) => (
 								<div className="flex flex-row items-center mb-6 justify-center">
 									<FormItem className="w-auto">
-										<Label>ชื่อภาษาไทย / ThesisName(TH)</Label>
+										<FormLabel>ชื่อภาษาไทย / ThesisName(TH)</FormLabel>
 										<FormControl>
 											<Input
-												className="text-sm p-2 w-60 m-auto  rounded-lg"
+												className="text-sm p-2 w-[300px] m-auto  rounded-lg"
 												{...field}
 											/>
 										</FormControl>
@@ -210,11 +225,11 @@ const OutlineFormCreate = () => {
 							name="thesisNameEN"
 							render={({ field }) => (
 								<div className="flex flex-row items-center mb-6 justify-center">
-									<FormItem className="w-auto">
+									<FormItem className="w-max">
 										<FormLabel>ชื่อภาษาอังกฤษ / ThesisName(EN)</FormLabel>
 										<FormControl>
 											<Input
-												className="text-sm p-2 w-60 m-auto  rounded-lg"
+												className="text-sm p-2 w-[300px] m-auto  rounded-lg"
 												{...field}
 											/>
 										</FormControl>
@@ -228,7 +243,7 @@ const OutlineFormCreate = () => {
 							name="advisorID"
 							render={({ field }) => (
 								<div className="flex flex-row items-center mb-6 justify-center">
-									<FormItem className="w-auto flex flex-col">
+									<FormItem className="w-auto flex flex-col ">
 										<FormLabel>อาจารย์ที่ปรึกษา / Thesis Advisor</FormLabel>
 										<Popover>
 											<PopoverTrigger asChild>
@@ -237,7 +252,7 @@ const OutlineFormCreate = () => {
 														variant="outline"
 														role="combobox"
 														className={cn(
-															"w-[200px] justify-between",
+															"w-[300px] justify-between",
 															!field.value && "text-muted-foreground"
 														)}
 													>
@@ -306,7 +321,7 @@ const OutlineFormCreate = () => {
 														variant="outline"
 														role="combobox"
 														className={cn(
-															"w-[200px] justify-between",
+															"w-[300px] justify-between",
 															!field.value && "text-muted-foreground"
 														)}
 													>
@@ -375,8 +390,28 @@ const OutlineFormCreate = () => {
 						</div>
 					</div>
 				</div>
+				<div className="w-full h-max">
+					<FormField
+						control={form.control}
+						name="abstract"
+						render={({ field }) => (
+							<FormItem className="w-full h-auto flex flex-col items-center">
+								<FormLabel>บทคัดย่อ / Abstract</FormLabel>
+								<FormControl>
+									<Textarea
+										placeholder="บทคัดย่อ..."
+										className="text-[16px] resize-none w-[595px] lg:w-[794px] h-[842px] lg:h-[1123px] pt-[108px] lg:pt-[144px] pl-[108px] lg:pl-[144px] pr-[72px] lg:pr-[96px] pb-[72px]lg:pb-[96px]"
+										value={field.value}
+										onChange={field.onChange}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
 
-				<div className="w-full flex px-20 lg:flex justify-center">
+				<div className="w-full flex mt-4 px-20 lg:flex justify-center">
 					<Button
 						variant="outline"
 						type="reset"

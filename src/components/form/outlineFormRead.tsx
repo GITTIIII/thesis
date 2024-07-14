@@ -6,15 +6,19 @@ import signature from "@/../../public/asset/signature.png";
 import InputForm from "@/components/inputForm/inputForm";
 import Image from "next/image";
 import { Textarea } from "../ui/textarea";
+import { use } from "react";
+import { IOutlineForm } from "@/interface/form";
 
-async function getOutlineFormById(formId: number) {
-	const res = await fetch(`/api/getOutlineFormById/${formId}`);
+async function getOutlineFormById(formId: number){
+	const res = await fetch(`/api/getOutlineFormById/${formId}`, {
+		next: { revalidate: 10 },
+	});
 	return res.json();
 }
 
 export default async function OutlineFormRead({ formId }: { formId: number }) {
 	const router = useRouter();
-	const formData = await getOutlineFormById(formId);
+	const formData: IOutlineForm = await getOutlineFormById(formId);
 
 	return (
 		<>
@@ -130,7 +134,9 @@ export default async function OutlineFormRead({ formId }: { formId: number }) {
 				</div>
 				<div className="flex flex-col items-center mb-6 justify-center md:flex-row">
 					<div className="flex flex-col justify-center items-center px-20">
-						<h1 className="mb-2 font-bold">กรรมการโครงร่าง</h1>
+						<h1 className="mb-2 font-bold">
+							ความเห็นของคณะกรรมการพิจารณาโครงร่างวิทยานิพนธ์
+						</h1>
 						<Label>ลายเซ็น / Signature</Label>
 						<Button variant="outline" type="button" className="w-60 mt-4 h-max">
 							<Image
@@ -178,7 +184,9 @@ export default async function OutlineFormRead({ formId }: { formId: number }) {
 					</div>
 
 					<div className="flex flex-col justify-center items-center px-20">
-						<h1 className="mb-2 font-bold">กรรมการสำนักวิชา</h1>
+						<h1 className="mb-2 font-bold">
+							มติคณะกรรมการประจำสำนักวิชาวิศวกรรมศาสตร์
+						</h1>
 						<Label>ลายเซ็น / Signature</Label>
 						<Button variant="outline" type="button" className="w-60 mt-4 h-max">
 							<Image

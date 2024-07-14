@@ -42,7 +42,7 @@ type User = {
 	firstName: string;
 	lastName: string;
 	username: string;
-	educationLevel: string;
+	degree: string;
 	school: string;
 	program: string;
 	programYear: string;
@@ -252,7 +252,7 @@ const ThesisProgressFormCreate = () => {
 							<RadioGroup className="space-y-1 mt-2">
 								<div>
 									<RadioGroupItem
-										checked={user?.educationLevel === "Master"}
+										checked={user?.degree === "Master"}
 										value="Master"
 									/>
 									<FormLabel className="ml-2 font-normal">
@@ -261,7 +261,7 @@ const ThesisProgressFormCreate = () => {
 								</div>
 								<div>
 									<RadioGroupItem
-										checked={user?.educationLevel === "Doctoral"}
+										checked={user?.degree === "Doctoral"}
 										value="Doctoral"
 									/>
 									<FormLabel className="ml-2 font-normal">
