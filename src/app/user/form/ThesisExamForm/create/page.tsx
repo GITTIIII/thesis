@@ -1,6 +1,6 @@
 "use client";
 import learning1 from "@/../../public/asset/learning1.png";
-import ThesisProgressFormCreate from "@/components/form/ThesisProgressFormCreate";
+import ThesisExamCreate from "@/components/form/ThesisExamCreate";
 import Image from "next/image";
 
 const ThesisProgressFormCreatePage = () => {
@@ -10,7 +10,7 @@ const ThesisProgressFormCreatePage = () => {
 				<div className="h-full w-full flex items-center text-2xl bg-white-500 py-8">
 					<Image src={learning1} width={100} height={100} alt="leaning1" />
 					<span className="ml-5 bg-[#FFF4EF] px-4 text-[#F26522] border-2 border-[#F26522] rounded-lg text-lg">
-						เอกสารหมายเลข ทบ.21
+						เอกสารหมายเลข ทบ.23
 					</span>
 				</div>
 				<div className="h-full w-full flex items-center bg-[#EEEEEE] p-8 rounded-md">
@@ -18,7 +18,7 @@ const ThesisProgressFormCreatePage = () => {
 						<div className="p-2 flex justify-center bg-[#A67436] text-white text-lg">
 							กรุณากรอกข้อมูลให้ครบถ้วน และตรวจสอบความถูกต้องก่อนกดยืนยัน
 						</div>
-						<ThesisProgressFormCreate />
+						<ThesisExamCreate />
 					</div>
 				</div>
 			</div>

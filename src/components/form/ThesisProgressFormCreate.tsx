@@ -440,7 +440,7 @@ const ThesisProgressFormCreate = () => {
 										<FormItem className="w-auto">
 											<FormControl>
 												<Textarea
-													className="text-sm p-2 w-60 m-auto  rounded-lg"
+													className="text-sm p-2 w-[300px] m-auto  rounded-lg"
 													placeholder="Type your message here."
 												/>
 											</FormControl>
