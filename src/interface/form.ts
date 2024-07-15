@@ -1,10 +1,12 @@
-import {IUser} from "./user"
+import { IUser } from "./user";
 
-export type IOutlineForm ={
-    id: number;
+export type IOutlineForm = {
+	id: number;
 	date: string;
 	thesisNameTH: string;
 	thesisNameEN: string;
+	abstract: string;
+	processPlan: JSON;
 
 	studentID: number;
 	student: IUser;
@@ -24,4 +26,4 @@ export type IOutlineForm ={
 	instituteCommitteeStatus: string;
 	instituteCommitteeComment: string;
 	dateInstituteCommitteeSign: string;
-}
+};

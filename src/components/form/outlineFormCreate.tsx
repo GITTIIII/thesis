@@ -78,6 +78,7 @@ const OutlineFormCreate = () => {
 	const router = useRouter();
 	const user: IUser = use(userPromise);
 	const allAdvisor: IUser[] = use(allAdvisorPromise);
+	const [loading, setLoading] = useState(false)
 
 	const { toast } = useToast();
 	const form = useForm({
@@ -94,13 +95,14 @@ const OutlineFormCreate = () => {
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		console.log(values);
+		setLoading(true)
 		if (!user?.signatureUrl) {
 			toast({
 				title: "Error",
 				description: "ไม่พบลายเซ็น",
 				variant: "destructive",
 			});
+			setLoading(false)
 			return;
 		}
 		const url = qs.stringifyUrl({
@@ -153,7 +155,7 @@ const OutlineFormCreate = () => {
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
 					<div className="w-full sm:2/4">
-						<div className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</div>
+						<h1 className="mb-2 font-bold">ข้อมูลนักศึกษา</h1>
 						<InputForm
 							value={`${user?.firstName} ${user?.lastName}`}
 							label="ชื่อ-นามสกุล / Full Name"
@@ -400,7 +402,14 @@ const OutlineFormCreate = () => {
 								<FormControl>
 									<Textarea
 										placeholder="บทคัดย่อ..."
-										className="text-[16px] resize-none w-[595px] lg:w-[794px] h-[842px] lg:h-[1123px] pt-[108px] lg:pt-[144px] pl-[108px] lg:pl-[144px] pr-[72px] lg:pr-[96px] pb-[72px]lg:pb-[96px]"
+										className="text-[16px] resize-none 
+											w-full md:w-[595px] lg:w-[794px] 
+											h-[842px] lg:h-[1123px] 
+											p-[16px] 
+											md:pt-[108px] lg:pt-[144px] 
+											md:pl-[108px] lg:pl-[144px] 
+											md:pr-[72px]  lg:pr-[96px] 
+											md:pb-[72px]  lg:pb-[96px]"
 										value={field.value}
 										onChange={field.onChange}
 									/>
@@ -421,6 +430,7 @@ const OutlineFormCreate = () => {
 						ยกเลิก
 					</Button>
 					<Button
+						disabled={loading}
 						variant="outline"
 						type="submit"
 						className="bg-[#A67436] w-auto text-lg text-white rounded-xl ml-4 border-[#A67436] mr-4"

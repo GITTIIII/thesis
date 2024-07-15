@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Download } from "lucide-react";
+import { Download, RotateCcw } from "lucide-react";
 import { IOutlineForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 
@@ -69,11 +69,19 @@ async function getCurrentUser() {
 }
 
 const userPromise = getCurrentUser();
-const formDataPromise = getFormData();
 
 export default function OutlineFormTable({ userId }: OutlineFormTableProps) {
-	const formData: IOutlineForm[] = use(formDataPromise);
 	const user: IUser = use(userPromise);
+	const [formData, setFormData] = useState<IOutlineForm[]>();
+
+	useEffect(() => {
+		async function fetchData() {
+			const data = await getFormData();
+			setFormData(data);
+		}
+		fetchData();
+	}, []);
+
 	return (
 		<>
 			<div className="w-full h-full bg-white shadow-2xl rounded-md p-2 ">

@@ -2,7 +2,7 @@
 import Image from "next/image";
 import studentFormPage from "@/../../public/asset/studentFormPage.png";
 import Stepper from "@/components/stepper/stepper";
-import { use, useEffect, useState } from "react";
+import { use, useState } from "react";
 import {
 	Select,
 	SelectContent,
@@ -18,6 +18,7 @@ import ExamAppointmentFormTable from "@/components/formTable/examAppointmentForm
 import ThesisProgressFormTable from "@/components/formTable/thesisProgressFormTable";
 import OutlineExamCommitteeFormTable from "@/components/formTable/outlineExamCommitteeFormTable";
 import ThesisExamCommitteeFormTable from "@/components/formTable/thesisExamCommitteeFormTable";
+
 
 async function getUser() {
 	const res = await fetch("/api/getCurrentUser");

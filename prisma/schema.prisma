@@ -78,7 +78,7 @@ model OutlineForm {
   date                         String
   thesisNameTH                 String
   thesisNameEN                 String
-  abstract                     String
+  abstract                     String @db.Text
   processPlan                  Json?
 
   //กรรมการโครงร่าง
