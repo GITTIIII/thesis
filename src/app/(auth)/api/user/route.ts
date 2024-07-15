@@ -6,6 +6,15 @@ import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
 	try {
+		const session = await getServerSession(authOptions);
+
+		if (!session) {
+			return NextResponse.json(
+				{ user: null, message: "Session not found" },
+				{ status: 404 }
+			);
+		}
+		
 		const body = await req.json();
 		const {
 			prefix,
@@ -17,10 +26,9 @@ export async function POST(req: Request) {
 			phone,
 			sex,
 			degree,
-			institute,
-			school,
-			program,
-			programYear,
+			instituteID,
+			schoolID,
+			programID,
 			position,
 			role,
 			formState,
@@ -64,10 +72,9 @@ export async function POST(req: Request) {
 				phone,
 				sex,
 				degree,
-				institute,
-				school,
-				program,
-				programYear,
+				instituteID,
+				schoolID,
+				programID,
 				position,
 				role,
 				formState,
@@ -91,19 +98,37 @@ export async function GET() {
 	const session = await getServerSession(authOptions);
 
 	if (!session) {
-		return null;
+		return NextResponse.json(
+			{ user: null, message: "Session not found" },
+			{ status: 404 }
+		);
 	}
 
-	const user = await db.user.findMany({});
+	const user = await db.user.findMany({
+		include: {
+			advisor: true,
+			institute: true,
+			school: true,
+			program: true,
+		},
+	});
 
 	const usersWithoutPassword = user.map(({ password, ...rest }) => rest);
 
 	return NextResponse.json(usersWithoutPassword);
-
 }
 
 export async function PATCH(req: Request) {
 	try {
+		const session = await getServerSession(authOptions);
+
+		if (!session) {
+			return NextResponse.json(
+				{ user: null, message: "Session not found" },
+				{ status: 404 }
+			);
+		}
+		
 		const body = await req.json();
 		const {
 			id,
@@ -116,10 +141,9 @@ export async function PATCH(req: Request) {
 			phone,
 			sex,
 			degree,
-			institute,
-			school,
-			program,
-			programYear,
+			instituteID,
+			schoolID,
+			programID,
 			position,
 			role,
 			formState,
@@ -161,11 +185,10 @@ export async function PATCH(req: Request) {
 				email: email || existingUser.email,
 				phone: phone || existingUser.phone,
 				sex: sex || existingUser.sex,
-				institute: institute || existingUser.institute,
 				degree: degree || existingUser.degree,
-				school: school || existingUser.school,
-				program: program || existingUser.program,
-				programYear: programYear || existingUser.programYear,
+				instituteID: instituteID == 0 ? existingUser.instituteID : instituteID,
+				schoolID: schoolID == 0 ? existingUser.schoolID : schoolID,
+				programID: programID == 0 ? existingUser.programID : programID,
 				position: position || existingUser.position,
 				role: role || existingUser.role,
 				formState: formState || existingUser.formState,

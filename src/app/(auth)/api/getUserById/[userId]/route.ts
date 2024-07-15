@@ -9,11 +9,14 @@ type Params = {
 };
 
 export async function GET(req: NextApiRequest, context: { params: Params }) {
-	const userId = context.params.userId;;
+	const userId = context.params.userId;
 	const session = await getServerSession(authOptions);
 
 	if (!session) {
-		return null;
+		return NextResponse.json(
+			{ user: null, message: "Session not found" },
+			{ status: 404 }
+		);
 	}
 
 	const user = await db.user.findUnique({
