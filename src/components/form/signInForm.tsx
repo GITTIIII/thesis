@@ -50,6 +50,11 @@ const SignInForm = () => {
 				variant: "destructive",
 			});
 		} else {
+			toast({
+				title: "Success",
+				description: "เข้าสู่ระบบสำเร็จ",
+				variant: 'default',
+			});
 			const session = await getSession();
 			if (session?.user.role == "STUDENT") {
 				router.push("/user/student");
