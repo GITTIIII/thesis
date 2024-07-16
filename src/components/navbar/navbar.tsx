@@ -87,7 +87,7 @@ const Navbar: React.FC<Props> = ({ menu, notification = false }) => {
 					</li>
 					<li className=" hidden md:flex text-gray-700">
 						<div>
-							{user?.role === "STUDENT"
+							{user?.role.toString() === "STUDENT"
 								? `${user?.username}  ${user?.firstName} ${user?.lastName}`
 								: user? `${user?.firstName} ${user?.lastName}`:""}
 						</div>
@@ -142,7 +142,7 @@ const Navbar: React.FC<Props> = ({ menu, notification = false }) => {
 						href=""
 						className="block px-4 py-2  hover:bg-gray-100 border-b-2 text-center md:hidden transition-colors duration-200"
 					>
-						{user?.role === "STUDENT"
+						{user?.role.toString() === "STUDENT"
 							? `${user?.username}  ${user?.firstName} ${user?.lastName}`
 							:user? `${user?.firstName} ${user?.lastName}`:""}
 					</Link>

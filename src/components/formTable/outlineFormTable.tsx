@@ -71,13 +71,13 @@ async function getCurrentUser() {
 const userPromise = getCurrentUser();
 
 export default function OutlineFormTable({ userId }: OutlineFormTableProps) {
-	const user: IUser = use(userPromise);
+	const userData = use(userPromise)
 	const [formData, setFormData] = useState<IOutlineForm[]>();
 
 	useEffect(() => {
 		async function fetchData() {
-			const data = await getFormData();
-			setFormData(data);
+			const formData = await getFormData();
+			setFormData(formData);
 		}
 		fetchData();
 	}, []);
@@ -96,7 +96,7 @@ export default function OutlineFormTable({ userId }: OutlineFormTableProps) {
 							<TableHead className="text-center">สถานะ</TableHead>
 							<TableHead className="text-center">รายละเอียด</TableHead>
 							<TableHead
-								hidden={user?.role != "STUDENT"}
+								hidden={userData?.role.toString() != "STUDENT"}
 								className="text-center"
 							>
 								ดาวน์โหลดฟอร์ม
@@ -107,9 +107,9 @@ export default function OutlineFormTable({ userId }: OutlineFormTableProps) {
 						{formData
 							?.filter(
 								(formData) =>
-									(user?.role === "STUDENT" &&
-										user?.id === formData?.student?.id) ||
-									user?.role != "STUDENT"
+									(userData?.role.toString() === "STUDENT" &&
+										userData?.id === formData?.student?.id) ||
+									userData?.role.toString() != "STUDENT"
 							)
 							.map((formData, index) => (
 								<TableRow
@@ -137,7 +137,7 @@ export default function OutlineFormTable({ userId }: OutlineFormTableProps) {
 											href={
 												(formData.outlineCommitteeID &&
 													formData.instituteCommitteeID) ||
-												user?.role == "STUDENT"
+												userData?.role.toString() == "STUDENT"
 													? `/user/form/outlineForm/${formData.id}`
 													: `/user/form/outlineForm/update/${formData.id}`
 											}
@@ -146,7 +146,7 @@ export default function OutlineFormTable({ userId }: OutlineFormTableProps) {
 										</Link>
 									</TableCell>
 									<TableCell
-										hidden={user?.role != "STUDENT"}
+										hidden={userData?.role.toString() != "STUDENT"}
 										className="text-center"
 									>
 										<Button

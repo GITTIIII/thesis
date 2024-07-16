@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { User } from "@/interface/user";
+import { IUser } from "@/interface/user";
 import { MoreHorizontal } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -43,7 +43,7 @@ export default function SuperAdminTable({
 }: {
 	filterRole: string;
 }) {
-	const [userData, setUserData] = useState<User[]>([]);
+	const [userData, setUserData] = useState<IUser[]>([]);
 
 	useEffect(() => {
 		async function fetchData() {
@@ -88,7 +88,7 @@ export default function SuperAdminTable({
 									<TableCell>{user.email}</TableCell>
 									<TableCell>{user.phone}</TableCell>
 									<TableCell className="hidden md:table-cell">
-										{user.school}
+										{user.school.schoolName}
 									</TableCell>
 									<TableCell className="hidden md:table-cell">
 										{user.degree}

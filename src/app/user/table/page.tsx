@@ -39,7 +39,7 @@ export default function StudentTablePage() {
 	return (
 		<>
 			<div className="w-full h-full bg-transparent py-12 px-2 lg:px-28">
-				{user?.role == "STUDENT" && (
+				{user?.role.toString() == "STUDENT" && (
 					<div className="w-full h-max p-4 flex justify-center items-center">
 						<Stepper step={user?.formState ?? 0} />
 					</div>
@@ -61,21 +61,21 @@ export default function StudentTablePage() {
 								/>
 							</SelectTrigger>
 							<SelectContent>
-								{(user?.position == "HEAD_INSTITUTE" ||
-									user?.position == "ADVISOR") && (
+								{(user?.position.toString() == "HEAD_INSTITUTE" ||
+									user?.position.toString() == "ADVISOR") && (
 									<SelectItem value="outlineExamCommitteeForm">
 										แบบคำขออนุมัติแต่งตั้งกรรมการสอบโครงร่างวิทยานิพนธ์
 									</SelectItem>
 								)}
-								{(user?.position == "HEAD_INSTITUTE" ||
-									user?.position == "ADVISOR") && (
+								{(user?.position.toString() == "HEAD_INSTITUTE" ||
+									user?.position.toString() == "ADVISOR") && (
 									<SelectItem value="thesisExamCommitteeForm">
 										แบบคำขออนุมัติแต่งตั้งกรรมการสอบวิทยานิพนธ์
 									</SelectItem>
 								)}
 								<SelectItem
 									disabled={
-										user?.role == "STUDENT" && (user?.formState ?? 0) < 1
+										user?.role.toString() == "STUDENT" && (user?.formState ?? 0) < 1
 									}
 									value="outlineForm"
 								>
@@ -84,7 +84,7 @@ export default function StudentTablePage() {
 
 								<SelectItem
 									disabled={
-										user?.role == "STUDENT" && (user?.formState ?? 0) < 2
+										user?.role.toString() == "STUDENT" && (user?.formState ?? 0) < 2
 									}
 									value="thesisProgressForm"
 								>
@@ -92,7 +92,7 @@ export default function StudentTablePage() {
 								</SelectItem>
 								<SelectItem
 									disabled={
-										user?.role == "STUDENT" && (user?.formState ?? 0) < 3
+										user?.role.toString() == "STUDENT" && (user?.formState ?? 0) < 3
 									}
 									value="examAppointment"
 								>
@@ -100,10 +100,10 @@ export default function StudentTablePage() {
 								</SelectItem>
 							</SelectContent>
 						</Select>
-						{(user?.role === "STUDENT" ||
-							(user?.position === "HEAD_INSTITUTE" &&
+						{(user?.role.toString() === "STUDENT" ||
+							(user?.position.toString() === "HEAD_INSTITUTE" &&
 								formType === "outlineExamCommitteeForm") ||
-							(user?.position === "HEAD_INSTITUTE" &&
+							(user?.position.toString() === "HEAD_INSTITUTE" &&
 								formType === "examCommitteeForm")) && (
 							<Button
 								type="button"

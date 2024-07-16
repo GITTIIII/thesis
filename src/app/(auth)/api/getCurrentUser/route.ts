@@ -20,6 +20,12 @@ export async function GET(){
     findUnique({
         where: {
             username: username
+        },
+        include:{
+            institute:true,
+            school:true,
+            program:true,
+            advisor:true,
         }
     });
 

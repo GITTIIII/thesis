@@ -84,9 +84,9 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 		}
 		if (
 			(values.outlineCommitteeStatus == "" &&
-				user.position == "COMMITTEE_OUTLINE") ||
+				user.position.toString() == "COMMITTEE_OUTLINE") ||
 			(values.instituteCommitteeStatus == "" &&
-				user.position == "COMMITTEE_INSTITUTE")
+				user.position.toString() == "COMMITTEE_INSTITUTE")
 		) {
 			toast({
 				title: "Error",
@@ -129,7 +129,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 		const currentDate = date + "/" + month + "/" + year;
 		if (
 			user &&
-			user.position == "COMMITTEE_OUTLINE" &&
+			user.position.toString() == "COMMITTEE_OUTLINE" &&
 			!formData?.outlineCommitteeID
 		) {
 			reset({
@@ -139,7 +139,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 			});
 		} else if (
 			user &&
-			user.position == "COMMITTEE_INSTITUTE" &&
+			user.position.toString() == "COMMITTEE_INSTITUTE" &&
 			!formData?.instituteCommitteeID
 		) {
 			reset({
@@ -170,9 +170,9 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 				className="w-full h-full bg-white p-4"
 			>
 				{(formData?.outlineCommitteeID &&
-					user?.position === "COMMITTEE_OUTLINE") ||
+					user?.position.toString() === "COMMITTEE_OUTLINE") ||
 				(formData?.instituteCommitteeID &&
-					user?.position === "COMMITTEE_INSTITUTE") ? (
+					user?.position.toString() === "COMMITTEE_INSTITUTE") ? (
 					<div className="w-full flex px-0 lg:px-20 mb-2">
 						<Button
 							variant="outline"
@@ -232,7 +232,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 							label="หลักสูตร / Program"
 						/>
 						<InputForm
-							value={`${formData?.student.programYear}`}
+							value={`${formData?.student.program.programYear}`}
 							label="ปีหลักสูตร / Program Year"
 						/>
 					</div>
@@ -289,7 +289,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 
 				<div className="w-full flex flex-col md:flex-row justify-center mt-4">
 					{/* กรรมการโครงร่าง */}
-					{user?.role == "COMMITTEE" && (
+					{user?.role.toString() == "COMMITTEE" && (
 						<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
 							<h1 className="mb-2 font-bold">
 								ความเห็นของคณะกรรมการพิจารณาโครงร่างวิทยานิพนธ์
@@ -335,7 +335,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 										<FormItem>
 											<FormControl>
 												<RadioGroup
-													disabled={user.position != "COMMITTEE_OUTLINE"}
+													disabled={user.position.toString() != "COMMITTEE_OUTLINE"}
 													onValueChange={field.onChange}
 													className="flex my-4"
 												>
@@ -373,8 +373,8 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 													formData?.outlineCommitteeID
 														? true
 														: false ||
-														  (user.position != "COMMITTEE_OUTLINE" &&
-																user.role != "SUPER_ADMIN")
+														  (user.position.toString() != "COMMITTEE_OUTLINE" &&
+																user.role.toString() != "SUPER_ADMIN")
 												}
 												placeholder="ความเห็น..."
 												className="resize-none h-full text-md mb-2"
@@ -399,7 +399,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 									src={
 										formData?.outlineCommittee?.signatureUrl
 											? formData?.outlineCommittee.signatureUrl
-											: user.position == "COMMITTEE_OUTLINE"
+											: user.position.toString() == "COMMITTEE_OUTLINE"
 											? user.signatureUrl
 											: signature
 									}
@@ -408,7 +408,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 									alt="signature"
 								/>
 							</Button>
-							{(user.position == "COMMITTEE_OUTLINE" ||
+							{(user.position.toString() == "COMMITTEE_OUTLINE" ||
 								formData?.outlineCommitteeID) && (
 								<Label className="mb-2">
 									{formData?.outlineCommitteeID
@@ -421,7 +421,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 					)}
 
 					{/* กรรมการสำนักวิชา */}
-					{(user?.position == "COMMITTEE_INSTITUTE" ||
+					{(user?.position.toString() == "COMMITTEE_INSTITUTE" ||
 						formData?.instituteCommitteeID) && (
 						<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
 							<h1 className="mb-2 font-bold">
@@ -439,8 +439,8 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 								<div className="flex flex-col items-center justify-center">
 									<RadioGroup
 										disabled={
-											user.position != "COMMITTEE_INSTITUTE" ||
-											user.role != "SUPER_ADMIN"
+											user.position.toString() != "COMMITTEE_INSTITUTE" ||
+											user.role.toString() != "SUPER_ADMIN"
 										}
 										className="flex my-6"
 									>
@@ -532,7 +532,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 									src={
 										formData?.instituteCommittee?.signatureUrl
 											? formData?.instituteCommittee.signatureUrl
-											: user.position == "COMMITTEE_INSTITUTE"
+											: user.position.toString() == "COMMITTEE_INSTITUTE"
 											? user.signatureUrl
 											: signature
 									}
@@ -552,9 +552,9 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 				</div>
 
 				{(!formData?.outlineCommitteeID &&
-					user?.position === "COMMITTEE_OUTLINE") ||
+					user?.position.toString() === "COMMITTEE_OUTLINE") ||
 				(!formData?.instituteCommitteeID &&
-					user?.position === "COMMITTEE_INSTITUTE") ? (
+					user?.position.toString() === "COMMITTEE_INSTITUTE") ? (
 					<div className="w-full flex px-20 mt-4 lg:flex justify-center">
 						<Button
 							variant="outline"

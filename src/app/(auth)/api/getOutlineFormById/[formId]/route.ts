@@ -24,7 +24,13 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 			id: Number(formId),
 		},
 		include: {
-			student: true,
+			student:{
+				include:{
+					institute:true,
+					school:true,
+					program:true,
+				}
+			},
 			advisor: true,
 			coAdvisor: true,
 			outlineCommittee: true,

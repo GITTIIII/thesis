@@ -1,24 +1,9 @@
+import { Institute } from "./institute";
+import { School } from "./school";
+import { Program } from "./program";
+
 export type IUser = {
 	id: number;
-	firstName: string;
-	lastName: string;
-	username: string;
-	email: string;
-	degree: string;
-	institute: string;
-	school: string;
-	program: string;
-	programYear: string;
-	role: string;
-	position: string;
-	formState: number;
-	advisorID: number;
-	co_advisorID: number;
-	signatureUrl: string;
-	profileUrl: string;
-};
-
-export interface User {
 	firstName: string;
 	lastName: string;
 	username: string;
@@ -27,15 +12,20 @@ export interface User {
 	phone: string;
 	sex: string;
 	degree: string;
-	school: string;
-	program: string;
-	programYear: string;
+	instituteID: number;
+	institute: Institute;
+
+	schoolID: number;
+	school: School;
+
+	programID: number;
+	program: Program;
 	position: Position | Position.NONE;
 	role: Role | Role.STUDENT;
 	formState: number;
 	signatureUrl: string;
 	profileUrl: string;
-}
+};
 
 enum Position {
 	NONE,

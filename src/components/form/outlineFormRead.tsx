@@ -81,15 +81,15 @@ export default function OutlineFormRead({ formId }: { formId: number }) {
 						</div>
 
 						<InputForm
-							value={`${formData?.student?.school}`}
+							value={`${formData?.student?.school.schoolName}`}
 							label="สาขาวิชา / School"
 						/>
 						<InputForm
-							value={`${formData?.student?.program}`}
+							value={`${formData?.student?.program.programName}`}
 							label="หลักสูตร / Program"
 						/>
 						<InputForm
-							value={`${formData?.student?.programYear}`}
+							value={`${formData?.student?.program.programYear}`}
 							label="ปีหลักสูตร / Program Year"
 						/>
 					</div>

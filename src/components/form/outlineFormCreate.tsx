@@ -146,6 +146,8 @@ const OutlineFormCreate = () => {
 		}
 	}, [user, reset]);
 
+	
+
 	return (
 		<Form {...form}>
 			<form
@@ -155,7 +157,7 @@ const OutlineFormCreate = () => {
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
 					<div className="w-full sm:2/4">
-						<h1 className="mb-2 font-bold">ข้อมูลนักศึกษา</h1>
+						<h1 className="mb-2 font-bold text-center">ข้อมูลนักศึกษา</h1>
 						<InputForm
 							value={`${user?.firstName} ${user?.lastName}`}
 							label="ชื่อ-นามสกุล / Full Name"
@@ -191,19 +193,19 @@ const OutlineFormCreate = () => {
 							</RadioGroup>
 						</div>
 
-						<InputForm value={`${user?.school}`} label="สาขาวิชา / School" />
-						<InputForm value={`${user?.program}`} label="หลักสูตร / Program" />
+						<InputForm value={`${user?.school.schoolName}`} label="สาขาวิชา / School" />
+						<InputForm value={`${user?.program.programName}`} label="หลักสูตร / Program" />
 						<InputForm
-							value={`${user?.programYear}`}
+							value={`${user?.program.programYear}`}
 							label="ปีหลักสูตร / Program Year"
 						/>
 					</div>
 
 					{/* ฝั่งขวา */}
 					<div className="w-full sm:2/4">
-						<div className="text-center font-semibold mb-2">
+						<h1 className="text-center font-semibold mb-2">
 							ชื่อโครงร่างวิทยานิพนธ์
-						</div>
+						</h1>
 						<FormField
 							control={form.control}
 							name="thesisNameTH"
