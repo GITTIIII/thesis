@@ -1,11 +1,11 @@
-import { User } from "../interface/user";
+import { IUser } from "../interface/user";
 const excelToJson = require("convert-excel-to-json");
 import { hash } from "bcrypt";
 
 export const excelFileToJson = async (
 	path: string,
 	columnKey: string
-): Promise<User[]> => {
+): Promise<IUser[]> => {
 	const columnKey_ = JSON.parse(columnKey);
 	const result = excelToJson({
 		sourceFile: path,
@@ -15,11 +15,11 @@ export const excelFileToJson = async (
 	return await convertToUsers(result.Sheet1);
 };
 
-const convertToUsers = async (arr: any[]): Promise<User[]> => {
+const convertToUsers = async (arr: any[]): Promise<IUser[]> => {
 	return Promise.all(
 		arr.map(async (obj) => {
 			const hashedPassword = await hash(String(obj.password), 10);
-			const user: User = {
+			const user: IUser = {
 				firstName: obj.firstName ? String(obj.firstName) : "",
 				lastName: obj.lastName ? String(obj.lastName) : "",
 				username: obj.username ? String(obj.username) : "",

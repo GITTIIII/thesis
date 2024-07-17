@@ -93,7 +93,9 @@ export default function CreateUsers() {
 			<div className="relative">
 				<div
 					className="w-6 h-6 bg-[#f8d7da] border border-[#f5c6cb] flex items-center justify-center rounded-full absolute -right-2 -top-3 hover:cursor-pointer"
-					onClick={() => setList(list.filter((item) => item !== value))}
+					onClick={() =>
+						setList(list.filter((item) => item !== value))
+					}
 				>
 					<GoTrash color="#721c24" />
 				</div>
@@ -110,7 +112,9 @@ export default function CreateUsers() {
 								}
 							>
 								<SelectTrigger className="h-12 w-32">
-									<SelectValue placeholder={`${list[index].key}`} />
+									<SelectValue
+										placeholder={`${list[index].key}`}
+									/>
 								</SelectTrigger>
 								<SelectContent>
 									<SelectGroup>
@@ -137,12 +141,17 @@ export default function CreateUsers() {
 								}
 							>
 								<SelectTrigger className="h-12 w-44 focus-visible:ring-offset-0 focus-visible:ring-0">
-									<SelectValue placeholder={userPropertyValue} />
+									<SelectValue
+										placeholder={userPropertyValue}
+									/>
 								</SelectTrigger>
 								<SelectContent>
 									<SelectGroup>
 										{userProperty.map((userP) => (
-											<SelectItem value={userP.key} key={userP.key}>
+											<SelectItem
+												value={userP.key}
+												key={userP.key}
+											>
 												{userP.value}
 											</SelectItem>
 										))}
@@ -184,13 +193,15 @@ export default function CreateUsers() {
 				if (err) {
 					console.log(err);
 				} else {
-					const modifyData = resp.rows?.map((itm: any, index: any) => {
-						const rowData: RowData = {};
-						alphabet.forEach((alp, key) => {
-							rowData[alp] = itm[key] || "";
-						});
-						setData((prevData) => [...prevData, rowData]);
-					});
+					const modifyData = resp.rows?.map(
+						(itm: any, index: any) => {
+							const rowData: RowData = {};
+							alphabet.forEach((alp, key) => {
+								rowData[alp] = itm[key] || "";
+							});
+							setData((prevData) => [...prevData, rowData]);
+						}
+					);
 				}
 			});
 		}
@@ -199,7 +210,8 @@ export default function CreateUsers() {
 		setDisabled(true);
 		if (
 			list.some(
-				(item) => item.key === "เลือกคอลัมน์" || item.value === "เลือกค่าคีย์"
+				(item) =>
+					item.key === "เลือกคอลัมน์" || item.value === "เลือกค่าคีย์"
 			)
 		) {
 			toast({
@@ -296,7 +308,9 @@ export default function CreateUsers() {
 							id="picture"
 							type="file"
 							onChange={(e) => {
-								const selectFile = e.target.files ? e.target.files[0] : null;
+								const selectFile = e.target.files
+									? e.target.files[0]
+									: null;
 								if (selectFile) {
 									setFileObject(selectFile);
 								}
@@ -333,7 +347,11 @@ export default function CreateUsers() {
 													userProperty.find(
 														(prop) =>
 															prop.key ===
-															list.find((item) => item.key === alp)?.value
+															list.find(
+																(item) =>
+																	item.key ===
+																	alp
+															)?.value
 													)?.value
 												}
 											</p>
@@ -346,7 +364,9 @@ export default function CreateUsers() {
 							{data.map((d, rowKey) => (
 								<TableRow key={rowKey}>
 									{alphabet.map((letter, cellKey) => (
-										<TableCell key={cellKey}>{d[letter]}</TableCell>
+										<TableCell key={cellKey}>
+											{d[letter]}
+										</TableCell>
 									))}
 								</TableRow>
 							))}

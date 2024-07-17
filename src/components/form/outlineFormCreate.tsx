@@ -57,7 +57,7 @@ const formSchema = z.object({
 	studentID: z.number(),
 	advisorID: z
 		.number()
-		.min(1, { message: "กรุณาเลือกอาจารย์ที่ปรึกษา / Advisor requierd" }),
+		.min(1, { message: "กรุณาเลือกอาจารย์ที่ปรึกษา / Please select advisor" }),
 	coAdvisorID: z.number(),
 });
 

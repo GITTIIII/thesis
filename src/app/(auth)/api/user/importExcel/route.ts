@@ -1,7 +1,7 @@
 import { db } from "@/lib/db"
 import { NextResponse } from "next/server"
 import path from "path"
-import { User } from "../../../../../interface/user"
+import { IUser } from "../../../../../interface/user"
 import { writeFile, unlink } from "fs/promises"
 import { excelFileToJson } from "../../../../../lib/excelFileToJSON"
 
@@ -38,7 +38,7 @@ export const POST = async (req: Request) => {
 
   try {
     await writeFile(pathExcel, buffer)
-    const users: User[] = await excelFileToJson(pathExcel, columnKey)
+    const users: IUser[] = await excelFileToJson(pathExcel, columnKey)
 
     const result = await CreateMultipleStudent(users)
     return NextResponse.json(

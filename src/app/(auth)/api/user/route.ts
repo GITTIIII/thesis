@@ -43,7 +43,7 @@ export async function POST(req: Request) {
 
 		if (existUsername) {
 			return NextResponse.json(
-				{ user: null, message: "username already exists" },
+				{ user: null, message: "ชื่อผู้ใช้ หรือ รหัสนักศึกษา ถูกใช้เเล้ว" },
 				{ status: 409 }
 			);
 		}
@@ -55,7 +55,7 @@ export async function POST(req: Request) {
 
 		if (existEmail) {
 			return NextResponse.json(
-				{ user: null, message: "email already exists" },
+				{ user: null, message: "อีเมล ถูกใช้เเล้ว" },
 				{ status: 409 }
 			);
 		}

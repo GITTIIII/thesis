@@ -1,9 +1,9 @@
-import { Institute } from "./institute";
+import { IInstitute } from "./institute";
 
-export type School = {
+export type ISchool = {
 	id: number;
 	schoolName: string;
 
 	instituteID: number;
-	institute: Institute;
+	institute: IInstitute;
 };
