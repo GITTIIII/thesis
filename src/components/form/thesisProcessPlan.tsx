@@ -32,13 +32,7 @@ export default function ThesisProcessPlan({
   const [fixedindexs, setFixedindexs] = useState<number[]>([]);
 
   useEffect(() => {
-    if (setProcessPlans !== undefined) {
-      setProcessPlans((prevprocessPlans) => {
-        setData(prevprocessPlans!);
-        console.log(processPlans);
-        return processPlans;
-      });
-    } else setData(processPlans);
+    setData(processPlans);
     updateFixedindex(data);
     setMonths(() => {
       return degree === "Master" ? 12 : 36;

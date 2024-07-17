@@ -403,50 +403,11 @@ const ThesisProgressFormCreate = () => {
           </div>
         </div>
         <hr className="่่justify-center mx-auto w-3/4 my-5 border-t-2 border-[#eeee]" />
-        <Table>
-          <TableHeader>
-            <TableRow>
-              {Array.from({ length: 13 }).map((_, index) => (
-                <TableHead key={index} className="text-center text-[14px] p-2">
-                  {index === 0 ? "กิจกรรม / ขั้นตอนการดำเนินงาน" : "เดือนที่" + index}
-                </TableHead>
-              ))}
-            </TableRow>
-          </TableHeader>
 
-          <TableBody>
-            {Array.from({ length: 14 }).map((_, rowIndex) => (
-              <TableRow key={rowIndex}>
-                {Array.from({ length: 13 }).map((_, colIndex) => (
-                  <TableCell className="  item-center" key={colIndex}>
-                    {(rowIndex === 0 && colIndex === 0) || (rowIndex >= 6 && rowIndex <= 13 && colIndex === 0) ? (
-                      <span className="text-formal">{fixedText[rowIndex >= 6 ? rowIndex - 6 : rowIndex]}</span>
-                    ) : rowIndex >= 1 && rowIndex <= 5 && colIndex === 0 ? (
-                      <Input
-                        className="text-formal"
-                        value={inputData[rowIndex][colIndex]}
-                        onChange={(e) => handleInputChange(rowIndex, colIndex, e.target.value)}
-                      />
-                    ) : rowIndex >= 10 && colIndex > 0 ? (
-                      <Input type="number" className="w-14 h-10" />
-                    ) : (
-                      <Input
-                        type="checkbox"
-                        checked={checkData[rowIndex][colIndex]}
-                        onChange={() => handleCheckboxChange(rowIndex, colIndex)}
-                        className="w-12 h-4"
-                      />
-                    )}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
         {/* <ThesisProcessPlan degree={user?.degree} /> */}
-        <div className="flex justify-center  w-full ">
+        <div className="flex justify-center  w-full mb-10">
           <ThesisProcessPlan
-            degree={"Master_"}
+            degree={"Master"}
             canEdit={true}
             processPlans={defaultprocessPlans}
             setProcessPlans={setProcessPlans}
