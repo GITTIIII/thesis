@@ -289,7 +289,7 @@ const ThesisExamFormCreate = () => {
 							/>
                             <div className="px-4 m-0 text-xs text-justify">
                                 <span className="font-bold">หมายเหตุ:</span>&nbsp;กรณีนักศึกษามีส่วนที่ต้องปรับปรุง 
-                                 ต้องดำเนินการให้แล้วเสร็จ<span className="font-bold underline">ภายในระยะเวลา 30 วัน</span> 
+                                ต้องดำเนินการให้แล้วเสร็จ<span className="font-bold underline">ภายในระยะเวลา 30 วัน</span> 
                                 และไม่เกินวันสุดท้ายของภาคการศึกษาที่ขอสอบวิทยานิพนธ์ 
                                 หากดำเนินการไม่ทันภาคการศึกษาดังกล่าว นักศึกษาต้องลงทะเบียนรักษาสภาพในภาคการศึกษาถัดไป 
                                 และกำหนดให้วันที่นักศึกษาส่งเล่มวิทยานิพนธ์เป็นวันที่สำเร็จการศึกษา
@@ -299,7 +299,7 @@ const ThesisExamFormCreate = () => {
                                 <span className="font-bold underline">must complete all amendments within 30 days</span>&nbsp;
                                 and no later than the last day of the term in which the thesis examination took place. Failure to do so 
                                 will result in the student maintaining student status in the following term. The thesis submission date 
-                                shall be deemed the student's graduation date.
+                                shall be deemed the students graduation date.
                             </div>
 					</div>
 						<div className="flex justify-center my-8 bg-[#ffff]  text-[#000] underline rounded-lg">

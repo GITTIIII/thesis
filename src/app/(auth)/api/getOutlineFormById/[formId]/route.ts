@@ -13,7 +13,10 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 	const session = await getServerSession(authOptions);
 
 	if (!session) {
-		return null;
+		return NextResponse.json(
+			{ user: null, message: "Session not found" },
+			{ status: 404 }
+		);
 	}
 
 	const outlineForm = await db.outlineForm.findUnique({
@@ -21,7 +24,13 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 			id: Number(formId),
 		},
 		include: {
-			student: true,
+			student:{
+				include:{
+					institute:true,
+					school:true,
+					program:true,
+				}
+			},
 			advisor: true,
 			coAdvisor: true,
 			outlineCommittee: true,

@@ -108,9 +108,7 @@ const CreateUser = () => {
 		}
 	};
 
-	useEffect(() => {
-		console.log(form.getValues().role);
-	});
+	
 	return (
 		<div className="w-full h-full p-12">
 			<div className="flex items-center p-4">

@@ -26,8 +26,8 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
   ) {
     menu = [
       { menuItem: "หน้าหลัก", path: "/user/admin" },
-      { menuItem: "คำขออนุมัติฟอร์ม", path: "/user/profile" },
-      { menuItem: "รายชื่อนักศึกษา", path: "/user/table" },
+      { menuItem: "คำขออนุมัติฟอร์ม", path: "/user/table" },
+      { menuItem: "โปรไฟล์", path: "/user/profile" },
       { menuItem: "student", path: "/user/student" },
       { menuItem: "superadmin", path: "/user/superAdmin" },
     ];

@@ -1,6 +1,6 @@
 "use client";
 import learning1 from "@/../../public/asset/learning1.png";
-import ThesisExamCreate from "@/components/form/ThesisExamCreate";
+import ThesisExamCreate from "@/components/form/thesisExamCreate";
 import Image from "next/image";
 
 const ThesisProgressFormCreatePage = () => {
@@ -16,7 +16,7 @@ const ThesisProgressFormCreatePage = () => {
 				<div className="h-full w-full flex items-center bg-[#EEEEEE] p-8 rounded-md">
 					<div className="w-full h-full">
 						<div className="p-2 flex justify-center bg-[#A67436] text-white text-lg">
-							กรุณากรอกข้อมูลให้ครบถ้วน และตรวจสอบความถูกต้องก่อนกดยืนยัน
+							กรุณากรอกข้อมูลให้ครบถ้วน และตรวจสอบความถูกต้อง
 						</div>
 						<ThesisExamCreate />
 					</div>

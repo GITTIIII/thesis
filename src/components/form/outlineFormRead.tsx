@@ -6,24 +6,32 @@ import signature from "@/../../public/asset/signature.png";
 import InputForm from "@/components/inputForm/inputForm";
 import Image from "next/image";
 import { Textarea } from "../ui/textarea";
-import { use } from "react";
+import { useEffect, useState } from "react";
 import { IOutlineForm } from "@/interface/form";
 
-async function getOutlineFormById(formId: number){
+async function getOutlineFormById(formId: number): Promise<IOutlineForm> {
 	const res = await fetch(`/api/getOutlineFormById/${formId}`, {
 		next: { revalidate: 10 },
 	});
 	return res.json();
 }
 
-export default async function OutlineFormRead({ formId }: { formId: number }) {
+export default function OutlineFormRead({ formId }: { formId: number }) {
 	const router = useRouter();
-	const formData: IOutlineForm = await getOutlineFormById(formId);
+	const [formData, setFormData] = useState<IOutlineForm>();
+
+	useEffect(() => {
+		async function fetchData() {
+			const data = await getOutlineFormById(formId);
+			setFormData(data);
+		}
+		fetchData();
+	}, [formId]);
 
 	return (
 		<>
-			<div className="w-full h-full bg-white p-4">
-				<div className="w-full flex px-20">
+			<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg">
+				<div className="w-full flex px-0 lg:px-20 mb-2">
 					<Button
 						variant="outline"
 						type="reset"
@@ -73,15 +81,15 @@ export default async function OutlineFormRead({ formId }: { formId: number }) {
 						</div>
 
 						<InputForm
-							value={`${formData?.student?.school}`}
-							label="สำนักวิชา / School"
+							value={`${formData?.student?.school.schoolName}`}
+							label="สาขาวิชา / School"
 						/>
 						<InputForm
-							value={`${formData?.student?.program}`}
+							value={`${formData?.student?.program.programName}`}
 							label="หลักสูตร / Program"
 						/>
 						<InputForm
-							value={`${formData?.student?.programYear}`}
+							value={`${formData?.student?.program.programYear}`}
 							label="ปีหลักสูตร / Program Year"
 						/>
 					</div>
@@ -111,12 +119,12 @@ export default async function OutlineFormRead({ formId }: { formId: number }) {
 							}
 							label="อาจารย์ที่ปรึกษาร่วม(ถ้ามี) / Co-Thesis Advisor (if any)"
 						/>
-						<div className="flex flex-col items-center mb-6 justify-center">
+						<div className="flex flex-col items-center mt-6 justify-center">
 							<Label>ลายเซ็น / Signature</Label>
 							<Button
 								variant="outline"
 								type="button"
-								className="w-60 mt-4 h-max"
+								className="w-60 my-4 h-max"
 							>
 								<Image
 									src={
@@ -129,27 +137,22 @@ export default async function OutlineFormRead({ formId }: { formId: number }) {
 									alt="signature"
 								/>
 							</Button>
+							<Label className="mt-2">{`วันที่ ${
+								formData?.date ? formData?.date : "__________"
+							}`}</Label>
 						</div>
 					</div>
 				</div>
-				<div className="flex flex-col items-center mb-6 justify-center md:flex-row">
-					<div className="flex flex-col justify-center items-center px-20">
+				<div className="flex flex-col items-center mt-4 sm:mt-0 mb-6 justify-center md:flex-row">
+					<div className="flex flex-col justify-center items-center p-4 lg:px-20">
 						<h1 className="mb-2 font-bold">
 							ความเห็นของคณะกรรมการพิจารณาโครงร่างวิทยานิพนธ์
 						</h1>
-						<Label>ลายเซ็น / Signature</Label>
-						<Button variant="outline" type="button" className="w-60 mt-4 h-max">
-							<Image
-								src={
-									formData?.outlineCommittee
-										? formData?.outlineCommittee.signatureUrl
-										: signature
-								}
-								width={100}
-								height={100}
-								alt="signature"
-							/>
-						</Button>
+						<Label className="mt-2">{`วันที่ ${
+							formData?.dateOutlineCommitteeSign
+								? formData?.dateOutlineCommitteeSign
+								: "__________"
+						}`}</Label>
 						<div className="flex flex-col items-center justify-center">
 							<RadioGroup disabled className="flex my-6">
 								<div className="flex items-center justify-center">
@@ -173,26 +176,18 @@ export default async function OutlineFormRead({ formId }: { formId: number }) {
 							</RadioGroup>
 						</div>
 						<div>
-							<Label>ความเห็นกรรมการสำนักวิชา</Label>
 							<Textarea
 								disabled
 								placeholder="ความเห็น..."
-								className="resize-none h-full text-md"
-								value={formData?.outlineCommitteeComment}
+								className="resize-none h-full text-md mb-2"
+								defaultValue={formData?.outlineCommitteeComment}
 							/>
 						</div>
-					</div>
-
-					<div className="flex flex-col justify-center items-center px-20">
-						<h1 className="mb-2 font-bold">
-							มติคณะกรรมการประจำสำนักวิชาวิศวกรรมศาสตร์
-						</h1>
-						<Label>ลายเซ็น / Signature</Label>
-						<Button variant="outline" type="button" className="w-60 mt-4 h-max">
+						<Button variant="outline" type="button" className="w-60 my-4 h-max">
 							<Image
 								src={
-									formData?.instituteCommittee
-										? formData?.instituteCommittee.signatureUrl
+									formData?.outlineCommittee
+										? formData?.outlineCommittee.signatureUrl
 										: signature
 								}
 								width={100}
@@ -200,6 +195,23 @@ export default async function OutlineFormRead({ formId }: { formId: number }) {
 								alt="signature"
 							/>
 						</Button>
+						<Label className="mb-2">
+							{formData?.outlineCommittee
+								? `${formData?.outlineCommittee.firstName} ${formData?.outlineCommittee.lastName}`
+								: ""}
+						</Label>
+						<Label className="mb-2">(ประธานคณะกรรมการ)</Label>
+					</div>
+
+					<div className="flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
+						<h1 className="mb-2 font-bold">
+							มติคณะกรรมการประจำสำนักวิชาวิศวกรรมศาสตร์
+						</h1>
+						<Label className="mt-2">{`ครั้งที่ 1  วันที่ ${
+							formData?.dateInstituteCommitteeSign
+								? formData?.dateInstituteCommitteeSign
+								: "__________"
+						}`}</Label>
 						<div className="flex flex-col items-center justify-center">
 							<RadioGroup disabled className="flex my-6">
 								<div className="flex items-center justify-center">
@@ -225,15 +237,51 @@ export default async function OutlineFormRead({ formId }: { formId: number }) {
 							</RadioGroup>
 						</div>
 						<div>
-							<Label>ความเห็นกรรมการสำนักวิชา</Label>
 							<Textarea
 								disabled
 								placeholder="ความเห็น..."
-								className="resize-none h-full text-md"
-								value={formData?.instituteCommitteeComment}
+								className="resize-none h-full text-md mb-2"
+								defaultValue={formData?.instituteCommitteeComment}
 							/>
 						</div>
+						<Button variant="outline" type="button" className="w-60 my-4 h-max">
+							<Image
+								src={
+									formData?.instituteCommittee
+										? formData?.instituteCommittee.signatureUrl
+										: signature
+								}
+								width={100}
+								height={100}
+								alt="signature"
+							/>
+						</Button>
+						<Label className="mb-2">
+							{formData?.instituteCommittee
+								? `${formData?.instituteCommittee.firstName} ${formData?.instituteCommittee.lastName}`
+								: ""}
+						</Label>
+						<Label className="mb-2">(ประธานคณะกรรมการ)</Label>
 					</div>
+				</div>
+			</div>
+			<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg mt-4">
+				<div className="w-full h-max flex flex-col items-center">
+					<Label className="text-sm font-medium mb-2">
+						บทคัดย่อ / Abstract
+					</Label>
+					<Textarea
+						className="text-[16px] resize-none 
+						w-full md:w-[595px] lg:w-[794px] 
+						h-[842px] lg:h-[1123px] 
+						p-[16px] 
+						md:pt-[108px] lg:pt-[144px] 
+						md:pl-[108px] lg:pl-[144px] 
+						md:pr-[72px]  lg:pr-[96px] 
+						md:pb-[72px]  lg:pb-[96px]"
+						defaultValue={formData?.abstract}
+						disabled
+					/>
 				</div>
 			</div>
 		</>

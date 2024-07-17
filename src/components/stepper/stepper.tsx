@@ -1,10 +1,11 @@
 import { cn } from "@/lib/utils"
+import React from "react"
 
 function Stepper({ step }: { step: number}) {
   return (
     <div className=" items-center md:flex hidden">
       {Array.from(Array(7).keys(), (item) => item + 1).map((key) => (
-        <>
+        <React.Fragment key={key}>
           <div
             className={cn(
               "flex border-2 border-[#A67436] w-12 h-12  rounded-full items-center  justify-center text-3xl font-normal mx-2",
@@ -20,7 +21,7 @@ function Stepper({ step }: { step: number}) {
           {key < 7 && (
             <div className=" border-2 border-[#A67436] xl:w-24 md:w-12 w-4 h-0 rounded-lg" /> //เส้น
           )}
-        </>
+        </React.Fragment>
       ))}
     </div>
   )

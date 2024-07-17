@@ -8,7 +8,10 @@ export async function POST(req: Request) {
 		const session = await getServerSession(authOptions);
 
 		if (!session) {
-			return null;
+			return NextResponse.json(
+				{ user: null, message: "Session not found" },
+				{ status: 404 }
+			);
 		}
 
 		const body = await req.json();
@@ -49,7 +52,10 @@ export async function GET() {
 	const session = await getServerSession(authOptions);
 
 	if (!session) {
-		return null;
+		return NextResponse.json(
+			{ user: null, message: "Session not found" },
+			{ status: 404 }
+		);
 	}
 
 	const outlineForm = await db.outlineForm.findMany({
@@ -68,7 +74,10 @@ export async function PATCH(req: Request) {
 		const session = await getServerSession(authOptions);
 
 		if (!session) {
-			return null;
+			return NextResponse.json(
+				{ user: null, message: "Session not found" },
+				{ status: 404 }
+			);
 		}
 
 		const body = await req.json();

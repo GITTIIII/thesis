@@ -30,6 +30,38 @@ enum Role{
   SUPER_ADMIN
 }
 
+model Institute{
+  id Int          @id @default(autoincrement())
+  instituteName  String @unique
+
+  user   User[]   @relation("userInstitute")
+  
+  school     School[]   @relation("school")
+}
+
+model School{
+  id Int          @id @default(autoincrement())
+  schoolName  String @unique
+
+  instituteID Int
+  institute   Institute   @relation("school", fields: [instituteID], references: [id])
+
+  user   User[]    @relation("userSchool")
+
+  program     Program[]   @relation("program")
+}
+
+model Program{
+  id Int          @id @default(autoincrement())
+  programName  String @unique
+  programYear String
+
+  schoolID Int
+  school   School   @relation("program", fields: [schoolID], references: [id])
+
+  user   User[]    @relation("userProgram")
+}
+
 model User {
   id Int          @id @default(autoincrement())
   prefix          String
@@ -41,10 +73,16 @@ model User {
   phone           String
   sex             String
   degree          String?
-  institute       String?
-  school          String?
-  program         String?
-  programYear     String?
+
+  instituteID       Int?
+  institute   Institute?    @relation("userInstitute", fields: [instituteID], references: [id])
+
+  schoolID          Int?
+  school   School?    @relation("userSchool", fields: [schoolID], references: [id])
+
+  programID         Int?
+  program   Program?    @relation("userProgram", fields: [programID], references: [id])
+
   position        Position
   role            Role
   formState       Int? 
@@ -78,7 +116,7 @@ model OutlineForm {
   date                         String
   thesisNameTH                 String
   thesisNameEN                 String
-  abstract                     String
+  abstract                     String @db.Text
   processPlan                  Json?
 
   //กรรมการโครงร่าง

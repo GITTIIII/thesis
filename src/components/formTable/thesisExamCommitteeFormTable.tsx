@@ -15,10 +15,6 @@ import { Download } from "lucide-react";
 import { IOutlineForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 
-interface OutlineFormTableProps {
-	userId: number | undefined;
-}
-
 const FindStatus = ({ formData }: { formData: IOutlineForm }) => {
 	let status = "";
 
@@ -71,7 +67,7 @@ const FindStatus = ({ formData }: { formData: IOutlineForm }) => {
 // const userPromise = getCurrentUser();
 // const formDataPromise = getFormData();
 
-export default function ThesisExamCommitteeFormTable({ userId }: OutlineFormTableProps) {
+export default function ThesisExamCommitteeFormTable() {
 	// const formData: IOutlineForm[] = use(formDataPromise);
 	// const user: IUser = use(userPromise);
 	return (

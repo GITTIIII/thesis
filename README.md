@@ -17,6 +17,9 @@ npm run dev
 npx prisma generate
 npx prisma db push
 
+#ใช้ run ข้อมูลเริ่มต้น
+npx prisma db seed
+
 #ใช้เข้า ui ของ prisma
 npx prisma studio
 ```
