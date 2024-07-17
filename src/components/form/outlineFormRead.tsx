@@ -6,7 +6,7 @@ import signature from "@/../../public/asset/signature.png";
 import InputForm from "@/components/inputForm/inputForm";
 import Image from "next/image";
 import { Textarea } from "../ui/textarea";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IOutlineForm } from "@/interface/form";
 
 async function getOutlineFormById(formId: number): Promise<IOutlineForm> {
@@ -180,7 +180,7 @@ export default function OutlineFormRead({ formId }: { formId: number }) {
 								disabled
 								placeholder="ความเห็น..."
 								className="resize-none h-full text-md mb-2"
-								value={formData?.outlineCommitteeComment}
+								defaultValue={formData?.outlineCommitteeComment}
 							/>
 						</div>
 						<Button variant="outline" type="button" className="w-60 my-4 h-max">
@@ -241,7 +241,7 @@ export default function OutlineFormRead({ formId }: { formId: number }) {
 								disabled
 								placeholder="ความเห็น..."
 								className="resize-none h-full text-md mb-2"
-								value={formData?.instituteCommitteeComment}
+								defaultValue={formData?.instituteCommitteeComment}
 							/>
 						</div>
 						<Button variant="outline" type="button" className="w-60 my-4 h-max">
@@ -279,7 +279,7 @@ export default function OutlineFormRead({ formId }: { formId: number }) {
 						md:pl-[108px] lg:pl-[144px] 
 						md:pr-[72px]  lg:pr-[96px] 
 						md:pb-[72px]  lg:pb-[96px]"
-						value={formData?.abstract}
+						defaultValue={formData?.abstract}
 						disabled
 					/>
 				</div>

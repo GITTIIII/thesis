@@ -15,7 +15,6 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
-import signature from "@../../../public/asset/signature.png";
 import Image from "next/image";
 import axios from "axios";
 import qs from "query-string";
@@ -23,6 +22,7 @@ import InputForm from "@/components/inputForm/inputForm";
 import { IOutlineForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 import { Label } from "../ui/label";
+import signature from "../../../public/asset/signature.png";
 
 const formSchema = z.object({
 	id: z.number(),
@@ -187,7 +187,9 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
 					<div className="w-full sm:2/4">
-						<h1 className="text-center mb-2 font-bold">ข้อมูลนักศึกษา</h1>
+						<h1 className="text-center mb-2 font-bold">
+							ข้อมูลนักศึกษา
+						</h1>
 						<InputForm
 							value={`${formData?.student.firstName} ${formData?.student.lastName}`}
 							label="ชื่อ-นามสกุล / Fullname"
@@ -204,7 +206,10 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 							<RadioGroup disabled className="space-y-1 mt-2">
 								<div>
 									<RadioGroupItem
-										checked={formData?.student.degree === "Master"}
+										checked={
+											formData?.student.degree ===
+											"Master"
+										}
 										value="Master"
 									/>
 									<FormLabel className="ml-2 font-normal">
@@ -213,7 +218,10 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 								</div>
 								<div>
 									<RadioGroupItem
-										checked={formData?.student.degree === "Doctoral"}
+										checked={
+											formData?.student.degree ===
+											"Doctoral"
+										}
 										value="Doctoral"
 									/>
 									<FormLabel className="ml-2 font-normal">
@@ -224,11 +232,11 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 						</div>
 
 						<InputForm
-							value={`${formData?.student.school}`}
+							value={`${formData?.student.school.schoolName}`}
 							label="สำนักวิชา / School"
 						/>
 						<InputForm
-							value={`${formData?.student.program}`}
+							value={`${formData?.student.program.programName}`}
 							label="หลักสูตร / Program"
 						/>
 						<InputForm
@@ -308,7 +316,8 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 										<div className="flex items-center justify-center">
 											<RadioGroupItem
 												checked={
-													formData?.outlineCommitteeStatus == "NOT_APPROVED"
+													formData?.outlineCommitteeStatus ==
+													"NOT_APPROVED"
 												}
 												value="NOT_APPROVED"
 											/>
@@ -318,7 +327,10 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 										</div>
 										<div className="ml-4 mt-0 flex items-center justify-center">
 											<RadioGroupItem
-												checked={formData?.outlineCommitteeStatus == "APPROVED"}
+												checked={
+													formData?.outlineCommitteeStatus ==
+													"APPROVED"
+												}
 												value="APPROVED"
 											/>
 											<div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
@@ -335,8 +347,13 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 										<FormItem>
 											<FormControl>
 												<RadioGroup
-													disabled={user.position.toString() != "COMMITTEE_OUTLINE"}
-													onValueChange={field.onChange}
+													disabled={
+														user.position.toString() !=
+														"COMMITTEE_OUTLINE"
+													}
+													onValueChange={
+														field.onChange
+													}
 													className="flex my-4"
 												>
 													<FormItem className="flex items-center justify-center">
@@ -349,7 +366,10 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 														</div>
 													</FormItem>
 													<FormItem className="ml-4 mt-0 flex items-center justify-center">
-														<RadioGroupItem className="mt-2" value="APPROVED" />
+														<RadioGroupItem
+															className="mt-2"
+															value="APPROVED"
+														/>
 														<div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
 															อนุมัติ
 														</div>
@@ -373,8 +393,10 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 													formData?.outlineCommitteeID
 														? true
 														: false ||
-														  (user.position.toString() != "COMMITTEE_OUTLINE" &&
-																user.role.toString() != "SUPER_ADMIN")
+														  (user.position.toString() !=
+																"COMMITTEE_OUTLINE" &&
+																user.role.toString() !=
+																	"SUPER_ADMIN")
 												}
 												placeholder="ความเห็น..."
 												className="resize-none h-full text-md mb-2"
@@ -398,8 +420,11 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 								<Image
 									src={
 										formData?.outlineCommittee?.signatureUrl
-											? formData?.outlineCommittee.signatureUrl
-											: user.position.toString() == "COMMITTEE_OUTLINE"
+											? formData?.outlineCommittee
+													.signatureUrl
+											: user.position.toString() ==
+													"COMMITTEE_OUTLINE" &&
+											  user.signatureUrl
 											? user.signatureUrl
 											: signature
 									}
@@ -430,8 +455,10 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 							<Label className="mt-2">{`วันที่ ${
 								formData?.dateInstituteCommitteeSign
 									? formData?.dateInstituteCommitteeSign
-									: form.getValues().dateInstituteCommitteeSign
-									? form.getValues().dateInstituteCommitteeSign
+									: form.getValues()
+											.dateInstituteCommitteeSign
+									? form.getValues()
+											.dateInstituteCommitteeSign
 									: "__________"
 							}`}</Label>
 
@@ -439,15 +466,18 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 								<div className="flex flex-col items-center justify-center">
 									<RadioGroup
 										disabled={
-											user.position.toString() != "COMMITTEE_INSTITUTE" ||
-											user.role.toString() != "SUPER_ADMIN"
+											user.position.toString() !=
+												"COMMITTEE_INSTITUTE" ||
+											user.role.toString() !=
+												"SUPER_ADMIN"
 										}
 										className="flex my-6"
 									>
 										<div className="flex items-center justify-center">
 											<RadioGroupItem
 												checked={
-													formData?.instituteCommitteeStatus == "NOT_APPROVED"
+													formData?.instituteCommitteeStatus ==
+													"NOT_APPROVED"
 												}
 												value="NOT_APPROVED"
 											/>
@@ -458,7 +488,8 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 										<div className="ml-4 mt-0 flex items-center justify-center">
 											<RadioGroupItem
 												checked={
-													formData?.instituteCommitteeStatus == "APPROVED"
+													formData?.instituteCommitteeStatus ==
+													"APPROVED"
 												}
 												value="APPROVED"
 											/>
@@ -476,7 +507,9 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 										<FormItem>
 											<FormControl>
 												<RadioGroup
-													onValueChange={field.onChange}
+													onValueChange={
+														field.onChange
+													}
 													className="flex my-4"
 												>
 													<FormItem className="flex items-center justify-center">
@@ -489,7 +522,10 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 														</div>
 													</FormItem>
 													<FormItem className="ml-4 mt-0 flex items-center justify-center">
-														<RadioGroupItem className="mt-2" value="APPROVED" />
+														<RadioGroupItem
+															className="mt-2"
+															value="APPROVED"
+														/>
 														<div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
 															อนุมัติ
 														</div>
@@ -530,9 +566,13 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 							>
 								<Image
 									src={
-										formData?.instituteCommittee?.signatureUrl
-											? formData?.instituteCommittee.signatureUrl
-											: user.position.toString() == "COMMITTEE_INSTITUTE"
+										formData?.instituteCommittee
+											?.signatureUrl
+											? formData?.instituteCommittee
+													.signatureUrl
+											: user.position.toString() ==
+													"COMMITTEE_INSTITUTE" &&
+											  user.signatureUrl
 											? user.signatureUrl
 											: signature
 									}

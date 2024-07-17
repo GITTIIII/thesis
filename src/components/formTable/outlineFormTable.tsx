@@ -10,14 +10,9 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Download, RotateCcw } from "lucide-react";
+import { Download } from "lucide-react";
 import { IOutlineForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
-
-interface OutlineFormTableProps {
-	userId: number | undefined;
-}
 
 const FindStatus = ({ formData }: { formData: IOutlineForm }) => {
 	let status = "";
@@ -63,15 +58,7 @@ async function getFormData() {
 	return res.json();
 }
 
-async function getCurrentUser() {
-	const res = await fetch("/api/getCurrentUser");
-	return res.json();
-}
-
-const userPromise = getCurrentUser();
-
-export default function OutlineFormTable({ userId }: OutlineFormTableProps) {
-	const userData = use(userPromise)
+export default function OutlineFormTable({ userData }: { userData: IUser | undefined }) {
 	const [formData, setFormData] = useState<IOutlineForm[]>();
 
 	useEffect(() => {
@@ -89,12 +76,22 @@ export default function OutlineFormTable({ userId }: OutlineFormTableProps) {
 					<TableHeader>
 						<TableRow>
 							<TableHead className="text-center">ลำดับ</TableHead>
-							<TableHead className="text-center">วันที่สอบ</TableHead>
-							<TableHead className="text-center">รหัสนักศึกษา</TableHead>
-							<TableHead className="text-center">ชื่อ นศ.</TableHead>
-							<TableHead className="text-center">ประเภทฟอร์ม</TableHead>
+							<TableHead className="text-center">
+								วันที่สอบ
+							</TableHead>
+							<TableHead className="text-center">
+								รหัสนักศึกษา
+							</TableHead>
+							<TableHead className="text-center">
+								ชื่อ นศ.
+							</TableHead>
+							<TableHead className="text-center">
+								ประเภทฟอร์ม
+							</TableHead>
 							<TableHead className="text-center">สถานะ</TableHead>
-							<TableHead className="text-center">รายละเอียด</TableHead>
+							<TableHead className="text-center">
+								รายละเอียด
+							</TableHead>
 							<TableHead
 								hidden={userData?.role.toString() != "STUDENT"}
 								className="text-center"
@@ -108,15 +105,22 @@ export default function OutlineFormTable({ userId }: OutlineFormTableProps) {
 							?.filter(
 								(formData) =>
 									(userData?.role.toString() === "STUDENT" &&
-										userData?.id === formData?.student?.id) ||
+										userData?.id ===
+											formData?.student?.id) ||
 									userData?.role.toString() != "STUDENT"
 							)
 							.map((formData, index) => (
 								<TableRow
 									key={formData.id}
-									className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}
+									className={
+										(index + 1) % 2 == 0
+											? `bg-[#f0c38d3d]`
+											: ""
+									}
 								>
-									<TableCell className="text-center">{index + 1}</TableCell>
+									<TableCell className="text-center">
+										{index + 1}
+									</TableCell>
 									<TableCell className="text-center">
 										{formData.dateOutlineCommitteeSign
 											? formData.dateOutlineCommitteeSign
@@ -137,7 +141,8 @@ export default function OutlineFormTable({ userId }: OutlineFormTableProps) {
 											href={
 												(formData.outlineCommitteeID &&
 													formData.instituteCommitteeID) ||
-												userData?.role.toString() == "STUDENT"
+												userData?.role.toString() ==
+													"STUDENT"
 													? `/user/form/outlineForm/${formData.id}`
 													: `/user/form/outlineForm/update/${formData.id}`
 											}
@@ -146,13 +151,18 @@ export default function OutlineFormTable({ userId }: OutlineFormTableProps) {
 										</Link>
 									</TableCell>
 									<TableCell
-										hidden={userData?.role.toString() != "STUDENT"}
+										hidden={
+											userData?.role.toString() !=
+											"STUDENT"
+										}
 										className="text-center"
 									>
 										<Button
 											disabled={
-												formData?.outlineCommitteeStatus === "APPROVED" &&
-												formData?.instituteCommitteeStatus === "APPROVED"
+												formData?.outlineCommitteeStatus ===
+													"APPROVED" &&
+												formData?.instituteCommitteeStatus ===
+													"APPROVED"
 													? false
 													: true
 											}

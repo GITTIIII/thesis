@@ -2,7 +2,7 @@
 import Image from "next/image";
 import studentFormPage from "@/../../public/asset/studentFormPage.png";
 import Stepper from "@/components/stepper/stepper";
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import {
 	Select,
 	SelectContent,
@@ -19,16 +19,13 @@ import ThesisProgressFormTable from "@/components/formTable/thesisProgressFormTa
 import OutlineExamCommitteeFormTable from "@/components/formTable/outlineExamCommitteeFormTable";
 import ThesisExamCommitteeFormTable from "@/components/formTable/thesisExamCommitteeFormTable";
 
-
-async function getUser() {
+async function getCurrentUser() {
 	const res = await fetch("/api/getCurrentUser");
 	return res.json();
 }
 
-const userPromise = getUser();
-
 export default function StudentTablePage() {
-	const user: IUser = use(userPromise);
+	const [userData, setUserData] = useState<IUser>();
 	const [formType, setFormType] = useState("outlineForm");
 	const router = useRouter();
 
@@ -36,12 +33,20 @@ export default function StudentTablePage() {
 		setFormType(value.toString());
 	};
 
+	useEffect(() => {
+		async function fetchData() {
+			const userData = await getCurrentUser();
+			setUserData(userData);
+		}
+		fetchData();
+	}, []);
+
 	return (
 		<>
 			<div className="w-full h-full bg-transparent py-12 px-2 lg:px-28">
-				{user?.role.toString() == "STUDENT" && (
+				{userData?.role.toString() == "STUDENT" && (
 					<div className="w-full h-max p-4 flex justify-center items-center">
-						<Stepper step={user?.formState ?? 0} />
+						<Stepper step={userData?.formState ?? 0} />
 					</div>
 				)}
 				<div className="h-max w-full flex items-center text-2xl p-2">
@@ -61,21 +66,27 @@ export default function StudentTablePage() {
 								/>
 							</SelectTrigger>
 							<SelectContent>
-								{(user?.position.toString() == "HEAD_INSTITUTE" ||
-									user?.position.toString() == "ADVISOR") && (
+								{(userData?.position.toString() ==
+									"HEAD_INSTITUTE" ||
+									userData?.position.toString() ==
+										"ADVISOR") && (
 									<SelectItem value="outlineExamCommitteeForm">
 										แบบคำขออนุมัติแต่งตั้งกรรมการสอบโครงร่างวิทยานิพนธ์
 									</SelectItem>
 								)}
-								{(user?.position.toString() == "HEAD_INSTITUTE" ||
-									user?.position.toString() == "ADVISOR") && (
+								{(userData?.position.toString() ==
+									"HEAD_INSTITUTE" ||
+									userData?.position.toString() ==
+										"ADVISOR") && (
 									<SelectItem value="thesisExamCommitteeForm">
 										แบบคำขออนุมัติแต่งตั้งกรรมการสอบวิทยานิพนธ์
 									</SelectItem>
 								)}
 								<SelectItem
 									disabled={
-										user?.role.toString() == "STUDENT" && (user?.formState ?? 0) < 1
+										userData?.role.toString() ==
+											"STUDENT" &&
+										(userData?.formState ?? 0) < 1
 									}
 									value="outlineForm"
 								>
@@ -84,7 +95,9 @@ export default function StudentTablePage() {
 
 								<SelectItem
 									disabled={
-										user?.role.toString() == "STUDENT" && (user?.formState ?? 0) < 2
+										userData?.role.toString() ==
+											"STUDENT" &&
+										(userData?.formState ?? 0) < 2
 									}
 									value="thesisProgressForm"
 								>
@@ -92,7 +105,9 @@ export default function StudentTablePage() {
 								</SelectItem>
 								<SelectItem
 									disabled={
-										user?.role.toString() == "STUDENT" && (user?.formState ?? 0) < 3
+										userData?.role.toString() ==
+											"STUDENT" &&
+										(userData?.formState ?? 0) < 3
 									}
 									value="examAppointment"
 								>
@@ -100,16 +115,20 @@ export default function StudentTablePage() {
 								</SelectItem>
 							</SelectContent>
 						</Select>
-						{(user?.role.toString() === "STUDENT" ||
-							(user?.position.toString() === "HEAD_INSTITUTE" &&
+						{(userData?.role.toString() === "STUDENT" ||
+							(userData?.position.toString() ===
+								"HEAD_INSTITUTE" &&
 								formType === "outlineExamCommitteeForm") ||
-							(user?.position.toString() === "HEAD_INSTITUTE" &&
+							(userData?.position.toString() ===
+								"HEAD_INSTITUTE" &&
 								formType === "examCommitteeForm")) && (
 							<Button
 								type="button"
 								variant="outline"
 								className="mt-4"
-								onClick={() => router.push(`/user/form/${formType}/create`)}
+								onClick={() =>
+									router.push(`/user/form/${formType}/create`)
+								}
 							>
 								เพิ่มฟอร์ม
 							</Button>
@@ -118,17 +137,19 @@ export default function StudentTablePage() {
 				</div>
 				<div className="h-full w-full flex items-center py-4">
 					{formType == "outlineExamCommitteeForm" && (
-						<OutlineExamCommitteeFormTable userId={user?.id} />
+						<OutlineExamCommitteeFormTable />
 					)}
 					{formType == "thesisExamCommitteeForm" && (
-						<ThesisExamCommitteeFormTable userId={user?.id} />
+						<ThesisExamCommitteeFormTable />
 					)}
-					{formType == "outlineForm" && <OutlineFormTable userId={user?.id} />}
+					{formType == "outlineForm" && (
+						<OutlineFormTable userData={userData} />
+					)}
 					{formType == "thesisProgressForm" && (
-						<ThesisProgressFormTable userId={user?.id} />
+						<ThesisProgressFormTable />
 					)}
 					{formType == "examAppointment" && (
-						<ExamAppointmentFormTable userId={user?.id} />
+						<ExamAppointmentFormTable />
 					)}
 				</div>
 			</div>
