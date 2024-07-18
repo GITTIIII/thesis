@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,22 +36,7 @@ import axios from "axios";
 import qs from "query-string";
 import { useToast } from "@/components/ui/use-toast";
 import InputForm from "../inputForm/inputForm";
-
-type User = {
-	id: number;
-	firstName: string;
-	lastName: string;
-	username: string;
-	degree: string;
-	school: string;
-	program: string;
-	programYear: string;
-	position: string;
-	role: string;
-	advisorID: number;
-	coAdvisorID: number;
-	signatureUrl: string;
-};
+import { IUser } from "@/interface/user";
 
 const formSchema = z.object({
 	number: z.number(),
@@ -63,15 +48,30 @@ const formSchema = z.object({
 	coAdvisorID: z.number(),
 });
 
+async function getUser() {
+	const res = await fetch("/api/getCurrentUser");
+	return res.json();
+}
+
+async function getAllAdvisor() {
+	const res = await fetch("/api/getAdvisor");
+	return res.json();
+}
+
+const userPromise = getUser();
+const allAdvisorPromise = getAllAdvisor();
+
 const ThesisProgressFormCreate = () => {
 	const router = useRouter();
-	const [user, setUser] = useState<User | null>(null);
-	const [allAdvisor, setAllAdvisor] = useState<User[] | null>(null);
+	const user: IUser = use(userPromise);
+	const allAdvisor: IUser[] = use(allAdvisorPromise);
+	const [loading, setLoading] = useState(false)
 
 	const { toast } = useToast();
 	const form = useForm({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
+			date:"",
 			number: 0,
 			trimester: 0,
 			thesisNameTH: "",
@@ -127,14 +127,19 @@ const ThesisProgressFormCreate = () => {
 	}, [user, reset]);
 
 	useEffect(() => {
-		fetch("/api/getCurrentUser")
-			.then((res) => res.json())
-			.then((data) => setUser(data));
-		fetch("/api/getAdvisor")
-			.then((res) => res.json())
-			.then((data) => setAllAdvisor(data));
-	}, []);
-
+		const today = new Date();
+		const month = today.getMonth() + 1;
+		const year = today.getFullYear();
+		const date = today.getDate();
+		const currentDate = date + "/" + month + "/" + year;
+		if (user) {
+			reset({
+				...form.getValues(),
+				studentID: user.id,
+				date: currentDate,
+			});
+		}
+	}, [user, reset]);
 	const [inputData, setInputData] = useState<string[][]>(
 		Array(14).fill(Array(13).fill(""))
 	);
@@ -271,10 +276,11 @@ const ThesisProgressFormCreate = () => {
 							</RadioGroup>
 						</div>
 
-						<InputForm value={`${user?.school}`} label="สำนักวิชา / School" />
-						<InputForm value={`${user?.program}`} label="หลักสูตร / Program" />
+						<InputForm value={`${user?.school.schoolName}`} label="สาขาวิชา / School" />
+						<InputForm value={`${user?.institute.instituteName}`} label="สำนักวิชา / School" />
+						<InputForm value={`${user?.program.programName}`} label="หลักสูตร / Program" />
 						<InputForm
-							value={`${user?.programYear}`}
+							value={`${user?.program.programYear}`}
 							label="ปีหลักสูตร / Program Year"
 						/>
 						<div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">

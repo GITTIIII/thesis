@@ -1,19 +1,11 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormEvent, useEffect, useState } from "react";
+import { FormEvent, use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useForm } from "react-hook-form";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
 import {
 	Form,
 	FormControl,
@@ -36,25 +28,7 @@ import axios from "axios";
 import qs from "query-string";
 import { useToast } from "@/components/ui/use-toast";
 import InputForm from "../inputForm/inputForm";
-
-type User = {
-	id: number;
-	firstName: string;
-	lastName: string;
-	username: string;
-	educationLevel: string;
-    institute: string;
-	school: string;
-	program: string;
-	programYear: string;
-	position: string;
-	role: string;
-	advisorID: number;
-	coAdvisorID: number;
-	signatureUrl: string;
-    email: string;
-    phone:string;
-};
+import { IUser } from "@/interface/user";
 
 const formSchema = z.object({
 	number: z.number(),
@@ -66,15 +40,29 @@ const formSchema = z.object({
 	coAdvisorID: z.number(),
 });
 
+
+async function getUser() {
+	const res = await fetch("/api/getCurrentUser");
+	return res.json();
+}
+
+async function getAllAdvisor() {
+	const res = await fetch("/api/getAdvisor");
+	return res.json();
+}
+
+const userPromise = getUser();
+
 const ThesisExamFormCreate = () => {
 	const router = useRouter();
-	const [user, setUser] = useState<User | null>(null);
-	const [allAdvisor, setAllAdvisor] = useState<User[] | null>(null);
+	const user: IUser = use(userPromise);
+	const [loading, setLoading] = useState(false)
 
 	const { toast } = useToast();
 	const form = useForm({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
+			date: "",
 			number: 0,
 			trimester: 0,
 			thesisNameTH: "",
@@ -82,6 +70,7 @@ const ThesisExamFormCreate = () => {
 			studentID: 0,
 			advisorID: 0,
 			coAdvisorID: 0,
+			examinationDate:""
 		},
 	});
 
@@ -128,15 +117,20 @@ const ThesisExamFormCreate = () => {
 			});
 		}
 	}, [user, reset]);
-
 	useEffect(() => {
-		fetch("/api/getCurrentUser")
-			.then((res) => res.json())
-			.then((data) => setUser(data));
-		fetch("/api/getAdvisor")
-			.then((res) => res.json())
-			.then((data) => setAllAdvisor(data));
-	}, []);
+		const today = new Date();
+		const month = today.getMonth() + 1;
+		const year = today.getFullYear();
+		const date = today.getDate();
+		const currentDate = date + "/" + month + "/" + year;
+		if (user) {
+			reset({
+				...form.getValues(),
+				studentID: user.id,
+				date: currentDate,
+			});
+		}
+	}, [user, reset]);
 
 	const [isDisabled, setIsDisabled] = useState(false);
 
@@ -181,8 +175,8 @@ const ThesisExamFormCreate = () => {
 							</FormLabel>
 							<RadioGroup className="space-y-1 mt-2">
 								<div>
-									<RadioGroupItem
-										checked={user?.educationLevel === "Master"}
+								<RadioGroupItem
+										checked={user?.degree === "Master"}
 										value="Master"
 									/>
 									<FormLabel className="ml-2 font-normal">
@@ -191,7 +185,7 @@ const ThesisExamFormCreate = () => {
 								</div>
 								<div>
 									<RadioGroupItem
-										checked={user?.educationLevel === "Doctoral"}
+										checked={user?.degree === "Doctoral"}
 										value="Doctoral"
 									/>
 									<FormLabel className="ml-2 font-normal">
@@ -200,12 +194,12 @@ const ThesisExamFormCreate = () => {
 								</div>
 							</RadioGroup>
 						</div>
-                        <InputForm value={`${user?.program}`} label="สาขาวิชา / School Of" />
-						<InputForm value={`${user?.institute}`} label="สำนักวิชา / Institute" />
-						<InputForm value={`${user?.program}`} label="หลักสูตร / Program" />
+                        <InputForm value={`${user?.school.schoolName}`} label="สาขาวิชา / School Of" />
+						<InputForm value={`${user?.institute.instituteName}`} label="สำนักวิชา / Institute" />
+						<InputForm value={`${user?.program.programName}`} label="หลักสูตร / Program" />
                         
 						<InputForm
-							value={`${user?.programYear}`}
+							value={`${user?.program.programYear}`}
 							label="ปีหลักสูตร / Program Year"
 						/>
 						
@@ -270,7 +264,7 @@ const ThesisExamFormCreate = () => {
 							</RadioGroup>
                             <FormField
 								control={form.control}
-								name="trimester"
+								name="examinationDate"
 								render={({ field }) => (
 									<div className="flex flex-row items-center my-6 justify-center">
 										<FormItem className="w-auto">
@@ -337,7 +331,7 @@ const ThesisExamFormCreate = () => {
                                 </RadioGroup>
 									<FormField
 								        control={form.control}
-								        name="trimester"
+								        name="thesisNameTH"
 								        render={({ field }) => (
 									    <div className="flex flex-row items-center mt-5 justify-center">
 										    <FormItem className="w-auto">
@@ -358,7 +352,7 @@ const ThesisExamFormCreate = () => {
 								
                                 <FormField
 								        control={form.control}
-								        name="trimester"
+								        name="thesisNameEN"
 								        render={({ field }) => (
 									    <div className="flex flex-row items-center my-5 justify-center">
 										    <FormItem className="w-auto">
