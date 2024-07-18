@@ -11,7 +11,7 @@ import React, { use, useEffect, useState } from "react";
 
 import Image from "next/image";
 import createUser from "@../../../public/asset/createUser.png";
-import CreateUsers from "./creatUsers";
+import CreateUsers from "./createStudentExel";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";

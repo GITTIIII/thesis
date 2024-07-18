@@ -57,7 +57,7 @@ const userProperty = [
   { key: "profileUrl", value: "รูปโปรไฟล์" },
 ];
 
-export default function CreateUsers() {
+export default function CreateStudentExel() {
   const { toast } = useToast();
   const router = useRouter();
   const [disabled, setDisabled] = useState<boolean>(false);

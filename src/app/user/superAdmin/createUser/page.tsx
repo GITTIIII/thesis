@@ -3,8 +3,6 @@
 import Image from "next/image";
 import createUser from "@../../../public/asset/createUser.png";
 
-import CreateUsers from "./creatUsers";
-
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -13,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import CreateAdmin from "./createAdmin";
 import CreateStudent from "./createStudent";
 import CreateCommittee from "./createCommittee";
+import CreateStudentExel from "./createStudentExel";
 
 const CreateUser = () => {
 	return (
@@ -75,7 +74,7 @@ const CreateUser = () => {
 							<CardDescription></CardDescription>
 						</CardHeader>
 						<CardContent>
-							<CreateUsers />
+							<CreateStudentExel />
 						</CardContent>
 					</Card>
 				</TabsContent>
