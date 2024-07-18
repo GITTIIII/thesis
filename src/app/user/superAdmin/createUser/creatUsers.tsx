@@ -299,7 +299,7 @@ export default function CreateUsers() {
 			.catch((error) => {});
 	};
 	return (
-		<div className=" px-20">
+		<div className="px-20">
 			<div className="mt-12 flex gap-4 ">
 				<div className="flex flex-col gap-3 ">
 					<div className="grid w-full items-center gap-1.5">
