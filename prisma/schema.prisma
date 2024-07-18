@@ -70,8 +70,8 @@ model User {
   username        String  @unique
   password        String
   email           String  @unique
-  phone           String
-  sex             String
+  phone           String?
+  sex             String?
   degree          String?
 
   instituteID       Int?

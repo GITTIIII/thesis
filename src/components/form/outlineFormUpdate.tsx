@@ -43,12 +43,12 @@ async function getOutlineFormById(formId: number): Promise<IOutlineForm> {
 	return res.json();
 }
 
-async function getUser() {
+async function getCurrentUser() {
 	const res = await fetch("/api/getCurrentUser");
 	return res.json();
 }
 
-const userPromise = getUser();
+const userPromise = getCurrentUser();
 
 const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 	const router = useRouter();

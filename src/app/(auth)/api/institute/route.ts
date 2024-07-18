@@ -8,10 +8,7 @@ export async function POST(req: Request) {
 		const session = await getServerSession(authOptions);
 
 		if (!session) {
-			return NextResponse.json(
-				{ user: null, message: "Session not found" },
-				{ status: 404 }
-			);
+			return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
 		}
 
 		const body = await req.json();
@@ -25,10 +22,7 @@ export async function POST(req: Request) {
 
 		const { ...rest } = institute;
 
-		return NextResponse.json(
-			{ form: rest, message: "Institute Created" },
-			{ status: 200 }
-		);
+		return NextResponse.json({ form: rest, message: "Institute Created" }, { status: 200 });
 	} catch (error) {
 		return NextResponse.json({ message: error }, { status: 500 });
 	}
@@ -38,21 +32,10 @@ export async function GET() {
 	const session = await getServerSession(authOptions);
 
 	if (!session) {
-        return NextResponse.json(
-            { user: null, message: "Session not found" },
-            { status: 404 }
-        );
-    }
+		return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
+	}
 
-	const institute = await db.institute.findMany({
-		include: {
-			school: {
-				include: {
-					program: true,
-				},
-			},
-		},
-	});
+	const institute = await db.institute.findMany({});
 
 	return NextResponse.json(institute);
 }
@@ -62,20 +45,14 @@ export async function PATCH(req: Request) {
 		const session = await getServerSession(authOptions);
 
 		if (!session) {
-			return NextResponse.json(
-				{ user: null, message: "Session not found" },
-				{ status: 404 }
-			);
+			return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
 		}
 
 		const body = await req.json();
 		const { id, instituteName } = body;
 
 		if (!id) {
-			return NextResponse.json(
-				{ message: "Institute ID is required for update" },
-				{ status: 400 }
-			);
+			return NextResponse.json({ message: "Institute ID is required for update" }, { status: 400 });
 		}
 
 		const existingInstitute = await db.institute.findUnique({
@@ -83,26 +60,19 @@ export async function PATCH(req: Request) {
 		});
 
 		if (!existingInstitute) {
-			return NextResponse.json(
-				{ user: null, message: "Institute not found" },
-				{ status: 404 }
-			);
+			return NextResponse.json({ user: null, message: "Institute not found" }, { status: 404 });
 		}
 
 		const institute = await db.institute.update({
 			where: { id: id },
 			data: {
-				instituteName:
-					instituteName == "" ? existingInstitute.instituteName : instituteName,
+				instituteName: instituteName == "" ? existingInstitute.instituteName : instituteName,
 			},
 		});
 
 		const { ...rest } = institute;
 
-		return NextResponse.json(
-			{ form: rest, message: "institute Updated" },
-			{ status: 200 }
-		);
+		return NextResponse.json({ form: rest, message: "institute Updated" }, { status: 200 });
 	} catch (error) {
 		return NextResponse.json({ message: error }, { status: 500 });
 	}
