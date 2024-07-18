@@ -28,7 +28,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 
-async function getCurrentUser() {
+async function getAllUser() {
   const res = await fetch("/api/user");
   return res.json();
 }
@@ -47,18 +47,18 @@ export default function SuperAdminAdvisorTable({ filterRole }: { filterRole: str
 
   useEffect(() => {
     async function fetchData() {
-      const data = await getCurrentUser();
+      const data = await getAllUser();
       setUserData(data);
-      setUsername(data[0].username);
     }
     fetchData();
   }, []);
 
-  const [selectedUser, setSelectedUser] = useState<IUser | null>(null);
+  const [selectedUser, setSelectedUser] = useState<IUser>();
 
   useEffect(() => {
     const user = userData.find((u) => u.username === username);
-    setSelectedUser(user || null);
+    setSelectedUser(user);
+    console.log(user)
   }, [userData, username]);
 
   return (
@@ -167,16 +167,13 @@ export default function SuperAdminAdvisorTable({ filterRole }: { filterRole: str
                 <Input value={selectedUser?.email} className="col-span-3 disabled" readOnly />
                 <Label className="text-right">เบอร์ติดต่อ</Label>
                 <Input value={selectedUser?.phone} className="col-span-3 disabled" readOnly />
-                <Label className="text-right">ระดับการศึกษา</Label>
-                <Input value={selectedUser?.degree} className="col-span-3 disabled" readOnly />
                 <Label className="text-right">สำนักวิชา</Label>
                 <Input value={selectedUser?.institute.instituteName} className="col-span-3 disabled" readOnly />
                 <Label className="text-right">สาขาวิชา</Label>
                 <Input value={selectedUser?.school.schoolName} className="col-span-3 disabled" readOnly />
-                <Label className="text-right">หลักสูตร</Label>
-                <Input value={selectedUser?.program.programName} className="col-span-3 disabled" readOnly />
-                <Label className="text-right">ปีหลักสูตร</Label>
-                <Input value={selectedUser?.program.programYear} className="col-span-3 disabled" readOnly />
+                <Label className="text-right">ตำเเหน่ง</Label>
+								<Input value={selectedUser?.position} className="col-span-3 disabled" readOnly />
+           
               </div>
             </div>
             <DialogFooter></DialogFooter>
