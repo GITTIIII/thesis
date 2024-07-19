@@ -205,11 +205,11 @@ const AppointmentOutlineFormCreate = () => {
 															? `${
 																	allAdvisor?.find(
 																		(advisor) => advisor.id === field.value
-																	)?.firstName
+																	)?.firstNameTH
 															  } ${
 																	allAdvisor?.find(
 																		(advisor) => advisor.id === field.value
-																	)?.lastName
+																	)?.lastNameTH
 															  }`
 															: "ค้นหารายชึ่อนักศึกษา"}
 														<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -223,7 +223,7 @@ const AppointmentOutlineFormCreate = () => {
 														<CommandEmpty>ไม่พบอาจารย์ที่ปรึกษา</CommandEmpty>
 														{allAdvisor?.map((advisor) => (
 															<CommandItem
-																value={`${advisor.firstName} ${advisor.lastName}`}
+																value={`${advisor.firstNameTH} ${advisor.lastNameTH}`}
 																key={advisor.id}
 																onSelect={() => {
 																	form.setValue("advisorID", advisor.id);
@@ -237,7 +237,7 @@ const AppointmentOutlineFormCreate = () => {
 																			: "opacity-0"
 																	)}
 																/>
-																{`${advisor.firstName} ${advisor.lastName}`}
+																{`${advisor.firstNameTH} ${advisor.lastNameTH}`}
 															</CommandItem>
 														))}
 													</CommandList>
@@ -271,8 +271,8 @@ const AppointmentOutlineFormCreate = () => {
 								</div>
 							)}
 						/>
-						<InputForm value={`${user?.school.schoolName}`} label="สาขาวิชา / School" />
-						<InputForm value={`${user?.program.programName}`} label="หลักสูตร / Program" />
+						<InputForm value={`${user?.school.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${user?.program.programNameTH}`} label="หลักสูตร / Program" />
 						<InputForm
 							value={`${user?.program.programYear}`}
 							label="ปีหลักสูตร / Program Year"

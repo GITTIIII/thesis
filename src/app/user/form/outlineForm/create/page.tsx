@@ -1,6 +1,6 @@
 "use client";
 import learning1 from "@/../../public/asset/learning1.png";
-import OutlineFormCreate from "@/components/form/outlineFormCreate";
+import OutlineFormCreate from "@/components/form/05-outlineForm/05-outlineFormCreate";
 import Stepper from "@/components/stepper/stepper";
 import Image from "next/image";
 

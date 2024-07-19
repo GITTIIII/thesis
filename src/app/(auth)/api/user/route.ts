@@ -9,17 +9,17 @@ export async function POST(req: Request) {
 		const session = await getServerSession(authOptions);
 
 		if (!session) {
-			return NextResponse.json(
-				{ user: null, message: "Session not found" },
-				{ status: 404 }
-			);
+			return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
 		}
-		
+
 		const body = await req.json();
 		const {
+			formLanguage,
 			prefix,
-			firstName,
-			lastName,
+			firstNameTH,
+			lastNameTH,
+			firstNameEN,
+			lastNameEN,
 			username,
 			password,
 			email,
@@ -34,6 +34,8 @@ export async function POST(req: Request) {
 			formState,
 			signatureUrl,
 			profileUrl,
+			advisorID,
+			coAdvisorID,
 		} = body;
 
 		//check if username already exists
@@ -54,18 +56,18 @@ export async function POST(req: Request) {
 		});
 
 		if (existEmail) {
-			return NextResponse.json(
-				{ user: null, message: "อีเมล ถูกใช้เเล้ว" },
-				{ status: 409 }
-			);
+			return NextResponse.json({ user: null, message: "อีเมล ถูกใช้เเล้ว" }, { status: 409 });
 		}
 
 		const hashedPassword = await hash(password, 10);
 		const newUser = await db.user.create({
 			data: {
+				formLanguage,
 				prefix,
-				firstName,
-				lastName,
+				firstNameTH,
+				lastNameTH,
+				firstNameEN,
+				lastNameEN,
 				username,
 				password: hashedPassword,
 				email,
@@ -80,15 +82,14 @@ export async function POST(req: Request) {
 				formState,
 				signatureUrl,
 				profileUrl,
+				advisorID,
+				coAdvisorID,
 			},
 		});
 
 		const { password: newUserPassword, ...rest } = newUser;
 
-		return NextResponse.json(
-			{ user: rest, message: "User Created" },
-			{ status: 201 }
-		);
+		return NextResponse.json({ user: rest, message: "User Created" }, { status: 201 });
 	} catch (error) {
 		return NextResponse.json({ message: "Something wrong!" }, { status: 500 });
 	}
@@ -98,10 +99,7 @@ export async function GET() {
 	const session = await getServerSession(authOptions);
 
 	if (!session) {
-		return NextResponse.json(
-			{ user: null, message: "Session not found" },
-			{ status: 404 }
-		);
+		return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
 	}
 
 	const user = await db.user.findMany({
@@ -123,18 +121,18 @@ export async function PATCH(req: Request) {
 		const session = await getServerSession(authOptions);
 
 		if (!session) {
-			return NextResponse.json(
-				{ user: null, message: "Session not found" },
-				{ status: 404 }
-			);
+			return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
 		}
-		
+
 		const body = await req.json();
 		const {
 			id,
+			formLanguage,
 			prefix,
-			firstName,
-			lastName,
+			firstNameTH,
+			lastNameTH,
+			firstNameEN,
+			lastNameEN,
 			username,
 			password,
 			email,
@@ -149,14 +147,13 @@ export async function PATCH(req: Request) {
 			formState,
 			signatureUrl,
 			profileUrl,
+			advisorID,
+			coAdvisorID,
 		} = body;
 		console.log(body);
 
 		if (!id) {
-			return NextResponse.json(
-				{ message: "User ID is required for update" },
-				{ status: 400 }
-			);
+			return NextResponse.json({ message: "User ID is required for update" }, { status: 400 });
 		}
 
 		const existingUser = await db.user.findUnique({
@@ -164,22 +161,20 @@ export async function PATCH(req: Request) {
 		});
 
 		if (!existingUser) {
-			return NextResponse.json(
-				{ user: null, message: "User not found" },
-				{ status: 404 }
-			);
+			return NextResponse.json({ user: null, message: "User not found" }, { status: 404 });
 		}
 
-		const hashedPassword = password
-			? await hash(password, 10)
-			: existingUser.password;
+		const hashedPassword = password ? await hash(password, 10) : existingUser.password;
 
 		const updatedUser = await db.user.update({
 			where: { id: id },
 			data: {
+				formLanguage: formLanguage || existingUser.formLanguage,
 				prefix: prefix || existingUser.prefix,
-				firstName: firstName || existingUser.firstName,
-				lastName: lastName || existingUser.lastName,
+				firstNameTH: firstNameTH || existingUser.firstNameTH,
+				lastNameTH: lastNameTH || existingUser.lastNameTH,
+				firstNameEN: firstNameEN || existingUser.firstNameEN,
+				lastNameEN: lastNameEN || existingUser.lastNameEN,
 				username: username || existingUser.username,
 				password: hashedPassword,
 				email: email || existingUser.email,
@@ -194,15 +189,14 @@ export async function PATCH(req: Request) {
 				formState: formState || existingUser.formState,
 				signatureUrl: signatureUrl || existingUser.signatureUrl,
 				profileUrl: profileUrl || existingUser.profileUrl,
+				advisorID: advisorID == 0 ? existingUser.advisorID : advisorID,
+				coAdvisorID: coAdvisorID == 0 ? existingUser.coAdvisorID : coAdvisorID,
 			},
 		});
 
 		const { password: updatedUserPassword, ...rest } = updatedUser;
 
-		return NextResponse.json(
-			{ user: rest, message: "User Updated" },
-			{ status: 200 }
-		);
+		return NextResponse.json({ user: rest, message: "User Updated" }, { status: 200 });
 	} catch (error) {
 		return NextResponse.json({ message: error }, { status: 500 });
 	}

@@ -26,6 +26,7 @@ export async function GET(){
             school:true,
             program:true,
             advisor:true,
+            coAdvisor:true,
         }
     });
 

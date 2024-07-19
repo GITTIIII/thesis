@@ -1,6 +1,6 @@
 "use client";
 import learning1 from "@/../../public/asset/learning1.png";
-import ThesisProgressFormCreate from "@/components/form/ThesisProgressFormCreate";
+import ThesisProgressFormCreate from "@/components/form/thesisProgressFormCreate";
 import Image from "next/image";
 
 const ThesisProgressFormCreatePage = () => {

@@ -32,7 +32,8 @@ enum Role{
 
 model Institute{
   id Int          @id @default(autoincrement())
-  instituteName  String @unique
+  instituteNameTH  String 
+  instituteNameEN  String 
 
   user   User[]   @relation("userInstitute")
   
@@ -41,32 +42,32 @@ model Institute{
 
 model School{
   id Int          @id @default(autoincrement())
-  schoolName  String @unique
+  schoolNameTH  String 
+  schoolNameEN  String 
 
   instituteID Int
   institute   Institute   @relation("school", fields: [instituteID], references: [id])
 
   user   User[]    @relation("userSchool")
-
-  program     Program[]   @relation("program")
 }
 
 model Program{
   id Int          @id @default(autoincrement())
-  programName  String @unique
-  programYear String
-
-  schoolID Int
-  school   School   @relation("program", fields: [schoolID], references: [id])
+  programNameTH  String 
+  programNameEN  String 
+  programYear String?
 
   user   User[]    @relation("userProgram")
 }
 
 model User {
   id Int          @id @default(autoincrement())
+  formLanguage    String?
   prefix          String
-  firstName       String
-  lastName        String
+  firstNameTH     String?
+  lastNameTH      String?
+  firstNameEN     String?
+  lastNameEN      String?
   username        String  @unique
   password        String
   email           String  @unique
@@ -88,20 +89,27 @@ model User {
   formState       Int? 
   signatureUrl    String? @db.LongText
   profileUrl      String? @db.LongText
+  
+  //รับรองผู้ทรงคุณวุติ
+  approvedExpert  String?
+  //กรรมกรรมนอก/ใน  
+  committeeType   String?
 
   //นศ. อาจารย์ที่ปรึกษา
   advisorID Int?
   advisor   User?    @relation("advisor", fields: [advisorID], references: [id])
+
+  //นศ. อาจารย์ที่ปรึกษาร่วม
+  coAdvisorID Int?
+  coAdvisor   User?    @relation("coAdvisor", fields: [coAdvisorID], references: [id])
   
-  //อาจารย์ที่ปรึกษามี นศ. หลายคน
-  students     User[]   @relation("advisor")
+  //อาจารย์ที่ปรึกษา เเละ  อาจารย์ที่ปรึกษาร่วม มี นศ. หลายคน
+  advisedStudents User[] @relation("advisor")
+  coAdvisedStudents User[] @relation("coAdvisor")
 
   //นศ. สร้างฟอร์ม
   outlineForm             OutlineForm[]     @relation("formOwner")
-  //เป็นอาจารย์ที่ปรึกษา thesis
-  thesisAdvisor     OutlineForm[]      @relation("thesisAdvisor")
-  //เป็นอาจารย์ที่ปรึกษาร่วม thesis
-  thesisCoAdvisor   OutlineForm[]      @relation("thesisCoAdvisor")
+  
   //เป็นกรรมการโครงร่าง
   outlineCommittee   OutlineForm[]      @relation("outlineCommittee")
   //เป็นกรรมการโครงร่าง
@@ -137,12 +145,6 @@ model OutlineForm {
 
   studentID                    Int
   student        User @relation(fields: [studentID], references: [id], name: "formOwner")
-
-  advisorID                    Int
-  advisor        User @relation(fields: [advisorID], references: [id], name: "thesisAdvisor")
-
-  coAdvisorID                 Int?
-  coAdvisor      User? @relation(fields: [coAdvisorID], references: [id], name: "thesisCoAdvisor")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

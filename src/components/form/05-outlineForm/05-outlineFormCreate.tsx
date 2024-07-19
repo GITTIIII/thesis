@@ -8,19 +8,14 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { IUser } from "@/interface/user";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import signature from "@/../../public/asset/signature.png";
 import Image from "next/image";
 import axios from "axios";
 import qs from "query-string";
-import InputForm from "../inputForm/inputForm";
-import { Label } from "../ui/label";
-import { cn } from "@/lib/utils";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../ui/command";
-import { Textarea } from "../ui/textarea";
+import InputForm from "../../inputForm/inputForm";
+import { Textarea } from "../../ui/textarea";
+import { CircleAlert } from "lucide-react";
 
 const formSchema = z.object({
 	date: z.string(),
@@ -28,8 +23,6 @@ const formSchema = z.object({
 	thesisNameEN: z.string().toUpperCase().min(1, { message: "กรุณากรอกชื่อวิทยานิพนธ์ / Thesis name requierd" }),
 	abstract: z.string().min(1, { message: "กรุณากรอกบทคัดย่อ / Abstract requierd" }),
 	studentID: z.number(),
-	advisorID: z.number().min(1, { message: "กรุณาเลือกอาจารย์ที่ปรึกษา / Please select advisor" }),
-	coAdvisorID: z.number(),
 });
 
 async function getUser() {
@@ -37,18 +30,11 @@ async function getUser() {
 	return res.json();
 }
 
-async function getAllAdvisor() {
-	const res = await fetch("/api/getAdvisor");
-	return res.json();
-}
-
 const userPromise = getUser();
-const allAdvisorPromise = getAllAdvisor();
 
 const OutlineFormCreate = () => {
 	const router = useRouter();
 	const user: IUser = use(userPromise);
-	const allAdvisor: IUser[] = use(allAdvisorPromise);
 	const [loading, setLoading] = useState(false);
 
 	const { toast } = useToast();
@@ -60,8 +46,6 @@ const OutlineFormCreate = () => {
 			thesisNameEN: "",
 			abstract: "",
 			studentID: 0,
-			advisorID: 0,
-			coAdvisorID: 0,
 		},
 	});
 
@@ -124,7 +108,14 @@ const OutlineFormCreate = () => {
 					{/* ฝั่งซ้าย */}
 					<div className="w-full sm:2/4">
 						<h1 className="mb-2 font-bold text-center">ข้อมูลนักศึกษา</h1>
-						<InputForm value={`${user?.firstName} ${user?.lastName}`} label="ชื่อ-นามสกุล / Full Name" />
+						<InputForm
+							value={
+								user.formLanguage == "en"
+									? `${user?.firstNameEN} ${user?.lastNameEN}`
+									: `${user?.firstNameTH} ${user?.lastNameTH}`
+							}
+							label="ชื่อ-นามสกุล / Full Name"
+						/>
 						<InputForm value={`${user?.username} `} label="รหัสนักศึกษา / Student ID" />
 
 						<div className="flex flex-col items-center mb-6 justify-center">
@@ -141,8 +132,22 @@ const OutlineFormCreate = () => {
 							</RadioGroup>
 						</div>
 
-						<InputForm value={`${user?.school.schoolName}`} label="สาขาวิชา / School" />
-						<InputForm value={`${user?.program.programName}`} label="หลักสูตร / Program" />
+						<InputForm
+							value={
+								user.formLanguage == "en"
+									? `${user?.school.schoolNameEN}`
+									: `${user?.school.schoolNameTH}`
+							}
+							label="สาขาวิชา / School"
+						/>
+						<InputForm
+							value={
+								user.formLanguage == "en"
+									? `${user?.program.programNameEN}`
+									: `${user?.program.programNameTH}`
+							}
+							label="หลักสูตร / Program"
+						/>
 						<InputForm value={`${user?.program.programYear}`} label="ปีหลักสูตร / Program Year" />
 					</div>
 
@@ -183,140 +188,21 @@ const OutlineFormCreate = () => {
 								</div>
 							)}
 						/>
-						<FormField
-							control={form.control}
-							name="advisorID"
-							render={({ field }) => (
-								<div className="flex flex-row items-center mb-6 justify-center">
-									<FormItem className="w-auto flex flex-col ">
-										<FormLabel>
-											อาจารย์ที่ปรึกษา / Thesis Advisor <span className="text-red-500">*</span>
-										</FormLabel>
-										<Popover>
-											<PopoverTrigger asChild>
-												<FormControl>
-													<Button
-														variant="outline"
-														role="combobox"
-														className={cn(
-															"w-[300px] justify-between",
-															!field.value && "text-muted-foreground"
-														)}
-													>
-														{field.value
-															? `${
-																	allAdvisor?.find(
-																		(advisor) => advisor.id === field.value
-																	)?.firstName
-															  } ${
-																	allAdvisor?.find(
-																		(advisor) => advisor.id === field.value
-																	)?.lastName
-															  }`
-															: "เลือกอาจารย์ที่ปรึกษา"}
-														<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-													</Button>
-												</FormControl>
-											</PopoverTrigger>
-											<PopoverContent className="w-[200px] p-0">
-												<Command>
-													<CommandInput placeholder="ค้นหาชื่ออาจารย์ที่ปรึกษา" />
-													<CommandList>
-														<CommandEmpty>ไม่พบอาจารย์ที่ปรึกษา</CommandEmpty>
-														{allAdvisor?.map((advisor) => (
-															<CommandItem
-																value={`${advisor.firstName} ${advisor.lastName}`}
-																key={advisor.id}
-																onSelect={() => {
-																	form.setValue("advisorID", advisor.id);
-																}}
-															>
-																<Check
-																	className={cn(
-																		"mr-2 h-4 w-4",
-																		field.value === advisor.id
-																			? "opacity-100"
-																			: "opacity-0"
-																	)}
-																/>
-																{`${advisor.firstName} ${advisor.lastName}`}
-															</CommandItem>
-														))}
-													</CommandList>
-												</Command>
-											</PopoverContent>
-										</Popover>
-
-										<FormMessage />
-									</FormItem>
-								</div>
-							)}
+						<InputForm
+							value={
+								user.formLanguage == "en"
+									? `${user?.advisor?.firstNameEN} ${user?.advisor?.lastNameEN}`
+									: `${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`
+							}
+							label="อาจารย์ที่ปรึกษา / Advisor"
 						/>
-						<FormField
-							control={form.control}
-							name="coAdvisorID"
-							render={({ field }) => (
-								<div className="flex flex-row items-center mb-6 justify-center">
-									<FormItem className="w-auto flex flex-col items-center">
-										<FormLabel>อาจารย์ที่ปรึกษาร่วม(ถ้ามี) / Co-Thesis Advisor (if any)</FormLabel>
-										<Popover>
-											<PopoverTrigger asChild>
-												<FormControl>
-													<Button
-														variant="outline"
-														role="combobox"
-														className={cn(
-															"w-[300px] justify-between",
-															!field.value && "text-muted-foreground"
-														)}
-													>
-														{field.value
-															? `${
-																	allAdvisor?.find(
-																		(advisor) => advisor.id === field.value
-																	)?.firstName
-															  } ${
-																	allAdvisor?.find(
-																		(advisor) => advisor.id === field.value
-																	)?.lastName
-															  }`
-															: "เลือกอาจารย์ที่ปรึกษาร่วม"}
-														<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-													</Button>
-												</FormControl>
-											</PopoverTrigger>
-											<PopoverContent className="w-[200px] p-0">
-												<Command>
-													<CommandInput placeholder="ค้นหาชื่ออาจารย์ที่ปรึกษา" />
-													<CommandList>
-														<CommandEmpty>ไม่พบอาจารย์ที่ปรึกษา</CommandEmpty>
-														{allAdvisor?.map((advisor) => (
-															<CommandItem
-																value={`${advisor.firstName} ${advisor.lastName}`}
-																key={advisor.id}
-																onSelect={() => {
-																	form.setValue("coAdvisorID", advisor.id);
-																}}
-															>
-																<Check
-																	className={cn(
-																		"mr-2 h-4 w-4",
-																		field.value === advisor.id
-																			? "opacity-100"
-																			: "opacity-0"
-																	)}
-																/>
-																{`${advisor.firstName} ${advisor.lastName}`}
-															</CommandItem>
-														))}
-													</CommandList>
-												</Command>
-											</PopoverContent>
-										</Popover>
-										<FormMessage />
-									</FormItem>
-								</div>
-							)}
+						<InputForm
+							value={
+								user.formLanguage == "en"
+									? `${user?.advisor?.firstNameEN} ${user?.advisor?.lastNameEN}`
+									: `${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`
+							}
+							label="อาจารย์ที่ปรึกษาร่วม / Co-advisor"
 						/>
 						<div className="flex flex-col items-center mb-6 justify-center">
 							<FormLabel>ลายเซ็น / Signature</FormLabel>
@@ -349,10 +235,11 @@ const OutlineFormCreate = () => {
 											md:pl-[108px] lg:pl-[144px] 
 											md:pr-[72px]  lg:pr-[96px] 
 											md:pb-[72px]  lg:pb-[96px]"
-										value={field.value}
-										onChange={field.onChange}
-									/>
+											value={field.value}
+											onChange={field.onChange}
+											/>
 								</FormControl>
+								<FormDescription className="flex items-center"> <CircleAlert className="mr-1" />บทคัดย่อต้องมีความยาวไม่เกิน 1 หน้ากระดาษ</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}

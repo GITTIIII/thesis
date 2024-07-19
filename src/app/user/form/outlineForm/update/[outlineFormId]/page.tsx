@@ -1,13 +1,9 @@
 "use client";
 import Image from "next/image";
 import learning1 from "@/../../public/asset/learning1.png";
-import OutlineFormUpdate from "@/components/form/outlineFormUpdate";
+import OutlineFormUpdate from "@/components/form/05-outlineForm/05-outlineFormUpdate";
 
-export default function OutlineFormUpdatePage({
-	params,
-}: {
-	params: { outlineFormId: number };
-}) {
+export default function OutlineFormUpdatePage({ params }: { params: { outlineFormId: number } }) {
 	const outlineFormId = params.outlineFormId;
 	return (
 		<>

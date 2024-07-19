@@ -12,11 +12,12 @@ export async function POST(req: Request) {
 		}
 
 		const body = await req.json();
-		const { schoolName, instituteID } = body;
+		const { schoolNameTH, schoolNameEN, instituteID } = body;
 
 		const school = await db.school.create({
 			data: {
-				schoolName,
+				schoolNameTH,
+				schoolNameEN,
 				instituteID: instituteID == 0 ? null : instituteID,
 			},
 		});
@@ -49,7 +50,7 @@ export async function PATCH(req: Request) {
 		}
 
 		const body = await req.json();
-		const { id, schoolName, instituteID } = body;
+		const { id, schoolNameTH, schoolNameEN, instituteID } = body;
 
 		if (!id) {
 			return NextResponse.json({ message: "School ID is required for update" }, { status: 400 });
@@ -66,7 +67,8 @@ export async function PATCH(req: Request) {
 		const school = await db.school.update({
 			where: { id: id },
 			data: {
-				schoolName: schoolName == "" ? existingSchool.schoolName : schoolName,
+				schoolNameTH: schoolNameTH == "" ? existingSchool.schoolNameTH : schoolNameTH,
+				schoolNameEN: schoolNameEN == "" ? existingSchool.schoolNameEN : schoolNameEN,
 				instituteID: instituteID == 0 ? existingSchool.instituteID : instituteID,
 			},
 		});

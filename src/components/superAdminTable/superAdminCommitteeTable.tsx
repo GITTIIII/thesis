@@ -41,8 +41,8 @@ export default function SuperAdminCommitteeTable({ filterRole }: { filterRole: s
 
 	const filteredData = userData.filter(
 		(user) =>
-			user.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			user.lastName.toLowerCase().includes(searchQuery.toLowerCase())
+			user.firstNameTH.toLowerCase().includes(searchQuery.toLowerCase()) ||
+			user.lastNameTH.toLowerCase().includes(searchQuery.toLowerCase())
 	);
 
 	useEffect(() => {
@@ -59,7 +59,7 @@ export default function SuperAdminCommitteeTable({ filterRole }: { filterRole: s
 	useEffect(() => {
 		const user = userData.find((u) => u.username === username);
 		setSelectedUser(user);
-    console.log(user)
+		console.log(user);
 	}, [userData, username]);
 
 	return (
@@ -115,7 +115,7 @@ export default function SuperAdminCommitteeTable({ filterRole }: { filterRole: s
 							.map((user, index) => (
 								<TableRow key={index}>
 									<TableCell>
-										{user.firstName} {user.lastName}
+										{user.firstNameTH} {user.lastNameTH}
 									</TableCell>
 									<TableCell>{user.email}</TableCell>
 									<TableCell>{user.phone}</TableCell>
@@ -159,14 +159,14 @@ export default function SuperAdminCommitteeTable({ filterRole }: { filterRole: s
 								<Label className="text-right">รหัส</Label>
 								<Input value={selectedUser?.username} className="col-span-3 disabled" readOnly />
 								<Label className="text-right">ชื่อ</Label>
-								<Input value={selectedUser?.firstName} className="col-span-3 disabled" readOnly />
+								<Input value={selectedUser?.firstNameTH} className="col-span-3 disabled" readOnly />
 								<Label className="text-right">นามสกุล</Label>
-								<Input value={selectedUser?.lastName} className="col-span-3 disabled" readOnly />
+								<Input value={selectedUser?.lastNameTH} className="col-span-3 disabled" readOnly />
 								<Label className="text-right">อีเมล</Label>
 								<Input value={selectedUser?.email} className="col-span-3 disabled" readOnly />
 								<Label className="text-right">เบอร์ติดต่อ</Label>
 								<Input value={selectedUser?.phone} className="col-span-3 disabled" readOnly />
-                <Label className="text-right">ตำเเหน่ง</Label>
+								<Label className="text-right">ตำเเหน่ง</Label>
 								<Input value={selectedUser?.position} className="col-span-3 disabled" readOnly />
 							</div>
 						</div>

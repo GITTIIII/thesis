@@ -15,6 +15,7 @@ import {
 	FormLabel,
 	FormMessage,
 } from "@/components/ui/form";
+import { useState } from "react";
 
 const formSchema = z.object({
 	username: z
@@ -28,6 +29,7 @@ const formSchema = z.object({
 const SignInForm = () => {
 	const router = useRouter();
 	const { toast } = useToast();
+	const [loading, setLoading] = useState(false);
 	const form = useForm({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -37,6 +39,7 @@ const SignInForm = () => {
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		setLoading(true);
 		const signInData = await signIn("credentials", {
 			username: values.username,
 			password: values.password,
@@ -114,7 +117,7 @@ const SignInForm = () => {
 						)}
 					/>
 				</div>
-				<Button className="bg-[#F26522] w-2/4 mx-auto text-white rounded-xl">
+				<Button disabled={loading} className="bg-[#F26522] w-2/4 mx-auto text-white rounded-xl">
 					เข้าสู่ระบบ
 				</Button>
 			</form>
