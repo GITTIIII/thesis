@@ -8,21 +8,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { IUser } from "@/interface/user";
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@/components/ui/form";
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import signature from "@/../../public/asset/signature.png";
 import Image from "next/image";
 import axios from "axios";
@@ -32,32 +19,16 @@ import { Label } from "../ui/label";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-} from "../ui/command";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "../ui/command";
 import { Textarea } from "../ui/textarea";
 
 const formSchema = z.object({
 	date: z.string(),
-	thesisNameTH: z
-		.string()
-		.min(1, { message: "กรุณากรอกชื่อวิทยานิพนธ์ / Thesis name requierd" }),
-	thesisNameEN: z
-		.string()
-		.toUpperCase()
-		.min(1, { message: "กรุณากรอกชื่อวิทยานิพนธ์ / Thesis name requierd" }),
-	abstract: z
-		.string()
-		.min(1, { message: "กรุณากรอกบทคัดย่อ / Abstract requierd" }),
+	thesisNameTH: z.string().min(1, { message: "กรุณากรอกชื่อวิทยานิพนธ์ / Thesis name requierd" }),
+	thesisNameEN: z.string().toUpperCase().min(1, { message: "กรุณากรอกชื่อวิทยานิพนธ์ / Thesis name requierd" }),
+	abstract: z.string().min(1, { message: "กรุณากรอกบทคัดย่อ / Abstract requierd" }),
 	studentID: z.number(),
-	advisorID: z
-		.number()
-		.min(1, { message: "กรุณาเลือกอาจารย์ที่ปรึกษา / Please select advisor" }),
+	advisorID: z.number().min(1, { message: "กรุณาเลือกอาจารย์ที่ปรึกษา / Please select advisor" }),
 	coAdvisorID: z.number(),
 });
 
@@ -78,7 +49,7 @@ const OutlineFormCreate = () => {
 	const router = useRouter();
 	const user: IUser = use(userPromise);
 	const allAdvisor: IUser[] = use(allAdvisorPromise);
-	const [loading, setLoading] = useState(false)
+	const [loading, setLoading] = useState(false);
 
 	const { toast } = useToast();
 	const form = useForm({
@@ -95,14 +66,14 @@ const OutlineFormCreate = () => {
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		setLoading(true)
+		setLoading(true);
 		if (!user?.signatureUrl) {
 			toast({
 				title: "Error",
 				description: "ไม่พบลายเซ็น",
 				variant: "destructive",
 			});
-			setLoading(false)
+			setLoading(false);
 			return;
 		}
 		const url = qs.stringifyUrl({
@@ -146,78 +117,49 @@ const OutlineFormCreate = () => {
 		}
 	}, [user, reset]);
 
-	
-
 	return (
 		<Form {...form}>
-			<form
-				onSubmit={form.handleSubmit(onSubmit)}
-				className="w-full h-full bg-white p-4"
-			>
+			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
 					<div className="w-full sm:2/4">
 						<h1 className="mb-2 font-bold text-center">ข้อมูลนักศึกษา</h1>
-						<InputForm
-							value={`${user?.firstName} ${user?.lastName}`}
-							label="ชื่อ-นามสกุล / Full Name"
-						/>
-						<InputForm
-							value={`${user?.username} `}
-							label="รหัสนักศึกษา / Student ID"
-						/>
+						<InputForm value={`${user?.firstName} ${user?.lastName}`} label="ชื่อ-นามสกุล / Full Name" />
+						<InputForm value={`${user?.username} `} label="รหัสนักศึกษา / Student ID" />
 
 						<div className="flex flex-col items-center mb-6 justify-center">
-							<FormLabel className="font-normal">
-								ระดับการศึกษา / Education Level
-							</FormLabel>
+							<FormLabel className="font-normal">ระดับการศึกษา / Education Level</FormLabel>
 							<RadioGroup disabled className="space-y-1 mt-2">
 								<div>
-									<RadioGroupItem
-										checked={user?.degree === "Master"}
-										value="Master"
-									/>
-									<FormLabel className="ml-2 font-normal">
-										ปริญญาโท (Master Degree)
-									</FormLabel>
+									<RadioGroupItem checked={user?.degree === "Master"} value="Master" />
+									<FormLabel className="ml-2 font-normal">ปริญญาโท (Master Degree)</FormLabel>
 								</div>
 								<div>
-									<RadioGroupItem
-										checked={user?.degree === "Doctoral"}
-										value="Doctoral"
-									/>
-									<FormLabel className="ml-2 font-normal">
-										ปริญญาเอก (Doctoral Degree)
-									</FormLabel>
+									<RadioGroupItem checked={user?.degree === "Doctoral"} value="Doctoral" />
+									<FormLabel className="ml-2 font-normal">ปริญญาเอก (Doctoral Degree)</FormLabel>
 								</div>
 							</RadioGroup>
 						</div>
 
 						<InputForm value={`${user?.school.schoolName}`} label="สาขาวิชา / School" />
 						<InputForm value={`${user?.program.programName}`} label="หลักสูตร / Program" />
-						<InputForm
-							value={`${user?.program.programYear}`}
-							label="ปีหลักสูตร / Program Year"
-						/>
+						<InputForm value={`${user?.program.programYear}`} label="ปีหลักสูตร / Program Year" />
 					</div>
 
 					{/* ฝั่งขวา */}
 					<div className="w-full sm:2/4">
-						<h1 className="text-center font-semibold mb-2">
-							ชื่อโครงร่างวิทยานิพนธ์
-						</h1>
+						<h1 className="text-center font-semibold mb-2">ชื่อโครงร่างวิทยานิพนธ์</h1>
 						<FormField
 							control={form.control}
 							name="thesisNameTH"
 							render={({ field }) => (
 								<div className="flex flex-row items-center mb-6 justify-center">
 									<FormItem className="w-auto">
-										<FormLabel>ชื่อภาษาไทย / ThesisName(TH)</FormLabel>
+										<FormLabel>
+											ชื่อภาษาไทย / ThesisName(TH) <span className="text-red-500">*</span>
+										</FormLabel>
 										<FormControl>
-											<Input
-												className="text-sm p-2 w-[300px] m-auto  rounded-lg"
-												{...field}
-											/>
+											<Input className="text-sm p-2 w-[300px] m-auto  rounded-lg" {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -230,12 +172,11 @@ const OutlineFormCreate = () => {
 							render={({ field }) => (
 								<div className="flex flex-row items-center mb-6 justify-center">
 									<FormItem className="w-max">
-										<FormLabel>ชื่อภาษาอังกฤษ / ThesisName(EN)</FormLabel>
+										<FormLabel>
+											ชื่อภาษาอังกฤษ / ThesisName(EN) <span className="text-red-500">*</span>
+										</FormLabel>
 										<FormControl>
-											<Input
-												className="text-sm p-2 w-[300px] m-auto  rounded-lg"
-												{...field}
-											/>
+											<Input className="text-sm p-2 w-[300px] m-auto  rounded-lg" {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -248,7 +189,9 @@ const OutlineFormCreate = () => {
 							render={({ field }) => (
 								<div className="flex flex-row items-center mb-6 justify-center">
 									<FormItem className="w-auto flex flex-col ">
-										<FormLabel>อาจารย์ที่ปรึกษา / Thesis Advisor</FormLabel>
+										<FormLabel>
+											อาจารย์ที่ปรึกษา / Thesis Advisor <span className="text-red-500">*</span>
+										</FormLabel>
 										<Popover>
 											<PopoverTrigger asChild>
 												<FormControl>
@@ -315,9 +258,7 @@ const OutlineFormCreate = () => {
 							render={({ field }) => (
 								<div className="flex flex-row items-center mb-6 justify-center">
 									<FormItem className="w-auto flex flex-col items-center">
-										<FormLabel>
-											อาจารย์ที่ปรึกษาร่วม(ถ้ามี) / Co-Thesis Advisor (if any)
-										</FormLabel>
+										<FormLabel>อาจารย์ที่ปรึกษาร่วม(ถ้ามี) / Co-Thesis Advisor (if any)</FormLabel>
 										<Popover>
 											<PopoverTrigger asChild>
 												<FormControl>
@@ -379,11 +320,7 @@ const OutlineFormCreate = () => {
 						/>
 						<div className="flex flex-col items-center mb-6 justify-center">
 							<FormLabel>ลายเซ็น / Signature</FormLabel>
-							<Button
-								variant="outline"
-								type="button"
-								className="w-60 mt-4 h-max"
-							>
+							<Button variant="outline" type="button" className="w-60 mt-4 h-max">
 								<Image
 									src={user?.signatureUrl ? user?.signatureUrl : signature}
 									width={100}
