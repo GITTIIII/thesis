@@ -6,9 +6,29 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useForm } from "react-hook-form";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import signature from "@/../../public/asset/signature.png";
 import ThesisProcessPlan from "./thesisProcessPlan";
@@ -51,15 +71,15 @@ const defaultprocessPlans: IProcessPlan[] = [
   },
   {
     step: "",
-    months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
   },
   {
     step: "",
-    months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
   },
   {
     step: "",
-    months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
   },
   {
     step: "ปริมาณงานที่วางแผนไว้ (%)",
@@ -154,21 +174,30 @@ const ThesisProgressFormCreate = () => {
     fetch("/api/getAdvisor")
       .then((res) => res.json())
       .then((data) => setAllAdvisor(data));
+    console.log(user);
   }, []);
 
-  const [inputData, setInputData] = useState<string[][]>(Array(14).fill(Array(13).fill("")));
-  const [checkData, setCheckData] = useState<boolean[][]>(Array(14).fill(Array(13).fill(false)));
+  const [inputData, setInputData] = useState<string[][]>(
+    Array(14).fill(Array(13).fill(""))
+  );
+  const [checkData, setCheckData] = useState<boolean[][]>(
+    Array(14).fill(Array(13).fill(false))
+  );
 
   const handleInputChange = (rowIndex: number, colIndex: number, value: string) => {
     const updatedInputData = inputData.map((row, rIndex) =>
-      rIndex === rowIndex ? row.map((col, cIndex) => (cIndex === colIndex ? value : col)) : row
+      rIndex === rowIndex
+        ? row.map((col, cIndex) => (cIndex === colIndex ? value : col))
+        : row
     );
     setInputData(updatedInputData);
   };
 
   const handleCheckboxChange = (rowIndex: number, colIndex: number) => {
     const updatedCheckData = checkData.map((row, rIndex) =>
-      rIndex === rowIndex ? row.map((col, cIndex) => (cIndex === colIndex ? !col : col)) : row
+      rIndex === rowIndex
+        ? row.map((col, cIndex) => (cIndex === colIndex ? !col : col))
+        : row
     );
     setCheckData(updatedCheckData);
   };
@@ -181,6 +210,7 @@ const ThesisProgressFormCreate = () => {
     "ปริมาณงานที่วางแผนไว้ (%)",
     "ปริมาณงานที่ทำได้จริง (%)",
     "งานสะสมที่วางแผนไว้ (%)",
+    "งานสะสมที่ทำได้จริง (%)",
     "งานสะสมที่ทำได้จริง (%)",
   ];
 
@@ -209,7 +239,11 @@ const ThesisProgressFormCreate = () => {
                   <FormItem className="w-auto">
                     <FormLabel>ครั้งที่</FormLabel>
                     <FormControl>
-                      <Input type="int" className="text-sm p-2 w-[300px] rounded-lg" {...field} />
+                      <Input
+                        type="int"
+                        className="text-sm p-2 w-[300px] rounded-lg"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -226,7 +260,11 @@ const ThesisProgressFormCreate = () => {
                     <FormItem className="w-auto">
                       <FormLabel>ประจำภาคการศึกษา</FormLabel>
                       <FormControl>
-                        <Input type="int" className="w-[300px] text-sm p-2 rounded-lg" {...field} />
+                        <Input
+                          type="int"
+                          className="w-[300px] text-sm p-2 rounded-lg"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -234,19 +272,31 @@ const ThesisProgressFormCreate = () => {
                 )}
               />
             </div>
-            <InputForm value={`${user?.firstName} ${user?.lastName}`} label="ชื่อ-นามสกุล / Fullname" />
+            <InputForm
+              value={`${user?.firstName} ${user?.lastName}`}
+              label="ชื่อ-นามสกุล / Fullname"
+            />
             <InputForm value={`${user?.username} `} label="รหัสนักศึกษา / StudentID" />
 
             <div className="w-[300px] flex flex-col items-left mb-6 justify-left mx-auto">
-              <FormLabel className="font-normal">ระดับการศึกษา / Education Level</FormLabel>
+              <FormLabel className="font-normal">
+                ระดับการศึกษา / Education Level
+              </FormLabel>
               <RadioGroup className="space-y-1 mt-2">
                 <div>
                   <RadioGroupItem checked={user?.degree === "Master"} value="Master" />
-                  <FormLabel className="ml-2 font-normal">ปริญญาโท (Master Degree)</FormLabel>
+                  <FormLabel className="ml-2 font-normal">
+                    ปริญญาโท (Master Degree)
+                  </FormLabel>
                 </div>
                 <div>
-                  <RadioGroupItem checked={user?.degree === "Doctoral"} value="Doctoral" />
-                  <FormLabel className="ml-2 font-normal">ปริญญาเอก (Doctoral Degree)</FormLabel>
+                  <RadioGroupItem
+                    checked={user?.degree === "Doctoral"}
+                    value="Doctoral"
+                  />
+                  <FormLabel className="ml-2 font-normal">
+                    ปริญญาเอก (Doctoral Degree)
+                  </FormLabel>
                 </div>
               </RadioGroup>
             </div>
@@ -264,7 +314,10 @@ const ThesisProgressFormCreate = () => {
                     <FormItem className="w-auto">
                       <FormLabel>ชื่อภาษาไทย / ThesisName(TH)</FormLabel>
                       <FormControl>
-                        <Input className="text-sm p-2 w-[300px] m-auto  rounded-lg" {...field} />
+                        <Input
+                          className="text-sm p-2 w-[300px] m-auto  rounded-lg"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -279,7 +332,10 @@ const ThesisProgressFormCreate = () => {
                     <FormItem className="w-auto">
                       <FormLabel>ชื่อภาษาอังกฤษ / ThesisName(EN)</FormLabel>
                       <FormControl>
-                        <Input className="text-sm p-2 w-[300px] m-auto  rounded-lg" {...field} />
+                        <Input
+                          className="text-sm p-2 w-[300px] m-auto  rounded-lg"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -299,7 +355,9 @@ const ThesisProgressFormCreate = () => {
                 <div className=" max-w-full flex flex-row items-center mb-6 justify-center">
                   <FormItem className="w-auto">
                     <FormLabel>อาจารย์ที่ปรึกษา / Thesis Advisor</FormLabel>
-                    <Select onValueChange={(value) => field.onChange(parseInt(value, 10))}>
+                    <Select
+                      onValueChange={(value) => field.onChange(parseInt(value, 10))}
+                    >
                       <FormControl>
                         <SelectTrigger className="text-sm p-2 w-[300px] m-auto  rounded-lg">
                           <SelectValue placeholder="อาจารย์ที่ปรึกษา" defaultValue="" />
@@ -325,20 +383,33 @@ const ThesisProgressFormCreate = () => {
             <div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
               <div className="font-normal text-center mb-5">1. ระดับการดำเนินงาน</div>
 
-              <RadioGroup className="space-y-1 mt-2 justify-center" onValueChange={handleRadioChange}>
+              <RadioGroup
+                className="space-y-1 mt-2 justify-center"
+                onValueChange={handleRadioChange}
+              >
                 <div className="w-[300px]">
                   <RadioGroupItem value="AsPlaned" />
-                  <FormLabel className="ml-2 font-normal">เป็นไปตามแผนที่วางไว้ทุกประการ</FormLabel>
+                  <FormLabel className="ml-2 font-normal">
+                    เป็นไปตามแผนที่วางไว้ทุกประการ
+                  </FormLabel>
                 </div>
                 <div>
                   <RadioGroupItem value="Adjustments" />
-                  <FormLabel className="ml-2 font-normal mb-6">มีการเปลี่ยนแผนที่วางไว้</FormLabel>
-                  <Textarea className="mt-2" placeholder="มีการเปลี่ยนแปลงดังนี้..." disabled={!isDisabled} />
+                  <FormLabel className="ml-2 font-normal mb-6">
+                    มีการเปลี่ยนแผนที่วางไว้
+                  </FormLabel>
+                  <Textarea
+                    className="mt-2"
+                    placeholder="มีการเปลี่ยนแปลงดังนี้..."
+                    disabled={!isDisabled}
+                  />
                 </div>
               </RadioGroup>
             </div>
             <div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
-              <div className="w-full text-center font-normal mb-6">2. ผลการดำเนินงานที่ผ่านมาในครั้งนี้</div>
+              <div className="w-full text-center font-normal mb-6">
+                2. ผลการดำเนินงานที่ผ่านมาในครั้งนี้
+              </div>
               <FormField
                 control={form.control}
                 name="trimester"
@@ -347,7 +418,11 @@ const ThesisProgressFormCreate = () => {
                     <FormItem className="w-auto">
                       <FormLabel>คิดเป็นร้อยละการทำงานของเป้าหมาย</FormLabel>
                       <FormControl>
-                        <Input type="int" className="text-sm p-2 w-[300px] rounded-lg" {...field} />
+                        <Input
+                          type="int"
+                          className="text-sm p-2 w-[300px] rounded-lg"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -374,7 +449,9 @@ const ThesisProgressFormCreate = () => {
               />
             </div>
             <div className="mt-6 w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
-              <div className="w-full text-center font-normal mb-6">3. ปัญหา อุปสรรค และแนวทางแก้ไข</div>
+              <div className="w-full text-center font-normal mb-6">
+                3. ปัญหา อุปสรรค และแนวทางแก้ไข
+              </div>
               <FormField
                 control={form.control}
                 name="trimester"
@@ -408,15 +485,16 @@ const ThesisProgressFormCreate = () => {
         </div>
         <hr className="่่justify-center mx-auto w-3/4 my-5 border-t-2 border-[#eeee]" />
 
-        {/* <ThesisProcessPlan degree={user?.degree} /> */}
         <div className="flex justify-center  w-full mb-10">
-          {/* <ThesisProcessPlan
-            degree={user!.degree}
-            canEdit={true}
-            processPlans={defaultprocessPlans}
-            setProcessPlans={setProcessPlans}
-          /> */}
-          <ThesisProcessPlan degree={user!.degree} processPlans={defaultprocessPlans} />
+          {user?.degree ? (
+            <ThesisProcessPlan
+              degree={user!.degree}
+              canEdit={true}
+              processPlans={defaultprocessPlans}
+              setProcessPlans={setProcessPlans}
+            />
+          ) : null}
+          {/* <ThesisProcessPlan degree={user.degree} processPlans={defaultprocessPlans} /> */}
         </div>
         <div className="w-full flex px-20 lg:flex justify-center">
           <Button
