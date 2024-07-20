@@ -1,12 +1,5 @@
 "use Client";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { use, useEffect, useState } from "react";
@@ -17,20 +10,14 @@ import { IUser } from "@/interface/user";
 const FindStatus = ({ formData }: { formData: IOutlineForm }) => {
 	let status = "";
 
-	if (
-		formData?.outlineCommitteeStatus === "APPROVED" &&
-		formData?.instituteCommitteeStatus === "APPROVED"
-	) {
+	if (formData?.outlineCommitteeStatus === "APPROVED" && formData?.instituteCommitteeStatus === "APPROVED") {
 		status = "approve";
 	} else if (
 		formData?.outlineCommitteeStatus === "NOT_APPROVED" ||
 		formData?.instituteCommitteeStatus === "NOT_APPROVED"
 	) {
 		status = "notApprove";
-	} else if (
-		formData?.outlineCommitteeStatus === null ||
-		formData?.instituteCommitteeStatus === null
-	) {
+	} else if (formData?.outlineCommitteeStatus === null || formData?.instituteCommitteeStatus === null) {
 		status = "waiting";
 	}
 
@@ -45,9 +32,7 @@ const FindStatus = ({ formData }: { formData: IOutlineForm }) => {
 					รอดำเนินการ
 				</div>
 			) : status == "notApprove" ? (
-				<div className="w-24 text-center text-red-500  rounded-xl border-2 border-red-400 py-1">
-					ไม่อนุมัติ
-				</div>
+				<div className="w-24 text-center text-red-500  rounded-xl border-2 border-red-400 py-1">ไม่อนุมัติ</div>
 			) : null}
 		</>
 	);
@@ -76,26 +61,13 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 					<TableHeader>
 						<TableRow>
 							<TableHead className="text-center">ลำดับ</TableHead>
-							<TableHead className="text-center">
-								วันที่สอบ
-							</TableHead>
-							<TableHead className="text-center">
-								รหัสนักศึกษา
-							</TableHead>
-							<TableHead className="text-center">
-								ชื่อ นศ.
-							</TableHead>
-							<TableHead className="text-center">
-								ประเภทฟอร์ม
-							</TableHead>
+							<TableHead className="text-center">วันที่สอบ</TableHead>
+							<TableHead className="text-center">รหัสนักศึกษา</TableHead>
+							<TableHead className="text-center">ชื่อ นศ.</TableHead>
+							<TableHead className="text-center">ประเภทฟอร์ม</TableHead>
 							<TableHead className="text-center">สถานะ</TableHead>
-							<TableHead className="text-center">
-								รายละเอียด
-							</TableHead>
-							<TableHead
-								hidden={userData?.role.toString() != "STUDENT"}
-								className="text-center"
-							>
+							<TableHead className="text-center">รายละเอียด</TableHead>
+							<TableHead hidden={userData?.role.toString() != "STUDENT"} className="text-center">
 								ดาวน์โหลดฟอร์ม
 							</TableHead>
 						</TableRow>
@@ -105,44 +77,32 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 							?.filter(
 								(formData) =>
 									(userData?.role.toString() === "STUDENT" &&
-										userData?.id ===
-											formData?.student?.id) ||
+										userData?.id === formData?.student?.id) ||
 									userData?.role.toString() != "STUDENT"
 							)
 							.map((formData, index) => (
-								<TableRow
-									key={formData.id}
-									className={
-										(index + 1) % 2 == 0
-											? `bg-[#f0c38d3d]`
-											: ""
-									}
-								>
-									<TableCell className="text-center">
-										{index + 1}
-									</TableCell>
+								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
+									<TableCell className="text-center">{index + 1}</TableCell>
 									<TableCell className="text-center">
 										{formData.dateOutlineCommitteeSign
 											? formData.dateOutlineCommitteeSign
 											: "ยังไม่ทำการสอบ"}
 									</TableCell>
+									<TableCell className="text-center">{formData?.student.username}</TableCell>
 									<TableCell className="text-center">
-										{formData?.student.username}
+										{formData.student.formLanguage == "en"
+											? `${formData?.student?.firstNameEN} ${formData?.student?.lastNameEN}`
+											: `${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 									</TableCell>
-									<TableCell className="text-center">{`${formData?.student?.firstName} ${formData?.student?.lastName}`}</TableCell>
-									<TableCell className="text-center">
-										เเบบคำขออนุมัติโครงร่างวิทยานิพนธ์
-									</TableCell>
+									<TableCell className="text-center">เเบบคำขออนุมัติโครงร่างวิทยานิพนธ์</TableCell>
 									<TableCell className="flex justify-center">
 										<FindStatus formData={formData} />
 									</TableCell>
 									<TableCell className="text-[#F26522] text-center">
 										<Link
 											href={
-												(formData.outlineCommitteeID &&
-													formData.instituteCommitteeID) ||
-												userData?.role.toString() ==
-													"STUDENT"
+												(formData.outlineCommitteeID && formData.instituteCommitteeID) ||
+												userData?.role.toString() == "STUDENT"
 													? `/user/form/outlineForm/${formData.id}`
 													: `/user/form/outlineForm/update/${formData.id}`
 											}
@@ -150,19 +110,11 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 											คลิกเพื่อดูเพิ่มเติม
 										</Link>
 									</TableCell>
-									<TableCell
-										hidden={
-											userData?.role.toString() !=
-											"STUDENT"
-										}
-										className="text-center"
-									>
+									<TableCell hidden={userData?.role.toString() != "STUDENT"} className="text-center">
 										<Button
 											disabled={
-												formData?.outlineCommitteeStatus ===
-													"APPROVED" &&
-												formData?.instituteCommitteeStatus ===
-													"APPROVED"
+												formData?.outlineCommitteeStatus === "APPROVED" &&
+												formData?.instituteCommitteeStatus === "APPROVED"
 													? false
 													: true
 											}

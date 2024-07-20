@@ -1,30 +1,44 @@
-import { Institute } from "./institute";
-import { School } from "./school";
-import { Program } from "./program";
+import { IInstitute } from "./institute";
+import { ISchool } from "./school";
+import { IProgram } from "./program";
 
 export type IUser = {
 	id: number;
-	firstName: string;
-	lastName: string;
+	formLanguage: string;
+	prefix: string;
+	firstNameTH: string;
+	lastNameTH: string;
+	firstNameEN: string;
+	lastNameEN: string;
 	username: string;
 	password: string;
 	email: string;
 	phone: string;
 	sex: string;
 	degree: string;
+
 	instituteID: number;
-	institute: Institute;
+	institute: IInstitute;
 
 	schoolID: number;
-	school: School;
+	school: ISchool;
 
 	programID: number;
-	program: Program;
+	program: IProgram;
+
 	position: Position | Position.NONE;
 	role: Role | Role.STUDENT;
 	formState: number;
 	signatureUrl: string;
 	profileUrl: string;
+	approvedExpert: string;
+	committeeType: string;
+
+	advisorID: number;
+	advisor: IUser;
+
+	coAdvisorID: number;
+	coAdvisor: IUser;
 };
 
 enum Position {

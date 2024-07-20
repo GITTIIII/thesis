@@ -24,6 +24,8 @@ const formSchema = z.object({
 	sex: z.string(),
 	position: z.string().min(1, { message: "กรุณาเลือกตำเเหน่ง / Please select position" }),
 	role: z.string(),
+	approvedExpert: z.string().min(1, { message: "กรุณาเลือกการรับรอง / Please select approval" }),
+	committeeType: z.string().min(1, { message: "กรุณาเลือกประเภทกรรมการ / Please select committee type" }),
 });
 
 export default function CreateAdmin() {
@@ -43,6 +45,8 @@ export default function CreateAdmin() {
 			sex: "",
 			position: "",
 			role: "COMMITTEE",
+			approvedExpert: "",
+			committeeType: "",
 		},
 	});
 
@@ -85,7 +89,9 @@ export default function CreateAdmin() {
 						name="prefix"
 						render={({ field }) => (
 							<div className="space-y-1 mb-2">
-								<FormLabel htmlFor="prefix">คำนำหน้า / Prefix <span className="text-red-500">*</span></FormLabel>
+								<FormLabel htmlFor="prefix">
+									คำนำหน้า / Prefix <span className="text-red-500">*</span>
+								</FormLabel>
 								<Select onValueChange={(value) => field.onChange(value)} value={field.value}>
 									<SelectTrigger className="w-[180px]">
 										<SelectValue placeholder="คำนำหน้า" />
@@ -110,7 +116,9 @@ export default function CreateAdmin() {
 						name="firstName"
 						render={({ field }) => (
 							<div className="space-y-1 mb-2">
-								<FormLabel htmlFor="firstName">ชื่อ / First name <span className="text-red-500">*</span></FormLabel>
+								<FormLabel htmlFor="firstName">
+									ชื่อ / First name <span className="text-red-500">*</span>
+								</FormLabel>
 								<Input {...field} />
 								<FormMessage />
 							</div>
@@ -121,7 +129,9 @@ export default function CreateAdmin() {
 						name="lastName"
 						render={({ field }) => (
 							<div className="space-y-1 mb-2">
-								<FormLabel htmlFor="lastName">นามสกุล / Last name <span className="text-red-500">*</span></FormLabel>
+								<FormLabel htmlFor="lastName">
+									นามสกุล / Last name <span className="text-red-500">*</span>
+								</FormLabel>
 								<Input {...field} />
 								<FormMessage />
 							</div>
@@ -132,7 +142,9 @@ export default function CreateAdmin() {
 						name="username"
 						render={({ field }) => (
 							<div className="space-y-1 mb-2">
-								<FormLabel htmlFor="username">ชื่อผู้ใช้ / Username <span className="text-red-500">*</span></FormLabel>
+								<FormLabel htmlFor="username">
+									ชื่อผู้ใช้ / Username <span className="text-red-500">*</span>
+								</FormLabel>
 								<Input {...field} />
 								<FormMessage />
 							</div>
@@ -143,7 +155,9 @@ export default function CreateAdmin() {
 						name="password"
 						render={({ field }) => (
 							<div className="space-y-1 mb-2">
-								<FormLabel htmlFor="password">รหัสผ่าน / Password <span className="text-red-500">*</span></FormLabel>
+								<FormLabel htmlFor="password">
+									รหัสผ่าน / Password <span className="text-red-500">*</span>
+								</FormLabel>
 								<Input {...field} />
 								<FormMessage />
 							</div>
@@ -154,7 +168,9 @@ export default function CreateAdmin() {
 						name="email"
 						render={({ field }) => (
 							<div className="space-y-1 mb-2">
-								<FormLabel htmlFor="email">อีเมล / Email <span className="text-red-500">*</span></FormLabel>
+								<FormLabel htmlFor="email">
+									อีเมล / Email <span className="text-red-500">*</span>
+								</FormLabel>
 								<Input {...field} />
 								<FormMessage />
 							</div>
@@ -197,7 +213,9 @@ export default function CreateAdmin() {
 						name="position"
 						render={({ field }) => (
 							<div className="space-y-1 mb-2">
-								<FormLabel htmlFor="position">ตำเเหน่ง / Position <span className="text-red-500">*</span></FormLabel>
+								<FormLabel htmlFor="position">
+									ตำเเหน่ง / Position <span className="text-red-500">*</span>
+								</FormLabel>
 								<Select onValueChange={(value) => field.onChange(value)} value={field.value}>
 									<SelectTrigger className="w-full">
 										<SelectValue placeholder="ตำเเหน่ง" />
@@ -209,6 +227,52 @@ export default function CreateAdmin() {
 											</SelectItem>
 											<SelectItem value="COMMITTEE_INSTITUTE">กรรมการประจำสำนักวิขา</SelectItem>
 											<SelectItem value="COMMITTEE_EXAMING">กรรมการสอบวิทยานิพนธ์</SelectItem>
+										</SelectGroup>
+									</SelectContent>
+								</Select>
+								<FormMessage />
+							</div>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="approvedExpert"
+						render={({ field }) => (
+							<div className="space-y-1 mb-2">
+								<FormLabel htmlFor="position">
+									การรับรอง / Approval <span className="text-red-500">*</span>
+								</FormLabel>
+								<Select onValueChange={(value) => field.onChange(value)} value={field.value}>
+									<SelectTrigger className="w-full">
+										<SelectValue placeholder="เลือกการรับรอง" />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectGroup>
+											<SelectItem value="approved">รับรองเเล้ว</SelectItem>
+											<SelectItem value="notApproved">ยังไม่รับรอง</SelectItem>
+										</SelectGroup>
+									</SelectContent>
+								</Select>
+								<FormMessage />
+							</div>
+						)}
+					/>
+					<FormField
+						control={form.control}
+						name="committeeType"
+						render={({ field }) => (
+							<div className="space-y-1 mb-2">
+								<FormLabel htmlFor="position">
+									ประเภทกรรมการ / CommitteeType <span className="text-red-500">*</span>
+								</FormLabel>
+								<Select onValueChange={(value) => field.onChange(value)} value={field.value}>
+									<SelectTrigger className="w-full">
+										<SelectValue placeholder="เลือกประเภทกรรมการ" />
+									</SelectTrigger>
+									<SelectContent>
+										<SelectGroup>
+											<SelectItem value="internalCommittee">กรรมการภายนอก</SelectItem>
+											<SelectItem value="externalCommittee">กรรมการภายใน</SelectItem>
 										</SelectGroup>
 									</SelectContent>
 								</Select>

@@ -8,7 +8,17 @@ import { signOut } from "next-auth/react";
 import { use, useEffect, useState } from "react";
 import { IUser } from "@/interface/user";
 import profile from "@../../../public/asset/profile.png";
-import sutLogo from "@../../../public/asset/sutLogo.jpg"
+import sutLogo from "@../../../public/asset/sutLogo.jpg";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
 interface Message {
 	topic: string;
 	information: string;
@@ -21,29 +31,29 @@ type Props = {
 	notification?: boolean;
 };
 
-async function getUser() {
+async function getCurrentUser() {
 	const res = await fetch("/api/getCurrentUser");
 	return res.json();
 }
 
 const Navbar: React.FC<Props> = ({ menu, notification = false }) => {
 	const [user, setUser] = useState<IUser>();
-
+	const router = useRouter();
 	useEffect(() => {
 		async function fetchData() {
-			const data = await getUser();
+			const data = await getCurrentUser();
 			setUser(data);
 		}
 		fetchData();
 	}, []);
-
-	const { ref, isComponentVisible, setIsComponentVisible } =
-		useComponentVisible();
+	if (user?.formLanguage === null && user?.role.toString() == "STUDENT") {
+		router.push("/user/student/selectLanguage");
+	}
+	const { ref, isComponentVisible, setIsComponentVisible } = useComponentVisible();
 	const message = [
 		{
 			topic: "topic 1 ",
-			information:
-				"ชิพเน็ตบุคโมไบล์ทรานแซกชั่นไลบรารี สแกนบิทแอพพลิเคชั่นโค้ด สเปซสแปมอัพเกรดกูเกิล",
+			information: "ชิพเน็ตบุคโมไบล์ทรานแซกชั่นไลบรารี สแกนบิทแอพพลิเคชั่นโค้ด สเปซสแปมอัพเกรดกูเกิล",
 		},
 		{
 			topic: "topic 2 ",
@@ -51,8 +61,7 @@ const Navbar: React.FC<Props> = ({ menu, notification = false }) => {
 		},
 		{
 			topic: "topic 3 ",
-			information:
-				"แฟล็กเคอร์เซอร์เดสก์ท็อปอูบันตู กราฟิกส์ทวีตเวอร์ชันเดลไฟสแปม สกรีนอูบุนตูแพตช์แอพพลิเคชั่น",
+			information: "แฟล็กเคอร์เซอร์เดสก์ท็อปอูบันตู กราฟิกส์ทวีตเวอร์ชันเดลไฟสแปม สกรีนอูบุนตูแพตช์แอพพลิเคชั่น",
 		},
 	];
 	// React.useEffect(() => {
@@ -82,25 +91,43 @@ const Navbar: React.FC<Props> = ({ menu, notification = false }) => {
 					))}
 				</ul>
 				<ul className=" items-center gap-6 flex">
-					<li className=" hidden xl:flex">
-						{notification && <Notification messages={message} />}
-					</li>
+					<li className=" hidden xl:flex">{notification && <Notification messages={message} />}</li>
 					<li className=" hidden md:flex text-gray-700">
 						<div>
 							{user?.role.toString() === "STUDENT"
-								? `${user?.username}  ${user?.firstName} ${user?.lastName}`
-								: user? `${user?.firstName} ${user?.lastName}`:""}
+								? `${user?.username} ${
+										user.formLanguage === "en"
+											? `${user?.firstNameEN} ${user?.lastNameEN}`
+											: `${user?.firstNameTH} ${user?.lastNameTH}`
+								  }`
+								: user
+								? `${user?.firstNameTH} ${user?.lastNameTH}`
+								: ""}
 						</div>
 					</li>
 					<li>
 						<Link href="">
 							<div className="h-12 w-12 rounded-full border-[#6E6D70] content-center items-center overflow-hidden  hidden md:flex animate-fade-up animate-once">
-								<Image
-									src={user?.profileUrl ? user?.profileUrl : profile}
-									width={48}
-									height={48}
-									alt="Profile"
-								/>
+								<DropdownMenu>
+									<DropdownMenuTrigger asChild>
+										<Button variant="outline" size="icon" className="overflow-hidden rounded-full">
+											<Image
+												src={user?.profileUrl ? user?.profileUrl : profile}
+												width={48}
+												height={48}
+												alt="Profile"
+											/>
+										</Button>
+									</DropdownMenuTrigger>
+									<DropdownMenuContent align="end">
+										<DropdownMenuLabel>บัญชีของฉัน</DropdownMenuLabel>
+										<DropdownMenuSeparator />
+										<DropdownMenuItem>การตั้งค่า</DropdownMenuItem>
+										<DropdownMenuItem>ช่วยเหลือ</DropdownMenuItem>
+										<DropdownMenuSeparator />
+										<DropdownMenuItem>ออกจากระบบ</DropdownMenuItem>
+									</DropdownMenuContent>
+								</DropdownMenu>
 							</div>
 						</Link>
 					</li>
@@ -143,8 +170,14 @@ const Navbar: React.FC<Props> = ({ menu, notification = false }) => {
 						className="block px-4 py-2  hover:bg-gray-100 border-b-2 text-center md:hidden transition-colors duration-200"
 					>
 						{user?.role.toString() === "STUDENT"
-							? `${user?.username}  ${user?.firstName} ${user?.lastName}`
-							:user? `${user?.firstName} ${user?.lastName}`:""}
+							? `${user?.username} ${
+									user.formLanguage === "th"
+										? `${user?.firstNameTH} ${user?.lastNameTH}`
+										: `${user?.firstNameEN} ${user?.lastNameEN}`
+							  }`
+							: user
+							? `${user?.firstNameTH} ${user?.lastNameTH}`
+							: ""}
 					</Link>
 					<Link
 						href="/"
@@ -165,8 +198,7 @@ const Navbar: React.FC<Props> = ({ menu, notification = false }) => {
 };
 export default Navbar;
 const Notification: React.FC<{ messages: Message[] }> = ({ messages }) => {
-	const { ref, isComponentVisible, setIsComponentVisible } =
-		useComponentVisible();
+	const { ref, isComponentVisible, setIsComponentVisible } = useComponentVisible();
 	return (
 		<div
 			className=" relative inline-block"
@@ -178,18 +210,9 @@ const Notification: React.FC<{ messages: Message[] }> = ({ messages }) => {
 				<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#F26522] opacity-75"></span>
 				<span className="relative inline-flex rounded-full h-2 w-2 bg-[#F26522]"></span>
 			</span>
-			<svg
-				viewBox="0 0 24 24"
-				fill="none"
-				xmlns="http://www.w3.org/2000/svg"
-				className="h-7 "
-			>
+			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-7 ">
 				<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-				<g
-					id="SVGRepo_tracerCarrier"
-					strokeLinecap="round"
-					strokeLinejoin="round"
-				></g>
+				<g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
 				<g id="SVGRepo_iconCarrier">
 					<path
 						d="M12.02 2.90991C8.70997 2.90991 6.01997 5.59991 6.01997 8.90991V11.7999C6.01997 12.4099 5.75997 13.3399 5.44997 13.8599L4.29997 15.7699C3.58997 16.9499 4.07997 18.2599 5.37997 18.6999C9.68997 20.1399 14.34 20.1399 18.65 18.6999C19.86 18.2999 20.39 16.8699 19.73 15.7699L18.58 13.8599C18.28 13.3399 18.02 12.4099 18.02 11.7999V8.90991C18.02 5.60991 15.32 2.90991 12.02 2.90991Z"
@@ -238,18 +261,9 @@ const Notification: React.FC<{ messages: Message[] }> = ({ messages }) => {
 
 const Logout = () => {
 	return (
-		<svg
-			viewBox="0 0 24 24"
-			fill="none"
-			xmlns="http://www.w3.org/2000/svg"
-			className="h-7 "
-		>
+		<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-7 ">
 			<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-			<g
-				id="SVGRepo_tracerCarrier"
-				strokeLinecap="round"
-				strokeLinejoin="round"
-			></g>
+			<g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
 			<g id="SVGRepo_iconCarrier">
 				<path
 					d="M15 16.5V19C15 20.1046 14.1046 21 13 21H6C4.89543 21 4 20.1046 4 19V5C4 3.89543 4.89543 3 6 3H13C14.1046 3 15 3.89543 15 5V8.0625M11 12H21M21 12L18.5 9.5M21 12L18.5 14.5"
@@ -265,38 +279,13 @@ const Logout = () => {
 const Hamburger = () => {
 	return (
 		<>
-			<svg
-				viewBox="0 0 24 24"
-				fill="none"
-				xmlns="http://www.w3.org/2000/svg"
-				stroke="#000000"
-				className="h-7 "
-			>
+			<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#000000" className="h-7 ">
 				<g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-				<g
-					id="SVGRepo_tracerCarrier"
-					strokeLinecap="round"
-					strokeLinejoin="round"
-				></g>
+				<g id="SVGRepo_tracerCarrier" strokeLinecap="round" strokeLinejoin="round"></g>
 				<g id="SVGRepo_iconCarrier">
-					<path
-						d="M20 7L4 7"
-						stroke="#6E6D70"
-						strokeWidth="1.5"
-						strokeLinecap="round"
-					></path>
-					<path
-						d="M20 12L4 12"
-						stroke="#6E6D70"
-						strokeWidth="1.5"
-						strokeLinecap="round"
-					></path>
-					<path
-						d="M20 17L4 17"
-						stroke="#6E6D70"
-						strokeWidth="1.5"
-						strokeLinecap="round"
-					></path>
+					<path d="M20 7L4 7" stroke="#6E6D70" strokeWidth="1.5" strokeLinecap="round"></path>
+					<path d="M20 12L4 12" stroke="#6E6D70" strokeWidth="1.5" strokeLinecap="round"></path>
+					<path d="M20 17L4 17" stroke="#6E6D70" strokeWidth="1.5" strokeLinecap="round"></path>
 				</g>
 			</svg>
 		</>

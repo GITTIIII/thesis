@@ -8,22 +8,11 @@ export async function POST(req: Request) {
 		const session = await getServerSession(authOptions);
 
 		if (!session) {
-			return NextResponse.json(
-				{ user: null, message: "Session not found" },
-				{ status: 404 }
-			);
+			return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
 		}
 
 		const body = await req.json();
-		const {
-			date,
-			thesisNameTH,
-			thesisNameEN,
-			abstract,
-			advisorID,
-			coAdvisorID,
-			studentID,
-		} = body;
+		const { date, thesisNameTH, thesisNameEN, abstract, processPlan, studentID } = body;
 
 		const newForm = await db.outlineForm.create({
 			data: {
@@ -31,18 +20,14 @@ export async function POST(req: Request) {
 				thesisNameTH,
 				thesisNameEN,
 				abstract,
-				advisorID: advisorID === 0 ? null : advisorID,
-				coAdvisorID: coAdvisorID === 0 ? null : coAdvisorID,
+				processPlan,
 				studentID: studentID === 0 ? null : studentID,
 			},
 		});
 
 		const { ...rest } = newForm;
 
-		return NextResponse.json(
-			{ form: rest, message: "Form Created" },
-			{ status: 200 }
-		);
+		return NextResponse.json({ form: rest, message: "Form Created" }, { status: 200 });
 	} catch (error) {
 		return NextResponse.json({ message: error }, { status: 500 });
 	}
@@ -52,17 +37,12 @@ export async function GET() {
 	const session = await getServerSession(authOptions);
 
 	if (!session) {
-		return NextResponse.json(
-			{ user: null, message: "Session not found" },
-			{ status: 404 }
-		);
+		return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
 	}
 
 	const outlineForm = await db.outlineForm.findMany({
 		include: {
 			student: true,
-			advisor: true,
-			coAdvisor: true,
 		},
 	});
 
@@ -74,10 +54,7 @@ export async function PATCH(req: Request) {
 		const session = await getServerSession(authOptions);
 
 		if (!session) {
-			return NextResponse.json(
-				{ user: null, message: "Session not found" },
-				{ status: 404 }
-			);
+			return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
 		}
 
 		const body = await req.json();
@@ -87,24 +64,22 @@ export async function PATCH(req: Request) {
 			thesisNameTH,
 			thesisNameEN,
 			abstract,
-			advisorID,
-			coAdvisorID,
+			processPlan,
 			studentID,
 			outlineCommitteeID,
 			outlineCommitteeStatus,
 			outlineCommitteeComment,
+			outlineCommitteeSignUrl,
 			dateOutlineCommitteeSign,
 			instituteCommitteeID,
 			instituteCommitteeStatus,
 			instituteCommitteeComment,
+			instituteCommitteeSignUrl,
 			dateInstituteCommitteeSign,
 		} = body;
 
 		if (!id) {
-			return NextResponse.json(
-				{ message: "Form ID is required for update" },
-				{ status: 400 }
-			);
+			return NextResponse.json({ message: "Form ID is required for update" }, { status: 400 });
 		}
 
 		const existingOutlineForm = await db.outlineForm.findUnique({
@@ -112,10 +87,7 @@ export async function PATCH(req: Request) {
 		});
 
 		if (!existingOutlineForm) {
-			return NextResponse.json(
-				{ user: null, message: "Form not found" },
-				{ status: 404 }
-			);
+			return NextResponse.json({ user: null, message: "Form not found" }, { status: 404 });
 		}
 
 		const newForm = await db.outlineForm.update({
@@ -125,30 +97,27 @@ export async function PATCH(req: Request) {
 				thesisNameTH,
 				thesisNameEN,
 				abstract,
-				advisorID: advisorID === 0 ? null : advisorID,
-				coAdvisorID: coAdvisorID === 0 ? null : coAdvisorID,
+				processPlan,
 				studentID: studentID === 0 ? null : studentID,
 
 				outlineCommitteeID:
-					outlineCommitteeID == 0
-						? existingOutlineForm.outlineCommitteeID
-						: outlineCommitteeID,
+					outlineCommitteeID == 0 ? existingOutlineForm.outlineCommitteeID : outlineCommitteeID,
 				outlineCommitteeStatus:
-					outlineCommitteeStatus == ""
-						? existingOutlineForm.outlineCommitteeStatus
-						: outlineCommitteeStatus,
+					outlineCommitteeStatus == "" ? existingOutlineForm.outlineCommitteeStatus : outlineCommitteeStatus,
 				outlineCommitteeComment:
 					outlineCommitteeComment == ""
 						? existingOutlineForm.outlineCommitteeComment
 						: outlineCommitteeComment,
+				outlineCommitteeSignUrl:
+					outlineCommitteeSignUrl == ""
+						? existingOutlineForm.outlineCommitteeSignUrl
+						: outlineCommitteeSignUrl,
 				dateOutlineCommitteeSign:
 					dateOutlineCommitteeSign == ""
 						? existingOutlineForm.dateOutlineCommitteeSign
 						: dateOutlineCommitteeSign,
 				instituteCommitteeID:
-					instituteCommitteeID == 0
-						? existingOutlineForm.instituteCommitteeID
-						: instituteCommitteeID,
+					instituteCommitteeID == 0 ? existingOutlineForm.instituteCommitteeID : instituteCommitteeID,
 				instituteCommitteeStatus:
 					instituteCommitteeStatus == ""
 						? existingOutlineForm.instituteCommitteeStatus
@@ -157,6 +126,10 @@ export async function PATCH(req: Request) {
 					instituteCommitteeComment == ""
 						? existingOutlineForm.instituteCommitteeComment
 						: instituteCommitteeComment,
+				instituteCommitteeSignUrl:
+					instituteCommitteeSignUrl == ""
+						? existingOutlineForm.instituteCommitteeSignUrl
+						: instituteCommitteeSignUrl,
 				dateInstituteCommitteeSign:
 					dateInstituteCommitteeSign == ""
 						? existingOutlineForm.dateInstituteCommitteeSign
@@ -166,10 +139,7 @@ export async function PATCH(req: Request) {
 
 		const { ...rest } = newForm;
 
-		return NextResponse.json(
-			{ form: rest, message: "Form Updated" },
-			{ status: 200 }
-		);
+		return NextResponse.json({ form: rest, message: "Form Updated" }, { status: 200 });
 	} catch (error) {
 		return NextResponse.json({ message: error }, { status: 500 });
 	}

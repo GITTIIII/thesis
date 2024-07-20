@@ -24,8 +24,8 @@ import { ISchool } from "@/interface/school";
 
 const formSchema = z.object({
 	prefix: z.string().min(1, { message: "กรุณาเลือกคำนำหน้า / Please select prefix" }),
-	firstName: z.string().min(1, { message: "กรุณากรอกชื่อ / First name requierd" }),
-	lastName: z.string().min(1, { message: "กรุณากรอกนามสกุล / Last name requierd" }),
+	firstNameTH: z.string().min(1, { message: "กรุณากรอกชื่อ / First name requierd" }),
+	lastNameTH: z.string().min(1, { message: "กรุณากรอกนามสกุล / Last name requierd" }),
 	username: z.string().min(1, { message: "กรุณากรอกรชื่อผู้ใช้ / Username requierd" }),
 	password: z.string().min(1, { message: "กรุณากรอกรหัสผ่าน / Password requierd" }),
 	email: z.string().min(1, { message: "กรุณาอีเมล / Email requierd" }),
@@ -60,8 +60,8 @@ export default function CreateAdmin() {
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			prefix: "",
-			firstName: "",
-			lastName: "",
+			firstNameTH: "",
+			lastNameTH: "",
 			username: "",
 			password: "",
 			email: "",
@@ -147,7 +147,7 @@ export default function CreateAdmin() {
 					/>
 					<FormField
 						control={form.control}
-						name="firstName"
+						name="firstNameTH"
 						render={({ field }) => (
 							<div className="space-y-1 mb-2">
 								<FormLabel htmlFor="firstName">
@@ -160,7 +160,7 @@ export default function CreateAdmin() {
 					/>
 					<FormField
 						control={form.control}
-						name="lastName"
+						name="lastNameTH"
 						render={({ field }) => (
 							<div className="space-y-1 mb-2">
 								<FormLabel htmlFor="lastName">
@@ -292,7 +292,7 @@ export default function CreateAdmin() {
 													? `${
 															instituteData?.find(
 																(instituteData) => instituteData.id === field.value
-															)?.instituteName
+															)?.instituteNameTH
 													  } `
 													: "เลือกสำนักวิชา"}
 												<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -306,7 +306,7 @@ export default function CreateAdmin() {
 												<CommandEmpty>ไม่พบสำนักวิชา</CommandEmpty>
 												{instituteData?.map((instituteData) => (
 													<CommandItem
-														value={`${instituteData.instituteName}`}
+														value={`${instituteData.instituteNameTH}`}
 														key={instituteData.id}
 														onSelect={() => {
 															form.setValue("instituteID", instituteData.id);
@@ -320,7 +320,7 @@ export default function CreateAdmin() {
 																	: "opacity-0"
 															)}
 														/>
-														{instituteData.instituteName}
+														{instituteData.instituteNameTH}
 													</CommandItem>
 												))}
 											</CommandList>
@@ -354,7 +354,7 @@ export default function CreateAdmin() {
 													? `${
 															schoolData?.find(
 																(schoolData) => schoolData.id === field.value
-															)?.schoolName
+															)?.schoolNameTH
 													  } `
 													: "เลือกสาขาวิชา"}
 												<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -373,7 +373,7 @@ export default function CreateAdmin() {
 													)
 													.map((schoolData) => (
 														<CommandItem
-															value={`${schoolData.schoolName}`}
+															value={`${schoolData.schoolNameTH}`}
 															key={schoolData.id}
 															onSelect={() => {
 																form.setValue("schoolID", schoolData.id);
@@ -387,7 +387,7 @@ export default function CreateAdmin() {
 																		: "opacity-0"
 																)}
 															/>
-															{schoolData.schoolName}
+															{schoolData.schoolNameTH}
 														</CommandItem>
 													))}
 											</CommandList>

@@ -23,6 +23,13 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 		where: {
 			id: Number(userId),
 		},
+		include:{
+            institute:true,
+            school:true,
+            program:true,
+            advisor:true,
+            coAdvisor:true,
+        }
 	});
 
 	if (!user) {

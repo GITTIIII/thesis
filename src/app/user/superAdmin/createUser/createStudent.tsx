@@ -329,7 +329,7 @@ export default function CreateStudent() {
 													? `${
 															instituteData?.find(
 																(instituteData) => instituteData.id === field.value
-															)?.instituteName
+															)?.instituteNameTH
 													  } `
 													: "เลือกสำนักวิชา"}
 												<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -343,7 +343,7 @@ export default function CreateStudent() {
 												<CommandEmpty>ไม่พบสำนักวิชา</CommandEmpty>
 												{instituteData?.map((instituteData) => (
 													<CommandItem
-														value={`${instituteData.instituteName}`}
+														value={`${instituteData.instituteNameTH}`}
 														key={instituteData.id}
 														onSelect={() => {
 															form.setValue("instituteID", instituteData.id);
@@ -357,7 +357,7 @@ export default function CreateStudent() {
 																	: "opacity-0"
 															)}
 														/>
-														{instituteData.instituteName}
+														{instituteData.instituteNameTH}
 													</CommandItem>
 												))}
 											</CommandList>
@@ -391,7 +391,7 @@ export default function CreateStudent() {
 													? `${
 															schoolData?.find(
 																(schoolData) => schoolData.id === field.value
-															)?.schoolName
+															)?.schoolNameTH
 													  } `
 													: "เลือกสาขาวิชา"}
 												<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -410,7 +410,7 @@ export default function CreateStudent() {
 													)
 													.map((schoolData) => (
 														<CommandItem
-															value={`${schoolData.schoolName}`}
+															value={`${schoolData.schoolNameTH}`}
 															key={schoolData.id}
 															onSelect={() => {
 																form.setValue("schoolID", schoolData.id);
@@ -424,7 +424,7 @@ export default function CreateStudent() {
 																		: "opacity-0"
 																)}
 															/>
-															{schoolData.schoolName}
+															{schoolData.schoolNameTH}
 														</CommandItem>
 													))}
 											</CommandList>
@@ -458,7 +458,7 @@ export default function CreateStudent() {
 													? `${
 															programData?.find(
 																(programData) => programData.id === field.value
-															)?.programName
+															)?.programNameTH
 													  } `
 													: "เลือกหลักสูตร"}
 												<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -470,29 +470,25 @@ export default function CreateStudent() {
 											<CommandInput placeholder="ค้นหาหลักสูตร" />
 											<CommandList>
 												<CommandEmpty>ไม่พบหลักสูตร</CommandEmpty>
-												{programData
-													?.filter(
-														(programData) => programData.schoolID == form.watch("schoolID")
-													)
-													.map((programData) => (
-														<CommandItem
-															value={`${programData.programName}`}
-															key={programData.id}
-															onSelect={() => {
-																form.setValue("programID", programData.id);
-															}}
-														>
-															<Check
-																className={cn(
-																	"mr-2 h-4 w-4",
-																	field.value === programData.id
-																		? "opacity-100"
-																		: "opacity-0"
-																)}
-															/>
-															{programData.programName}
-														</CommandItem>
-													))}
+												{programData.map((programData) => (
+													<CommandItem
+														value={`${programData.programNameTH}`}
+														key={programData.id}
+														onSelect={() => {
+															form.setValue("programID", programData.id);
+														}}
+													>
+														<Check
+															className={cn(
+																"mr-2 h-4 w-4",
+																field.value === programData.id
+																	? "opacity-100"
+																	: "opacity-0"
+															)}
+														/>
+														{programData.programNameTH}
+													</CommandItem>
+												))}
 											</CommandList>
 										</Command>
 									</PopoverContent>
@@ -523,10 +519,10 @@ export default function CreateStudent() {
 												{field.value
 													? `${
 															allAdvisor?.find((advisor) => advisor.id === field.value)
-																?.firstName
+																?.firstNameTH
 													  } ${
 															allAdvisor?.find((advisor) => advisor.id === field.value)
-																?.lastName
+																?.lastNameTH
 													  }`
 													: "เลือกอาจารย์ที่ปรึกษา"}
 												<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -544,7 +540,7 @@ export default function CreateStudent() {
 													)
 													.map((advisor) => (
 														<CommandItem
-															value={`${advisor.firstName} ${advisor.lastName}`}
+															value={`${advisor.firstNameTH} ${advisor.lastNameTH}`}
 															key={advisor.id}
 															onSelect={() => {
 																form.setValue("advisorID", advisor.id);
@@ -558,7 +554,7 @@ export default function CreateStudent() {
 																		: "opacity-0"
 																)}
 															/>
-															{`${advisor.firstName} ${advisor.lastName}`}
+															{`${advisor.firstNameTH} ${advisor.lastNameTH}`}
 														</CommandItem>
 													))}
 											</CommandList>
