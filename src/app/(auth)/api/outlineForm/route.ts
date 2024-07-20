@@ -12,7 +12,7 @@ export async function POST(req: Request) {
 		}
 
 		const body = await req.json();
-		const { date, thesisNameTH, thesisNameEN, abstract, processPlan, studentID } = body;
+		const { date, thesisNameTH, thesisNameEN, abstract, processPlan, times, studentID } = body;
 
 		const newForm = await db.outlineForm.create({
 			data: {
@@ -21,6 +21,7 @@ export async function POST(req: Request) {
 				thesisNameEN,
 				abstract,
 				processPlan,
+				times,
 				studentID: studentID === 0 ? null : studentID,
 			},
 		});
@@ -65,6 +66,7 @@ export async function PATCH(req: Request) {
 			thesisNameEN,
 			abstract,
 			processPlan,
+			times,
 			studentID,
 			outlineCommitteeID,
 			outlineCommitteeStatus,
@@ -94,46 +96,26 @@ export async function PATCH(req: Request) {
 			where: { id: id },
 			data: {
 				date,
-				thesisNameTH,
-				thesisNameEN,
-				abstract,
-				processPlan,
-				studentID: studentID === 0 ? null : studentID,
+				thesisNameTH: thesisNameTH || existingOutlineForm.thesisNameTH,
+				thesisNameEN: thesisNameEN || existingOutlineForm.thesisNameEN,
+				abstract: abstract || existingOutlineForm.abstract,
+				processPlan: processPlan || existingOutlineForm.processPlan,
+				times: times === 0 ? existingOutlineForm.times : times,
+				studentID: studentID === 0 ? existingOutlineForm.studentID : studentID,
 
 				outlineCommitteeID:
 					outlineCommitteeID == 0 ? existingOutlineForm.outlineCommitteeID : outlineCommitteeID,
-				outlineCommitteeStatus:
-					outlineCommitteeStatus == "" ? existingOutlineForm.outlineCommitteeStatus : outlineCommitteeStatus,
-				outlineCommitteeComment:
-					outlineCommitteeComment == ""
-						? existingOutlineForm.outlineCommitteeComment
-						: outlineCommitteeComment,
-				outlineCommitteeSignUrl:
-					outlineCommitteeSignUrl == ""
-						? existingOutlineForm.outlineCommitteeSignUrl
-						: outlineCommitteeSignUrl,
-				dateOutlineCommitteeSign:
-					dateOutlineCommitteeSign == ""
-						? existingOutlineForm.dateOutlineCommitteeSign
-						: dateOutlineCommitteeSign,
+				outlineCommitteeStatus: outlineCommitteeStatus || existingOutlineForm.outlineCommitteeStatus,
+				outlineCommitteeComment: outlineCommitteeComment || existingOutlineForm.outlineCommitteeComment,
+				outlineCommitteeSignUrl: outlineCommitteeSignUrl || existingOutlineForm.outlineCommitteeSignUrl,
+				dateOutlineCommitteeSign: dateOutlineCommitteeSign || existingOutlineForm.dateOutlineCommitteeSign,
 				instituteCommitteeID:
 					instituteCommitteeID == 0 ? existingOutlineForm.instituteCommitteeID : instituteCommitteeID,
-				instituteCommitteeStatus:
-					instituteCommitteeStatus == ""
-						? existingOutlineForm.instituteCommitteeStatus
-						: instituteCommitteeStatus,
-				instituteCommitteeComment:
-					instituteCommitteeComment == ""
-						? existingOutlineForm.instituteCommitteeComment
-						: instituteCommitteeComment,
-				instituteCommitteeSignUrl:
-					instituteCommitteeSignUrl == ""
-						? existingOutlineForm.instituteCommitteeSignUrl
-						: instituteCommitteeSignUrl,
+				instituteCommitteeStatus: instituteCommitteeStatus || existingOutlineForm.instituteCommitteeStatus,
+				instituteCommitteeComment: instituteCommitteeComment || existingOutlineForm.instituteCommitteeComment,
+				instituteCommitteeSignUrl: instituteCommitteeSignUrl || existingOutlineForm.instituteCommitteeSignUrl,
 				dateInstituteCommitteeSign:
-					dateInstituteCommitteeSign == ""
-						? existingOutlineForm.dateInstituteCommitteeSign
-						: dateInstituteCommitteeSign,
+					dateInstituteCommitteeSign || existingOutlineForm.dateInstituteCommitteeSign,
 			},
 		});
 

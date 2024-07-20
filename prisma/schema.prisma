@@ -95,11 +95,11 @@ model User {
   //กรรมกรรมนอก/ใน  
   committeeType   String?
 
-  //นศ. อาจารย์ที่ปรึกษา
+  //นศ. มีอาจารย์ที่ปรึกษา
   advisorID Int?
   advisor   User?    @relation("advisor", fields: [advisorID], references: [id])
 
-  //นศ. อาจารย์ที่ปรึกษาร่วม
+  //นศ. มีอาจารย์ที่ปรึกษาร่วม
   coAdvisorID Int?
   coAdvisor   User?    @relation("coAdvisor", fields: [coAdvisorID], references: [id])
   
@@ -108,11 +108,12 @@ model User {
   coAdvisedStudents User[] @relation("coAdvisor")
 
   //นศ. สร้างฟอร์ม
-  outlineForm             OutlineForm[]     @relation("formOwner")
+  outlineForm             OutlineForm[]     @relation("outlineFormOwner")
+  comprehensiveExamCommitteeForm             ComprehensiveExamCommitteeForm[]     @relation("comprehensiveExamCommitteeFormOwner")
   
-  //เป็นกรรมการโครงร่าง
+  //เป็นกรรมการโครงร่างในฟอมโครงร่าง
   outlineCommittee   OutlineForm[]      @relation("outlineCommittee")
-  //เป็นกรรมการโครงร่าง
+  //เป็นกรรมการสำนักในฟอมโครงร่าง
   instituteCommittee   OutlineForm[]      @relation("instituteCommittee")
 
   createdAt DateTime @default(now())
@@ -126,6 +127,7 @@ model OutlineForm {
   thesisNameEN                 String
   abstract                     String @db.Text
   processPlan                  Json?
+  times Int
 
   //กรรมการโครงร่าง
   outlineCommitteeStatus      String?
@@ -144,8 +146,28 @@ model OutlineForm {
   instituteCommittee        User? @relation(fields: [instituteCommitteeID], references: [id], name: "instituteCommittee")
 
   studentID                    Int
-  student        User @relation(fields: [studentID], references: [id], name: "formOwner")
+  student        User @relation(fields: [studentID], references: [id], name: "outlineFormOwner")
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ComprehensiveExamCommitteeForm{
+  id                           Int       @id @default(autoincrement())
+  date String
+  times Int
+  trimester Int
+  academicYear String
+  committeeName1 String
+  committeeName2 String
+  committeeName3 String
+  committeeName4 String
+  committeeName5 String
+  numberStudent Int
+  examDay String
+
+  studentID Int
+  student User @relation(fields: [studentID], references: [id], name: "comprehensiveExamCommitteeFormOwner")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
