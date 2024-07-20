@@ -71,15 +71,15 @@ const defaultprocessPlans: IProcessPlan[] = [
   },
   {
     step: "",
-    months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0],
+    months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   },
   {
     step: "",
-    months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+    months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   },
   {
     step: "",
-    months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0],
+    months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
   },
   {
     step: "ปริมาณงานที่วางแผนไว้ (%)",
@@ -131,12 +131,10 @@ const ThesisProgressFormCreate = () => {
     const url = qs.stringifyUrl({
       url: `/api/outlineForm`,
     });
-    console.log({
+    const res = await axios.post(url, {
       ...values,
-      processPlan: JSON.stringify(processPlans!.filter((item) => item.step !== "")),
+      processPlan: processPlans!.filter((item) => item.step !== ""),
     });
-
-    const res = await axios.post(url, values);
     if (res.status === 200) {
       toast({
         title: "Success",
