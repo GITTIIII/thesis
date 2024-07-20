@@ -485,13 +485,13 @@ const ThesisProgressFormCreate = () => {
 
         {/* <ThesisProcessPlan degree={user?.degree} /> */}
         <div className="flex justify-center  w-full mb-10">
-          <ThesisProcessPlan
-            degree={"Master"}
+          {/* <ThesisProcessPlan
+            degree={user!.degree}
             canEdit={true}
             processPlans={defaultprocessPlans}
             setProcessPlans={setProcessPlans}
-          />
-          {/* <ThesisProcessPlan degree={"Master"} ProcessPlans={defaultprocessPlan} /> ดูอย่างเดียว */}
+          /> */}
+          <ThesisProcessPlan degree={user!.degree} processPlans={defaultprocessPlans} />
         </div>
         <div className="w-full flex px-20 lg:flex justify-center">
           <Button
