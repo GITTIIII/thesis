@@ -29,3 +29,21 @@ export interface IProcessPlan {
 	step: string;
 	months: number[];
 }
+
+export type IComprehensiveExamCommitteeForm = {
+	id: number;
+	date: string;
+	trimester: number;
+	academicYear: string;
+	commiteeName1: string;
+	commiteeName2: string;
+	commiteeName3: string;
+	commiteeName4: string;
+	commiteeName5: string;
+	numberStudent: number;
+	times: number;
+	examDay: string;
+
+	studentID: number;
+	student: IUser;
+};

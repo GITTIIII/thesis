@@ -22,7 +22,7 @@ async function getCurrentUser() {
 
 export default function StudentTablePage() {
 	const [userData, setUserData] = useState<IUser>();
-	const [formType, setFormType] = useState("outlineForm");
+	const [formType, setFormType] = useState("comprehensiveExamCommitteeForm");
 	const router = useRouter();
 
 	const handleSelect = (value: String) => {
@@ -52,62 +52,72 @@ export default function StudentTablePage() {
 						<Select onValueChange={handleSelect}>
 							<SelectTrigger className="w-max">
 								<SelectValue
-									placeholder="แบบคำขออนุมัติโครงร่างวิทยานิพนธ์"
-									defaultValue={"outlineForm"}
+									placeholder="แบบคำขออนุมัติแต่งตั้งกรรมการสอบประมวลความรู้"
+									defaultValue={"comprehensiveExamCommitteeForm"}
 								/>
 							</SelectTrigger>
 							<SelectContent>
-								<SelectItem value="comprehensiveExamCommitteeForm">
+								<SelectItem
+									// disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 1}
+									value="comprehensiveExamCommitteeForm"
+								>
 									แบบคำขออนุมัติแต่งตั้งกรรมการสอบประมวลความรู้
 								</SelectItem>
-								<SelectItem value="qualificationExamCommitteeForm">
+								<SelectItem
+									// disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 2}
+									value="qualificationExamCommitteeForm"
+								>
 									แบบคำขออนุมัติแต่งตั้งกรรมการสอบวัดคุณสมบัติ
 								</SelectItem>
-								<SelectItem value="outlineExamCommitteeForm">
+								<SelectItem
+									// disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 3}
+									value="outlineExamCommitteeForm"
+								>
 									แบบคำขออนุมัติแต่งตั้งกรรมการสอบโครงร่างวิทยานิพนธ์
 								</SelectItem>
 
-								<SelectItem value="thesisExamCommitteeForm">
+								<SelectItem
+									// disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 4}
+									value="thesisExamCommitteeForm"
+								>
 									แบบคำขออนุมัติแต่งตั้งกรรมการสอบวิทยานิพนธ์
 								</SelectItem>
 
 								<SelectItem
-									disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 1}
+									// disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 5}
 									value="outlineForm"
 								>
 									แบบคำขออนุมัติโครงร่างวิทยานิพนธ์
 								</SelectItem>
 
 								<SelectItem
-									disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 2}
+									// disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 6}
 									value="thesisProgressForm"
 								>
 									เเบบรายงานความคืบหน้าของการทำวิทยานิพนธ์
 								</SelectItem>
 								<SelectItem
-									disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 3}
+									// disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 7}
 									value="examAppointment"
 								>
 									คำขอนัดสอบวิทยานิพนธ์
 								</SelectItem>
 							</SelectContent>
 						</Select>
-						{userData?.role.toString() === "STUDENT" ||
-							(userData?.position.toString() === "HEAD_INSTITUTE" &&
-								formType === "outlineExamCommitteeForm" && (
-									<Button
-										type="button"
-										variant="outline"
-										className="mt-4"
-										onClick={() => router.push(`/user/form/${formType}/create`)}
-									>
-										เพิ่มฟอร์ม
-									</Button>
-								))}
+						{userData?.role.toString() === "STUDENT" && (
+							<Button
+								type="button"
+								variant="outline"
+								className="mt-4"
+								onClick={() => router.push(`/user/form/${formType}/create`)}
+							>
+								เพิ่มฟอร์ม
+							</Button>
+						)}
 					</div>
 				</div>
 				<div className="h-full w-full flex items-center py-4">
-					{formType == "comprehensiveExamCommitteeForm" && <ComprehensiveExamCommitteeFormTable />}
+					{formType == "comprehensiveExamCommitteeForm" && <ComprehensiveExamCommitteeFormTable userData={userData} />}
 					{formType == "qualificationExamCommitteeForm" && <QualificationExamCommitteeFormTable />}
 					{formType == "outlineExamCommitteeForm" && <OutlineExamCommitteeFormTable />}
 					{formType == "thesisExamCommitteeForm" && <ThesisExamCommitteeFormTable />}

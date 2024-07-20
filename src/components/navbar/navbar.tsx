@@ -36,19 +36,16 @@ async function getCurrentUser() {
 	return res.json();
 }
 
+const userPromise = getCurrentUser()
+
 const Navbar: React.FC<Props> = ({ menu, notification = false }) => {
-	const [user, setUser] = useState<IUser>();
+	const user = use(userPromise)
 	const router = useRouter();
-	useEffect(() => {
-		async function fetchData() {
-			const data = await getCurrentUser();
-			setUser(data);
-		}
-		fetchData();
-	}, []);
+
 	if (user?.formLanguage === null && user?.role.toString() == "STUDENT") {
 		router.push("/user/student/selectLanguage");
 	}
+	
 	const { ref, isComponentVisible, setIsComponentVisible } = useComponentVisible();
 	const message = [
 		{
