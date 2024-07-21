@@ -15,7 +15,12 @@ import axios from "axios";
 import qs from "query-string";
 import InputForm from "../../inputForm/inputForm";
 import { Textarea } from "../../ui/textarea";
-import { CircleAlert } from "lucide-react";
+import { CalendarIcon, CircleAlert } from "lucide-react";
+import { IComprehensiveExamCommitteeForm } from "@/interface/form";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { format, isValid, parseISO } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
 
 const formSchema = z.object({
 	date: z.string(),
@@ -125,39 +130,83 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 		}
 	}, [user, reset]);
 
-	console.log(form.getValues());
-
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
 					<div className="w-full sm:2/4">
-						<h1 className="mb-2 font-bold text-center">ข้อมูลนักศึกษา</h1>
+						<FormField
+							control={form.control}
+							name="times"
+							render={({ field }) => (
+								<div className="flex flex-row items-center mb-6 justify-center">
+									<FormItem className="w-auto">
+										<FormLabel>
+											สอบครั้งที่ / Exam. No. <span className="text-red-500">*</span>
+										</FormLabel>
+										<FormControl>
+											<Input className="text-sm p-2 w-[300px] m-auto  rounded-lg" {...field} />
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								</div>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="date"
+							render={({ field }) => (
+								<div >
+									<FormItem >
+										<FormLabel>
+											วันที่สอบ / Date of the examination <span className="text-red-500">*</span>
+										</FormLabel>
+										<Popover>
+											<PopoverTrigger asChild>
+												<FormControl>
+													<Button
+														variant={"outline"}
+														className={cn(
+															"w-[240px] pl-3 text-left font-normal",
+															!field.value && "text-muted-foreground"
+														)}
+													>
+														{field.value && isValid(parseISO(field.value)) ? (
+															format(parseISO(field.value), "dd/MM/yyyy")
+														) : (
+															<span>เลือกวันที่สอบ</span>
+														)}
+														<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+													</Button>
+												</FormControl>
+											</PopoverTrigger>
+											<PopoverContent className="w-full flex flex-col">
+												<Calendar
+													className="w-full"
+													mode="single"
+													selected={field.value ? parseISO(field.value) : undefined}
+													onSelect={(date) => field.onChange(date ? date.toISOString() : "")}
+													disabled={(date) =>
+														date > new Date() || date < new Date("1900-01-01")
+													}
+												/>
+											</PopoverContent>
+										</Popover>
+										<FormMessage />
+									</FormItem>
+								</div>
+							)}
+						/>
+						<InputForm value={user.username} label="รหัสนักศึกษา / Student ID" />
 						<InputForm
 							value={
-								user.formLanguage == "en"
+								user?.formLanguage == "en"
 									? `${user?.firstNameEN} ${user?.lastNameEN}`
 									: `${user?.firstNameTH} ${user?.lastNameTH}`
 							}
-							label="ชื่อ-นามสกุล / Full Name"
+							label="ชื่อ-นามสกุล / Fullname"
 						/>
-						<InputForm value={`${user?.username} `} label="รหัสนักศึกษา / Student ID" />
-
-						<div className="flex flex-col items-center mb-6 justify-center">
-							<FormLabel className="font-normal">ระดับการศึกษา / Education Level</FormLabel>
-							<RadioGroup disabled className="space-y-1 mt-2">
-								<div>
-									<RadioGroupItem checked={user?.degree === "Master"} value="Master" />
-									<FormLabel className="ml-2 font-normal">ปริญญาโท (Master Degree)</FormLabel>
-								</div>
-								<div>
-									<RadioGroupItem checked={user?.degree === "Doctoral"} value="Doctoral" />
-									<FormLabel className="ml-2 font-normal">ปริญญาเอก (Doctoral Degree)</FormLabel>
-								</div>
-							</RadioGroup>
-						</div>
-
 						<InputForm
 							value={
 								user.formLanguage == "en"
@@ -174,7 +223,10 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 							}
 							label="หลักสูตร / Program"
 						/>
-						<InputForm value={`${user?.program.programYear}`} label="ปีหลักสูตร / Program Year" />
+						<InputForm
+							value={`${user?.program.programYear}`}
+							label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)"
+						/>
 					</div>
 
 					{/* ฝั่งขวา */}

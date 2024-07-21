@@ -101,6 +101,18 @@ const OutlineFormCreate = () => {
 		}
 	}, [user, reset]);
 
+	// useEffect(() => {
+	// 	async function getTimes() {
+	// 		const res = await fetch("/api/getTimesForm05");
+	// 		const data = await res.json();
+	// 		reset({
+	// 			...form.getValues(),
+	// 			times: data.times + 1,
+	// 		});
+	// 	}
+	// 	getTimes();
+	// }, []);
+
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">

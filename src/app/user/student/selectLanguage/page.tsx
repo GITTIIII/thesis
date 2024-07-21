@@ -70,7 +70,6 @@ export default function SelectLanguage() {
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
-		console.log(values);
 		const url = qs.stringifyUrl({
 			url: `/api/user`,
 		});
