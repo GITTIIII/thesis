@@ -74,7 +74,7 @@ async function getAllAdvisor() {
 const userPromise = getUser();
 const allAdvisorPromise = getAllAdvisor();
 
-const AppointmentOutlineFormCreate = () => {
+const ThesisExamCommitteeFormFormCreate = () => {
 	const router = useRouter();
 	const user: IUser = use(userPromise);
 	const allAdvisor: IUser[] = use(allAdvisorPromise);
@@ -576,33 +576,4 @@ const AppointmentOutlineFormCreate = () => {
 	);
 };
 
-export default AppointmentOutlineFormCreate;
-
-
-
-					// Input box
-					// <FormField
-					// 		control={form.control}
-					// 		name="thesisNameEN"
-					// 		render={({ field }) => (
-					// 			<div className="flex flex-row items-center mb-6 justify-center">
-					// 				<FormItem className="w-max">
-					// 					<FormLabel>ชื่อภาษาอังกฤษ / ThesisName(EN)</FormLabel>
-					// 					<FormControl>
-					// 						<Input
-					// 							className="text-sm p-2 w-[300px] m-auto  rounded-lg"
-					// 							{...field}
-					// 						/>
-					// 					</FormControl>
-					// 					<FormMessage />
-					// 				</FormItem>
-					// 			</div>
-					// 		)}
-					// 	/>
-
-
-					//Get Data Box
-					// <InputForm
-					// 		value={`${user?.firstName} ${user?.lastName}`}
-					// 		label="ชื่อ-นามสกุล / Full Name"
-					// 	/>
+export default ThesisExamCommitteeFormFormCreate;

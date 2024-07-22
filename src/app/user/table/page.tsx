@@ -11,7 +11,7 @@ import OutlineFormTable from "@/components/formTable/05-outlineFormTable";
 import ExamAppointmentFormTable from "@/components/formTable/07-thesisExamAppointmentFormTable";
 import ThesisProgressFormTable from "@/components/formTable/06-thesisProgressFormTable";
 import OutlineExamCommitteeFormTable from "@/components/formTable/03-outlineExamCommitteeFormTable";
-import AppointmentThesisExamFormTable from "@/components/formTable/04-appointmentThesisExamFormTable";
+import AppointmentThesisExamFormTable from "@/components/formTable/04-thesisExamCommitteeFormTable";
 import ComprehensiveExamCommitteeFormTable from "@/components/formTable/01-comprehensiveExamCommitteeFormTable";
 import QualificationExamCommitteeFormTable from "@/components/formTable/02-qualificationExamCommitteeFormTable";
 

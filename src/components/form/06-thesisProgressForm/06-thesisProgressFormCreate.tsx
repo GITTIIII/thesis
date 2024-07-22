@@ -31,12 +31,12 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import signature from "@/../../public/asset/signature.png";
-import ThesisProcessPlan from "./thesisProcessPlan";
+import ThesisProcessPlan from "../thesisProcessPlan";
 import Image from "next/image";
 import axios from "axios";
 import qs from "query-string";
 import { useToast } from "@/components/ui/use-toast";
-import InputForm from "../inputForm/inputForm";
+import InputForm from "@/components/inputForm/inputForm";
 import { IProcessPlan } from "@/interface/form";
 
 type User = {
