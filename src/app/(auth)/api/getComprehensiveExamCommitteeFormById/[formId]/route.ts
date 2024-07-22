@@ -5,11 +5,11 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 type Params = {
-	userId: number;
+	formId: number;
 };
 
 export async function GET(req: NextApiRequest, context: { params: Params }) {
-	const userId = context.params.userId;
+	const formId = context.params.formId;
 	const session = await getServerSession(authOptions);
 
 	if (!session) {
@@ -19,14 +19,24 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 		);
 	}
 
-	const outlineForm = await db.outlineForm.findMany({
+	const comprehensiveExamCommitteeForm = await db.comprehensiveExamCommitteeForm.findUnique({
 		where: {
-			studentID: Number(userId),
+			id: Number(formId),
 		},
 		include: {
-			student: true,
+			student:{
+				include:{
+					institute:true,
+					school:true,
+					program:true,
+				}
+			},
 		},
 	});
 
-	return NextResponse.json(outlineForm);
+	if (!comprehensiveExamCommitteeForm) {
+		return NextResponse.json({ error: "Form not found" }, { status: 404 });
+	}
+
+	return NextResponse.json(comprehensiveExamCommitteeForm);
 }

@@ -35,11 +35,11 @@ export type IComprehensiveExamCommitteeForm = {
 	date: string;
 	trimester: number;
 	academicYear: string;
-	commiteeName1: string;
-	commiteeName2: string;
-	commiteeName3: string;
-	commiteeName4: string;
-	commiteeName5: string;
+	committeeName1: string;
+	committeeName2: string;
+	committeeName3: string;
+	committeeName4: string;
+	committeeName5: string;
 	numberStudent: number;
 	times: number;
 	examDay: string;

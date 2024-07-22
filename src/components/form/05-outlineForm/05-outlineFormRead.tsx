@@ -263,5 +263,3 @@ export default function OutlineFormRead({ formId }: { formId: number }) {
 		</>
 	);
 }
-
-// export default OutlineFormRead;
