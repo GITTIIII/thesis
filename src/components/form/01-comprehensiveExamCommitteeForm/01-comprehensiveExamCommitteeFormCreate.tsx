@@ -4,28 +4,23 @@ import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { IUser } from "@/interface/user";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import signature from "@/../../public/asset/signature.png";
-import Image from "next/image";
+import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import axios from "axios";
 import qs from "query-string";
 import InputForm from "../../inputForm/inputForm";
-import { Textarea } from "../../ui/textarea";
-import { CalendarIcon, CircleAlert } from "lucide-react";
-import { IComprehensiveExamCommitteeForm } from "@/interface/form";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { format, isValid, parseISO } from "date-fns";
-import { Calendar } from "@/components/ui/calendar";
+import { CircleAlert } from "lucide-react";
+import Link from "next/link";
 
 const formSchema = z.object({
 	date: z.string(),
-	times: z.number(),
-	trimester: z.number().min(1, { message: "กรุณาระบุภาคเรียน / Trimester requierd" }).max(1),
+	times: z.number().min(1, { message: "กรุณาระบุครั้ง / Times requierd" }),
+	trimester: z
+		.number()
+		.min(1, { message: "กรุณาระบุภาคเรียน / Trimester requierd" })
+		.max(3, { message: "กรุณาระบุเลขเทอมระหว่าง 1-3 / Trimester must be between 1-3" }),
 	academicYear: z.string().min(1, { message: "กรุณากรอกปีการศึกษา / Academic year requierd" }),
 	committeeName1: z
 		.string()
@@ -43,7 +38,9 @@ const formSchema = z.object({
 		.string()
 		.min(1, { message: "กรุณากรอก คำนำหน้า ชื่อ-นามสกุล กรรมการ / Please fill prefix & full name of committee" }),
 	numberStudent: z.number().min(1, { message: "กรุณาระบุจำนวนนักศึกษา / Number of student requierd" }),
-	examDay: z.string().min(1, { message: "กรุณาระบุวันสอบ / Exam date requierd" }),
+	examDay: z.string({
+		required_error: "กรุณาเลือกวันที่สอบ / Exam Day required",
+	}),
 	studentID: z.number(),
 });
 
@@ -60,7 +57,7 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 	const [loading, setLoading] = useState(false);
 
 	const { toast } = useToast();
-	const form = useForm({
+	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			date: "",
@@ -80,17 +77,9 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
-		if (!user?.signatureUrl) {
-			toast({
-				title: "Error",
-				description: "ไม่พบลายเซ็น",
-				variant: "destructive",
-			});
-			setLoading(false);
-			return;
-		}
+		console.log(values);
 		const url = qs.stringifyUrl({
-			url: `/api/outlineForm`,
+			url: `/api/comprehensiveExamCommitteeForm`,
 		});
 		const res = await axios.post(url, values);
 		if (res.status === 200) {
@@ -126,28 +115,45 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 				...form.getValues(),
 				studentID: user.id,
 				date: currentDate,
+				numberStudent: 1,
 			});
 		}
 	}, [user, reset]);
+
+	useEffect(() => {
+		console.log(form.getValues());
+	}, [form.watch()]);
+
+	const formatDateForInput = (value: string) => {
+		if (!value) return "";
+		const [day, month, year] = value.split("/");
+		return `${year}-${month}-${day}`;
+	};
+
+	const formatDateForField = (value: string) => {
+		const [year, month, day] = value.split("-");
+		return `${day}/${month}/${year}`;
+	};
 
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">
 				<div className="flex flex-col justify-center md:flex-row">
-					{/* ฝั่งซ้าย */}
 					<div className="w-full sm:2/4">
+						<h1 className="text-center font-semibold mb-2">รายละเอียดการสอบ</h1>
 						<FormField
 							control={form.control}
 							name="times"
 							render={({ field }) => (
 								<div className="flex flex-row items-center mb-6 justify-center">
-									<FormItem className="w-auto">
+									<FormItem className="w-[300px]">
 										<FormLabel>
 											สอบครั้งที่ / Exam. No. <span className="text-red-500">*</span>
 										</FormLabel>
-										<FormControl>
-											<Input className="text-sm p-2 w-[300px] m-auto  rounded-lg" {...field} />
-										</FormControl>
+										<Input
+											value={field.value ? field.value : ""}
+											onChange={(e) => field.onChange(Number(e.target.value))}
+										/>
 										<FormMessage />
 									</FormItem>
 								</div>
@@ -155,49 +161,60 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 						/>
 						<FormField
 							control={form.control}
-							name="date"
+							name="trimester"
 							render={({ field }) => (
-								<div >
-									<FormItem >
+								<div className="flex flex-row items-center mb-6 justify-center">
+									<FormItem className="w-[300px]">
 										<FormLabel>
-											วันที่สอบ / Date of the examination <span className="text-red-500">*</span>
+											ภาคเรียน / Trimester <span className="text-red-500">*</span>
 										</FormLabel>
-										<Popover>
-											<PopoverTrigger asChild>
-												<FormControl>
-													<Button
-														variant={"outline"}
-														className={cn(
-															"w-[240px] pl-3 text-left font-normal",
-															!field.value && "text-muted-foreground"
-														)}
-													>
-														{field.value && isValid(parseISO(field.value)) ? (
-															format(parseISO(field.value), "dd/MM/yyyy")
-														) : (
-															<span>เลือกวันที่สอบ</span>
-														)}
-														<CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-													</Button>
-												</FormControl>
-											</PopoverTrigger>
-											<PopoverContent className="w-full flex flex-col">
-												<Calendar
-													className="w-full"
-													mode="single"
-													selected={field.value ? parseISO(field.value) : undefined}
-													onSelect={(date) => field.onChange(date ? date.toISOString() : "")}
-													disabled={(date) =>
-														date > new Date() || date < new Date("1900-01-01")
-													}
-												/>
-											</PopoverContent>
-										</Popover>
+										<Input
+											value={field.value ? field.value : ""}
+											onChange={(e) => field.onChange(Number(e.target.value))}
+										/>
 										<FormMessage />
 									</FormItem>
 								</div>
 							)}
 						/>
+						<FormField
+							control={form.control}
+							name="academicYear"
+							render={({ field }) => (
+								<div className="flex flex-row items-center mb-6 justify-center">
+									<FormItem className="w-[300px]">
+										<FormLabel>
+											ปีการศึกษา / Academic year <span className="text-red-500">*</span>
+										</FormLabel>
+										<Input {...field} />
+										<FormMessage />
+									</FormItem>
+								</div>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="examDay"
+							render={({ field }) => (
+								<div className="flex flex-row items-center mb-6 justify-center">
+									<FormItem className="w-[300px] flex flex-col">
+										<FormLabel>
+											วันที่สอบ / Date of the examination <span className="text-red-500">*</span>
+										</FormLabel>
+										<Input
+											type="date"
+											value={field.value ? formatDateForInput(field.value) : ""}
+											onChange={(e) => {
+												const formattedDate = formatDateForField(e.target.value);
+												field.onChange(formattedDate);
+											}}
+										/>
+										<FormMessage />
+									</FormItem>
+								</div>
+							)}
+						/>
+						<h1 className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</h1>
 						<InputForm value={user.username} label="รหัสนักศึกษา / Student ID" />
 						<InputForm
 							value={
@@ -229,21 +246,26 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 						/>
 					</div>
 
-					{/* ฝั่งขวา */}
 					<div className="w-full sm:2/4">
-						<h1 className="text-center font-semibold mb-2">ชื่อโครงร่างวิทยานิพนธ์</h1>
-						{/* <FormField
+						<h1 className="text-center font-semibold mb-2">ขอเสนอเเต่งตั้งคณะกรรมการสอบประมวลความรู้</h1>
+						<div className="flex items-center justify-center text-sm">
+							<CircleAlert className="mr-1" />
+							สามารถดูรายชื่อกรรมการที่ได้รับการรับรองเเล้ว
+							<Button variant="link" className="p-1 text-[#A67436]">
+								<Link href="">คลิกที่นี่</Link>
+							</Button>
+						</div>
+						<FormField
 							control={form.control}
-							name="thesisNameTH"
+							name="committeeName1"
 							render={({ field }) => (
 								<div className="flex flex-row items-center mb-6 justify-center">
-									<FormItem className="w-auto">
+									<FormItem className="w-[300px]">
 										<FormLabel>
-											ชื่อภาษาไทย / ThesisName(TH) <span className="text-red-500">*</span>
+											ประธานกรรมการ / Head of the Committee{" "}
+											<span className="text-red-500">*</span>
 										</FormLabel>
-										<FormControl>
-											<Input className="text-sm p-2 w-[300px] m-auto  rounded-lg" {...field} />
-										</FormControl>
+										<Input {...field} />
 										<FormMessage />
 									</FormItem>
 								</div>
@@ -251,83 +273,66 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 						/>
 						<FormField
 							control={form.control}
-							name="thesisNameEN"
+							name="committeeName2"
 							render={({ field }) => (
 								<div className="flex flex-row items-center mb-6 justify-center">
-									<FormItem className="w-max">
+									<FormItem className="w-[300px]">
 										<FormLabel>
-											ชื่อภาษาอังกฤษ / ThesisName(EN) <span className="text-red-500">*</span>
+											กรรมการ / Member of the Committee <span className="text-red-500">*</span>
 										</FormLabel>
-										<FormControl>
-											<Input className="text-sm p-2 w-[300px] m-auto  rounded-lg" {...field} />
-										</FormControl>
+										<Input {...field} />
 										<FormMessage />
 									</FormItem>
 								</div>
 							)}
-						/> */}
-						<InputForm
-							value={
-								user.formLanguage == "en"
-									? `${user?.advisor?.firstNameEN} ${user?.advisor?.lastNameEN}`
-									: `${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`
-							}
-							label="อาจารย์ที่ปรึกษา / Advisor"
 						/>
-						<InputForm
-							value={
-								user.formLanguage == "en"
-									? `${user?.advisor?.firstNameEN} ${user?.advisor?.lastNameEN}`
-									: `${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`
-							}
-							label="อาจารย์ที่ปรึกษาร่วม / Co-advisor"
+						<FormField
+							control={form.control}
+							name="committeeName3"
+							render={({ field }) => (
+								<div className="flex flex-row items-center mb-6 justify-center">
+									<FormItem className="w-[300px]">
+										<FormLabel>
+											กรรมการ / Member of the Committee <span className="text-red-500">*</span>
+										</FormLabel>
+										<Input {...field} />
+										<FormMessage />
+									</FormItem>
+								</div>
+							)}
 						/>
-						<div className="flex flex-col items-center mb-6 justify-center">
-							<FormLabel>ลายเซ็น / Signature</FormLabel>
-							<Button variant="outline" type="button" className="w-60 mt-4 h-max">
-								<Image
-									src={user?.signatureUrl ? user?.signatureUrl : signature}
-									width={100}
-									height={100}
-									alt="signature"
-								/>
-							</Button>
-						</div>
+						<FormField
+							control={form.control}
+							name="committeeName4"
+							render={({ field }) => (
+								<div className="flex flex-row items-center mb-6 justify-center">
+									<FormItem className="w-[300px]">
+										<FormLabel>
+											กรรมการ / Member of the Committee <span className="text-red-500">*</span>
+										</FormLabel>
+										<Input {...field} />
+										<FormMessage />
+									</FormItem>
+								</div>
+							)}
+						/>
+						<FormField
+							control={form.control}
+							name="committeeName5"
+							render={({ field }) => (
+								<div className="flex flex-row items-center mb-6 justify-center">
+									<FormItem className="w-[300px]">
+										<FormLabel>
+											กรรมการ / Member of the Committee <span className="text-red-500">*</span>
+										</FormLabel>
+										<Input {...field} />
+										<FormMessage />
+									</FormItem>
+								</div>
+							)}
+						/>
 					</div>
 				</div>
-				<div className="w-full h-max">
-					{/* <FormField
-						control={form.control}
-						name="abstract"
-						render={({ field }) => (
-							<FormItem className="w-full h-auto flex flex-col items-center">
-								<FormLabel>บทคัดย่อ / Abstract</FormLabel>
-								<FormControl>
-									<Textarea
-										placeholder="บทคัดย่อ..."
-										className="text-[16px] resize-none 
-											w-full md:w-[595px] lg:w-[794px] 
-											h-[842px] lg:h-[1123px] 
-											p-[16px] 
-											md:pt-[108px] lg:pt-[144px] 
-											md:pl-[108px] lg:pl-[144px] 
-											md:pr-[72px]  lg:pr-[96px] 
-											md:pb-[72px]  lg:pb-[96px]"
-										value={field.value}
-										onChange={field.onChange}
-									/>
-								</FormControl>
-								<FormDescription className="flex items-center">
-									{" "}
-									<CircleAlert className="mr-1" />
-									บทคัดย่อต้องมีความยาวไม่เกิน 1 หน้ากระดาษ
-								</FormDescription>
-								<FormMessage />
-							</FormItem>
-						)}
-					/> */}
-				</div>
-
 				<div className="w-full flex mt-4 px-20 lg:flex justify-center">
 					<Button
 						variant="outline"

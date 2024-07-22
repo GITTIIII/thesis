@@ -54,6 +54,7 @@ export default function ComprehensiveExamCommitteeFormTable({ userData }: { user
 				<Table>
 					<TableHeader>
 						<TableRow>
+							<TableHead className="text-center">ลำดับ</TableHead>
 							<TableHead className="text-center">รหัสนักศึกษา</TableHead>
 							<TableHead className="text-center">วันที่สร้าง</TableHead>
 							<TableHead className="text-center">วันที่สอบ</TableHead>
@@ -67,7 +68,8 @@ export default function ComprehensiveExamCommitteeFormTable({ userData }: { user
 						{formData
 							?.filter(
 								(formData) =>
-									(userData?.role.toString() === "STUDENT" && userData?.id === formData?.student?.id) ||
+									(userData?.role.toString() === "STUDENT" &&
+										userData?.id === formData?.student?.id) ||
 									userData?.role.toString() != "STUDENT"
 							)
 							.map((formData, index) => (
