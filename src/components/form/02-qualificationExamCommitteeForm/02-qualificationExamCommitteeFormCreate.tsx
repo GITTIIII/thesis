@@ -51,7 +51,7 @@ async function getCurrentUser() {
 
 const userPromise = getCurrentUser();
 
-const ComprehensiveExamCommitteeFormCreate = () => {
+const QualificationExamCommitteeFormCreate = () => {
 	const router = useRouter();
 	const user: IUser = use(userPromise);
 	const [loading, setLoading] = useState(false);
@@ -78,7 +78,7 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
 		const url = qs.stringifyUrl({
-			url: `/api/comprehensiveExamCommitteeForm`,
+			url: `/api/qualificationExamCommitteeForm`,
 		});
 		const res = await axios.post(url, values);
 		if (res.status === 200) {
@@ -90,7 +90,7 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 			setTimeout(() => {
 				form.reset();
 				router.refresh();
-				router.push("/user/table?formType=comprehensiveExamCommitteeForm");
+				router.push("/user/table?formType=qualificationExamCommitteeForm");
 			}, 1000);
 		} else {
 			toast({
@@ -242,7 +242,7 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 					</div>
 
 					<div className="w-full sm:2/4">
-						<h1 className="text-center font-semibold mb-2">ขอเสนอเเต่งตั้งคณะกรรมการสอบประมวลความรู้</h1>
+						<h1 className="text-center font-semibold mb-2">แบบคำขออนุมัติแต่งตั้งกรรมการสอบวัดคุณสมบัติ</h1>
 						<div className="flex items-center justify-center text-sm">
 							<CircleAlert className="mr-1" />
 							สามารถดูรายชื่อกรรมการที่ได้รับการรับรองเเล้ว
@@ -332,7 +332,7 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push("/user/table?formType=comprehensiveExamCommitteeForm")}
+						onClick={() => router.push("/user/table?formType=qualificationExamCommitteeForm")}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436] md:ml-auto"
 					>
 						ยกเลิก
@@ -351,4 +351,4 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 	);
 };
 
-export default ComprehensiveExamCommitteeFormCreate;
+export default QualificationExamCommitteeFormCreate;

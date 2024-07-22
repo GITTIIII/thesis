@@ -4,22 +4,22 @@ import { Button } from "@/components/ui/button";
 import InputForm from "../../inputForm/inputForm";
 import { CircleAlert } from "lucide-react";
 import Link from "next/link";
-import { IComprehensiveExamCommitteeForm } from "@/interface/form";
+import { IQualificationExamCommitteeForm } from "@/interface/form";
 
-async function getComprehensiveExamCommitteeFormById(formId: number): Promise<IComprehensiveExamCommitteeForm> {
-	const res = await fetch(`/api/getComprehensiveExamCommitteeFormById/${formId}`, {
+async function getQualificationExamCommitteeFormById(formId: number): Promise<IQualificationExamCommitteeForm> {
+	const res = await fetch(`/api/getQualificationExamCommitteeFormById/${formId}`, {
 		next: { revalidate: 10 },
 	});
 	return res.json();
 }
 
-const ComprehensiveExamCommitteeFormRead = ({ formId }: { formId: number }) => {
+const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 	const router = useRouter();
-	const [formData, setFormData] = useState<IComprehensiveExamCommitteeForm>();
+	const [formData, setFormData] = useState<IQualificationExamCommitteeForm>();
 
 	useEffect(() => {
 		async function fetchData() {
-			const data = await getComprehensiveExamCommitteeFormById(formId);
+			const data = await getQualificationExamCommitteeFormById(formId);
 			setFormData(data);
 		}
 		fetchData();
@@ -31,7 +31,7 @@ const ComprehensiveExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 				<Button
 					variant="outline"
 					type="reset"
-					onClick={() => router.push("/user/table?formType=comprehensiveExamCommitteeForm")}
+					onClick={() => router.push("/user/table?formType=qualificationExamCommitteeForm")}
 					className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436]"
 				>
 					ย้อนกลับ
@@ -97,4 +97,4 @@ const ComprehensiveExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 	);
 };
 
-export default ComprehensiveExamCommitteeFormRead;
+export default QualificationExamCommitteeFormRead;
