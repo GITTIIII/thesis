@@ -11,7 +11,7 @@ import OutlineFormTable from "@/components/formTable/05-outlineFormTable";
 import ExamAppointmentFormTable from "@/components/formTable/07-thesisExamAppointmentFormTable";
 import ThesisProgressFormTable from "@/components/formTable/06-thesisProgressFormTable";
 import OutlineExamCommitteeFormTable from "@/components/formTable/03-outlineExamCommitteeFormTable";
-import ThesisExamCommitteeFormTable from "@/components/formTable/04-thesisExamCommitteeFormTable";
+import AppointmentThesisExamFormTable from "@/components/formTable/04-appointmentThesisExamFormTable";
 import ComprehensiveExamCommitteeFormTable from "@/components/formTable/01-comprehensiveExamCommitteeFormTable";
 import QualificationExamCommitteeFormTable from "@/components/formTable/02-qualificationExamCommitteeFormTable";
 
@@ -78,7 +78,7 @@ export default function StudentTablePage() {
 
 								<SelectItem
 									// disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 4}
-									value="thesisExamCommitteeForm"
+									value="appointmentThesisExamForm"
 								>
 									แบบคำขออนุมัติแต่งตั้งกรรมการสอบวิทยานิพนธ์
 								</SelectItem>
@@ -120,7 +120,7 @@ export default function StudentTablePage() {
 					{formType == "comprehensiveExamCommitteeForm" && <ComprehensiveExamCommitteeFormTable userData={userData} />}
 					{formType == "qualificationExamCommitteeForm" && <QualificationExamCommitteeFormTable />}
 					{formType == "outlineExamCommitteeForm" && <OutlineExamCommitteeFormTable />}
-					{formType == "thesisExamCommitteeForm" && <ThesisExamCommitteeFormTable />}
+					{formType == "appointmentThesisExamForm" && <AppointmentThesisExamFormTable />}
 					{formType == "outlineForm" && <OutlineFormTable userData={userData} />}
 					{formType == "thesisProgressForm" && <ThesisProgressFormTable />}
 					{formType == "examAppointment" && <ExamAppointmentFormTable />}

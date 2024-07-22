@@ -1,6 +1,6 @@
 "use client";
 import learning1 from "@/../../public/asset/learning1.png";
-import AppointmentOutlineFormCreate from "@/components/form/appointmentThesisOutlineformCreate";
+import AppointmentOutlineFormCreate from "@/components/form/04-appointmentThesisForm/appointmentThesisformCreate";
 import Stepper from "@/components/stepper/stepper";
 import Image from "next/image";
 

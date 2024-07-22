@@ -27,10 +27,10 @@ import signature from "@/../../public/asset/signature.png";
 import Image from "next/image";
 import axios from "axios";
 import qs from "query-string";
-import InputForm from "../inputForm/inputForm";
-import { Label } from "../ui/label";
+import InputForm from "../../inputForm/inputForm";
+import { Label } from "../../ui/label";
 import { cn } from "@/lib/utils";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import { Check, ChevronsUpDown } from "lucide-react";
 import {
 	Command,
@@ -39,8 +39,8 @@ import {
 	CommandInput,
 	CommandItem,
 	CommandList,
-} from "../ui/command";
-import { Textarea } from "../ui/textarea";
+} from "../../ui/command";
+import { Textarea } from "../../ui/textarea";
 
 const formSchema = z.object({
 	date: z.string(),
