@@ -17,13 +17,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" >
+    <html lang="en">
       <body className={inter.className}>
-        <Background/>
-        <main className="h-full w-full absolute top-0">
-          {children}
-        </main>
-        <Toaster/>
+        <Background />
+        <main className="w-full h-full absolute top-0 overflow-auto">{children}</main>
+        <Toaster />
       </body>
     </html>
   );

@@ -17,27 +17,18 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
       { menuItem: "หน้าหลัก", path: "/user/student" },
       { menuItem: "คำขออนุมัติฟอร์ม", path: "/user/table" },
       { menuItem: "โปรไฟล์", path: "/user/profile" },
-      { menuItem: "admin", path: "/user/admin" },
-      { menuItem: "superadmin", path: "/user/superAdmin" },
     ];
-  } else if (
-    session?.user.role == "ADMIN" ||
-    session?.user.role == "COMMITTEE"
-  ) {
+  } else if (session?.user.role == "ADMIN" || session?.user.role == "COMMITTEE") {
     menu = [
       { menuItem: "หน้าหลัก", path: "/user/admin" },
       { menuItem: "คำขออนุมัติฟอร์ม", path: "/user/table" },
       { menuItem: "โปรไฟล์", path: "/user/profile" },
-      { menuItem: "student", path: "/user/student" },
-      { menuItem: "superadmin", path: "/user/superAdmin" },
     ];
   } else if (session?.user.role == "SUPER_ADMIN") {
     menu = [
-      { menuItem: "หน้าหลัก", path: "/user/superAdmin" },
-      { menuItem: "คู่มือการเขียนวิทยานิพนธ์", path: "/user/superAdmin" },
-      { menuItem: "ติดตามผลการอนุมัติ", path: "/user/superAdmin" },
-      { menuItem: "student", path: "/user/student" },
-      { menuItem: "admin", path: "/user/admin" },
+      { menuItem: "แดชบอร์ด", path: "/user/superAdmin" },
+      { menuItem: "แบบฟอร์ม", path: "/user/superAdmin/form" },
+      { menuItem: "รายชื่อ", path: "/user/superAdmin/user" },
     ];
   }
 
