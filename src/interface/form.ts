@@ -7,6 +7,7 @@ export type IOutlineForm = {
 	thesisNameEN: string;
 	abstract: string;
 	processPlan: JSON;
+	times: number;
 
 	studentID: number;
 	student: IUser;

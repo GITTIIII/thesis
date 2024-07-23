@@ -64,7 +64,7 @@ const formSchema = z.object({
   advisorID: z.number(),
   coAdvisorID: z.number(),
 });
-const defaultprocessPlans: IProcessPlan[] = [
+const defaultProcessPlans: IProcessPlan[] = [
   {
     step: "ทบทวนการศึกษา รวมข้อมูลรวมทั้งสำรวจปริทัศน์วรรณกรรมและงานวิจัยที่เกี่ยวข้อง",
     months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -488,7 +488,7 @@ const ThesisProgressFormCreate = () => {
             <ThesisProcessPlan
               degree={user!.degree}
               canEdit={true}
-              processPlans={defaultprocessPlans}
+              processPlans={defaultProcessPlans}
               setProcessPlans={setProcessPlans}
             />
           ) : null}

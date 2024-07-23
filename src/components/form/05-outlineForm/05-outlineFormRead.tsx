@@ -16,7 +16,7 @@ async function get05FormById(formId: number): Promise<IOutlineForm> {
 	return res.json();
 }
 
-export default function OutlineFormRead({ formId }: { formId: number }) {
+const OutlineFormRead = ({ formId }: { formId: number }) => {
 	const router = useRouter();
 	const [formData, setFormData] = useState<IOutlineForm>();
 
@@ -28,6 +28,8 @@ export default function OutlineFormRead({ formId }: { formId: number }) {
 		fetchData();
 	}, [formId]);
 
+	console.log(formId)
+
 	return (
 		<>
 			<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg">
@@ -35,7 +37,7 @@ export default function OutlineFormRead({ formId }: { formId: number }) {
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push(`/user/table`)}
+						onClick={() => router.push(`/user/table?formType=outlineForm`)}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436]"
 					>
 						ย้อนกลับ
@@ -263,3 +265,5 @@ export default function OutlineFormRead({ formId }: { formId: number }) {
 		</>
 	);
 }
+
+export default OutlineFormRead;

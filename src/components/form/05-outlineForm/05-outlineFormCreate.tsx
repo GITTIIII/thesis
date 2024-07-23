@@ -16,12 +16,71 @@ import qs from "query-string";
 import InputForm from "../../inputForm/inputForm";
 import { Textarea } from "../../ui/textarea";
 import { CircleAlert } from "lucide-react";
+import ThesisProcessPlan from "../thesisProcessPlan";
+import { IProcessPlan } from "@/interface/form";
+
+const defaultProcessPlans: IProcessPlan[] = [
+	{
+		step: "ทบทวนการศึกษา รวมข้อมูลรวมทั้งสำรวจปริทัศน์วรรณกรรมและงานวิจัยที่เกี่ยวข้อง",
+		months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	},
+	{
+		step: "",
+		months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	},
+	{
+		step: "",
+		months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	},
+	{
+		step: "",
+		months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	},
+	{
+		step: "",
+		months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	},
+	{
+		step: "",
+		months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	},
+	{
+		step: "สรุปผลการศึกษาเเละจัดทำข้อเสนอเเนะ",
+		months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	},
+	{
+		step: "จัดทำวิทยานิพนธ์",
+		months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	},
+	{
+		step: "สอบวิทยานิพนธ์",
+		months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	},
+	{
+		step: "ปริมาณงานที่วางแผนไว้ (%)",
+		months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	},
+	{
+		step: "ปริมาณงานที่ทำได้จริง (%)",
+		months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	},
+	{
+		step: "งานสะสมที่วางแผนไว้ (%)",
+		months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	},
+	{
+		step: "งานสะสมที่ทำได้จริง (%)",
+		months: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	},
+];
 
 const formSchema = z.object({
 	date: z.string(),
 	thesisNameTH: z.string().min(1, { message: "กรุณากรอกชื่อวิทยานิพนธ์ / Thesis name requierd" }),
 	thesisNameEN: z.string().toUpperCase().min(1, { message: "กรุณากรอกชื่อวิทยานิพนธ์ / Thesis name requierd" }),
 	abstract: z.string().min(1, { message: "กรุณากรอกบทคัดย่อ / Abstract requierd" }),
+	processPlan: z.array(z.any()),
+	times: z.number(),
 	studentID: z.number(),
 });
 
@@ -36,6 +95,7 @@ const OutlineFormCreate = () => {
 	const router = useRouter();
 	const user: IUser = use(userPromise);
 	const [loading, setLoading] = useState(false);
+	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
 
 	const { toast } = useToast();
 	const form = useForm({
@@ -45,6 +105,8 @@ const OutlineFormCreate = () => {
 			thesisNameTH: "",
 			thesisNameEN: "",
 			abstract: "",
+			processPlan: [],
+			times: 0,
 			studentID: 0,
 		},
 	});
@@ -60,6 +122,10 @@ const OutlineFormCreate = () => {
 			setLoading(false);
 			return;
 		}
+		if (processPlans) {
+			values.processPlan = processPlans;
+		}
+		console.log(values);
 		const url = qs.stringifyUrl({
 			url: `/api/05OutlineForm`,
 		});
@@ -73,7 +139,7 @@ const OutlineFormCreate = () => {
 			setTimeout(() => {
 				form.reset();
 				router.refresh();
-				router.push("/user/table");
+				router.push("/user/table?formType=outlineForm");
 			}, 1000);
 		} else {
 			toast({
@@ -101,17 +167,17 @@ const OutlineFormCreate = () => {
 		}
 	}, [user, reset]);
 
-	// useEffect(() => {
-	// 	async function getTimes() {
-	// 		const res = await fetch("/api/getTimesForm05");
-	// 		const data = await res.json();
-	// 		reset({
-	// 			...form.getValues(),
-	// 			times: data.times + 1,
-	// 		});
-	// 	}
-	// 	getTimes();
-	// }, []);
+	useEffect(() => {
+		async function getTimes() {
+			const res = await fetch("/api/getTimesForm05");
+			const data = await res.json();
+			reset({
+				...form.getValues(),
+				times: data.formCount + 1,
+			});
+		}
+		getTimes();
+	}, []);
 
 	return (
 		<Form {...form}>
@@ -229,7 +295,7 @@ const OutlineFormCreate = () => {
 						</div>
 					</div>
 				</div>
-				<div className="w-full h-max">
+				<div className="w-full h-max mb-6">
 					<FormField
 						control={form.control}
 						name="abstract"
@@ -247,14 +313,28 @@ const OutlineFormCreate = () => {
 											md:pl-[108px] lg:pl-[144px] 
 											md:pr-[72px]  lg:pr-[96px] 
 											md:pb-[72px]  lg:pb-[96px]"
-											value={field.value}
-											onChange={field.onChange}
-											/>
+										value={field.value}
+										onChange={field.onChange}
+									/>
 								</FormControl>
-								<FormDescription className="flex items-center"> <CircleAlert className="mr-1" />บทคัดย่อต้องมีความยาวไม่เกิน 1 หน้ากระดาษ</FormDescription>
+								<FormDescription className="flex items-center">
+									{" "}
+									<CircleAlert className="mr-1" />
+									บทคัดย่อต้องมีความยาวไม่เกิน 1 หน้ากระดาษ
+								</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
+					/>
+				</div>
+
+				<h1 className="mb-2 font-bold text-center">เเผนการดำเนินการจัดทำวิทยานิพนธ์</h1>
+				<div className="w-full h-auto overflow-auto">
+					<ThesisProcessPlan
+						degree={user!.degree}
+						canEdit={true}
+						processPlans={defaultProcessPlans}
+						setProcessPlans={setProcessPlans}
 					/>
 				</div>
 
@@ -262,7 +342,7 @@ const OutlineFormCreate = () => {
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push(`/user/table`)}
+						onClick={() => router.push(`/user/table?formType=outlineForm`)}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436] md:ml-auto"
 					>
 						ยกเลิก

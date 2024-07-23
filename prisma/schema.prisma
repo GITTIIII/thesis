@@ -166,8 +166,8 @@ model OutlineForm {
   thesisNameTH                 String
   thesisNameEN                 String
   abstract                     String @db.Text
-  processPlan                  Json?
-  times Int
+  processPlan                  Json
+  times                        Int
 
   //กรรมการโครงร่าง
   outlineCommitteeStatus      String?

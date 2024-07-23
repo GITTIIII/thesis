@@ -43,7 +43,17 @@ export async function GET() {
 
 	const outlineForm = await db.outlineForm.findMany({
 		include: {
-			student: true,
+			student:{
+				include:{
+					institute:true,
+					school:true,
+					program:true,
+					advisor:true,
+					coAdvisor:true,
+				}
+			},
+			outlineCommittee: true,
+			instituteCommittee: true,
 		},
 	});
 

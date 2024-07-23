@@ -29,6 +29,8 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 					institute:true,
 					school:true,
 					program:true,
+					advisor:true,
+					coAdvisor:true,
 				}
 			},
 			outlineCommittee: true,
