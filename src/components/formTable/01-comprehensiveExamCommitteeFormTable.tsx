@@ -2,20 +2,31 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { use } from "react";
+import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
 import { IComprehensiveExamCommitteeForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 
-async function getFormData() {
-	const res = await fetch(`/api/comprehensiveExamCommitteeForm`);
-	return res.json();
+async function getFormData(stdId: number | undefined) {
+	if (stdId) {
+		const res = await fetch(`/api/get01FormByStdId/${stdId}`, {
+			next: { revalidate: 10 },
+		});
+		return res.json();
+	}
 }
 
-const formDataPromise = getFormData();
-
 export default function ComprehensiveExamCommitteeFormTable({ userData }: { userData: IUser | undefined }) {
-	const formData: IComprehensiveExamCommitteeForm[] = use(formDataPromise);
+	const [formData, setFormData] = useState<IComprehensiveExamCommitteeForm[]>();
+
+	useEffect(() => {
+		async function fetchData() {
+			const formData = await getFormData(userData?.id);
+			setFormData(formData);
+		}
+		fetchData();
+	}, [userData]);
+
 	return (
 		<>
 			<div className="w-full h-full bg-white shadow-2xl rounded-md p-2 ">

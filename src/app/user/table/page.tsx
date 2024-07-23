@@ -40,8 +40,6 @@ export default function StudentTablePage() {
 		fetchData();
 	}, []);
 
-	console.log(searchParams);
-
 	return (
 		<>
 			<div className="w-full h-full bg-transparent py-12 px-2 lg:px-28">

@@ -13,6 +13,7 @@ import qs from "query-string";
 import InputForm from "../../inputForm/inputForm";
 import { CircleAlert } from "lucide-react";
 import Link from "next/link";
+import { DatePicker } from "@/components/datePicker/datePicker";
 
 const formSchema = z.object({
 	date: z.string(),
@@ -38,9 +39,7 @@ const formSchema = z.object({
 		.string()
 		.min(1, { message: "กรุณากรอก คำนำหน้า ชื่อ-นามสกุล กรรมการ / Please fill prefix & full name of committee" }),
 	numberStudent: z.number().min(1, { message: "กรุณาระบุจำนวนนักศึกษา / Number of student requierd" }),
-	examDay: z.string({
-		required_error: "กรุณาเลือกวันที่สอบ / Exam Day required",
-	}),
+	examDay: z.string().min(1, { message: "กรุณาเลือกวันที่สอบ / Exam date requierd" }),
 	studentID: z.number(),
 });
 
@@ -78,7 +77,7 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
 		const url = qs.stringifyUrl({
-			url: `/api/comprehensiveExamCommitteeForm`,
+			url: `/api/01ComprehensiveExamCommitteeForm`,
 		});
 		const res = await axios.post(url, values);
 		if (res.status === 200) {
@@ -118,17 +117,6 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 			});
 		}
 	}, [user, reset]);
-
-	const formatDateForInput = (value: string) => {
-		if (!value) return "";
-		const [day, month, year] = value.split("/");
-		return `${year}-${month}-${day}`;
-	};
-
-	const formatDateForField = (value: string) => {
-		const [year, month, day] = value.split("-");
-		return `${day}/${month}/${year}`;
-	};
 
 	return (
 		<Form {...form}>
@@ -196,14 +184,7 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 										<FormLabel>
 											วันที่สอบ / Date of the examination <span className="text-red-500">*</span>
 										</FormLabel>
-										<Input
-											type="date"
-											value={field.value ? formatDateForInput(field.value) : ""}
-											onChange={(e) => {
-												const formattedDate = formatDateForField(e.target.value);
-												field.onChange(formattedDate);
-											}}
-										/>
+										<DatePicker onDateChange={field.onChange} language={user.formLanguage} />
 										<FormMessage />
 									</FormItem>
 								</div>

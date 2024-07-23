@@ -29,8 +29,8 @@ const formSchema = z.object({
 	dateInstituteCommitteeSign: z.string(),
 });
 
-async function getOutlineFormById(formId: number): Promise<IOutlineForm> {
-	const res = await fetch(`/api/getOutlineFormById/${formId}`, {
+async function get05FormById(formId: number): Promise<IOutlineForm> {
+	const res = await fetch(`/api/get05FormById/${formId}`, {
 		next: { revalidate: 10 },
 	});
 	return res.json();
@@ -135,7 +135,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 
 	useEffect(() => {
 		async function fetchData() {
-			const data = await getOutlineFormById(formId);
+			const data = await get05FormById(formId);
 			setFormData(data);
 		}
 		fetchData();

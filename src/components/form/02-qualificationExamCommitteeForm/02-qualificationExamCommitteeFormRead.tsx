@@ -6,8 +6,8 @@ import { CircleAlert } from "lucide-react";
 import Link from "next/link";
 import { IQualificationExamCommitteeForm } from "@/interface/form";
 
-async function getQualificationExamCommitteeFormById(formId: number): Promise<IQualificationExamCommitteeForm> {
-	const res = await fetch(`/api/getQualificationExamCommitteeFormById/${formId}`, {
+async function get02FormById(formId: number): Promise<IQualificationExamCommitteeForm> {
+	const res = await fetch(`/api/get02FormById/${formId}`, {
 		next: { revalidate: 10 },
 	});
 	return res.json();
@@ -19,7 +19,7 @@ const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 
 	useEffect(() => {
 		async function fetchData() {
-			const data = await getQualificationExamCommitteeFormById(formId);
+			const data = await get02FormById(formId);
 			setFormData(data);
 		}
 		fetchData();

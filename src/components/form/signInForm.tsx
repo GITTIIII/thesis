@@ -52,6 +52,7 @@ const SignInForm = () => {
 				description: signInData?.error,
 				variant: "destructive",
 			});
+			setLoading(false);
 		} else {
 			toast({
 				title: "Success",

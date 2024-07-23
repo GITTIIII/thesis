@@ -38,9 +38,13 @@ const FindStatus = ({ formData }: { formData: IOutlineForm }) => {
 	);
 };
 
-async function getFormData() {
-	const res = await fetch(`/api/outlineForm`);
-	return res.json();
+async function getFormData(stdId: number | undefined) {
+	if (stdId) {
+		const res = await fetch(`/api/get05FormByStdId/${stdId}`, {
+			next: { revalidate: 10 },
+		});
+		return res.json();
+	}
 }
 
 export default function OutlineFormTable({ userData }: { userData: IUser | undefined }) {
@@ -48,11 +52,11 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 
 	useEffect(() => {
 		async function fetchData() {
-			const formData = await getFormData();
+			const formData = await getFormData(userData?.id);
 			setFormData(formData);
 		}
 		fetchData();
-	}, []);
+	}, [userData]);
 
 	return (
 		<>

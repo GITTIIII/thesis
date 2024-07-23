@@ -1,10 +1,9 @@
 "use client";
 import learning1 from "@/../../public/asset/learning1.png";
-import AppointmentOutlineFormCreate from "@/components/form/04-thesisExamCommitteeForm/appointmentThesisformCreate";
-import Stepper from "@/components/stepper/stepper";
+import ThesisExamCommitteeFormFormCreate from "@/components/form/04-thesisExamCommitteeForm/04-thesisExamCommitteeFormCreate";
 import Image from "next/image";
 
-const OutlineFormCreatePage = () => {
+const ThesisExamCommitteeFormFormCreatePage = () => {
 	return (
 		<>
 			<div className="w-full h-max bg-transparent py-12 px-2 lg:px-28">
@@ -19,7 +18,7 @@ const OutlineFormCreatePage = () => {
 						<div className="p-2 flex justify-center bg-[#A67436] text-white text-lg">
 							กรุณากรอกข้อมูลให้ครบถ้วน และตรวจสอบความถูกต้อง
 						</div>
-						<AppointmentOutlineFormCreate />
+						<ThesisExamCommitteeFormFormCreate />
 					</div>
 				</div>
 			</div>
@@ -27,4 +26,4 @@ const OutlineFormCreatePage = () => {
 	);
 };
 
-export default OutlineFormCreatePage;
+export default ThesisExamCommitteeFormFormCreatePage;

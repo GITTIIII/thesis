@@ -61,7 +61,7 @@ const OutlineFormCreate = () => {
 			return;
 		}
 		const url = qs.stringifyUrl({
-			url: `/api/outlineForm`,
+			url: `/api/05OutlineForm`,
 		});
 		const res = await axios.post(url, values);
 		if (res.status === 200) {

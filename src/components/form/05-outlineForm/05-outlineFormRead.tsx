@@ -9,8 +9,8 @@ import { Textarea } from "../../ui/textarea";
 import { useEffect, useState } from "react";
 import { IOutlineForm } from "@/interface/form";
 
-async function getOutlineFormById(formId: number): Promise<IOutlineForm> {
-	const res = await fetch(`/api/getOutlineFormById/${formId}`, {
+async function get05FormById(formId: number): Promise<IOutlineForm> {
+	const res = await fetch(`/api/get05FormById/${formId}`, {
 		next: { revalidate: 10 },
 	});
 	return res.json();
@@ -22,7 +22,7 @@ export default function OutlineFormRead({ formId }: { formId: number }) {
 
 	useEffect(() => {
 		async function fetchData() {
-			const data = await getOutlineFormById(formId);
+			const data = await get05FormById(formId);
 			setFormData(data);
 		}
 		fetchData();
