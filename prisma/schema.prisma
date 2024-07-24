@@ -168,6 +168,8 @@ model OutlineForm {
   abstract                     String @db.Text
   processPlan                  Json
   times                        Int
+  thesisStartMonth String
+  thesisStartYear String
 
   //กรรมการโครงร่าง
   outlineCommitteeStatus      String?
