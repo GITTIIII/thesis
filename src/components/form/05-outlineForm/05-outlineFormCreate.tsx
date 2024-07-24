@@ -18,6 +18,9 @@ import { Textarea } from "../../ui/textarea";
 import { CircleAlert } from "lucide-react";
 import ThesisProcessPlan from "../thesisProcessPlan";
 import { IProcessPlan } from "@/interface/form";
+import { Select } from "@radix-ui/react-select";
+import { SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 
 const defaultProcessPlans: IProcessPlan[] = [
 	{
@@ -74,6 +77,36 @@ const defaultProcessPlans: IProcessPlan[] = [
 	},
 ];
 
+const MONTHS_TH = [
+	"มกราคม",
+	"กุมภาพันธ์",
+	"มีนาคม",
+	"เมษายน",
+	"พฤษภาคม",
+	"มิถุนายน",
+	"กรกฎาคม",
+	"สิงหาคม",
+	"กันยายน",
+	"ตุลาคม",
+	"พฤศจิกายน",
+	"ธันวาคม",
+];
+
+const MONTHS_EN = [
+	"January",
+	"February",
+	"March",
+	"April",
+	"May",
+	"June",
+	"July",
+	"August",
+	"September",
+	"October",
+	"November",
+	"December",
+];
+
 const formSchema = z.object({
 	date: z.string(),
 	thesisNameTH: z.string().min(1, { message: "กรุณากรอกชื่อวิทยานิพนธ์ / Thesis name requierd" }),
@@ -81,6 +114,8 @@ const formSchema = z.object({
 	abstract: z.string().min(1, { message: "กรุณากรอกบทคัดย่อ / Abstract requierd" }),
 	processPlan: z.array(z.any()),
 	times: z.number(),
+	thesisStartMonth: z.string().min(1, { message: "กรุณาเลือกเดือน / Please select month" }),
+	thesisStartYear: z.string().min(1, { message: "กรุณากรอกปี พ.ศ. / Year (B.E.) requierd" }),
 	studentID: z.number(),
 });
 
@@ -96,6 +131,7 @@ const OutlineFormCreate = () => {
 	const user: IUser = use(userPromise);
 	const [loading, setLoading] = useState(false);
 	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
+	const months = user.formLanguage === "en" ? MONTHS_EN : MONTHS_TH;
 
 	const { toast } = useToast();
 	const form = useForm({
@@ -107,6 +143,8 @@ const OutlineFormCreate = () => {
 			abstract: "",
 			processPlan: [],
 			times: 0,
+			thesisStartMonth: "",
+			thesisStartYear: "",
 			studentID: 0,
 		},
 	});
@@ -301,7 +339,9 @@ const OutlineFormCreate = () => {
 						name="abstract"
 						render={({ field }) => (
 							<FormItem className="w-full h-auto flex flex-col items-center">
-								<FormLabel>บทคัดย่อ / Abstract</FormLabel>
+								<FormLabel>
+									บทคัดย่อ / Abstract <span className="text-red-500">*</span>
+								</FormLabel>
 								<FormControl>
 									<Textarea
 										placeholder="บทคัดย่อ..."
@@ -329,6 +369,47 @@ const OutlineFormCreate = () => {
 				</div>
 
 				<h1 className="mb-2 font-bold text-center">เเผนการดำเนินการจัดทำวิทยานิพนธ์</h1>
+				<div className="w-full flex justify-center items-center mb-2">
+					<Label className="font-bold ">เริ่มทำวิทธายานิพนธ์ เดือน</Label>
+					<FormField
+						control={form.control}
+						name="thesisStartMonth"
+						render={({ field }) => (
+							<FormItem className="flex flex-col justify-center">
+								<FormControl>
+									<Select onValueChange={(value) => field.onChange(value)} value={field.value}>
+										<SelectTrigger className="w-[140px] mx-4">
+											<SelectValue placeholder="" />
+										</SelectTrigger>
+										<SelectContent>
+											<SelectGroup>
+												{months.map((month) => (
+													<SelectItem key={month} value={month}>
+														{month}
+													</SelectItem>
+												))}
+											</SelectGroup>
+										</SelectContent>
+									</Select>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+					<Label className="mx-4 font-bold"> ปี พ.ศ.</Label>
+					<FormField
+						control={form.control}
+						name="thesisStartYear"
+						render={({ field }) => (
+							<FormItem className="flex flex-col justify-center">
+								<FormControl>
+									<Input className="w-[80px]" value={field.value} onChange={field.onChange} />
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>
 				<div className="w-full h-auto overflow-auto">
 					<ThesisProcessPlan
 						degree={user!.degree}

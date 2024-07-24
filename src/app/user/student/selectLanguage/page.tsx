@@ -5,23 +5,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import qs from "query-string";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@/lib/utils";
-
-import Image from "next/image";
-
 import { Button } from "@/components/ui/button";
-
 import { useToast } from "@/components/ui/use-toast";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Form, FormControl, FormField, FormLabel, FormMessage } from "@/components/ui/form";
-import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-
-import { IInstitute } from "@/interface/institute";
-import { IProgram } from "@/interface/program";
-import { ISchool } from "@/interface/school";
+import { Form, FormField, FormLabel, FormMessage } from "@/components/ui/form";
 import { IUser } from "@/interface/user";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
@@ -67,6 +54,10 @@ export default function SelectLanguage() {
 		}
 		fetchData();
 	}, []);
+
+	if(user?.formLanguage != null){
+		router.push("/user/student")
+	}
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);

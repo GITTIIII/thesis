@@ -12,7 +12,17 @@ export async function POST(req: Request) {
 		}
 
 		const body = await req.json();
-		const { date, thesisNameTH, thesisNameEN, abstract, processPlan, times, studentID } = body;
+		const {
+			date,
+			thesisNameTH,
+			thesisNameEN,
+			abstract,
+			processPlan,
+			times,
+			thesisStartMonth,
+			thesisStartYear,
+			studentID,
+		} = body;
 
 		const newForm = await db.outlineForm.create({
 			data: {
@@ -22,6 +32,8 @@ export async function POST(req: Request) {
 				abstract,
 				processPlan,
 				times,
+				thesisStartMonth,
+				thesisStartYear,
 				studentID: studentID === 0 ? null : studentID,
 			},
 		});
@@ -43,14 +55,14 @@ export async function GET() {
 
 	const outlineForm = await db.outlineForm.findMany({
 		include: {
-			student:{
-				include:{
-					institute:true,
-					school:true,
-					program:true,
-					advisor:true,
-					coAdvisor:true,
-				}
+			student: {
+				include: {
+					institute: true,
+					school: true,
+					program: true,
+					advisor: true,
+					coAdvisor: true,
+				},
 			},
 			outlineCommittee: true,
 			instituteCommittee: true,
@@ -77,6 +89,8 @@ export async function PATCH(req: Request) {
 			abstract,
 			processPlan,
 			times,
+			thesisStartMonth,
+			thesisStartYear,
 			studentID,
 			outlineCommitteeID,
 			outlineCommitteeStatus,
@@ -111,6 +125,8 @@ export async function PATCH(req: Request) {
 				abstract: abstract || existingOutlineForm.abstract,
 				processPlan: processPlan || existingOutlineForm.processPlan,
 				times: times === 0 ? existingOutlineForm.times : times,
+				thesisStartMonth: thesisStartMonth || existingOutlineForm.thesisStartMonth,
+				thesisStartYear: thesisStartYear || existingOutlineForm.thesisStartYear,
 				studentID: studentID === 0 ? existingOutlineForm.studentID : studentID,
 
 				outlineCommitteeID:

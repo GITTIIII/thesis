@@ -150,7 +150,6 @@ export async function PATCH(req: Request) {
 			advisorID,
 			coAdvisorID,
 		} = body;
-		console.log(body);
 
 		if (!id) {
 			return NextResponse.json({ message: "User ID is required for update" }, { status: 400 });

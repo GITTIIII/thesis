@@ -15,7 +15,9 @@ import InputForm from "@/components/inputForm/inputForm";
 import { IOutlineForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 import { Label } from "../../ui/label";
-import signature from "../../../public/asset/signature.png";
+import signature from "../../../../public/asset/signature.png";
+import ThesisProcessPlan from "../thesisProcessPlan";
+import { Input } from "@/components/ui/input";
 
 const formSchema = z.object({
 	id: z.number(),
@@ -195,17 +197,17 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 
 						<InputForm
 							value={
-								user.formLanguage == "en"
-									? `${user?.school.schoolNameEN}`
-									: `${user?.school.schoolNameTH}`
+								formData?.student.formLanguage == "en"
+									? `${formData?.student?.school.schoolNameEN}`
+									: `${formData?.student?.school.schoolNameTH}`
 							}
 							label="สาขาวิชา / School"
 						/>
 						<InputForm
 							value={
-								user.formLanguage == "en"
-									? `${user?.program.programNameEN}`
-									: `${user?.program.programNameTH}`
+								formData?.student.formLanguage == "en"
+									? `${formData?.student?.program.programNameEN}`
+									: `${formData?.student?.program.programNameTH}`
 							}
 							label="หลักสูตร / Program"
 						/>
@@ -222,17 +224,17 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 						<InputForm value={`${formData?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / ThesisName(EN)" />
 						<InputForm
 							value={
-								user.formLanguage == "en"
-									? `${user?.advisor?.firstNameEN} ${user?.advisor?.lastNameEN}`
-									: `${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`
+								formData?.student.formLanguage == "en"
+									? `${formData?.student?.advisor?.firstNameEN} ${formData?.student?.advisor?.lastNameEN}`
+									: `${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`
 							}
 							label="อาจารย์ที่ปรึกษา / Advisor"
 						/>
 						<InputForm
 							value={
-								user.formLanguage == "en"
-									? `${user?.advisor?.firstNameEN} ${user?.advisor?.lastNameEN}`
-									: `${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`
+								formData?.student.formLanguage == "en"
+									? `${formData?.student?.advisor?.firstNameEN} ${formData?.student?.advisor?.lastNameEN}`
+									: `${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`
 							}
 							label="อาจารย์ที่ปรึกษาร่วม / Co-advisor"
 						/>
@@ -521,19 +523,37 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 			</form>
 			<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg mt-4">
 				<div className="w-full h-max flex flex-col items-center">
-					<Label className="text-sm font-medium mb-2">บทคัดย่อ / Abstract</Label>
+					<h1 className="mb-2 font-bold text-center">บทคัดย่อ / Abstract</h1>
 					<Textarea
 						className="text-[16px] resize-none 
-									w-full md:w-[595px] lg:w-[794px] 
-									h-[842px] lg:h-[1123px] 
-									p-[16px] 
-									md:pt-[108px] lg:pt-[144px] 
-									md:pl-[108px] lg:pl-[144px] 
-									md:pr-[72px]  lg:pr-[96px] 
-									md:pb-[72px]  lg:pb-[96px]"
-						value={formData?.abstract}
+						w-full md:w-[595px] lg:w-[794px] 
+						h-[842px] lg:h-[1123px] 
+						p-[16px] 
+						md:pt-[108px] lg:pt-[144px] 
+						md:pl-[108px] lg:pl-[144px] 
+						md:pr-[72px]  lg:pr-[96px] 
+						md:pb-[72px]  lg:pb-[96px]"
+						defaultValue={formData?.abstract}
 						disabled
 					/>
+				</div>
+			</div>
+			<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg mt-4">
+				<h1 className="mb-2 font-bold text-center">เเผนการดำเนินการจัดทำวิทยานิพนธ์</h1>
+				<div className="w-full flex justify-center items-center mb-2 ">
+					<Label className="font-bold">เริ่มทำวิทธายานิพนธ์ เดือน</Label>
+					<Input disabled className="w-max mx-4" value={`${formData?.thesisStartMonth}`} />
+					<Label className="mx-4 font-bold"> ปี พ.ศ.</Label>
+					<Input disabled className="w-max" value={`${formData?.thesisStartYear}`} />
+				</div>
+				<div className="w-full h-max overflow-auto flex justify-center">
+					{formData && (
+						<ThesisProcessPlan
+							canEdit={false}
+							degree={formData?.student.degree}
+							processPlans={formData?.processPlan}
+						/>
+					)}
 				</div>
 			</div>
 		</Form>

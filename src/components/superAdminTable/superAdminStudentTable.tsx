@@ -233,7 +233,7 @@ export default function SuperAdminStudentTable({ filterRole }: { filterRole: str
 								/>
 								<Label className="text-right">ปีหลักสูตร</Label>
 								<Input
-									value={selectedUser?.program?.programacademicYear}
+									value={selectedUser?.program?.programYear}
 									className="col-span-3 disabled"
 									readOnly
 								/>

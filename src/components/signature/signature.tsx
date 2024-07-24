@@ -11,14 +11,7 @@ import uploadBlack from "@../../../public/asset/uploadBlack.png";
 import { Button } from "@/components/ui/button";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import axios from "axios";
@@ -35,6 +28,13 @@ const formSchema = z.object({
 	id: z.number(),
 	signatureUrl: z.string(),
 });
+
+async function getCurrentUser() {
+	const res = await fetch("/api/getCurrentUser", {
+		next: { revalidate: 10 },
+	});
+	return res.json();
+}
 
 export default function Signature() {
 	const [active, setActive] = useState(1);
@@ -80,23 +80,16 @@ export default function Signature() {
 				variant: "destructive",
 			});
 			return;
-		} else if (
-			active == 2 &&
-			sigCanvas.current &&
-			!sigCanvas.current.isEmpty()
-		) {
+		} else if (active == 2 && sigCanvas.current && !sigCanvas.current.isEmpty()) {
 			reset({
 				...form.getValues(),
-				signatureUrl: sigCanvas.current
-					.getTrimmedCanvas()
-					.toDataURL("image/png"),
+				signatureUrl: sigCanvas.current.getTrimmedCanvas().toDataURL("image/png"),
 			});
 		}
 		onSubmit(form.getValues());
 	};
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		console.log(values);
 		const url = qs.stringifyUrl({
 			url: `/api/user`,
 		});
@@ -132,14 +125,12 @@ export default function Signature() {
 		}
 	}, [user, reset]);
 
-	const getUser = async () => {
-		const res = await fetch("/api/getCurrentUser");
-		const data = await res.json();
-		setUser(data);
-	};
-
 	useEffect(() => {
-		getUser();
+		async function fetchData() {
+			const data = await getCurrentUser();
+			setUser(data);
+		}
+		fetchData();
 	}, [active]);
 
 	return (
@@ -156,9 +147,7 @@ export default function Signature() {
 						<button
 							onClick={() => setActive(1)}
 							className={`w-full 2xl:w-1/5 flex justify-center items-center text-sm bg-white-500 border-black p-2 ${
-								active === 1
-									? "border-x border-t border-b-white text-[#F26522]"
-									: "border-b"
+								active === 1 ? "border-x border-t border-b-white text-[#F26522]" : "border-b"
 							}`}
 						>
 							<Image
@@ -171,9 +160,7 @@ export default function Signature() {
 						<button
 							onClick={() => setActive(2)}
 							className={`w-full 2xl:w-1/5 flex justify-center items-center text-sm bg-white-500 border-black p-2 ${
-								active === 2
-									? "border-x border-t border-b-white text-[#F26522]"
-									: "border-b"
+								active === 2 ? "border-x border-t border-b-white text-[#F26522]" : "border-b"
 							}`}
 						>
 							<Image
@@ -186,9 +173,7 @@ export default function Signature() {
 						<button
 							onClick={() => setActive(3)}
 							className={`w-full 2xl:w-1/5 flex justify-center items-center text-sm bg-white-500 border-black p-2 ${
-								active === 3
-									? "border-x border-t border-b-white text-[#F26522]"
-									: "border-b"
+								active === 3 ? "border-x border-t border-b-white text-[#F26522]" : "border-b"
 							}`}
 						>
 							<Image
