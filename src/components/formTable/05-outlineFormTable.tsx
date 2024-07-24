@@ -6,6 +6,7 @@ import { use, useEffect, useState } from "react";
 import { Download } from "lucide-react";
 import { IOutlineForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
+import { el } from "date-fns/locale";
 
 const FindStatus = ({ formData }: { formData: IOutlineForm }) => {
 	let status = "";
@@ -38,7 +39,7 @@ const FindStatus = ({ formData }: { formData: IOutlineForm }) => {
 	);
 };
 
-async function getFormData(stdId: number | undefined) {
+async function getAll05FormByStdId(stdId: number | undefined) {
 	if (stdId) {
 		const res = await fetch(`/api/get05FormByStdId/${stdId}`, {
 			next: { revalidate: 10 },
@@ -47,13 +48,25 @@ async function getFormData(stdId: number | undefined) {
 	}
 }
 
+async function getAll05Form() {
+	const res = await fetch(`/api/05OutlineForm`, {
+		next: { revalidate: 10 },
+	});
+	return res.json();
+}
+
 export default function OutlineFormTable({ userData }: { userData: IUser | undefined }) {
 	const [formData, setFormData] = useState<IOutlineForm[]>();
 
 	useEffect(() => {
 		async function fetchData() {
-			const formData = await getFormData(userData?.id);
-			setFormData(formData);
+			if (userData?.role.toString() === "STUDNET") {
+				const formData = await getAll05FormByStdId(userData?.id);
+				setFormData(formData);
+			}else{
+				const formData = await getAll05Form();
+				setFormData(formData);
+			}
 		}
 		fetchData();
 	}, [userData]);
@@ -77,60 +90,53 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{formData
-							?.filter(
-								(formData) =>
-									(userData?.role.toString() === "STUDENT" &&
-										userData?.id === formData?.student?.id) ||
-									userData?.role.toString() != "STUDENT"
-							)
-							.map((formData, index) => (
-								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
-									<TableCell className="text-center">{index + 1}</TableCell>
-									<TableCell className="text-center">
-										{formData.dateOutlineCommitteeSign
-											? formData.dateOutlineCommitteeSign
-											: "ยังไม่ทำการสอบ"}
-									</TableCell>
-									<TableCell className="text-center">{formData?.student.username}</TableCell>
-									<TableCell className="text-center">
-										{formData.student.formLanguage == "en"
-											? `${formData?.student?.firstNameEN} ${formData?.student?.lastNameEN}`
-											: `${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
-									</TableCell>
-									<TableCell className="text-center">เเบบคำขออนุมัติโครงร่างวิทยานิพนธ์</TableCell>
-									<TableCell className="flex justify-center">
-										<FindStatus formData={formData} />
-									</TableCell>
-									<TableCell className="text-[#F26522] text-center">
-										<Link
-											href={
-												(formData.outlineCommitteeID && formData.instituteCommitteeID) ||
-												userData?.role.toString() == "STUDENT"
-													? `/user/form/outlineForm/${formData.id}`
-													: `/user/form/outlineForm/update/${formData.id}`
-											}
-										>
-											คลิกเพื่อดูเพิ่มเติม
-										</Link>
-									</TableCell>
-									<TableCell hidden={userData?.role.toString() != "STUDENT"} className="text-center">
-										<Button
-											disabled={
-												formData?.outlineCommitteeStatus === "APPROVED" &&
-												formData?.instituteCommitteeStatus === "APPROVED"
-													? false
-													: true
-											}
-											type="button"
-											variant="outline"
-										>
-											<Download className="mr-2" />
-											ดาวน์โหลด
-										</Button>
-									</TableCell>
-								</TableRow>
-							))}
+						{formData?.map((formData, index) => (
+							<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
+								<TableCell className="text-center">{index + 1}</TableCell>
+								<TableCell className="text-center">
+									{formData.dateOutlineCommitteeSign
+										? formData.dateOutlineCommitteeSign
+										: "ยังไม่ทำการสอบ"}
+								</TableCell>
+								<TableCell className="text-center">{formData?.student.username}</TableCell>
+								<TableCell className="text-center">
+									{formData.student.formLanguage == "en"
+										? `${formData?.student?.firstNameEN} ${formData?.student?.lastNameEN}`
+										: `${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
+								</TableCell>
+								<TableCell className="text-center">เเบบคำขออนุมัติโครงร่างวิทยานิพนธ์</TableCell>
+								<TableCell className="flex justify-center">
+									<FindStatus formData={formData} />
+								</TableCell>
+								<TableCell className="text-[#F26522] text-center">
+									<Link
+										href={
+											(formData.outlineCommitteeID && formData.instituteCommitteeID) ||
+											userData?.role.toString() == "STUDENT"
+												? `/user/form/outlineForm/${formData.id}`
+												: `/user/form/outlineForm/update/${formData.id}`
+										}
+									>
+										คลิกเพื่อดูเพิ่มเติม
+									</Link>
+								</TableCell>
+								<TableCell hidden={userData?.role.toString() != "STUDENT"} className="text-center">
+									<Button
+										disabled={
+											formData?.outlineCommitteeStatus === "APPROVED" &&
+											formData?.instituteCommitteeStatus === "APPROVED"
+												? false
+												: true
+										}
+										type="button"
+										variant="outline"
+									>
+										<Download className="mr-2" />
+										ดาวน์โหลด
+									</Button>
+								</TableCell>
+							</TableRow>
+						))}
 					</TableBody>
 				</Table>
 			</div>

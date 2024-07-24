@@ -8,6 +8,8 @@ import Image from "next/image";
 import { Textarea } from "../../ui/textarea";
 import { useEffect, useState } from "react";
 import { IOutlineForm } from "@/interface/form";
+import ThesisProcessPlan from "../thesisProcessPlan";
+import { Input } from "@/components/ui/input";
 
 async function get05FormById(formId: number): Promise<IOutlineForm> {
 	const res = await fetch(`/api/get05FormById/${formId}`, {
@@ -28,7 +30,7 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 		fetchData();
 	}, [formId]);
 
-	console.log(formId)
+	console.log(formData);
 
 	return (
 		<>
@@ -189,7 +191,7 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 
 					<div className="flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
 						<h1 className="mb-2 font-bold">มติคณะกรรมการประจำสำนักวิชาวิศวกรรมศาสตร์</h1>
-						<Label className="mt-2">{`ครั้งที่ 1  วันที่ ${
+						<Label className="mt-2">{`ครั้งที่ ${formData?.times}  วันที่ ${
 							formData?.dateInstituteCommitteeSign ? formData?.dateInstituteCommitteeSign : "__________"
 						}`}</Label>
 						<div className="flex flex-col items-center justify-center">
@@ -247,7 +249,7 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 			</div>
 			<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg mt-4">
 				<div className="w-full h-max flex flex-col items-center">
-					<Label className="text-sm font-medium mb-2">บทคัดย่อ / Abstract</Label>
+					<h1 className="mb-2 font-bold text-center">บทคัดย่อ / Abstract</h1>
 					<Textarea
 						className="text-[16px] resize-none 
 						w-full md:w-[595px] lg:w-[794px] 
@@ -262,8 +264,26 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 					/>
 				</div>
 			</div>
+			<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg mt-4">
+				<h1 className="mb-2 font-bold text-center">เเผนการดำเนินการจัดทำวิทยานิพนธ์</h1>
+				<div className="w-full flex justify-center items-center mb-2 ">
+					<Label className="font-bold">เริ่มทำวิทธายานิพนธ์ เดือน</Label>
+					<Input disabled className="w-max mx-4" value={`${formData?.thesisStartMonth}`} />
+					<Label className="mx-4 font-bold"> ปี พ.ศ.</Label>
+					<Input disabled className="w-max" value={`${formData?.thesisStartYear}`} />
+				</div>
+				<div className="w-full h-max overflow-auto flex justify-center">
+					{formData && (
+						<ThesisProcessPlan
+							canEdit={false}
+							degree={formData?.student.degree}
+							processPlans={formData?.processPlan}
+						/>
+					)}
+				</div>
+			</div>
 		</>
 	);
-}
+};
 
 export default OutlineFormRead;

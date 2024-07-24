@@ -21,6 +21,9 @@ export async function GET() {
 			student: {
 				username: username,
 			},
+			instituteCommitteeStatus: {
+				not: null,
+			},
 		},
 	});
 

@@ -6,8 +6,10 @@ export type IOutlineForm = {
 	thesisNameTH: string;
 	thesisNameEN: string;
 	abstract: string;
-	processPlan: JSON;
+	processPlan: Array<any>;
 	times: number;
+	thesisStartMonth: string;
+	thesisStartYear: string;
 
 	studentID: number;
 	student: IUser;
@@ -57,7 +59,7 @@ export type IQualificationExamCommitteeForm = {
 	committeeName1: string;
 	committeeName2: string;
 	committeeName3: string;
-	committeeName4: string;	
+	committeeName4: string;
 	committeeName5: string;
 	numberStudent: number;
 	times: number;
