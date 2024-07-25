@@ -121,7 +121,7 @@ export default function CreateStudent() {
 			setTimeout(() => {
 				form.reset();
 				router.refresh();
-				router.push("/user/superAdmin");
+				router.push("/user/superAdmin/user");
 			}, 1000);
 		} catch (err) {
 			if (axios.isAxiosError(err)) {

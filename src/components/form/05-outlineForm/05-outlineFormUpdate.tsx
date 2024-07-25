@@ -56,17 +56,25 @@ async function getOutlineCommittee() {
 	return res.json();
 }
 
+async function getInstituteCommittee() {
+	const res = await fetch("/api/getInstituteCommittee");
+	return res.json();
+}
+
 const userPromise = getCurrentUser();
 const outlineCommitteePromise = getOutlineCommittee();
+const instituteCommitteePromise = getInstituteCommittee();
 
 const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 	const router = useRouter();
 	const { toast } = useToast();
-	const user: IUser = use(userPromise);
 	const [formData, setFormData] = useState<IOutlineForm>();
-	const [open, setOpen] = useState(false);
+	const [openOutline, setOpenOutline] = useState(false);
+	const [openInstitute, setOpenInstitute] = useState(false);
 	const [currentDate, setCurrentDate] = useState("");
+	const user: IUser = use(userPromise);
 	const outlineCommittee: IUser[] = use(outlineCommitteePromise);
+	const instituteCommittee: IUser[] = use(instituteCommitteePromise);
 
 	const sigCanvas = useRef<SignatureCanvas>(null);
 	const clear = () => {
@@ -84,11 +92,20 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 			});
 			return;
 		} else if (sigCanvas.current && !sigCanvas.current.isEmpty()) {
-			reset({
-				...form.getValues(),
-				outlineCommitteeSignUrl: sigCanvas.current.getTrimmedCanvas().toDataURL("image/png"),
-			});
-			setOpen(false);
+			if (openOutline) {
+				reset({
+					...form.getValues(),
+					outlineCommitteeSignUrl: sigCanvas.current.getTrimmedCanvas().toDataURL("image/png"),
+				});
+			}
+			if (openInstitute) {
+				reset({
+					...form.getValues(),
+					instituteCommitteeSignUrl: sigCanvas.current.getTrimmedCanvas().toDataURL("image/png"),
+				});
+			}
+			setOpenOutline(false);
+			setOpenInstitute(false);
 		}
 	};
 
@@ -111,24 +128,15 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		console.log(values);
-		if (values.instituteCommitteeID != 0) {
-			values.dateInstituteCommitteeSign = currentDate;
-		}
 		if (values.outlineCommitteeID != 0) {
 			values.dateOutlineCommitteeSign = currentDate;
 		}
-		if (!user?.signatureUrl) {
-			toast({
-				title: "Error",
-				description: "ไม่พบลายเซ็น",
-				variant: "destructive",
-			});
-			return;
+		if (values.instituteCommitteeID != 0) {
+			values.dateInstituteCommitteeSign = currentDate;
 		}
 		if (
-			(values.outlineCommitteeStatus == "" && user.position.toString() == "COMMITTEE_OUTLINE") ||
-			(values.instituteCommitteeStatus == "" && user.position.toString() == "COMMITTEE_INSTITUTE")
+			(values.outlineCommitteeStatus == "" && values.outlineCommitteeID != 0) ||
+			(values.instituteCommitteeStatus == "" && values.instituteCommitteeID != 0)
 		) {
 			toast({
 				title: "Error",
@@ -137,8 +145,20 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 			});
 			return;
 		}
+		if (
+			(values.outlineCommitteeSignUrl == "" && values.outlineCommitteeID != 0) ||
+			(values.instituteCommitteeSignUrl == "" && values.instituteCommitteeID != 0)
+		) {
+			toast({
+				title: "Error",
+				description: "ไม่พบลายเซ็น",
+				variant: "destructive",
+			});
+			return;
+		}
+		console.log(values);
 		const url = qs.stringifyUrl({
-			url: `/api/outlineForm`,
+			url: `/api/05OutlineForm`,
 		});
 		const res = await axios.patch(url, values);
 		if (res.status === 200) {
@@ -150,7 +170,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 			setTimeout(() => {
 				form.reset();
 				router.refresh();
-				router.push("/user/table");
+				router.push("/user/table?formType=outlineForm");
 			}, 1000);
 		} else {
 			toast({
@@ -205,19 +225,17 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">
-				{(formData?.outlineCommitteeID && user?.position.toString() === "COMMITTEE_OUTLINE") ||
-				(formData?.instituteCommitteeID && user?.position.toString() === "COMMITTEE_INSTITUTE") ? (
-					<div className="w-full flex px-0 lg:px-20 mb-2">
-						<Button
-							variant="outline"
-							type="reset"
-							onClick={() => router.push("/user/table")}
-							className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436]"
-						>
-							ย้อนกลับ
-						</Button>
-					</div>
-				) : null}
+				<div className="w-full flex px-0 lg:px-20 mb-2">
+					<Button
+						variant="outline"
+						type="reset"
+						onClick={() => router.push("/user/table?formType=outlineForm")}
+						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436]"
+					>
+						ย้อนกลับ
+					</Button>
+				</div>
+
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
 					<div className="w-full sm:2/4">
@@ -309,243 +327,256 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 
 				<div className="w-full flex flex-col md:flex-row justify-center mt-4">
 					{/* กรรมการโครงร่าง */}
-					{user?.role.toString() == "COMMITTEE" && (
-						<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
-							<h1 className="mb-2 font-bold">ความเห็นของคณะกรรมการพิจารณาโครงร่างวิทยานิพนธ์</h1>
-							<Label className="mt-2">{`วันที่ ${
-								formData?.dateOutlineCommitteeSign
-									? formData?.dateOutlineCommitteeSign
-									: form.getValues().dateOutlineCommitteeSign
-									? form.getValues().dateOutlineCommitteeSign
-									: currentDate
-							}`}</Label>
 
-							{formData?.outlineCommitteeID ? (
-								<div className="flex flex-col items-center justify-center">
-									<RadioGroup disabled className="flex my-6">
-										<div className="flex items-center justify-center">
-											<RadioGroupItem
-												checked={formData?.outlineCommitteeStatus == "NOT_APPROVED"}
-												value="NOT_APPROVED"
-											/>
-											<div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">
-												ไม่อนุมัติ
-											</div>
-										</div>
-										<div className="ml-4 mt-0 flex items-center justify-center">
-											<RadioGroupItem
-												checked={formData?.outlineCommitteeStatus == "APPROVED"}
-												value="APPROVED"
-											/>
-											<div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
-												อนุมัติ
-											</div>
-										</div>
-									</RadioGroup>
-								</div>
-							) : (
-								<FormField
-									control={form.control}
-									name="outlineCommitteeStatus"
-									render={({ field }) => (
-										<FormItem>
-											<FormControl>
-												<RadioGroup
-													disabled={user.position.toString() != "COMMITTEE_OUTLINE"}
-													onValueChange={field.onChange}
-													className="flex my-4"
-												>
-													<FormItem className="flex items-center justify-center">
-														<RadioGroupItem className="mt-2" value="NOT_APPROVED" />
-														<div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">
-															ไม่อนุมัติ
-														</div>
-													</FormItem>
-													<FormItem className="ml-4 mt-0 flex items-center justify-center">
-														<RadioGroupItem className="mt-2" value="APPROVED" />
-														<div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
-															อนุมัติ
-														</div>
-													</FormItem>
-												</RadioGroup>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									)}
-								/>
-							)}
+					<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
+						<h1 className="mb-2 font-bold">ความเห็นของคณะกรรมการพิจารณาโครงร่างวิทยานิพนธ์</h1>
+						<Label className="mt-2">{`วันที่ ${
+							formData?.dateOutlineCommitteeSign
+								? formData?.dateOutlineCommitteeSign
+								: form.getValues().dateOutlineCommitteeSign
+								? form.getValues().dateOutlineCommitteeSign
+								: currentDate
+						}`}</Label>
 
+						{formData?.outlineCommitteeID ? (
+							<div className="flex flex-col items-center justify-center">
+								<RadioGroup
+									disabled={
+										user.position.toString() != "COMMITTEE_OUTLINE" ||
+										user.role.toString() != "SUPER_ADMIN"
+									}
+									className="flex my-6"
+								>
+									<div className="flex items-center justify-center">
+										<RadioGroupItem
+											checked={formData?.outlineCommitteeStatus == "NOT_APPROVED"}
+											value="NOT_APPROVED"
+										/>
+										<div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">
+											ไม่อนุมัติ
+										</div>
+									</div>
+									<div className="ml-4 mt-0 flex items-center justify-center">
+										<RadioGroupItem
+											checked={formData?.outlineCommitteeStatus == "APPROVED"}
+											value="APPROVED"
+										/>
+										<div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
+											อนุมัติ
+										</div>
+									</div>
+								</RadioGroup>
+							</div>
+						) : (
 							<FormField
 								control={form.control}
-								name="outlineCommitteeComment"
+								name="outlineCommitteeStatus"
 								render={({ field }) => (
-									<FormItem className="w-1/2">
+									<FormItem>
 										<FormControl>
-											<Textarea
+											<RadioGroup
 												disabled={
-													formData?.outlineCommitteeID
-														? true
-														: false ||
-														  (user.position.toString() != "COMMITTEE_OUTLINE" &&
-																user.role.toString() != "SUPER_ADMIN")
+													user.position.toString() != "COMMITTEE_OUTLINE" &&
+													user.role.toString() != "SUPER_ADMIN"
 												}
-												placeholder="ความเห็น..."
-												className="resize-none h-full text-md mb-2"
-												value={
-													formData?.outlineCommitteeComment
-														? formData?.outlineCommitteeComment
-														: field.value
-												}
-												onChange={field.onChange}
-											/>
+												onValueChange={field.onChange}
+												className="flex my-4"
+											>
+												<FormItem className="flex items-center justify-center">
+													<RadioGroupItem className="mt-2" value="NOT_APPROVED" />
+													<div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">
+														ไม่อนุมัติ
+													</div>
+												</FormItem>
+												<FormItem className="ml-4 mt-0 flex items-center justify-center">
+													<RadioGroupItem className="mt-2" value="APPROVED" />
+													<div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
+														อนุมัติ
+													</div>
+												</FormItem>
+											</RadioGroup>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
 								)}
 							/>
-							<Dialog open={open} onOpenChange={setOpen}>
-								<DialogTrigger
-									onClick={() => setOpen(true)}
-									disabled={formData?.outlineCommitteeSignUrl ? true : false}
-								>
-									<Button variant="outline" type="button" className="w-60 my-4 h-max">
-										<Image
-											src={
-												formData?.outlineCommitteeSignUrl
-													? formData?.outlineCommitteeSignUrl
-													: form.getValues().outlineCommitteeSignUrl
-													? form.getValues().outlineCommitteeSignUrl
-													: signature
+						)}
+
+						<FormField
+							control={form.control}
+							name="outlineCommitteeComment"
+							render={({ field }) => (
+								<FormItem className="w-1/2">
+									<FormControl>
+										<Textarea
+											disabled={
+												formData?.outlineCommitteeID
+													? true
+													: false ||
+													  (user.position.toString() != "COMMITTEE_OUTLINE" &&
+															user.role.toString() != "SUPER_ADMIN")
 											}
-											width={100}
-											height={100}
-											alt="signature"
+											placeholder="ความเห็น..."
+											className="resize-none h-full text-md mb-2"
+											value={
+												formData?.outlineCommitteeComment
+													? formData?.outlineCommitteeComment
+													: field.value
+											}
+											onChange={field.onChange}
 										/>
-									</Button>
-								</DialogTrigger>
-								<DialogContent className="w-max">
-									<DialogHeader>
-										<DialogTitle>ลายเซ็น</DialogTitle>
-									</DialogHeader>
-									<div className="w-full h-max flex justify-center mb-6 border-2">
-										<SignatureCanvas
-											ref={sigCanvas}
-											backgroundColor="white"
-											throttle={8}
-											canvasProps={{
-												width: 250,
-												height: 200,
-												className: "sigCanvas",
-											}}
-										/>
-									</div>
-									<div className="w-full h-full flex justify-center">
-										<Button
-											variant="outline"
-											type="button"
-											onClick={() => clear()}
-											className="bg-[#F26522] w-auto px-6 text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-										>
-											ล้าง
-										</Button>
-										<Button
-											variant="outline"
-											type="button"
-											onClick={() => handleDrawingSign()}
-											className="bg-[#F26522] w-auto text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-										>
-											ยืนยัน
-										</Button>
-									</div>
-								</DialogContent>
-							</Dialog>
-							{formData?.outlineCommitteeID ? (
-								<Label className="mb-2">
-									{formData.student.formLanguage == "en"
-										? `${formData?.outlineCommittee.firstNameEN} ${formData?.outlineCommittee.lastNameEN}`
-										: `${formData?.outlineCommittee.firstNameTH} ${formData?.outlineCommittee.lastNameTH}`}
-								</Label>
-							) : (
-								<FormField
-									control={form.control}
-									name="outlineCommitteeID"
-									render={({ field }) => (
-										<>
-											<Popover>
-												<PopoverTrigger asChild>
-													<FormControl>
-														<Button
-															variant="outline"
-															role="combobox"
-															className={cn(
-																"w-[180px] justify-between",
-																!field.value && "text-muted-foreground"
-															)}
-														>
-															{field.value
-																? `${
-																		outlineCommittee?.find(
-																			(outlineCommittee) => outlineCommittee.id === field.value
-																		)?.firstNameTH
-																  } ${
-																		outlineCommittee?.find(
-																			(outlineCommittee) => outlineCommittee.id === field.value
-																		)?.lastNameTH
-																  } `
-																: "เลือกประธานกรรมการ"}
-															<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-														</Button>
-													</FormControl>
-												</PopoverTrigger>
-												<PopoverContent className="w-full p-0">
-													<Command>
-														<CommandInput placeholder="ค้นหากรรมการ" />
-														<CommandList>
-															<CommandEmpty>ไม่พบกรรมการ</CommandEmpty>
-															{outlineCommittee
-																?.filter(
-																	(outlineCommittee) =>
-																		outlineCommittee.id ==
-																		form.watch("outlineCommitteeID")
-																)
-																.map((outlineCommittee) => (
-																	<CommandItem
-																		value={`${outlineCommittee.firstNameTH} ${outlineCommittee.lastNameTH}`}
-																		key={outlineCommittee.id}
-																		onSelect={() => {
-																			form.setValue("outlineCommitteeID", outlineCommittee.id);
-																		}}
-																	>
-																		<Check
-																			className={cn(
-																				"mr-2 h-4 w-4",
-																				field.value === outlineCommittee.id
-																					? "opacity-100"
-																					: "opacity-0"
-																			)}
-																		/>
-																		{`${outlineCommittee.firstNameTH} ${outlineCommittee.lastNameTH}`}
-																	</CommandItem>
-																))}
-														</CommandList>
-													</Command>
-												</PopoverContent>
-											</Popover>
-											<FormMessage />
-										</>
-									)}
-								/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
 							)}
-							<Label className="my-2">
-								{formData?.student.formLanguage == "en"
-									? `(Chair of the Committee)`
-									: `(ประธานคณะกรรมการ)`}
+						/>
+						<Dialog open={openOutline} onOpenChange={setOpenOutline}>
+							<DialogTrigger
+								onClick={() => setOpenOutline(!openOutline)}
+								disabled={
+									(formData?.outlineCommitteeSignUrl ||
+										user.position.toString() != "COMMITTEE_OUTLINE") &&
+									user.role.toString() != "SUPER_ADMIN"
+										? true
+										: false
+								}
+							>
+								<Button variant="outline" type="button" className="w-60 my-4 h-max">
+									<Image
+										src={
+											formData?.outlineCommitteeSignUrl
+												? formData?.outlineCommitteeSignUrl
+												: form.getValues().outlineCommitteeSignUrl
+												? form.getValues().outlineCommitteeSignUrl
+												: signature
+										}
+										width={100}
+										height={100}
+										alt="signature"
+									/>
+								</Button>
+							</DialogTrigger>
+							<DialogContent className="w-max">
+								<DialogHeader>
+									<DialogTitle>ลายเซ็น</DialogTitle>
+								</DialogHeader>
+								<div className="w-full h-max flex justify-center mb-6 border-2">
+									<SignatureCanvas
+										ref={sigCanvas}
+										backgroundColor="white"
+										throttle={8}
+										canvasProps={{
+											width: 250,
+											height: 200,
+											className: "sigCanvas",
+										}}
+									/>
+								</div>
+								<div className="w-full h-full flex justify-center">
+									<Button
+										variant="outline"
+										type="button"
+										onClick={() => clear()}
+										className="bg-[#F26522] w-auto px-6 text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
+									>
+										ล้าง
+									</Button>
+									<Button
+										variant="outline"
+										type="button"
+										onClick={() => handleDrawingSign()}
+										className="bg-[#F26522] w-auto text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
+									>
+										ยืนยัน
+									</Button>
+								</div>
+							</DialogContent>
+						</Dialog>
+						{formData?.outlineCommitteeID ? (
+							<Label className="mb-2">
+								{formData.student.formLanguage == "en"
+									? `${formData?.outlineCommittee.firstNameEN} ${formData?.outlineCommittee.lastNameEN}`
+									: `${formData?.outlineCommittee.firstNameTH} ${formData?.outlineCommittee.lastNameTH}`}
 							</Label>
-						</div>
-					)}
+						) : (
+							<FormField
+								control={form.control}
+								name="outlineCommitteeID"
+								render={({ field }) => (
+									<>
+										<Popover>
+											<PopoverTrigger asChild disabled={user.role.toString() != "SUPER_ADMIN"}>
+												<FormControl>
+													<Button
+														variant="outline"
+														role="combobox"
+														className={cn(
+															"w-[180px] justify-between",
+															!field.value && "text-muted-foreground"
+														)}
+													>
+														{field.value
+															? `${
+																	outlineCommittee?.find(
+																		(outlineCommittee) =>
+																			outlineCommittee.id === field.value
+																	)?.firstNameTH
+															  } ${
+																	outlineCommittee?.find(
+																		(outlineCommittee) =>
+																			outlineCommittee.id === field.value
+																	)?.lastNameTH
+															  } `
+															: "เลือกประธานกรรมการ"}
+														<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+													</Button>
+												</FormControl>
+											</PopoverTrigger>
+											<PopoverContent className="w-full p-0">
+												<Command>
+													<CommandInput placeholder="ค้นหากรรมการ" />
+													<CommandList>
+														<CommandEmpty>ไม่พบกรรมการ</CommandEmpty>
+														{outlineCommittee.map((outlineCommittee) => (
+															<CommandItem
+																value={`${outlineCommittee.firstNameTH} ${outlineCommittee.lastNameTH}`}
+																key={outlineCommittee.id}
+																onSelect={() => {
+																	form.setValue(
+																		"outlineCommitteeID",
+																		outlineCommittee.id
+																	);
+																}}
+															>
+																<Check
+																	className={cn(
+																		"mr-2 h-4 w-4",
+																		field.value === outlineCommittee.id
+																			? "opacity-100"
+																			: "opacity-0"
+																	)}
+																/>
+																{`${outlineCommittee.firstNameTH} ${outlineCommittee.lastNameTH}`}
+															</CommandItem>
+														))}
+													</CommandList>
+												</Command>
+											</PopoverContent>
+										</Popover>
+										<FormMessage />
+									</>
+								)}
+							/>
+						)}
+						<Label className="my-2">
+							{formData?.student.formLanguage == "en" ? `(Chair of the Committee)` : `(ประธานคณะกรรมการ)`}
+						</Label>
+					</div>
 
 					{/* กรรมการสำนักวิชา */}
-					{(user?.position.toString() == "COMMITTEE_INSTITUTE" || formData?.instituteCommitteeID) && (
+					{(user?.position.toString() == "COMMITTEE_INSTITUTE" ||
+						user?.role.toString() == "SUPER_ADMIN" ||
+						formData?.instituteCommitteeID) && (
 						<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
 							<h1 className="mb-2 font-bold">มติคณะกรรมการประจำสำนักวิชาวิศวกรรมศาสตร์</h1>
 							<Label className="mt-2">{`วันที่ ${
@@ -592,7 +623,14 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 									render={({ field }) => (
 										<FormItem>
 											<FormControl>
-												<RadioGroup onValueChange={field.onChange} className="flex my-4">
+												<RadioGroup
+													onValueChange={field.onChange}
+													disabled={
+														user.position.toString() != "COMMITTEE_INSTITUTE" &&
+														user.role.toString() != "SUPER_ADMIN"
+													}
+													className="flex my-4"
+												>
 													<FormItem className="flex items-center justify-center">
 														<RadioGroupItem className="mt-2" value="NOT_APPROVED" />
 														<div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">
@@ -634,28 +672,148 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 									</FormItem>
 								)}
 							/>
-							<Button variant="outline" type="button" className="w-60 my-4 h-max">
-								<Image
-									src={
-										formData?.instituteCommittee?.signatureUrl
-											? formData?.instituteCommittee.signatureUrl
-											: user.position.toString() == "COMMITTEE_INSTITUTE" && user.signatureUrl
-											? user.signatureUrl
-											: signature
+							<Dialog open={openInstitute} onOpenChange={setOpenInstitute}>
+								<DialogTrigger
+									onClick={() => setOpenInstitute(!openInstitute)}
+									disabled={
+										(formData?.instituteCommitteeSignUrl ||
+											user.position.toString() != "COMMITTEE_INSTITUTE") &&
+										user.role.toString() != "SUPER_ADMIN"
+											? true
+											: false
 									}
-									width={100}
-									height={100}
-									alt="signature"
-								/>
-							</Button>
-							<Label className="mb-2">
-								{formData?.instituteCommittee
-									? formData.student.formLanguage == "en"
+								>
+									<Button variant="outline" type="button" className="w-60 my-4 h-max">
+										<Image
+											src={
+												formData?.instituteCommitteeSignUrl
+													? formData?.instituteCommitteeSignUrl
+													: form.getValues().instituteCommitteeSignUrl
+													? form.getValues().instituteCommitteeSignUrl
+													: signature
+											}
+											width={100}
+											height={100}
+											alt="signature"
+										/>
+									</Button>
+								</DialogTrigger>
+								<DialogContent className="w-max">
+									<DialogHeader>
+										<DialogTitle>ลายเซ็น</DialogTitle>
+									</DialogHeader>
+									<div className="w-full h-max flex justify-center mb-6 border-2">
+										<SignatureCanvas
+											ref={sigCanvas}
+											backgroundColor="white"
+											throttle={8}
+											canvasProps={{
+												width: 250,
+												height: 200,
+												className: "sigCanvas",
+											}}
+										/>
+									</div>
+									<div className="w-full h-full flex justify-center">
+										<Button
+											variant="outline"
+											type="button"
+											onClick={() => clear()}
+											className="bg-[#F26522] w-auto px-6 text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
+										>
+											ล้าง
+										</Button>
+										<Button
+											variant="outline"
+											type="button"
+											onClick={() => handleDrawingSign()}
+											className="bg-[#F26522] w-auto text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
+										>
+											ยืนยัน
+										</Button>
+									</div>
+								</DialogContent>
+							</Dialog>
+							{formData?.instituteCommitteeID ? (
+								<Label className="mb-2">
+									{formData.student.formLanguage == "en"
 										? `${formData?.instituteCommittee.firstNameEN} ${formData?.instituteCommittee.lastNameEN}`
-										: `${formData?.instituteCommittee.firstNameTH} ${formData?.instituteCommittee.lastNameTH}`
-									: `${user.firstNameTH} ${user.lastNameTH}`}
-							</Label>
-							<Label className="mb-2">
+										: `${formData?.instituteCommittee.firstNameTH} ${formData?.instituteCommittee.lastNameTH}`}
+								</Label>
+							) : (
+								<FormField
+									control={form.control}
+									name="instituteCommitteeID"
+									render={({ field }) => (
+										<>
+											<Popover>
+												<PopoverTrigger
+													asChild
+													disabled={user.role.toString() != "SUPER_ADMIN"}
+												>
+													<FormControl>
+														<Button
+															variant="outline"
+															role="combobox"
+															className={cn(
+																"w-[180px] justify-between",
+																!field.value && "text-muted-foreground"
+															)}
+														>
+															{field.value
+																? `${
+																		instituteCommittee?.find(
+																			(instituteCommittee) =>
+																				instituteCommittee.id === field.value
+																		)?.firstNameTH
+																  } ${
+																		instituteCommittee?.find(
+																			(instituteCommittee) =>
+																				instituteCommittee.id === field.value
+																		)?.lastNameTH
+																  } `
+																: "เลือกประธานกรรมการ"}
+															<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+														</Button>
+													</FormControl>
+												</PopoverTrigger>
+												<PopoverContent className="w-full p-0">
+													<Command>
+														<CommandInput placeholder="ค้นหากรรมการ" />
+														<CommandList>
+															<CommandEmpty>ไม่พบกรรมการ</CommandEmpty>
+															{instituteCommittee.map((instituteCommittee) => (
+																<CommandItem
+																	value={`${instituteCommittee.firstNameTH} ${instituteCommittee.lastNameTH}`}
+																	key={instituteCommittee.id}
+																	onSelect={() => {
+																		form.setValue(
+																			"instituteCommitteeID",
+																			instituteCommittee.id
+																		);
+																	}}
+																>
+																	<Check
+																		className={cn(
+																			"mr-2 h-4 w-4",
+																			field.value === instituteCommittee.id
+																				? "opacity-100"
+																				: "opacity-0"
+																		)}
+																	/>
+																	{`${instituteCommittee.firstNameTH} ${instituteCommittee.lastNameTH}`}
+																</CommandItem>
+															))}
+														</CommandList>
+													</Command>
+												</PopoverContent>
+											</Popover>
+											<FormMessage />
+										</>
+									)}
+								/>
+							)}
+							<Label className="my-2">
 								{formData?.student.formLanguage == "en"
 									? `(Chair of the Committee)`
 									: `(ประธานคณะกรรมการ)`}
@@ -664,8 +822,8 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 					)}
 				</div>
 
-				{(!formData?.outlineCommitteeID && user?.position.toString() === "COMMITTEE_OUTLINE") ||
-				(!formData?.instituteCommitteeID && user?.position.toString() === "COMMITTEE_INSTITUTE") ? (
+				{(!formData?.outlineCommitteeID && user?.position.toString() === "COMMITTEE_OUTLINE" ) ||
+				(!formData?.instituteCommitteeID && user?.position.toString() === "COMMITTEE_INSTITUTE") || user?.role.toString() === "SUPER_ADMIN" ? (
 					<div className="w-full flex px-20 mt-4 lg:flex justify-center">
 						<Button
 							variant="outline"

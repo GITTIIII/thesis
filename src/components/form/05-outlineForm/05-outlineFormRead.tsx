@@ -171,7 +171,7 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 						</div>
 						<Button variant="outline" type="button" className="w-60 my-4 h-max">
 							<Image
-								src={formData?.outlineCommittee ? formData?.outlineCommittee.signatureUrl : signature}
+								src={formData?.outlineCommitteeSignUrl ? formData?.outlineCommitteeSignUrl : signature}
 								width={100}
 								height={100}
 								alt="signature"
@@ -227,7 +227,9 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 						<Button variant="outline" type="button" className="w-60 my-4 h-max">
 							<Image
 								src={
-									formData?.instituteCommittee ? formData?.instituteCommittee.signatureUrl : signature
+									formData?.instituteCommitteeSignUrl
+										? formData?.instituteCommitteeSignUrl
+										: signature
 								}
 								width={100}
 								height={100}
