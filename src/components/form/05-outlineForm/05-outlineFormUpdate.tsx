@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { use, useEffect, useState } from "react";
+import { ChangeEvent, use, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -18,16 +18,24 @@ import { Label } from "../../ui/label";
 import signature from "../../../../public/asset/signature.png";
 import ThesisProcessPlan from "../thesisProcessPlan";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import SignatureCanvas from "react-signature-canvas";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
 	id: z.number(),
 	outlineCommitteeID: z.number(),
 	outlineCommitteeStatus: z.string(),
 	outlineCommitteeComment: z.string(),
+	outlineCommitteeSignUrl: z.string(),
 	dateOutlineCommitteeSign: z.string(),
 	instituteCommitteeID: z.number(),
 	instituteCommitteeStatus: z.string(),
 	instituteCommitteeComment: z.string(),
+	instituteCommitteeSignUrl: z.string(),
 	dateInstituteCommitteeSign: z.string(),
 });
 
@@ -43,13 +51,46 @@ async function getCurrentUser() {
 	return res.json();
 }
 
+async function getOutlineCommittee() {
+	const res = await fetch("/api/getOutlineCommittee");
+	return res.json();
+}
+
 const userPromise = getCurrentUser();
+const outlineCommitteePromise = getOutlineCommittee();
 
 const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 	const router = useRouter();
 	const { toast } = useToast();
 	const user: IUser = use(userPromise);
 	const [formData, setFormData] = useState<IOutlineForm>();
+	const [open, setOpen] = useState(false);
+	const [currentDate, setCurrentDate] = useState("");
+	const outlineCommittee: IUser[] = use(outlineCommitteePromise);
+
+	const sigCanvas = useRef<SignatureCanvas>(null);
+	const clear = () => {
+		if (sigCanvas.current) {
+			sigCanvas.current.clear();
+		}
+	};
+
+	const handleDrawingSign = () => {
+		if (sigCanvas.current?.isEmpty()) {
+			toast({
+				title: "Error",
+				description: "กรุณาวาดลายเซ็น",
+				variant: "destructive",
+			});
+			return;
+		} else if (sigCanvas.current && !sigCanvas.current.isEmpty()) {
+			reset({
+				...form.getValues(),
+				outlineCommitteeSignUrl: sigCanvas.current.getTrimmedCanvas().toDataURL("image/png"),
+			});
+			setOpen(false);
+		}
+	};
 
 	const form = useForm({
 		resolver: zodResolver(formSchema),
@@ -58,17 +99,25 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 			outlineCommitteeID: 0,
 			outlineCommitteeStatus: "",
 			outlineCommitteeComment: "",
+			outlineCommitteeSignUrl: "",
 			dateOutlineCommitteeSign: "",
 
 			instituteCommitteeID: 0,
 			instituteCommitteeStatus: "",
 			instituteCommitteeComment: "",
+			instituteCommitteeSignUrl: "",
 			dateInstituteCommitteeSign: "",
 		},
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		console.log(values);
+		if (values.instituteCommitteeID != 0) {
+			values.dateInstituteCommitteeSign = currentDate;
+		}
+		if (values.outlineCommitteeID != 0) {
+			values.dateOutlineCommitteeSign = currentDate;
+		}
 		if (!user?.signatureUrl) {
 			toast({
 				title: "Error",
@@ -120,6 +169,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 		const year = today.getFullYear();
 		const date = today.getDate();
 		const currentDate = date + "/" + month + "/" + year;
+		setCurrentDate(currentDate);
 		if (user && user.position.toString() == "COMMITTEE_OUTLINE" && !formData?.outlineCommitteeID) {
 			reset({
 				...form.getValues(),
@@ -147,6 +197,10 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 			id: formId,
 		});
 	}, [formId]);
+
+	useEffect(() => {
+		console.log(form.getValues());
+	}, []);
 
 	return (
 		<Form {...form}>
@@ -263,7 +317,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 									? formData?.dateOutlineCommitteeSign
 									: form.getValues().dateOutlineCommitteeSign
 									? form.getValues().dateOutlineCommitteeSign
-									: "__________"
+									: currentDate
 							}`}</Label>
 
 							{formData?.outlineCommitteeID ? (
@@ -349,30 +403,140 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 									</FormItem>
 								)}
 							/>
-							<Button variant="outline" type="button" className="w-60 my-4 h-max">
-								<Image
-									src={
-										formData?.outlineCommittee?.signatureUrl
-											? formData?.outlineCommittee.signatureUrl
-											: user.position.toString() == "COMMITTEE_OUTLINE" && user.signatureUrl
-											? user.signatureUrl
-											: signature
-									}
-									width={100}
-									height={100}
-									alt="signature"
-								/>
-							</Button>
-							{(user.position.toString() == "COMMITTEE_OUTLINE" || formData?.outlineCommitteeID) && (
+							<Dialog open={open} onOpenChange={setOpen}>
+								<DialogTrigger
+									onClick={() => setOpen(true)}
+									disabled={formData?.outlineCommitteeSignUrl ? true : false}
+								>
+									<Button variant="outline" type="button" className="w-60 my-4 h-max">
+										<Image
+											src={
+												formData?.outlineCommitteeSignUrl
+													? formData?.outlineCommitteeSignUrl
+													: form.getValues().outlineCommitteeSignUrl
+													? form.getValues().outlineCommitteeSignUrl
+													: signature
+											}
+											width={100}
+											height={100}
+											alt="signature"
+										/>
+									</Button>
+								</DialogTrigger>
+								<DialogContent className="w-max">
+									<DialogHeader>
+										<DialogTitle>ลายเซ็น</DialogTitle>
+									</DialogHeader>
+									<div className="w-full h-max flex justify-center mb-6 border-2">
+										<SignatureCanvas
+											ref={sigCanvas}
+											backgroundColor="white"
+											throttle={8}
+											canvasProps={{
+												width: 250,
+												height: 200,
+												className: "sigCanvas",
+											}}
+										/>
+									</div>
+									<div className="w-full h-full flex justify-center">
+										<Button
+											variant="outline"
+											type="button"
+											onClick={() => clear()}
+											className="bg-[#F26522] w-auto px-6 text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
+										>
+											ล้าง
+										</Button>
+										<Button
+											variant="outline"
+											type="button"
+											onClick={() => handleDrawingSign()}
+											className="bg-[#F26522] w-auto text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
+										>
+											ยืนยัน
+										</Button>
+									</div>
+								</DialogContent>
+							</Dialog>
+							{formData?.outlineCommitteeID ? (
 								<Label className="mb-2">
-									{formData?.outlineCommittee
-										? formData.student.formLanguage == "en"
-											? `${formData?.outlineCommittee.firstNameEN} ${formData?.outlineCommittee.lastNameEN}`
-											: `${formData?.outlineCommittee.firstNameTH} ${formData?.outlineCommittee.lastNameTH}`
-										: `${user.firstNameTH} ${user.lastNameTH}`}
+									{formData.student.formLanguage == "en"
+										? `${formData?.outlineCommittee.firstNameEN} ${formData?.outlineCommittee.lastNameEN}`
+										: `${formData?.outlineCommittee.firstNameTH} ${formData?.outlineCommittee.lastNameTH}`}
 								</Label>
+							) : (
+								<FormField
+									control={form.control}
+									name="outlineCommitteeID"
+									render={({ field }) => (
+										<>
+											<Popover>
+												<PopoverTrigger asChild>
+													<FormControl>
+														<Button
+															variant="outline"
+															role="combobox"
+															className={cn(
+																"w-[180px] justify-between",
+																!field.value && "text-muted-foreground"
+															)}
+														>
+															{field.value
+																? `${
+																		outlineCommittee?.find(
+																			(outlineCommittee) => outlineCommittee.id === field.value
+																		)?.firstNameTH
+																  } ${
+																		outlineCommittee?.find(
+																			(outlineCommittee) => outlineCommittee.id === field.value
+																		)?.lastNameTH
+																  } `
+																: "เลือกประธานกรรมการ"}
+															<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+														</Button>
+													</FormControl>
+												</PopoverTrigger>
+												<PopoverContent className="w-full p-0">
+													<Command>
+														<CommandInput placeholder="ค้นหากรรมการ" />
+														<CommandList>
+															<CommandEmpty>ไม่พบกรรมการ</CommandEmpty>
+															{outlineCommittee
+																?.filter(
+																	(outlineCommittee) =>
+																		outlineCommittee.id ==
+																		form.watch("outlineCommitteeID")
+																)
+																.map((outlineCommittee) => (
+																	<CommandItem
+																		value={`${outlineCommittee.firstNameTH} ${outlineCommittee.lastNameTH}`}
+																		key={outlineCommittee.id}
+																		onSelect={() => {
+																			form.setValue("outlineCommitteeID", outlineCommittee.id);
+																		}}
+																	>
+																		<Check
+																			className={cn(
+																				"mr-2 h-4 w-4",
+																				field.value === outlineCommittee.id
+																					? "opacity-100"
+																					: "opacity-0"
+																			)}
+																		/>
+																		{`${outlineCommittee.firstNameTH} ${outlineCommittee.lastNameTH}`}
+																	</CommandItem>
+																))}
+														</CommandList>
+													</Command>
+												</PopoverContent>
+											</Popover>
+											<FormMessage />
+										</>
+									)}
+								/>
 							)}
-							<Label className="mb-2">
+							<Label className="my-2">
 								{formData?.student.formLanguage == "en"
 									? `(Chair of the Committee)`
 									: `(ประธานคณะกรรมการ)`}
@@ -389,7 +553,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 									? formData?.dateInstituteCommitteeSign
 									: form.getValues().dateInstituteCommitteeSign
 									? form.getValues().dateInstituteCommitteeSign
-									: "__________"
+									: currentDate
 							}`}</Label>
 
 							{formData?.instituteCommitteeID ? (

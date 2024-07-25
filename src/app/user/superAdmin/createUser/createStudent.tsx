@@ -31,8 +31,8 @@ import { IUser } from "@/interface/user";
 
 const formSchema = z.object({
 	prefix: z.string().min(1, { message: "กรุณาเลือกคำนำหน้า / Please select prefix" }),
-	firstName: z.string().min(1, { message: "กรุณากรอกชื่อ / First name requierd" }),
-	lastName: z.string().min(1, { message: "กรุณากรอกนามสกุล / Last name requierd" }),
+	firstNameTH: z.string().min(1, { message: "กรุณากรอกชื่อ / First name requierd" }),
+	lastNameTH: z.string().min(1, { message: "กรุณากรอกนามสกุล / Last name requierd" }),
 	username: z.string().min(1, { message: "กรุณากรอกรหัสนักศึกษา / Student ID requierd" }),
 	password: z.string().min(1, { message: "กรุณากรอกรหัสผ่าน / Password requierd" }),
 	email: z.string().min(1, { message: "กรุณาอีเมล / Email requierd" }),
@@ -86,8 +86,8 @@ export default function CreateStudent() {
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			prefix: "",
-			firstName: "",
-			lastName: "",
+			firstNameTH: "",
+			lastNameTH: "",
 			username: "",
 			password: "",
 			email: "",
@@ -187,7 +187,7 @@ export default function CreateStudent() {
 					/>
 					<FormField
 						control={form.control}
-						name="firstName"
+						name="firstNameTH"
 						render={({ field }) => (
 							<div className="space-y-1 mb-2">
 								<FormLabel htmlFor="firstName">
@@ -200,7 +200,7 @@ export default function CreateStudent() {
 					/>
 					<FormField
 						control={form.control}
-						name="lastName"
+						name="lastNameTH"
 						render={({ field }) => (
 							<div className="space-y-1 mb-2">
 								<FormLabel htmlFor="lastName">
