@@ -1,4 +1,3 @@
-"use client";
 import axios from "axios";
 import ThesisProgressFormCreate from "@/components/form/06-thesisProgressForm/06-thesisProgressFormCreate";
 import { date } from "zod";

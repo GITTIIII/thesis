@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { use } from "react";
+import { use, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import useComponentVisible from "../componentVisible/useComponentVisible";
@@ -40,11 +40,17 @@ async function getCurrentUser() {
 	return res.json();
 }
 
-const userPromise = getCurrentUser();
-
 export default function Navbar({ menu, notification = false }: Props) {
-	const user: IUser = use(userPromise);
+	const [user, setUser] = useState<IUser>()
 	const router = useRouter();
+
+	useEffect(() => {
+		async function fetchData() {
+			const data = await getCurrentUser();
+			setUser(data);
+		}
+		fetchData();
+	}, []);
 
 	if (user?.formLanguage === null && user?.role.toString() == "STUDENT") {
 		router.push("/user/student/selectLanguage");
