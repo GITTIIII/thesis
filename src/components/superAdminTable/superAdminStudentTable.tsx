@@ -41,11 +41,11 @@ export default function SuperAdminStudentTable({ filterRole }: { filterRole: str
 
 	const filteredData = userData.filter(
 		(user) =>
-			user.firstNameTH.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			user.lastNameTH.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			user.firstNameEN.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			user.lastNameEN.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			user.username.toLowerCase().includes(searchQuery.toLowerCase())
+			user.firstNameTH?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+			user.lastNameTH?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+			user.firstNameEN?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+			user.lastNameEN?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+			user.username?.toLowerCase().includes(searchQuery.toLowerCase())
 	);
 
 	useEffect(() => {

@@ -34,6 +34,7 @@ export interface IProcessPlan {
 }
 
 export type IComprehensiveExamCommitteeForm = {
+  map(arg0: (data: any) => import("react").JSX.Element): import("react").ReactNode;
 	id: number;
 	date: string;
 	trimester: number;

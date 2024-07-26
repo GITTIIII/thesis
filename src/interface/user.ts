@@ -3,6 +3,7 @@ import { ISchool } from "./school";
 import { IProgram } from "./program";
 
 export type IUser = {
+  map(arg0: (data: IUser) => import("react").JSX.Element): import("react").ReactNode;
 	id: number;
 	formLanguage: string;
 	prefix: string;

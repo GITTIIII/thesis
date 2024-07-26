@@ -55,9 +55,9 @@ export async function POST(req: Request) {
 export async function GET() {
 	const session = await getServerSession(authOptions);
 
-	if (!session) {
-		return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
-	}
+	// if (!session) {
+	// 	return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
+	// }
 
 	const comprehensiveExamCommitteeForm = await db.comprehensiveExamCommitteeForm.findMany({
 		include: {
