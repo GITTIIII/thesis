@@ -3,6 +3,7 @@ import axios from "axios";
 import ThesisProgressFormCreate from "@/components/form/06-thesisProgressForm/06-thesisProgressFormCreate";
 import { date } from "zod";
 import Image from "next/image";
+import { GrPowerReset } from "react-icons/gr";
 import { Button } from "@/components/ui/button";
 import { GoPencil } from "react-icons/go";
 import {
@@ -35,6 +36,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Signature from "@/components/signature/signature";
+import Cropper, { CropperProps, Area, Point } from "react-easy-crop";
+import { useState } from "react";
+import getCroppedImg from "@/lib/cropImage";
+import { Slider } from "@/components/ui/slider";
+import qs from "query-string";
+import { useToast } from "@/components/ui/use-toast";
+
 export default async function profile() {
   return (
     <>
@@ -49,7 +57,7 @@ export default async function profile() {
               alt="Profile"
             />
             <div className=" absolute right-0 top-0">
-              <EditSignature />
+              <EditProfile />
             </div>
           </div>
           <div className=" md:col-span-3 md:row-span-3 row-start-4 row-span-3  col-span-4 p-8 relative ">
@@ -105,7 +113,6 @@ export default async function profile() {
     </>
   );
 }
-
 const EditPersonalInformation = ({ user_ }: { user_: any }) => {
   const formSchema = z.object({
     username: z
@@ -281,7 +288,7 @@ const EditPersonalInformation = ({ user_ }: { user_: any }) => {
               )}
             />
             <DialogFooter className=" mt-4">
-              <Button type="submit">Save changes</Button>
+              <Button type="submit">ยืนยัน</Button>
             </DialogFooter>
           </form>
         </Form>
@@ -310,6 +317,125 @@ const EditSignature = () => {
     </Dialog>
   );
 };
+const EditProfile = () => {
+  const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState<number>(1);
+  const [rotation, setRotation] = useState<number>(0);
+  const [image, setImage] = useState<string>("");
+  const [cropImage, setCropImage] = useState<string>("");
+  const { toast } = useToast();
+
+  const onCropComplete = async (croppedArea: Area, croppedAreaPixels: Area) => {
+    try {
+      const croppedImage = await getCroppedImg(image, croppedAreaPixels, rotation);
+      setCropImage(croppedImage!);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
+
+      reader.onloadend = () => {
+        setImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const onSubmit = async () => {
+    const url = qs.stringifyUrl({
+      url: `/api/user`,
+    });
+    // const aTag = document.createElement("a");
+    // aTag.href = cropImage;
+    // aTag.download = "test";
+    // aTag.click();
+    const res = await axios.patch(url, { img: cropImage });
+    if (res.status === 200) {
+      toast({
+        title: "Success",
+        description: "บันทึกสำเร็จแล้ว",
+        variant: "default",
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: res.statusText,
+        variant: "destructive",
+      });
+    }
+  };
+  return (
+    <>
+      <Dialog>
+        <DialogTrigger asChild>
+          <Button variant="link">
+            <GoPencil size={20} />
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="md:max-w-[500px] md:max-h-max sm:max-w-[425px]  inline rounded-lg">
+          <DialogHeader>
+            <DialogTitle className=" text-2xl">รูป</DialogTitle>
+          </DialogHeader>
+          <div className=" relative sm:h-[350px] h-60  mt-3  border">
+            <Cropper
+              image={image}
+              crop={crop}
+              zoom={zoom}
+              aspect={2.5 / 3}
+              rotation={rotation}
+              onCropChange={setCrop}
+              onCropComplete={onCropComplete}
+              onZoomChange={setZoom}
+              onRotationChange={setRotation}
+            />
+          </div>
+          <div className=" my-2 flex w-full  bg-white p-3 rounded-md border-1 border">
+            <Label className="mr-4 content-center inline-block text-[#F26522]">
+              Zoom
+            </Label>
+            <Slider
+              defaultValue={[zoom]}
+              value={[zoom]}
+              max={3}
+              min={1}
+              step={0.01}
+              className=" w-full "
+              onValueChange={(values) => setZoom(values[0])}
+            />
+          </div>
+          <div className=" w-full  flex bg-white p-3 rounded-md border-1 border">
+            <Label className="mr-4 content-center inline-block text-[#F26522] ">
+              Rotation
+            </Label>
+            <Slider
+              defaultValue={[rotation]}
+              value={[rotation]}
+              max={360}
+              min={0}
+              step={1}
+              className=" w-full "
+              onValueChange={(values) => setRotation(values[0])}
+            />
+          </div>
+          <Input
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className=" mt-2 text-sm text-grey-500 rounded-md file:border-0 file:text-md file:w-fit file:h-full file:text-[#F26522] bg-white hover:file:cursor-pointer hover:file:opacity-80"
+          />
+          <Button type="submit" className=" mt-2 w-full" onClick={() => onSubmit()}>
+            ยืนยัน
+          </Button>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+};
+
 const user = {
   id: 3,
   formLanguage: "th",

@@ -60,21 +60,6 @@ export default function Signature() {
     },
   });
 
-  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files && e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        reset({
-          ...form.getValues(),
-          signatureUrl: base64String,
-        });
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   const handleDrawingSign = () => {
     if (active == 2 && sigCanvas.current?.isEmpty()) {
       toast({
@@ -93,6 +78,10 @@ export default function Signature() {
     const url = qs.stringifyUrl({
       url: `/api/user`,
     });
+    const aTag = document.createElement("a");
+    aTag.href = values.signatureUrl;
+    aTag.download = "test";
+    aTag.click();
     const res = await axios.patch(url, values);
     if (res.status === 200) {
       toast({
@@ -137,10 +126,6 @@ export default function Signature() {
     try {
       const croppedImage = await getCroppedImg(image, croppedAreaPixels, rotation);
       console.log("donee", { croppedImage });
-      reset({
-        ...form.getValues(),
-        signatureUrl: croppedImage!,
-      });
       reset({
         ...form.getValues(),
         signatureUrl: croppedImage!,
