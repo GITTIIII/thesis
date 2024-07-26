@@ -36,6 +36,10 @@ async function getCurrentUser() {
 }
 
 export default function Signature() {
+  const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState<number>(1);
+  const [rotation, setRotation] = useState<number>(0);
+  const [image, setImage] = useState<string>("");
   const [active, setActive] = useState(1);
   const [user, setUser] = useState<User | null>(null);
   const { toast } = useToast();
@@ -86,10 +90,6 @@ export default function Signature() {
   };
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    // const a_ = document.createElement("a");
-    // a_.setAttribute("download", "reactflow.png");
-    // a_.setAttribute("href", values.signatureUrl);
-    // a_.click();
     const url = qs.stringifyUrl({
       url: `/api/user`,
     });
@@ -133,13 +133,9 @@ export default function Signature() {
     fetchData();
   }, [active]);
 
-  const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState<number>(1);
-  const [rotation, setRotation] = useState<number>(0);
-  const [image, setImage] = useState<string>("");
   const onCropComplete = async (croppedArea: Area, croppedAreaPixels: Area) => {
     try {
-      const croppedImage = await getCroppedImg(image, croppedAreaPixels);
+      const croppedImage = await getCroppedImg(image, croppedAreaPixels, rotation);
       console.log("donee", { croppedImage });
       reset({
         ...form.getValues(),
