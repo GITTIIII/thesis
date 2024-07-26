@@ -65,6 +65,10 @@ export async function GET() {
 		},
 	});
 
+	if (!comprehensiveExamCommitteeForm) {
+		return NextResponse.json({ error: "Form not found" }, { status: 404 });
+	}
+
 	return NextResponse.json(comprehensiveExamCommitteeForm);
 }
 
