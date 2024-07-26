@@ -1,3 +1,4 @@
+"use client";
 import axios from "axios";
 import ThesisProgressFormCreate from "@/components/form/06-thesisProgressForm/06-thesisProgressFormCreate";
 import { date } from "zod";
@@ -7,7 +8,6 @@ import { GoPencil } from "react-icons/go";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -21,7 +21,6 @@ import { useForm } from "react-hook-form";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -32,48 +31,51 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import Signature from "@/components/signature/signature";
 export default async function profile() {
   return (
     <>
-      <div className="w-full h-full flex justify-center">
-        <div className="[&>div]:border [&>div]:overflow-hidden  [&>div]:rounded-lg [&>div]:shadow-[0px_0px_5px_1px_#e2e8f0] mt-12 w-[950px]  grid grid-cols-4 grid-rows-9 gap-4">
-          <div className="row-span-3 overflow-clip content-center ">
+      <div className="w-full md:h-full flex justify-center">
+        <div className="lg:w-[950px] md:w-[750px] sm:w-[550px] w-[350px]  [&>div]:bg-white [&>div]:border [&>div]:overflow-hidden  [&>div]:rounded-lg [&>div]:shadow-[0px_0px_5px_1px_#e2e8f0] mt-12 grid md:grid-cols-4 md:grid-rows-9  gap-4">
+          <div className=" md:row-span-3 md:col-start-1 md:row-start-1 md:col-span-1 col-start-2 row-span-3  col-span-2  overflow-clip  content-center justify-center flex relative ">
             <Image
               src={user.signatureUrl}
               width={0}
               height={0}
-              className=" h-auto w-full"
+              className="h-auto md:w-full w-auto   self-center "
               alt="Profile"
             />
+            <div className=" absolute right-0 top-0">
+              <EditSignature />
+            </div>
           </div>
-          <div className=" lg:col-span-3 lg:row-span-3  p-8 ">
-            <div className="w-full flex  justify-between">
-              <label className=" text-xl ">ข้อมูลส่วนตัว</label>
+          <div className=" md:col-span-3 md:row-span-3 row-start-4 row-span-3  col-span-4 p-8 relative ">
+            <label className=" text-xl ">ข้อมูลส่วนตัว</label>
+            <div className=" absolute right-0 top-0">
               <EditPersonalInformation user_={user} />
             </div>
-            <div className=" flex mt-6">
-              <section className=" flex flex-col w-1/2 gap-3">
+            <div className="mt-4 sm:flex ">
+              <section className=" flex flex-col sm:w-1/2 gap-4">
                 <p className=" text-lg">{`รหัสนักศึกษา: ${user.username} `}</p>
                 <p className=" text-lg">{`ชื่อ: ${user.prefix}${user.firstNameTH} ${user.lastNameTH} `}</p>
                 <p className=" text-lg">{`ชื่ออังกฤษ: ${user.prefix}${user.firstNameEN} ${user.lastNameEN} `}</p>
                 <p className=" text-lg">{`เพศ: ${user.sex} `}</p>
               </section>
-              <section className=" flex flex-col w-1/2 gap-3  ">
+              <section className="flex flex-col sm:mt-0 mt-3 sm:w-1/2 gap-4  ">
                 <p className=" text-lg">{`อีเมล: ${user.email} `}</p>
                 <p className=" text-lg">{`เบอร์โทรศัพท์: ${user.phone} `}</p>
               </section>
             </div>
           </div>
 
-          <div className="col-span-2 row-span-4 row-start-4 p-8">
+          <div className="md:col-span-2 md:row-span-4 md:row-start-4 row-start-7 row-span-5  col-span-4 p-8">
             <div className="w-full flex  justify-between">
               <label className=" text-xl ">ข้อมูลด้านการศึกษา</label>
             </div>
-            <section className=" mt-6 gap-3 flex  flex-col self-center">
+            <section className="mt-4  gap-4 flex  flex-col self-center">
               <p className=" text-lg ">{`สำนักวิชา: ${user.institute.instituteNameTH} `}</p>
               <p className=" text-lg ">{`สาขาวิชา: ${user.school.schoolNameTH} `}</p>
               <p className=" text-lg ">{`หลักสูตร: ${user.program.programNameTH} ${user.program.programYear} `}</p>
@@ -83,20 +85,18 @@ export default async function profile() {
               <p className=" text-lg ">{`อ.ที่ปรึกษา: ${user.advisor.prefix} ${user.advisor.firstNameTH} ${user.advisor.lastNameTH}`}</p>
             </section>
           </div>
-          <div className="col-span-2 row-span-4 col-start-3 row-start-4 overflow-clip p-8">
-            <div className="w-full flex  justify-between">
-              <label className=" text-xl ">ลายเซ็น</label>
-              <Button variant="link">
-                <GoPencil size={20} />
-              </Button>
+          <div className="md:col-span-2 md:row-span-4 md:col-start-3 md:row-start-4 overflow-clip  row-start-12  col-span-4 p-8 relative">
+            <label className=" text-xl ">ลายเซ็น</label>
+            <div className=" absolute right-0 top-0">
+              <EditSignature />
             </div>
-            <div className=" mt-6 flex justify-center">
+            <div className=" mt-4 flex justify-center">
               <Image
                 src={user.signatureUrl}
-                width={260}
-                height={260}
+                width={0}
+                height={0}
                 alt="Profile"
-                className=" border"
+                className=" border w-60 h-60"
               />
             </div>
           </div>
@@ -108,11 +108,21 @@ export default async function profile() {
 
 const EditPersonalInformation = ({ user_ }: { user_: any }) => {
   const formSchema = z.object({
-    username: z.string().min(1, { message: "กรุณากรอกรหัสนักศึกษา" }),
-    firstNameTH: z.string().min(1, { message: "กรุณากรอกชื่อ" }),
-    lastNameTH: z.string().min(1, { message: "กรุณากรอกนามสกุล" }),
-    firstNameEN: z.string().min(1, { message: "Please enter your first name" }),
-    lastNameEN: z.string().min(1, { message: "Please enter your last name" }),
+    username: z
+      .string({ message: "กรุณากรอกรหัสนักศึกษา" })
+      .min(1, { message: "กรุณากรอกรหัสนักศึกษา" }),
+    firstNameTH: z
+      .string({ message: "กรุณากรอกชื่อ" })
+      .min(1, { message: "กรุณากรอกชื่อ" }),
+    lastNameTH: z
+      .string({ message: "กรุณากรอกนามสกุล" })
+      .min(1, { message: "กรุณากรอกนามสกุล" }),
+    firstNameEN: z
+      .string({ message: "Please enter your first name" })
+      .min(1, { message: "Please enter your first name" }),
+    lastNameEN: z
+      .string({ message: "Please enter your first name" })
+      .min(1, { message: "Please enter your last name" }),
     sex: z.string().min(1, { message: "กรุณาระบุเพศ" }),
     email: z.string().email({ message: "กรุณากรอกอีเมลให้ถูกต้อง" }),
     phone: z
@@ -146,9 +156,9 @@ const EditPersonalInformation = ({ user_ }: { user_: any }) => {
           <GoPencil size={20} />
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="md:max-w-[500px] md:max-h-max max-w-[350px] max-h-[550px]  overflow-auto rounded-lg">
         <DialogHeader>
-          <DialogTitle>แก้ไขข้อมูลส่วนตัว</DialogTitle>
+          <DialogTitle className=" text-2xl">แก้ไขข้อมูลส่วนตัว</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="">
@@ -165,12 +175,12 @@ const EditPersonalInformation = ({ user_ }: { user_: any }) => {
                 </FormItem>
               )}
             />
-            <div className="flex justify-between">
+            <div className="flex justify-between md:flex-row flex-col">
               <FormField
                 control={form.control}
                 name="firstNameTH"
                 render={({ field }) => (
-                  <FormItem className=" w-52">
+                  <FormItem className=" md:w-52">
                     <FormLabel>ชื่อ</FormLabel>
                     <FormControl>
                       <Input placeholder="ชื่อ" {...field} disabled />
@@ -183,7 +193,7 @@ const EditPersonalInformation = ({ user_ }: { user_: any }) => {
                 control={form.control}
                 name="lastNameTH"
                 render={({ field }) => (
-                  <FormItem className=" w-52">
+                  <FormItem className=" md:w-52">
                     <FormLabel>นามสกุล</FormLabel>
                     <FormControl>
                       <Input placeholder="นามสกุล" {...field} disabled />
@@ -193,12 +203,12 @@ const EditPersonalInformation = ({ user_ }: { user_: any }) => {
                 )}
               />
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between  md:flex-row flex-col">
               <FormField
                 control={form.control}
                 name="firstNameEN"
                 render={({ field }) => (
-                  <FormItem className=" w-52">
+                  <FormItem className=" md:w-52">
                     <FormLabel>First name</FormLabel>
                     <FormControl>
                       <Input placeholder="First name" {...field} />
@@ -211,7 +221,7 @@ const EditPersonalInformation = ({ user_ }: { user_: any }) => {
                 control={form.control}
                 name="lastNameEN"
                 render={({ field }) => (
-                  <FormItem className=" w-52">
+                  <FormItem className=" md:w-52">
                     <FormLabel>Last name</FormLabel>
                     <FormControl>
                       <Input placeholder="Last name" {...field} />
@@ -225,7 +235,7 @@ const EditPersonalInformation = ({ user_ }: { user_: any }) => {
               control={form.control}
               name="sex"
               render={({ field }) => (
-                <FormItem className=" w-52">
+                <FormItem className=" md:w-52">
                   <FormLabel>เพศ</FormLabel>
                   <FormControl>
                     <Select {...field}>
@@ -275,6 +285,27 @@ const EditPersonalInformation = ({ user_ }: { user_: any }) => {
             </DialogFooter>
           </form>
         </Form>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+const EditSignature = () => {
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="link">
+          <GoPencil size={20} />
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="max-w-fit  max-h-fit">
+        <DialogHeader>
+          <DialogTitle className=" text-2xl">ลายเซ็น</DialogTitle>
+        </DialogHeader>
+        <div className=" lg:w-[950px] lg:h-[650px] md:w-[700px] w-[520px] h-[500px]">
+          <Signature />
+        </div>
+        <DialogFooter>{/* <Button type="submit">Save changes</Button> */}</DialogFooter>
       </DialogContent>
     </Dialog>
   );
