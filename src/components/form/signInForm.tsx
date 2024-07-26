@@ -89,7 +89,7 @@ const SignInForm = () => {
 									<FormLabel>ชื่อผู้ใช้</FormLabel>
 									<FormControl>
 										<Input
-											className="text-sm p-2 w-full border-solid border-2 border-black rounded-lg"
+											className="text-sm p-2 w-full rounded-lg"
 											{...field}
 										/>
 									</FormControl>
@@ -108,7 +108,7 @@ const SignInForm = () => {
 									<FormControl>
 										<Input
 											type="password"
-											className="text-sm p-2 w-full border-solid border-2 border-black rounded-lg"
+											className="text-sm p-2 w-full rounded-lg"
 											{...field}
 										/>
 									</FormControl>
