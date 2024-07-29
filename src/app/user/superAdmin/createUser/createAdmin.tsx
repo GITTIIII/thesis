@@ -260,7 +260,7 @@ export default function CreateAdmin() {
 									<SelectContent>
 										<SelectGroup>
 											<SelectItem value="ADVISOR">อาจารย์ที่ปรึกษา</SelectItem>
-											<SelectItem value="HEAD_INSTITUTE">หัวหน้าสาขา</SelectItem>
+											<SelectItem value="HEAD_OF_SCHOOL">หัวหน้าสาขา</SelectItem>
 										</SelectGroup>
 									</SelectContent>
 								</Select>

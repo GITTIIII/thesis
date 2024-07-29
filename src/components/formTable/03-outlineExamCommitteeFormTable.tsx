@@ -28,7 +28,7 @@ import { IUser } from "@/interface/user";
 // const userPromise = getCurrentUser();
 // const formDataPromise = getFormData();
 
-export default function OutlineExamCommitteeFormTable() {
+export default function OutlineExamCommitteeFormTable({ userData }: { userData: IUser | undefined }) {
 	// const formData: IOutlineForm[] = use(formDataPromise);
 	// const user: IUser = use(userPromise);
 	return (

@@ -10,12 +10,15 @@ export async function GET() {
 		return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
 	}
 
-	const user = await db.user.findMany({
-		where: {
-			role: "COMMITTEE",
-			position: "OUTLINE_COMMITTEE",
+	const form = await db.thesisProgressForm.findFirst({
+		orderBy: {
+			createdAt: "desc",
 		},
 	});
 
-	return NextResponse.json(user);
+	if (!form) {
+		return NextResponse.json({ error: "Form not found" }, { status: 404 });
+	}
+
+	return NextResponse.json(form);
 }

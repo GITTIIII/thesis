@@ -222,11 +222,11 @@ export default function CreateAdmin() {
 									</SelectTrigger>
 									<SelectContent>
 										<SelectGroup>
-											<SelectItem value="COMMITTEE_OUTLINE">
+											<SelectItem value="OUTLINE_COMMITTEE">
 												กรรมการสอบโครงร่างวิทยานิพนธ์
 											</SelectItem>
-											<SelectItem value="COMMITTEE_INSTITUTE">กรรมการประจำสำนักวิขา</SelectItem>
-											<SelectItem value="COMMITTEE_EXAMING">กรรมการสอบวิทยานิพนธ์</SelectItem>
+											<SelectItem value="INSTITUTE_COMMITTEE">กรรมการประจำสำนักวิขา</SelectItem>
+											<SelectItem value="EXAMING_COMMITTEE">กรรมการสอบวิทยานิพนธ์</SelectItem>
 										</SelectGroup>
 									</SelectContent>
 								</Select>

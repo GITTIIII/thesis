@@ -26,23 +26,25 @@ import React, { useState, useEffect } from "react";
 import signature from "@/../../public/asset/signature.png";
 import profile from "@/../../public/asset/profile.png";
 import { useRouter } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { User } from "lucide-react";
 
 const prefixMapToEN: { [key: string]: string } = {
-	"นาย": "Mr.",
-  "นาง": "Miss",
-  "นางสาว": "Ms.",
-  "Mr.": "Mr.",
-  "Miss": "Miss",
-  "Ms.": "Ms."
+	นาย: "Mr.",
+	นาง: "Miss",
+	นางสาว: "Ms.",
+	"Mr.": "Mr.",
+	Miss: "Miss",
+	"Ms.": "Ms.",
 };
 
 const prefixMapToTH: { [key: string]: string } = {
-  "Mr.": "นาย",
-  "Miss": "นาง",
-  "Ms.": "นางสาว",
-  "นาย": "นาย",
-  "นาง": "นาง",
-  "นางสาว": "นางสาว"
+	"Mr.": "นาย",
+	Miss: "นาง",
+	"Ms.": "นางสาว",
+	นาย: "นาย",
+	นาง: "นาง",
+	นางสาว: "นางสาว",
 };
 
 async function getCurrentUser() {
@@ -67,14 +69,13 @@ export default function Profile() {
 		<>
 			<div className="w-full md:h-full flex justify-center">
 				<div className="lg:w-[950px] md:w-[750px] sm:w-[550px] w-[350px]  [&>div]:bg-white [&>div]:border [&>div]:overflow-hidden  [&>div]:rounded-lg [&>div]:shadow-[0px_0px_5px_1px_#e2e8f0] mt-12 grid md:grid-cols-4 md:grid-rows-9  gap-4">
-					<div className=" md:row-span-3 md:col-start-1 md:row-start-1 md:col-span-1 col-start-2 row-span-3  col-span-2  overflow-clip  content-center justify-center flex relative ">
-						<Image
-							src={user?.profileUrl ? user?.profileUrl : profile}
-							width={75}
-							height={75}
-							className="h-auto w-auto self-center rounded-full"
-							alt="Profile"
-						/>
+					<div className="md:row-span-3 md:col-start-1 md:row-start-1 md:col-span-1 col-start-2 row-span-3  col-span-2  overflow-clip  content-center justify-center flex relative ">
+						<Avatar className="w-[128px] h-auto my-auto">
+							<AvatarImage src={user?.profileUrl}  alt="Profile" />
+							<AvatarFallback>
+								<User />
+							</AvatarFallback>
+						</Avatar>
 						<div className=" absolute right-0 top-0">
 							<EditProfile user={user} />
 						</div>
@@ -87,10 +88,14 @@ export default function Profile() {
 						<div className="mt-4 sm:flex ">
 							<section className=" flex flex-col sm:w-1/2 gap-4">
 								<p className=" text-lg">{`รหัสนักศึกษา: ${user?.username} `}</p>
-								<p className=" text-lg">{`ชื่อ: ${prefixMapToTH[user?.prefix ? user?.prefix : ""]}${user?.firstNameTH} ${user?.lastNameTH} `}</p>
-								<p className=" text-lg">{`ชื่ออังกฤษ: ${prefixMapToEN[user?.prefix ? user?.prefix : ""]}${
-									user?.firstNameEN ? user?.firstNameEN : ""
-								} ${user?.lastNameEN ? user?.lastNameEN : ""} `}</p>
+								<p className=" text-lg">{`ชื่อ: ${prefixMapToTH[user?.prefix ? user?.prefix : ""]}${
+									user?.firstNameTH
+								} ${user?.lastNameTH} `}</p>
+								<p className=" text-lg">{`ชื่ออังกฤษ: ${
+									prefixMapToEN[user?.prefix ? user?.prefix : ""]
+								}${user?.firstNameEN ? user?.firstNameEN : ""} ${
+									user?.lastNameEN ? user?.lastNameEN : ""
+								} `}</p>
 								<p className=" text-lg">{`เพศ: ${user?.sex} `}</p>
 							</section>
 							<section className="flex flex-col sm:mt-0 mt-3 sm:w-1/2 gap-4  ">
@@ -137,7 +142,7 @@ export default function Profile() {
 const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 	const { toast } = useToast();
 	const router = useRouter();
-  const [ open, setOpen ] = useState(false);
+	const [open, setOpen] = useState(false);
 
 	const formSchema = z.object({
 		id: z.number(),
@@ -186,7 +191,7 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 			});
 			form.reset();
 			router.refresh();
-      setOpen(false)
+			setOpen(false);
 		} else {
 			toast({
 				title: "Error",
@@ -217,7 +222,7 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
-			<DialogTrigger asChild >
+			<DialogTrigger asChild>
 				<Button variant="link">
 					<GoPencil size={20} />
 				</Button>
@@ -357,8 +362,8 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 };
 
 const EditSignature = ({ user }: { user: IUser | undefined }) => {
-	const [ open, setOpen ] = useState(false)
-  return (
+	const [open, setOpen] = useState(false);
+	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
 				<Button variant="link">
@@ -385,7 +390,7 @@ const EditProfile = ({ user }: { user: IUser | undefined }) => {
 	const [image, setImage] = useState<string>("");
 	const [cropImage, setCropImage] = useState<string>("");
 	const { toast } = useToast();
-  const [ open, setOpen ] = useState(false)
+	const [open, setOpen] = useState(false);
 	const router = useRouter();
 
 	const formSchema = z.object({
@@ -459,7 +464,7 @@ const EditProfile = ({ user }: { user: IUser | undefined }) => {
 			});
 			form.reset();
 			router.refresh();
-      setOpen(false)
+			setOpen(false);
 		} else {
 			toast({
 				title: "Error",

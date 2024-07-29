@@ -1,11 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import useComponentVisible from "../componentVisible/useComponentVisible";
-import profile from "@../../../public/asset/profile.png";
 import sutLogo from "@../../../public/asset/sutLogo.jpg";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -17,8 +16,9 @@ import {
 	DropdownMenuSeparator,
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { Menu } from "lucide-react";
+import { Menu, User } from "lucide-react";
 import { IUser } from "@/interface/user";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 interface Message {
 	topic: string;
@@ -41,7 +41,7 @@ async function getCurrentUser() {
 }
 
 export default function Navbar({ menu, notification = false }: Props) {
-	const [user, setUser] = useState<IUser>()
+	const [user, setUser] = useState<IUser>();
 	const router = useRouter();
 
 	useEffect(() => {
@@ -78,7 +78,15 @@ export default function Navbar({ menu, notification = false }: Props) {
 				<ul className="flex gap-12 items-center">
 					<li>
 						<Link href="">
-							<Image src={sutLogo} alt="SUT Logo" height={48} />
+							<Image
+								src={sutLogo}
+								alt="sutLogo"
+								style={{
+									width: "256px",
+									height: "auto",
+								}}
+								priority
+							/>
 						</Link>
 					</li>
 					{menu.map((e, index) => (
@@ -108,12 +116,10 @@ export default function Navbar({ menu, notification = false }: Props) {
 					<li className="hover:cursor-pointer">
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
-								<Image
-									src={user?.profileUrl ? user?.profileUrl : profile}
-									width={36}
-									height={36}
-									alt="Profile"
-								/>
+								<Avatar>
+									<AvatarImage src={user?.profileUrl} alt="Profile" />
+									<AvatarFallback><User /></AvatarFallback>
+								</Avatar>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent align="end">
 								<DropdownMenuLabel>บัญชีของฉัน</DropdownMenuLabel>

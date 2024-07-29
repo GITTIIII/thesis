@@ -190,13 +190,13 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 		const date = today.getDate();
 		const currentDate = date + "/" + month + "/" + year;
 		setCurrentDate(currentDate);
-		if (user && user.position.toString() == "COMMITTEE_OUTLINE" && !formData?.outlineCommitteeID) {
+		if (user && user.position.toString() == "OUTLINE_COMMITTEE" && !formData?.outlineCommitteeID) {
 			reset({
 				...form.getValues(),
 				outlineCommitteeID: user.id,
 				dateOutlineCommitteeSign: currentDate,
 			});
-		} else if (user && user.position.toString() == "COMMITTEE_INSTITUTE" && !formData?.instituteCommitteeID) {
+		} else if (user && user.position.toString() == "INSTITUTE_COMMITTEE" && !formData?.instituteCommitteeID) {
 			reset({
 				...form.getValues(),
 				instituteCommitteeID: user.id,
@@ -342,7 +342,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 							<div className="flex flex-col items-center justify-center">
 								<RadioGroup
 									disabled={
-										user.position.toString() != "COMMITTEE_OUTLINE" ||
+										user.position.toString() != "OUTLINE_COMMITTEE" ||
 										user.role.toString() != "SUPER_ADMIN"
 									}
 									className="flex my-6"
@@ -376,7 +376,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 										<FormControl>
 											<RadioGroup
 												disabled={
-													user.position.toString() != "COMMITTEE_OUTLINE" &&
+													user.position.toString() != "OUTLINE_COMMITTEE" &&
 													user.role.toString() != "SUPER_ADMIN"
 												}
 												onValueChange={field.onChange}
@@ -413,7 +413,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 												formData?.outlineCommitteeID
 													? true
 													: false ||
-													  (user.position.toString() != "COMMITTEE_OUTLINE" &&
+													  (user.position.toString() != "OUTLINE_COMMITTEE" &&
 															user.role.toString() != "SUPER_ADMIN")
 											}
 											placeholder="ความเห็น..."
@@ -435,7 +435,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 								onClick={() => setOpenOutline(!openOutline)}
 								disabled={
 									(formData?.outlineCommitteeSignUrl ||
-										user.position.toString() != "COMMITTEE_OUTLINE") &&
+										user.position.toString() != "OUTLINE_COMMITTEE") &&
 									user.role.toString() != "SUPER_ADMIN"
 										? true
 										: false
@@ -574,7 +574,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 					</div>
 
 					{/* กรรมการสำนักวิชา */}
-					{(user?.position.toString() == "COMMITTEE_INSTITUTE" ||
+					{(user?.position.toString() == "INSTITUTE_COMMITTEE" ||
 						user?.role.toString() == "SUPER_ADMIN" ||
 						formData?.instituteCommitteeID) && (
 						<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
@@ -591,7 +591,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 								<div className="flex flex-col items-center justify-center">
 									<RadioGroup
 										disabled={
-											user.position.toString() != "COMMITTEE_INSTITUTE" ||
+											user.position.toString() != "INSTITUTE_COMMITTEE" ||
 											user.role.toString() != "SUPER_ADMIN"
 										}
 										className="flex my-6"
@@ -626,7 +626,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 												<RadioGroup
 													onValueChange={field.onChange}
 													disabled={
-														user.position.toString() != "COMMITTEE_INSTITUTE" &&
+														user.position.toString() != "INSTITUTE_COMMITTEE" &&
 														user.role.toString() != "SUPER_ADMIN"
 													}
 													className="flex my-4"
@@ -677,7 +677,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 									onClick={() => setOpenInstitute(!openInstitute)}
 									disabled={
 										(formData?.instituteCommitteeSignUrl ||
-											user.position.toString() != "COMMITTEE_INSTITUTE") &&
+											user.position.toString() != "INSTITUTE_COMMITTEE") &&
 										user.role.toString() != "SUPER_ADMIN"
 											? true
 											: false
@@ -822,8 +822,9 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 					)}
 				</div>
 
-				{(!formData?.outlineCommitteeID && user?.position.toString() === "COMMITTEE_OUTLINE" ) ||
-				(!formData?.instituteCommitteeID && user?.position.toString() === "COMMITTEE_INSTITUTE") || user?.role.toString() === "SUPER_ADMIN" ? (
+				{(!formData?.outlineCommitteeID && user?.position.toString() === "OUTLINE_COMMITTEE") ||
+				(!formData?.instituteCommitteeID && user?.position.toString() === "INSTITUTE_COMMITTEE") ||
+				user?.role.toString() === "SUPER_ADMIN" ? (
 					<div className="w-full flex px-20 mt-4 lg:flex justify-center">
 						<Button
 							variant="outline"
