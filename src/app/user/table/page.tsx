@@ -51,7 +51,7 @@ export default function StudentTablePage() {
 	useEffect(() => {
 		async function fetchData() {
 			const data = await get05ApprovedForm();
-			if (data.length != 0) {
+			if (data && data.length != 0) {
 				setIsDisabled(true);
 			}
 		}

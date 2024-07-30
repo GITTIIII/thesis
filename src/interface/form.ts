@@ -6,7 +6,6 @@ export interface IProcessPlan {
 }
 
 export type IComprehensiveExamCommitteeForm = {
-	map(arg0: (data: any) => import("react").JSX.Element): import("react").ReactNode;
 	id: number;
 	date: string;
 	trimester: number;
@@ -86,8 +85,12 @@ export type IThesisProgressForm = {
 	student: IUser;
 
 	assessmentResult: string;
+	advisorSignUrl: string;
 	dateAdvisor: string;
 
 	headInstituteComment: string;
+	headSchoolSignUrl: string;
 	dateHeadInstitute: string;
+	headSchoolID: number;
+	headSchool: IUser;
 };

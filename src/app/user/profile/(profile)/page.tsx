@@ -1,10 +1,6 @@
 "use client";
-
 import axios from "axios";
-import ThesisProgressFormCreate from "@/components/form/06-thesisProgressForm/06-thesisProgressFormCreate";
-import { date } from "zod";
 import Image from "next/image";
-import { GrPowerReset } from "react-icons/gr";
 import { Button } from "@/components/ui/button";
 import { GoPencil } from "react-icons/go";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -16,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import Signature from "@/components/signature/signature";
-import Cropper, { CropperProps, Area, Point } from "react-easy-crop";
+import Cropper, { Area, Point } from "react-easy-crop";
 import getCroppedImg from "@/lib/cropImage";
 import { Slider } from "@/components/ui/slider";
 import qs from "query-string";
@@ -24,7 +20,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { IUser } from "@/interface/user";
 import React, { useState, useEffect } from "react";
 import signature from "@/../../public/asset/signature.png";
-import profile from "@/../../public/asset/profile.png";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "lucide-react";
@@ -71,9 +66,9 @@ export default function Profile() {
 				<div className="lg:w-[950px] md:w-[750px] sm:w-[550px] w-[350px]  [&>div]:bg-white [&>div]:border [&>div]:overflow-hidden  [&>div]:rounded-lg [&>div]:shadow-[0px_0px_5px_1px_#e2e8f0] mt-12 grid md:grid-cols-4 md:grid-rows-9  gap-4">
 					<div className="md:row-span-3 md:col-start-1 md:row-start-1 md:col-span-1 col-start-2 row-span-3  col-span-2  overflow-clip  content-center justify-center flex relative ">
 						<Avatar className="w-[128px] h-auto my-auto">
-							<AvatarImage src={user?.profileUrl}  alt="Profile" />
+							<AvatarImage src={user?.profileUrl} alt="Profile" />
 							<AvatarFallback>
-								<User />
+								<User className="w-[128px] h-auto" />
 							</AvatarFallback>
 						</Avatar>
 						<div className=" absolute right-0 top-0">
@@ -124,13 +119,16 @@ export default function Profile() {
 						<div className=" absolute right-0 top-0">
 							<EditSignature user={user} />
 						</div>
-						<div className=" mt-4 flex justify-center">
+						<div className="mt-4 flex justify-center">
 							<Image
 								src={user?.signatureUrl ? user?.signatureUrl : signature}
-								width={100}
+								width={200}
 								height={100}
+								style={{
+									width: "auto",
+									height: "auto",
+								}}
 								alt="Profile"
-								className=" border w-60 h-60"
 							/>
 						</div>
 					</div>

@@ -1,3 +1,4 @@
+"use client";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { use, useEffect, useState } from "react";
@@ -18,6 +19,7 @@ import InputForm from "@/components/inputForm/inputForm";
 import { IOutlineForm, IProcessPlan, IThesisProgressForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 import { Label } from "@/components/ui/label";
+import { revalidateTag } from "next/cache";
 
 const formSchema = z.object({
 	times: z.number().min(1, { message: "กรุณาระบุครั้ง / Times requierd" }),
@@ -50,16 +52,14 @@ async function getLast06Form() {
 	return res.json();
 }
 
-
 const userPromise = getUser();
 const form05Promise = get05ApprovedForm();
-const form06Promise = getLast06Form();
 
 const ThesisProgressFormCreate = () => {
 	const router = useRouter();
 	const user: IUser = use(userPromise);
 	const approvedForm: IOutlineForm = use(form05Promise);
-	const last06Form: IThesisProgressForm = use(form06Promise);
+	const [last06Form, setLast06Form] = useState<IThesisProgressForm>();
 	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
 	const [loading, setLoading] = useState(false);
 	const [isDisabled, setIsDisabled] = useState(false);
@@ -136,6 +136,14 @@ const ThesisProgressFormCreate = () => {
 		}
 	}, [user, reset]);
 
+	useEffect(() => {
+		async function fetchData() {
+			const formData = await getLast06Form();
+			setLast06Form(formData);
+		}
+		fetchData();
+	}, []);
+
 	const handleRadioChange = (value: string) => {
 		if (value === "Adjustments") {
 			setIsDisabled(false);
@@ -148,6 +156,7 @@ const ThesisProgressFormCreate = () => {
 			reset({
 				...form.getValues(),
 				status: "AsPlaned",
+				statusComment: "",
 			});
 		}
 	};
@@ -395,12 +404,14 @@ const ThesisProgressFormCreate = () => {
 				<hr className="่่justify-center mx-auto w-3/4 my-5 border-t-2 border-[#eeee]" />
 
 				<div className="flex justify-center  w-full mb-10">
-					<ThesisProcessPlan
-						degree={user!.degree}
-						canEdit={true}
-						processPlans={last06Form ? last06Form.processPlan : approvedForm.processPlan}
-						setProcessPlans={setProcessPlans}
-					/>
+					{last06Form && (
+						<ThesisProcessPlan
+							degree={user!.degree}
+							canEdit={true}
+							processPlans={last06Form.processPlan ? last06Form.processPlan : approvedForm.processPlan}
+							setProcessPlans={setProcessPlans}
+						/>
+					)}
 				</div>
 				<div className="w-full flex mt-4 px-20 lg:flex justify-center">
 					<Button
