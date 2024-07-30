@@ -93,10 +93,14 @@ export async function PATCH(req: Request) {
 			date,
 			processPlan,
 			studentID,
+			
 			assessmentResult,
+			advisorSignUrl,
 			dateAdvisor,
-			headInstituteComment,
-			dateHeadInstitute,
+			headSchoolComment,
+			headSchoolSignUrl,
+			dateHeadSchool,
+			headSchoolID
 		} = body;
 
 		if (!id) {
@@ -124,10 +128,15 @@ export async function PATCH(req: Request) {
 				date: date || existingThesisProgressForm.date,
 				processPlan: processPlan || existingThesisProgressForm.processPlan,
 				studentID: studentID === 0 ? existingThesisProgressForm.studentID : studentID,
+				
 				assessmentResult: assessmentResult || existingThesisProgressForm.assessmentResult,
+				advisorSignUrl: advisorSignUrl || existingThesisProgressForm.advisorSignUrl,
 				dateAdvisor: dateAdvisor || existingThesisProgressForm.dateAdvisor,
-				headInstituteComment: headInstituteComment || existingThesisProgressForm.headInstituteComment,
-				dateHeadInstitute: dateHeadInstitute || existingThesisProgressForm.dateHeadInstitute,
+				
+				headSchoolComment: headSchoolComment || existingThesisProgressForm.headSchoolComment,
+				headSchoolSignUrl: headSchoolSignUrl || existingThesisProgressForm.headSchoolSignUrl,
+				dateHeadSchool: dateHeadSchool || existingThesisProgressForm.dateHeadSchool,
+				headSchoolID: headSchoolID === 0 ? existingThesisProgressForm.headSchoolID : headSchoolID,
 			},
 		});
 

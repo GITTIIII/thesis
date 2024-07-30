@@ -77,7 +77,12 @@ export default function ThesisProgressFormTable({ userData }: { userData: IUser 
 										: `${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 								</TableCell>
 								<TableCell className="text-[#F26522] text-center">
-									<Link href={`/user/form/thesisProgressForm/${formData.id}`}>คลิกเพื่อดูเพิ่มเติม</Link>
+									<Link href={
+											(formData.outlineCommitteeID && formData.instituteCommitteeID) ||
+											userData?.role.toString() == "STUDENT"
+												? `/user/form/thesisProgressForm/${formData.id}`
+												: `/user/form/thesisProgressForm/update/${formData.id}`
+										}>คลิกเพื่อดูเพิ่มเติม</Link>
 								</TableCell>
 								<TableCell hidden={userData?.role.toString() != "STUDENT"} className="text-center">
 									<Button type="button" variant="outline">

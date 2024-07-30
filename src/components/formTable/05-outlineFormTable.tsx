@@ -62,7 +62,7 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 			if (userData?.role.toString() === "STUDNET") {
 				const formData = await getAll05FormByStdId(userData?.id);
 				setFormData(formData);
-			}else{
+			} else {
 				const formData = await getAll05Form();
 				setFormData(formData);
 			}
@@ -78,9 +78,10 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 						<TableRow>
 							<TableHead className="text-center">ลำดับ</TableHead>
 							<TableHead className="text-center">วันที่สอบ</TableHead>
+							<TableHead className="text-center">ชื่อวิทยานิพนธ์ (ไทย)</TableHead>
+							<TableHead className="text-center">ชื่อวิทยานิพนธ์ (อังกฤษ)</TableHead>
 							<TableHead className="text-center">รหัสนักศึกษา</TableHead>
 							<TableHead className="text-center">ชื่อ นศ.</TableHead>
-							<TableHead className="text-center">ประเภทฟอร์ม</TableHead>
 							<TableHead className="text-center">สถานะ</TableHead>
 							<TableHead className="text-center">รายละเอียด</TableHead>
 							<TableHead hidden={userData?.role.toString() != "STUDENT"} className="text-center">
@@ -97,13 +98,14 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 										? formData.dateOutlineCommitteeSign
 										: "ยังไม่ทำการสอบ"}
 								</TableCell>
+								<TableCell className="text-center">{formData?.thesisNameTH}</TableCell>
+								<TableCell className="text-center">{formData?.thesisNameEN}</TableCell>
 								<TableCell className="text-center">{formData?.student.username}</TableCell>
 								<TableCell className="text-center">
 									{formData.student.formLanguage == "en"
 										? `${formData?.student?.firstNameEN} ${formData?.student?.lastNameEN}`
 										: `${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 								</TableCell>
-								<TableCell className="text-center">เเบบคำขออนุมัติโครงร่างวิทยานิพนธ์</TableCell>
 								<TableCell className="flex justify-center">
 									<FindStatus formData={formData} />
 								</TableCell>

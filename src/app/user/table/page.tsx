@@ -17,6 +17,16 @@ import ExamAppointmentFormTable from "@/components/formTable/07-thesisExamAppoin
 import studentFormPage from "@/../../public/asset/studentFormPage.png";
 import createForm from "@/../../public/asset/createForm.png";
 
+const labels: { [key: string]: string } = {
+	comprehensiveExamCommitteeForm: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบประมวลความรู้",
+	qualificationExamCommitteeForm: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบวัดคุณสมบัติ",
+	outlineExamCommitteeForm: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบโครงร่างวิทยานิพนธ์",
+	appointmentThesisExamForm: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบวิทยานิพนธ์",
+	outlineForm: "แบบคำขออนุมัติโครงร่างวิทยานิพนธ์",
+	thesisProgressForm: "เเบบรายงานความคืบหน้าของการทำวิทยานิพนธ์",
+	examAppointment: "คำขอนัดสอบวิทยานิพนธ์",
+};
+
 async function get05ApprovedForm() {
 	const res = await fetch("/api/get05ApprovedForm");
 	return res.json();
@@ -69,7 +79,9 @@ export default function StudentTablePage() {
 				)}
 				<div className="h-max w-full flex items-center text-2xl p-2">
 					<Image src={studentFormPage} width={100} height={100} alt="documentation" />
-					<label className="ml-5">ตารางฟอร์ม</label>
+					<label className="ml-5 bg-[#FFF4EF] px-4 text-[#F26522] border-2 border-[#F26522] rounded-lg text-xl">
+						{labels[formType]}
+					</label>
 				</div>
 				<div className="w-max ml-auto flex flex-col sm:flex-row items-center justify-center">
 					<Select onValueChange={handleSelect} defaultValue={searchParams ? searchParams : ""}>
