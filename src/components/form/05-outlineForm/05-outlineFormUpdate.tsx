@@ -75,6 +75,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 	const user: IUser = use(userPromise);
 	const outlineCommittee: IUser[] = use(outlineCommitteePromise);
 	const instituteCommittee: IUser[] = use(instituteCommitteePromise);
+	const [loading, setLoading] = useState(false);
 
 	const sigCanvas = useRef<SignatureCanvas>(null);
 	const clear = () => {
@@ -128,6 +129,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		setLoading(true);
 		if (values.outlineCommitteeID != 0) {
 			values.dateOutlineCommitteeSign = currentDate;
 		}
@@ -143,6 +145,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 				description: "กรุณาเลือกสถานะ",
 				variant: "destructive",
 			});
+			setLoading(false);
 			return;
 		}
 		if (
@@ -154,9 +157,9 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 				description: "ไม่พบลายเซ็น",
 				variant: "destructive",
 			});
+			
 			return;
 		}
-		console.log(values);
 		const url = qs.stringifyUrl({
 			url: `/api/05OutlineForm`,
 		});

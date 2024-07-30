@@ -7,22 +7,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
-import {
-	Form,
-	FormControl,
-	FormField,
-	FormItem,
-	FormLabel,
-	FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useState } from "react";
 
 const formSchema = z.object({
-	username: z
-		.string()
-		.min(1, { message: "กรุณากรอกชื่อผู้ใช้" })
-		.min(8, { message: "ชื่อผู้ใช้ต้องมีความยาว 8-10 ตัว" })
-		.max(10, { message: "ชื่อผู้ใช้ต้องมีความยาว 8-10 ตัว" }),
+	username: z.string().min(1, { message: "กรุณากรอกชื่อผู้ใช้" }),
 	password: z.string().min(1, { message: "กรุณากรอกรหัสผ่าน" }),
 });
 
@@ -57,15 +46,12 @@ const SignInForm = () => {
 			toast({
 				title: "Success",
 				description: "เข้าสู่ระบบสำเร็จ",
-				variant: 'default',
+				variant: "default",
 			});
 			const session = await getSession();
 			if (session?.user.role == "STUDENT") {
 				router.push("/user/student");
-			} else if (
-				session?.user.role == "ADMIN" ||
-				session?.user.role == "COMMITTEE"
-			) {
+			} else if (session?.user.role == "ADMIN" || session?.user.role == "COMMITTEE") {
 				router.push("/user/table");
 			} else if (session?.user.role == "SUPER_ADMIN") {
 				router.push("/user/superAdmin");
@@ -75,10 +61,7 @@ const SignInForm = () => {
 
 	return (
 		<Form {...form}>
-			<form
-				onSubmit={form.handleSubmit(onSubmit)}
-				className="flex flex-col w-3/4 sm:w-2/4"
-			>
+			<form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col w-3/4 sm:w-2/4">
 				<div className="text-black mb-4">
 					<FormField
 						control={form.control}
@@ -88,10 +71,7 @@ const SignInForm = () => {
 								<FormItem className="w-3/4">
 									<FormLabel>ชื่อผู้ใช้</FormLabel>
 									<FormControl>
-										<Input
-											className="text-sm p-2 w-full rounded-lg"
-											{...field}
-										/>
+										<Input className="text-sm p-2 w-full rounded-lg" {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>
@@ -106,11 +86,7 @@ const SignInForm = () => {
 								<FormItem className="w-3/4">
 									<FormLabel>รหัสผ่าน</FormLabel>
 									<FormControl>
-										<Input
-											type="password"
-											className="text-sm p-2 w-full rounded-lg"
-											{...field}
-										/>
+										<Input type="password" className="text-sm p-2 w-full rounded-lg" {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>

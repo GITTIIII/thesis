@@ -88,9 +88,9 @@ export type IThesisProgressForm = {
 	advisorSignUrl: string;
 	dateAdvisor: string;
 
-	headInstituteComment: string;
+	headSchoolComment: string;
 	headSchoolSignUrl: string;
-	dateHeadInstitute: string;
+	dateHeadSchool: string;
 	headSchoolID: number;
 	headSchool: IUser;
 };

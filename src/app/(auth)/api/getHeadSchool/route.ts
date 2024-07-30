@@ -13,13 +13,13 @@ export async function GET(){
 		);
 	}
 
-    const form = await db.outlineForm.
-    findFirst({
+    const user = await db.user.
+    findMany({
         where: {
-            outlineCommitteeStatus: "APPROVED",
-            instituteCommitteeStatus: "APPROVED",
+            role: "ADMIN",
+            position: "HEAD_OF_SCHOOL"
         }
     });
     
-    return NextResponse.json(form);
+    return NextResponse.json(user);
 } 

@@ -19,7 +19,7 @@ import InputForm from "@/components/inputForm/inputForm";
 import { IOutlineForm, IProcessPlan, IThesisProgressForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 import { Label } from "@/components/ui/label";
-import { revalidateTag } from "next/cache";
+
 
 const formSchema = z.object({
 	times: z.number().min(1, { message: "กรุณาระบุครั้ง / Times requierd" }),
@@ -42,8 +42,10 @@ async function getUser() {
 	return res.json();
 }
 
-async function get05ApprovedForm() {
-	const res = await fetch("/api/get05ApprovedForm");
+async function get05ApprovedFormByStdId(StdId: number): Promise<IOutlineForm> {
+	const res = await fetch(`/api/get05ApprovedFormByStdId/${StdId}`,{
+		next: { revalidate: 10 },
+	});
 	return res.json();
 }
 
@@ -53,12 +55,11 @@ async function getLast06Form() {
 }
 
 const userPromise = getUser();
-const form05Promise = get05ApprovedForm();
 
 const ThesisProgressFormCreate = () => {
 	const router = useRouter();
 	const user: IUser = use(userPromise);
-	const approvedForm: IOutlineForm = use(form05Promise);
+	const [approvedForm, setApprovedForm] = useState<IOutlineForm>();
 	const [last06Form, setLast06Form] = useState<IThesisProgressForm>();
 	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
 	const [loading, setLoading] = useState(false);
@@ -143,6 +144,14 @@ const ThesisProgressFormCreate = () => {
 		}
 		fetchData();
 	}, []);
+
+	useEffect(() => {
+		async function fetchData() {
+			const data = await get05ApprovedFormByStdId(user.id);
+			setApprovedForm(data);
+		}
+		fetchData();
+	}, [user]);
 
 	const handleRadioChange = (value: string) => {
 		if (value === "Adjustments") {
@@ -404,7 +413,7 @@ const ThesisProgressFormCreate = () => {
 				<hr className="่่justify-center mx-auto w-3/4 my-5 border-t-2 border-[#eeee]" />
 
 				<div className="flex justify-center  w-full mb-10">
-					{last06Form && (
+					{last06Form && approvedForm && (
 						<ThesisProcessPlan
 							degree={user!.degree}
 							canEdit={true}

@@ -6,12 +6,14 @@ import signature from "@/../../public/asset/signature.png";
 import InputForm from "@/components/inputForm/inputForm";
 import Image from "next/image";
 import { Textarea } from "../../ui/textarea";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IOutlineForm, IThesisProgressForm } from "@/interface/form";
 import ThesisProcessPlan from "../thesisProcessPlan";
 
-async function get05ApprovedForm() {
-	const res = await fetch("/api/get05ApprovedForm");
+async function get05ApprovedFormByStdId(StdId: number): Promise<IOutlineForm> {
+	const res = await fetch(`/api/get05ApprovedFormByStdId/${StdId}`, {
+		next: { revalidate: 10 },
+	});
 	return res.json();
 }
 
@@ -22,11 +24,9 @@ async function get06FormById(formId: number): Promise<IThesisProgressForm> {
 	return res.json();
 }
 
-const form05Promise = get05ApprovedForm();
-
 const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 	const router = useRouter();
-	const approvedForm: IOutlineForm = use(form05Promise);
+	const [approvedForm, setApprovedForm] = useState<IOutlineForm>();
 	const [formData, setFormData] = useState<IThesisProgressForm>();
 
 	useEffect(() => {
@@ -37,7 +37,15 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 		fetchData();
 	}, [formId]);
 
-	console.log(formData);
+	useEffect(() => {
+		async function fetchData() {
+			if (formData) {
+				const data = await get05ApprovedFormByStdId(formData?.student.id);
+				setApprovedForm(data);
+			}
+		}
+		fetchData();
+	}, [formData]);
 
 	return (
 		<>

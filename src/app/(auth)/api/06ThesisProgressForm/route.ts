@@ -76,9 +76,9 @@ export async function PATCH(req: Request) {
 	try {
 		const session = await getServerSession(authOptions);
 
-		if (!session) {
-			return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
-		}
+		// if (!session) {
+		// 	return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
+		// }
 
 		const body = await req.json();
 		const {
