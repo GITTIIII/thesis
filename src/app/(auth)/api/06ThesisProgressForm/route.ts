@@ -76,9 +76,9 @@ export async function PATCH(req: Request) {
 	try {
 		const session = await getServerSession(authOptions);
 
-		// if (!session) {
-		// 	return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
-		// }
+		if (!session) {
+			return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
+		}
 
 		const body = await req.json();
 		const {
@@ -123,7 +123,7 @@ export async function PATCH(req: Request) {
 				status: status || existingThesisProgressForm.status,
 				statusComment: statusComment || existingThesisProgressForm.statusComment,
 				percentage: percentage === 0 ? existingThesisProgressForm.percentage : percentage,
-				percentageComment: percentageComment || existingThesisProgressForm.percentage,
+				percentageComment: percentageComment || existingThesisProgressForm.percentageComment,
 				issues: issues || existingThesisProgressForm.issues,
 				date: date || existingThesisProgressForm.date,
 				processPlan: processPlan || existingThesisProgressForm.processPlan,

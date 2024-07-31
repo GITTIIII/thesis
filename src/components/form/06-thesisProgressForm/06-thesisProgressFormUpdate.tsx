@@ -526,7 +526,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 						<DialogTrigger
 							onClick={() => setOpenSchool(!openSchool)}
 							disabled={
-								(formData?.headSchoolSignUrl || user.position.toString() != "HEAD_OF_INSTITUTE") &&
+								(formData?.headSchoolSignUrl || user.position.toString() != "HEAD_OF_SCHOOL") &&
 								user.role.toString() != "SUPER_ADMIN"
 									? true
 									: false
@@ -586,8 +586,8 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 					{formData?.headSchoolID ? (
 						<Label className="mb-2">
 							{formData.student.formLanguage == "en"
-								? `${formData?.headSchool.firstNameEN} ${formData?.headSchool.lastNameEN}`
-								: `${formData?.headSchool.firstNameTH} ${formData?.headSchool.lastNameTH}`}
+								? `${formData?.headSchool?.firstNameEN} ${formData?.headSchool?.lastNameEN}`
+								: `${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`}
 						</Label>
 					) : (
 						<FormField
@@ -675,7 +675,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 						{formData && (
 							<ThesisProcessPlan
 								degree={user!.degree}
-								canEdit={true}
+								canEdit={user.position.toString() === "ADVISOR"}
 								processPlans={formData?.processPlan}
 								setProcessPlans={setProcessPlans}
 							/>

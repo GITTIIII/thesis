@@ -30,6 +30,7 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 					coAdvisor: true,
 				},
 			},
+			headSchool: true,
 		},
 	});
 

@@ -78,7 +78,7 @@ export default function ThesisProgressFormTable({ userData }: { userData: IUser 
 								</TableCell>
 								<TableCell className="text-[#F26522] text-center">
 									<Link href={
-											(formData.dateAdvisor && formData.dateHeadInstitute) ||
+											(formData.dateAdvisor && formData.dateHeadSchool) ||
 											userData?.role.toString() == "STUDENT"
 												? `/user/form/thesisProgressForm/${formData.id}`
 												: `/user/form/thesisProgressForm/update/${formData.id}`

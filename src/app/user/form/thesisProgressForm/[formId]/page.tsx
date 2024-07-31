@@ -14,7 +14,7 @@ export default function ThesisProgressFormReadPage({ params }: { params: { formI
 						เเบบรายงานความคืบหน้าของการทำวิทยานิพนธ์
 					</span>
 				</div>
-				<div className="h-full w-full flex items-center bg-[#EEEEEE] p-8 rounded-md">
+				<div className="h-full w-full flex items-center bg-[#EEEEEE] p-2 md:p-8 rounded-md">
 					<div className="w-full h-full">
 						<ThesisProgressFormRead formId={Number(formId)} />
 					</div>
