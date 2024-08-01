@@ -12,10 +12,7 @@ const FindStatus = ({ formData }: { formData: IOutlineForm }) => {
 
 	if (formData?.outlineCommitteeStatus === "APPROVED" && formData?.instituteCommitteeStatus === "APPROVED") {
 		status = "approve";
-	} else if (
-		formData?.outlineCommitteeStatus === "NOT_APPROVED" ||
-		formData?.instituteCommitteeStatus === "NOT_APPROVED"
-	) {
+	} else if (formData?.outlineCommitteeStatus === "NOT_APPROVED" || formData?.instituteCommitteeStatus === "NOT_APPROVED") {
 		status = "notApprove";
 	} else if (formData?.outlineCommitteeStatus === null || formData?.instituteCommitteeStatus === null) {
 		status = "waiting";
@@ -24,13 +21,9 @@ const FindStatus = ({ formData }: { formData: IOutlineForm }) => {
 	return (
 		<>
 			{status != "" && status === "approve" ? (
-				<div className="w-24 text-center text-green-500  rounded-xl border-2 border-green-400 py-1">
-					อนุมัติ
-				</div>
+				<div className="w-24 text-center text-green-500  rounded-xl border-2 border-green-400 py-1">อนุมัติ</div>
 			) : status === "waiting" ? (
-				<div className="w-24 text-center text-yellow-500  rounded-xl border-2 border-yellow-400 py-1">
-					รอดำเนินการ
-				</div>
+				<div className="w-24 text-center text-yellow-500  rounded-xl border-2 border-yellow-400 py-1">รอดำเนินการ</div>
 			) : status == "notApprove" ? (
 				<div className="w-24 text-center text-red-500  rounded-xl border-2 border-red-400 py-1">ไม่อนุมัติ</div>
 			) : null}
@@ -84,9 +77,7 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 							<TableHead className="text-center">ชื่อ นศ.</TableHead>
 							<TableHead className="text-center">สถานะ</TableHead>
 							<TableHead className="text-center">รายละเอียด</TableHead>
-							<TableHead hidden={userData?.role.toString() != "STUDENT"} className="text-center">
-								ดาวน์โหลดฟอร์ม
-							</TableHead>
+							<TableHead className="text-center">ดาวน์โหลดฟอร์ม</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
@@ -94,9 +85,7 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 							<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
 								<TableCell className="text-center">{index + 1}</TableCell>
 								<TableCell className="text-center">
-									{formData.dateOutlineCommitteeSign
-										? formData.dateOutlineCommitteeSign
-										: "ยังไม่ทำการสอบ"}
+									{formData.dateOutlineCommitteeSign ? formData.dateOutlineCommitteeSign : "ยังไม่ทำการสอบ"}
 								</TableCell>
 								<TableCell className="text-center">{formData?.thesisNameTH}</TableCell>
 								<TableCell className="text-center">{formData?.thesisNameEN}</TableCell>
@@ -121,17 +110,8 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 										คลิกเพื่อดูเพิ่มเติม
 									</Link>
 								</TableCell>
-								<TableCell hidden={userData?.role.toString() != "STUDENT"} className="text-center">
-									<Button
-										disabled={
-											formData?.outlineCommitteeStatus === "APPROVED" &&
-											formData?.instituteCommitteeStatus === "APPROVED"
-												? false
-												: true
-										}
-										type="button"
-										variant="outline"
-									>
+								<TableCell className="text-center">
+									<Button type="button" variant="outline">
 										<Download className="mr-2" />
 										ดาวน์โหลด
 									</Button>
