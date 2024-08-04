@@ -3,14 +3,35 @@ import axios from "axios";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { GoFileDirectory, GoPencil, GoUpload } from "react-icons/go";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import Cropper, { Area, Point } from "react-easy-crop";
 import getCroppedImg from "@/lib/cropImage";
 import { Slider } from "@/components/ui/slider";
@@ -170,7 +191,7 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 		}
 	};
 
-	const { reset } = form;
+  const { reset } = form;
 
 	useEffect(() => {
 		if (user) {
@@ -736,45 +757,43 @@ const EditProfile = ({ user }: { user: IUser | undefined }) => {
 		profileUrl: z.string(),
 	});
 
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
-		defaultValues: {
-			id: 0,
-			profileUrl: "",
-		},
-	});
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      id: 0,
+      profileUrl: "",
+    },
+  });
 
-	const { reset } = form;
+  const { reset } = form;
 
-	useEffect(() => {
-		if (user) {
-			reset({
-				...form.getValues(),
-				id: user.id,
-			});
-		}
-	}, [user, reset]);
+  useEffect(() => {
+    if (user) {
+      reset({
+        ...form.getValues(),
+        id: user.id,
+      });
+    }
+  }, [user, reset]);
 
-	const onCropComplete = async (croppedArea: Area, croppedAreaPixels: Area) => {
-		try {
-			const croppedImage = await getCroppedImg(image, croppedAreaPixels, rotation);
-			setCropImage(croppedImage!);
-		} catch (e) {
-			console.error(e);
-		}
-	};
+  const onCropComplete = async (croppedArea: Area, croppedAreaPixels: Area) => {
+    try {
+      const croppedImage = await getCroppedImg(image, croppedAreaPixels, rotation);
+      setCropImage(croppedImage!);
+    } catch (e) {}
+  };
 
-	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files) {
-			const file = e.target.files[0];
-			const reader = new FileReader();
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const file = e.target.files[0];
+      const reader = new FileReader();
 
-			reader.onloadend = () => {
-				setImage(reader.result as string);
-			};
-			reader.readAsDataURL(file);
-		}
-	};
+      reader.onloadend = () => {
+        setImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		if (cropImage == "") {
@@ -789,7 +808,10 @@ const EditProfile = ({ user }: { user: IUser | undefined }) => {
 		const url = qs.stringifyUrl({
 			url: `/api/user`,
 		});
-		console.log(values);
+		// const aTag = document.createElement("a");
+		// aTag.href = cropImage;
+		// aTag.download = "test";
+		// aTag.click();
 		const res = await axios.patch(url, values);
 		if (res.status === 200) {
 			toast({
@@ -799,7 +821,6 @@ const EditProfile = ({ user }: { user: IUser | undefined }) => {
 			});
 			form.reset();
 			router.refresh();
-			mutate("/api/getCurrentUser");
 			setOpen(false);
 		} else {
 			toast({
