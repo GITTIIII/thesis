@@ -67,7 +67,7 @@ const FindStatus = ({ formData }: { formData: IOutlineForm }) => {
 // const userPromise = getCurrentUser();
 // const formDataPromise = getFormData();
 
-export default function ThesisExamAppointmentFormTable() {
+export default function ThesisExamAppointmentFormTable({ userData }: { userData: IUser | undefined }) {
 	// const formData: IOutlineForm[] = use(formDataPromise);
 	// const user: IUser = use(userPromise);
 	return (

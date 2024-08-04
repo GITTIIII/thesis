@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
-import { useSearchParams } from "next/navigation";
 import Stepper from "@/components/stepper/stepper";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
@@ -17,6 +17,21 @@ import ExamAppointmentFormTable from "@/components/formTable/07-thesisExamAppoin
 import studentFormPage from "@/../../public/asset/studentFormPage.png";
 import createForm from "@/../../public/asset/createForm.png";
 
+const labels: { [key: string]: string } = {
+	comprehensiveExamCommitteeForm: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบประมวลความรู้",
+	qualificationExamCommitteeForm: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบวัดคุณสมบัติ",
+	outlineExamCommitteeForm: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบโครงร่างวิทยานิพนธ์",
+	appointmentThesisExamForm: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบวิทยานิพนธ์",
+	outlineForm: "แบบคำขออนุมัติโครงร่างวิทยานิพนธ์",
+	thesisProgressForm: "เเบบรายงานความคืบหน้าของการทำวิทยานิพนธ์",
+	examAppointment: "คำขอนัดสอบวิทยานิพนธ์",
+};
+
+async function get05ApprovedForm() {
+	const res = await fetch("/api/get05ApprovedForm");
+	return res.json();
+}
+
 async function getCurrentUser() {
 	const res = await fetch("/api/getCurrentUser");
 	return res.json();
@@ -26,11 +41,25 @@ export default function StudentTablePage() {
 	const searchParams = useSearchParams().get("formType");
 	const [userData, setUserData] = useState<IUser>();
 	const [formType, setFormType] = useState(searchParams ? searchParams : "comprehensiveExamCommitteeForm");
+	const [isDisabled, setIsDisabled] = useState(false);
 	const router = useRouter();
 
 	const handleSelect = (value: String) => {
 		setFormType(value.toString());
 	};
+
+	useEffect(() => {
+		async function fetchData() {
+			const data = await get05ApprovedForm();
+			if (data && data.length != 0) {
+				setIsDisabled(true);
+			}
+		}
+		if (formType === "outlineForm" && userData?.role.toString() === "STUDENT") {
+			fetchData();
+		}
+		setIsDisabled(false);
+	}, [formType, userData]);
 
 	useEffect(() => {
 		async function fetchData() {
@@ -50,7 +79,9 @@ export default function StudentTablePage() {
 				)}
 				<div className="h-max w-full flex items-center text-2xl p-2">
 					<Image src={studentFormPage} width={100} height={100} alt="documentation" />
-					<label className="ml-5">ตารางฟอร์ม</label>
+					<label className="ml-5 bg-[#FFF4EF] px-4 text-[#F26522] border-2 border-[#F26522] rounded-lg text-xl">
+						{labels[formType]}
+					</label>
 				</div>
 				<div className="w-max ml-auto flex flex-col sm:flex-row items-center justify-center">
 					<Select onValueChange={handleSelect} defaultValue={searchParams ? searchParams : ""}>
@@ -114,8 +145,9 @@ export default function StudentTablePage() {
 							variant="default"
 							className="bg-[#F26522] w-auto text-md text-white rounded-md ml-auto sm:ml-4 border-[#F26522] mt-2 sm:mt-0"
 							onClick={() => router.push(`/user/form/${formType}/create`)}
+							disabled={isDisabled}
 						>
-							<Image src={createForm} width={24} height={24} alt={"createForm"} className="mr-2"/>
+							<Image src={createForm} width={24} height={24} alt={"createForm"} className="mr-2" />
 							เพิ่มฟอร์ม
 						</Button>
 					)}
@@ -127,11 +159,11 @@ export default function StudentTablePage() {
 					{formType == "qualificationExamCommitteeForm" && (
 						<QualificationExamCommitteeFormTable userData={userData} />
 					)}
-					{formType == "outlineExamCommitteeForm" && <OutlineExamCommitteeFormTable />}
-					{formType == "appointmentThesisExamForm" && <ThesisExamCommitteeFormTable />}
+					{formType == "outlineExamCommitteeForm" && <OutlineExamCommitteeFormTable userData={userData} />}
+					{formType == "appointmentThesisExamForm" && <ThesisExamCommitteeFormTable userData={userData} />}
 					{formType == "outlineForm" && <OutlineFormTable userData={userData} />}
-					{formType == "thesisProgressForm" && <ThesisProgressFormTable />}
-					{formType == "examAppointment" && <ExamAppointmentFormTable />}
+					{formType == "thesisProgressForm" && <ThesisProgressFormTable userData={userData} />}
+					{formType == "examAppointment" && <ExamAppointmentFormTable userData={userData} />}
 				</div>
 			</div>
 		</>

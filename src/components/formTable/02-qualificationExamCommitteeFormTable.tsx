@@ -34,11 +34,13 @@ export default function QualificationExamCommitteeFormTable({ userData }: { user
 					<TableHeader>
 						<TableRow>
 							<TableHead className="text-center">ลำดับ</TableHead>
-							<TableHead className="text-center">รหัสนักศึกษา</TableHead>
 							<TableHead className="text-center">วันที่สร้าง</TableHead>
-							<TableHead className="text-center">วันที่สอบ</TableHead>
+							<TableHead className="text-center">ภาคการศึกษา</TableHead>
+							<TableHead className="text-center">ปีการศึกษา</TableHead>
+							<TableHead className="text-center">รหัสนักศึกษา</TableHead>
 							<TableHead className="text-center">ชื่อ นศ.</TableHead>
-							<TableHead className="text-center">ประเภทฟอร์ม</TableHead>
+							<TableHead className="text-center">สอบครั้งที่</TableHead>
+							<TableHead className="text-center">วันที่สอบ</TableHead>
 							<TableHead className="text-center">รายละเอียด</TableHead>
 							<TableHead className="text-center">ดาวน์โหลดฟอร์ม</TableHead>
 						</TableRow>
@@ -54,17 +56,17 @@ export default function QualificationExamCommitteeFormTable({ userData }: { user
 							.map((formData, index) => (
 								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
 									<TableCell className="text-center">{index + 1}</TableCell>
-									<TableCell className="text-center">{formData?.student.username}</TableCell>
 									<TableCell className="text-center">{formData.date}</TableCell>
-									<TableCell className="text-center">{formData.examDay}</TableCell>
+									<TableCell className="text-center">{formData.trimester}</TableCell>
+									<TableCell className="text-center">{formData.academicYear}</TableCell>
+									<TableCell className="text-center">{formData?.student.username}</TableCell>
 									<TableCell className="text-center">
 										{formData.student.formLanguage == "en"
 											? `${formData?.student?.firstNameEN} ${formData?.student?.lastNameEN}`
 											: `${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 									</TableCell>
-									<TableCell className="text-center">
-										แบบคำขออนุมัติแต่งตั้งกรรมการสอบวัดคุณสมบัติ
-									</TableCell>
+									<TableCell className="text-center">{formData.times}</TableCell>
+									<TableCell className="text-center">{formData.examDay}</TableCell>
 									<TableCell className="text-[#F26522] text-center">
 										<Link href={`/user/form/qualificationExamCommitteeForm/${formData.id}`}>
 											คลิกเพื่อดูเพิ่มเติม

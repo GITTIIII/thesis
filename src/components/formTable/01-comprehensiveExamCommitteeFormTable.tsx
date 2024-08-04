@@ -7,7 +7,7 @@ import { Download } from "lucide-react";
 import { IComprehensiveExamCommitteeForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 
-async function getFormData(stdId: number | undefined) {
+async function getFormDataByStdId(stdId: number | undefined) {
 	if (stdId) {
 		const res = await fetch(`/api/get01FormByStdId/${stdId}`, {
 			next: { revalidate: 10 },
@@ -16,13 +16,27 @@ async function getFormData(stdId: number | undefined) {
 	}
 }
 
+async function get01FormData() {
+		const res = await fetch(`/api/01ComprehensiveExamCommitteeForm`, {
+			next: { revalidate: 10 },
+		});
+		return res.json();
+}
+
+
+
 export default function ComprehensiveExamCommitteeFormTable({ userData }: { userData: IUser | undefined }) {
 	const [formData, setFormData] = useState<IComprehensiveExamCommitteeForm[]>();
 
 	useEffect(() => {
 		async function fetchData() {
-			const formData = await getFormData(userData?.id);
-			setFormData(formData);
+			if (userData?.role.toString() === "STUDENT") {
+				const formData = await getFormDataByStdId(userData?.id);
+				setFormData(formData);
+			}else{
+				const formData = await get01FormData();
+				setFormData(formData);
+			}
 		}
 		fetchData();
 	}, [userData]);
@@ -34,11 +48,13 @@ export default function ComprehensiveExamCommitteeFormTable({ userData }: { user
 					<TableHeader>
 						<TableRow>
 							<TableHead className="text-center">ลำดับ</TableHead>
-							<TableHead className="text-center">รหัสนักศึกษา</TableHead>
 							<TableHead className="text-center">วันที่สร้าง</TableHead>
-							<TableHead className="text-center">วันที่สอบ</TableHead>
+							<TableHead className="text-center">ภาคการศึกษา</TableHead>
+							<TableHead className="text-center">ปีการศึกษา</TableHead>
+							<TableHead className="text-center">รหัสนักศึกษา</TableHead>
 							<TableHead className="text-center">ชื่อ นศ.</TableHead>
-							<TableHead className="text-center">ประเภทฟอร์ม</TableHead>
+							<TableHead className="text-center">สอบครั้งที่</TableHead>
+							<TableHead className="text-center">วันที่สอบ</TableHead>
 							<TableHead className="text-center">รายละเอียด</TableHead>
 							<TableHead className="text-center">ดาวน์โหลดฟอร์ม</TableHead>
 						</TableRow>
@@ -47,28 +63,25 @@ export default function ComprehensiveExamCommitteeFormTable({ userData }: { user
 						{formData
 							?.filter(
 								(formData) =>
-									(userData?.role.toString() === "STUDENT" &&
-										userData?.id === formData?.student?.id) ||
+									(userData?.role.toString() === "STUDENT" && userData?.id === formData?.student?.id) ||
 									userData?.role.toString() != "STUDENT"
 							)
 							.map((formData, index) => (
 								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
 									<TableCell className="text-center">{index + 1}</TableCell>
-									<TableCell className="text-center">{formData?.student.username}</TableCell>
 									<TableCell className="text-center">{formData.date}</TableCell>
-									<TableCell className="text-center">{formData.examDay}</TableCell>
+									<TableCell className="text-center">{formData.trimester}</TableCell>
+									<TableCell className="text-center">{formData.academicYear}</TableCell>
+									<TableCell className="text-center">{formData?.student.username}</TableCell>
 									<TableCell className="text-center">
 										{formData.student.formLanguage == "en"
 											? `${formData?.student?.firstNameEN} ${formData?.student?.lastNameEN}`
 											: `${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 									</TableCell>
-									<TableCell className="text-center">
-										เเบบคำขออนุมัติเเต่งตั้งกรรมการสอบประมวลความรู้
-									</TableCell>
+									<TableCell className="text-center">{formData.times}</TableCell>
+									<TableCell className="text-center">{formData.examDay}</TableCell>
 									<TableCell className="text-[#F26522] text-center">
-										<Link href={`/user/form/comprehensiveExamCommitteeForm/${formData.id}`}>
-											คลิกเพื่อดูเพิ่มเติม
-										</Link>
+										<Link href={`/user/form/comprehensiveExamCommitteeForm/${formData.id}`}>คลิกเพื่อดูเพิ่มเติม</Link>
 									</TableCell>
 									<TableCell className="text-center">
 										<Button type="button" variant="outline">

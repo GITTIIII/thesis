@@ -1,10 +1,6 @@
 "use client";
-
 import axios from "axios";
-import ThesisProgressFormCreate from "@/components/form/06-thesisProgressForm/06-thesisProgressFormCreate";
-import { date } from "zod";
 import Image from "next/image";
-import { GrPowerReset } from "react-icons/gr";
 import { Button } from "@/components/ui/button";
 import { GoPencil } from "react-icons/go";
 import {
@@ -37,7 +33,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import Signature from "@/components/signature/signature";
-import Cropper, { CropperProps, Area, Point } from "react-easy-crop";
+import Cropper, { Area, Point } from "react-easy-crop";
 import getCroppedImg from "@/lib/cropImage";
 import { Slider } from "@/components/ui/slider";
 import qs from "query-string";
@@ -45,8 +41,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { IUser } from "@/interface/user";
 import React, { useState, useEffect } from "react";
 import signature from "@/../../public/asset/signature.png";
-import profile from "@/../../public/asset/profile.png";
 import { useRouter } from "next/navigation";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { User } from "lucide-react";
 
 const prefixMapToEN: { [key: string]: string } = {
   นาย: "Mr.",
@@ -97,13 +94,13 @@ export default function Profile() {
               alt="Profile"
             />
             <div className=" absolute right-0 top-0">
-              <EditProfile user={user} setUser={setUser} />
+              <EditProfile user={user} />
             </div>
           </div>
           <div className=" md:col-span-3 md:row-span-3 row-start-4 row-span-3  col-span-4 p-8 relative ">
             <label className=" text-xl ">ข้อมูลส่วนตัว</label>
             <div className=" absolute right-0 top-0">
-              <EditPersonalInformation user={user} setUser={setUser} />
+              <EditPersonalInformation user={user} />
             </div>
             <div className="mt-4 sm:flex ">
               <section className=" flex flex-col sm:w-1/2 gap-4">
@@ -142,7 +139,7 @@ export default function Profile() {
           <div className="md:col-span-2 md:row-span-4 md:col-start-3 md:row-start-4 overflow-clip  row-start-12  col-span-4 p-8 relative">
             <label className=" text-xl ">ลายเซ็น</label>
             <div className=" absolute right-0 top-0">
-              <EditSignature user={user} setUser={setUser} />
+              <EditSignature user={user} />
             </div>
             <div className=" mt-4 flex justify-center">
               <Image
@@ -159,13 +156,7 @@ export default function Profile() {
     </>
   );
 }
-const EditPersonalInformation = ({
-  user,
-  setUser,
-}: {
-  user: IUser | undefined;
-  setUser: React.Dispatch<React.SetStateAction<IUser | undefined>>;
-}) => {
+const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
   const { toast } = useToast();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -220,10 +211,6 @@ const EditPersonalInformation = ({
         title: "Success",
         description: "บันทึกสำเร็จแล้ว",
         variant: "default",
-      });
-      setUser((prevUser) => {
-        if (!prevUser) return undefined;
-        return { ...prevUser, ...values };
       });
       form.reset();
       router.refresh();
@@ -397,13 +384,7 @@ const EditPersonalInformation = ({
   );
 };
 
-const EditSignature = ({
-  user,
-  setUser,
-}: {
-  user: IUser | undefined;
-  setUser?: React.Dispatch<React.SetStateAction<IUser | undefined>>;
-}) => {
+const EditSignature = ({ user }: { user: IUser | undefined }) => {
   const [open, setOpen] = useState(false);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -417,20 +398,15 @@ const EditSignature = ({
           <DialogTitle className=" text-2xl">ลายเซ็น</DialogTitle>
         </DialogHeader>
         <div className=" lg:w-[950px] lg:h-[650px] md:w-[700px] w-[520px] h-[500px]">
-          <Signature user={user} setUser={setUser} />
+          <Signature user={user} />
         </div>
+        <DialogFooter>{/* <Button type="submit">Save changes</Button> */}</DialogFooter>
       </DialogContent>
     </Dialog>
   );
 };
 
-const EditProfile = ({
-  user,
-  setUser,
-}: {
-  user: IUser | undefined;
-  setUser: React.Dispatch<React.SetStateAction<IUser | undefined>>;
-}) => {
+const EditProfile = ({ user }: { user: IUser | undefined }) => {
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState<number>(1);
   const [rotation, setRotation] = useState<number>(0);
@@ -496,17 +472,16 @@ const EditProfile = ({
     const url = qs.stringifyUrl({
       url: `/api/user`,
     });
-
+    // const aTag = document.createElement("a");
+    // aTag.href = cropImage;
+    // aTag.download = "test";
+    // aTag.click();
     const res = await axios.patch(url, values);
     if (res.status === 200) {
       toast({
         title: "Success",
         description: "บันทึกสำเร็จแล้ว",
         variant: "default",
-      });
-      setUser((prevUser) => {
-        if (!prevUser) return undefined;
-        return { ...prevUser, ...values };
       });
       form.reset();
       router.refresh();

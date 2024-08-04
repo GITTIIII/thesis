@@ -327,9 +327,11 @@ const OutlineFormCreate = () => {
 									src={user?.signatureUrl ? user?.signatureUrl : signature}
 									width={100}
 									height={100}
+									style={{ width: 'auto', height: 'auto' }}
 									alt="signature"
 								/>
 							</Button>
+							<Label className="mt-2">{`วันที่ ${form.getValues().date ? form.getValues().date : "__________"}`}</Label>
 						</div>
 					</div>
 				</div>

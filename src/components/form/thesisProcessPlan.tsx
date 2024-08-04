@@ -270,7 +270,7 @@ const TemplateList = ({
 										disabled={canEdit == true ? false : true}
 										key={indexChackBox}
 										type="checkbox"
-										className="w-12 h-4 accent-[#a67436]"
+										className="w-12 h-4 accent-[#a67436] shadow-none"
 										checked={Boolean(processPlan.months[indexChackBox])}
 										onChange={() => {
 											setData((prevList) => {
