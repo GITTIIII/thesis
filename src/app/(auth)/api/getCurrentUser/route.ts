@@ -22,11 +22,20 @@ export async function GET(){
             username: username
         },
         include:{
+            prefix: true,
             institute:true,
             school:true,
             program:true,
-            advisor:true,
-            coAdvisor:true,
+            advisor:{
+                include:{
+                    prefix:true
+                }
+            },
+            coAdvisedStudents:{
+                include:{
+                    coAdvisor:true
+                }
+            }
         }
     });
 

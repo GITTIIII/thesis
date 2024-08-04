@@ -61,7 +61,11 @@ export async function GET() {
 
 	const qualificationExamCommitteeForm = await db.qualificationExamCommitteeForm.findMany({
 		include: {
-			student: true,
+			student: {
+				include:{
+					prefix:true,
+				}
+			},
 		},
 	});
 

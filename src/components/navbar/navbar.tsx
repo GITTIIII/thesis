@@ -1,13 +1,10 @@
 "use client";
-
 import * as React from "react";
-import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import useComponentVisible from "../componentVisible/useComponentVisible";
 import sutLogo from "@../../../public/asset/sutLogo.jpg";
 import { signOut } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
@@ -17,8 +14,9 @@ import {
 	DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Menu, User } from "lucide-react";
-import { IUser } from "@/interface/user";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import useSWR from 'swr'
+import { useRouter } from "next/navigation";
 
 interface Message {
 	topic: string;
@@ -33,28 +31,11 @@ type Props = {
 	notification?: boolean;
 };
 
-async function getCurrentUser() {
-	const res = await fetch("/api/getCurrentUser", {
-		next: { revalidate: 10 },
-	});
-	return res.json();
-}
+const fetcher = (url: string) => fetch(url).then((res)=> res.json())
 
 export default function Navbar({ menu, notification = false }: Props) {
-	const [user, setUser] = useState<IUser>();
-	const router = useRouter();
-
-	useEffect(() => {
-		async function fetchData() {
-			const data = await getCurrentUser();
-			setUser(data);
-		}
-		fetchData();
-	}, []);
-
-	if (user?.formLanguage === null && user?.role.toString() == "STUDENT") {
-		router.push("/user/student/selectLanguage");
-	}
+	const { data: user, isLoading } = useSWR("/api/getCurrentUser", fetcher)
+	const router = useRouter()
 
 	const { ref, isComponentVisible, setIsComponentVisible } = useComponentVisible();
 	const message = [
@@ -124,7 +105,7 @@ export default function Navbar({ menu, notification = false }: Props) {
 							<DropdownMenuContent align="end">
 								<DropdownMenuLabel>บัญชีของฉัน</DropdownMenuLabel>
 								<DropdownMenuSeparator />
-								<DropdownMenuItem>โปรไฟล์</DropdownMenuItem>
+								<DropdownMenuItem onClick={()=> router.push("/user/profile")}>โปรไฟล์</DropdownMenuItem>
 								<DropdownMenuSeparator />
 								<DropdownMenuItem
 									onClick={() =>

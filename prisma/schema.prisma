@@ -18,14 +18,11 @@ enum Position{
   NONE
   ADVISOR
   HEAD_OF_SCHOOL
-  OUTLINE_COMMITTEE
-  INSTITUTE_COMMITTEE
-  EXAMING_COMMITTEE
+  HEAD_OF_INSTITUTE
 }
 
 enum Role{
   STUDENT
-  COMMITTEE
   ADMIN
   SUPER_ADMIN
 }
@@ -40,35 +37,53 @@ model Institute{
   school            School[]   @relation("school")
 }
 
-model School{
-  id Int          @id @default(autoincrement())
-  schoolNameTH    String 
-  schoolNameEN    String 
+model School {
+  id            Int       @id @default(autoincrement())
+  schoolNameTH  String 
+  schoolNameEN  String 
+  instituteID   Int
+  institute     Institute @relation("school", fields: [instituteID], references: [id])
 
-  instituteID     Int
-  institute       Institute   @relation("school", fields: [instituteID], references: [id])
-
-  user            User[]    @relation("userSchool")
+  user          User[]    @relation("userSchool")
+  programs      SchoolProgram[] @relation("SchoolProgram")
 }
 
-model Program{
-  id Int          @id @default(autoincrement())
-  programNameTH   String 
-  programNameEN   String 
-  programYear     String?
+model Program {
+  id           Int       @id @default(autoincrement())
+  programNameTH String 
+  programNameEN String 
+  programYear   String?
 
-  user            User[]    @relation("userProgram")
+  user         User[]    @relation("userProgram")
+  schools      SchoolProgram[]  @relation("SchoolProgram")
+}
+
+model SchoolProgram {
+  schoolID  Int
+  programID Int
+
+  school    School   @relation("SchoolProgram",fields: [schoolID], references: [id])
+  program   Program  @relation("SchoolProgram",fields: [programID], references: [id])
+
+  @@id([schoolID, programID])
+}
+
+model Prefix{
+  id Int          @id @default(autoincrement())
+  prefixTH        String?
+  prefixEN        String?
+  userPrefix      User[]      @relation("userPrefix")
 }
 
 model User {
   id Int            @id @default(autoincrement())
-  formLanguage      String?
-  prefix            String?
+  prefixID          Int?
+  prefix            Prefix?    @relation("userPrefix", fields: [prefixID], references: [id])
   firstNameTH       String?
   lastNameTH        String?
   firstNameEN       String?
   lastNameEN        String?
-  username          String  @unique
+  username          String   @unique
   password          String
   email             String?  @unique
   phone             String?
@@ -76,36 +91,30 @@ model User {
   degree            String?
 
   instituteID       Int?
-  institute         Institute?    @relation("userInstitute", fields: [instituteID], references: [id])
+  institute         Institute?   @relation("userInstitute", fields: [instituteID], references: [id])
 
   schoolID          Int?
-  school            School?    @relation("userSchool", fields: [schoolID], references: [id])
+  school            School?      @relation("userSchool", fields: [schoolID], references: [id])
 
   programID         Int?
-  program           Program?    @relation("userProgram", fields: [programID], references: [id])
+  program           Program?     @relation("userProgram", fields: [programID], references: [id])
 
   position          Position
   role              Role
   formState         Int? 
-  signatureUrl      String? @db.LongText
-  profileUrl        String? @db.LongText
-  
-  //รับรองผู้ทรงคุณวุติ
-  approvedExpert    String?
-  //กรรมกรรมนอก/ใน  
-  committeeType     String?
+  signatureUrl      String?      @db.LongText
+  profileUrl        String?      @db.LongText
 
   //นศ. มีอาจารย์ที่ปรึกษา
   advisorID         Int?
-  advisor           User?    @relation("advisor", fields: [advisorID], references: [id])
+  advisor           User?        @relation("advisor", fields: [advisorID], references: [id])
 
   //นศ. มีอาจารย์ที่ปรึกษาร่วม
-  coAdvisorID       Int?
-  coAdvisor         User?    @relation("coAdvisor", fields: [coAdvisorID], references: [id])
+  coAdvisors       CoAdvisorStudent[]     @relation("coAdvisor")
   
   //อาจารย์ที่ปรึกษา เเละ  อาจารย์ที่ปรึกษาร่วม มี นศ. หลายคน
   advisedStudents   User[] @relation("advisor")
-  coAdvisedStudents User[] @relation("coAdvisor")
+  coAdvisedStudents CoAdvisorStudent[] @relation("student")
 
   //นศ. สร้างฟอร์ม
   comprehensiveExamCommitteeForm             ComprehensiveExamCommitteeForm[]     @relation("comprehensiveExamCommitteeFormOwner")
@@ -113,9 +122,8 @@ model User {
   outlineForm                                OutlineForm[]                        @relation("outlineFormOwner")
   thesisProgressForm                         ThesisProgressForm[]                 @relation("thesisProgressFormOwner")
   
-  //เป็นกรรมการโครงร่างในฟอมโครงร่าง
-  outlineCommittee                           OutlineForm[]      @relation("outlineCommittee")
-  //เป็นกรรมการสำนักในฟอมโครงร่าง
+
+ //เป็นกรรมการสำนักในฟอมโครงร่าง
   instituteCommittee                         OutlineForm[]      @relation("instituteCommittee")
   //เป็นหัวหน้าสาชา
   headSchool                                 ThesisProgressForm[]      @relation("headSchool")
@@ -123,6 +131,16 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model CoAdvisorStudent{
+    studentID Int
+    student User @relation("student", fields: [studentID], references: [id])
+    coAdvisorID Int
+    coAdvisor User @relation("coAdvisor", fields: [coAdvisorID], references: [id])
+      
+    @@id([studentID, coAdvisorID])
+}
+
 model ComprehensiveExamCommitteeForm{
   id                  Int       @id @default(autoincrement())
   date                String
@@ -180,7 +198,8 @@ model OutlineForm {
   outlineCommitteeSignUrl     String? @db.LongText
   dateOutlineCommitteeSign    String?
   outlineCommitteeID          Int?
-  outlineCommittee            User? @relation(fields: [outlineCommitteeID], references: [id], name: "outlineCommittee")
+  outlineCommittee            Expert? @relation(fields: [outlineCommitteeID], references: [id], name: "outlineCommittee")
+  
 
   //กรรมการสำนัก
   instituteCommitteeStatus    String?
@@ -220,6 +239,18 @@ model ThesisProgressForm{
   dateHeadSchool              String?
   headSchoolID                Int?
   headSchool                  User? @relation(fields: [headSchoolID], references: [id], name: "headSchool")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Expert{
+  id                          Int        @id @default(autoincrement())
+  prefix                      String?
+  firstName                   String?
+  lastName                    String?
+  //เป็นกรรมการโครงร่างในฟอมโครงร่าง
+  outlineCommittee                           OutlineForm[]      @relation("outlineCommittee")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

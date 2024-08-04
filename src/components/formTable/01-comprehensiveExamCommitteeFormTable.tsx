@@ -17,13 +17,11 @@ async function getFormDataByStdId(stdId: number | undefined) {
 }
 
 async function get01FormData() {
-		const res = await fetch(`/api/01ComprehensiveExamCommitteeForm`, {
-			next: { revalidate: 10 },
-		});
-		return res.json();
+	const res = await fetch(`/api/01ComprehensiveExamCommitteeForm`, {
+		next: { revalidate: 10 },
+	});
+	return res.json();
 }
-
-
 
 export default function ComprehensiveExamCommitteeFormTable({ userData }: { userData: IUser | undefined }) {
 	const [formData, setFormData] = useState<IComprehensiveExamCommitteeForm[]>();
@@ -33,7 +31,7 @@ export default function ComprehensiveExamCommitteeFormTable({ userData }: { user
 			if (userData?.role.toString() === "STUDENT") {
 				const formData = await getFormDataByStdId(userData?.id);
 				setFormData(formData);
-			}else{
+			} else {
 				const formData = await get01FormData();
 				setFormData(formData);
 			}
@@ -74,9 +72,7 @@ export default function ComprehensiveExamCommitteeFormTable({ userData }: { user
 									<TableCell className="text-center">{formData.academicYear}</TableCell>
 									<TableCell className="text-center">{formData?.student.username}</TableCell>
 									<TableCell className="text-center">
-										{formData.student.formLanguage == "en"
-											? `${formData?.student?.firstNameEN} ${formData?.student?.lastNameEN}`
-											: `${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
+										{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 									</TableCell>
 									<TableCell className="text-center">{formData.times}</TableCell>
 									<TableCell className="text-center">{formData.examDay}</TableCell>

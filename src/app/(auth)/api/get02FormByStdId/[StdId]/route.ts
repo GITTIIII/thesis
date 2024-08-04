@@ -26,6 +26,7 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 		include: {
 			student:{
 				include:{
+					prefix: true,
 					institute:true,
 					school:true,
 					program:true,

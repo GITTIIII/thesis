@@ -10,12 +10,7 @@ export async function GET() {
 		return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
 	}
 
-	const user = await db.user.findMany({
-		where: {
-			role: "COMMITTEE",
-			position: "OUTLINE_COMMITTEE",
-		},
-	});
+	const expert = await db.expert.findMany({});
 
-	return NextResponse.json(user);
+	return NextResponse.json(expert);
 }

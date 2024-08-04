@@ -12,9 +12,14 @@ export async function GET() {
 
 	const user = await db.user.findMany({
 		where: {
-			role: "COMMITTEE",
-			position: "INSTITUTE_COMMITTEE",
+			role: "ADMIN",
+			position: {
+				not: "NONE",
+			},
 		},
+		include:{
+			prefix: true,
+		}
 	});
 
 	return NextResponse.json(user);

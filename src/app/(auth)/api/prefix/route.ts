@@ -12,19 +12,18 @@ export async function POST(req: Request) {
 		}
 
 		const body = await req.json();
-		const { schoolNameTH, schoolNameEN, instituteID } = body;
+		const { prefixTH, prefixEN } = body;
 
-		const school = await db.school.create({
+		const prefix = await db.prefix.create({
 			data: {
-				schoolNameTH,
-				schoolNameEN,
-				instituteID: instituteID == 0 ? null : instituteID,
+				prefixTH,
+				prefixEN,
 			},
 		});
 
-		const { ...rest } = school;
+		const { ...rest } = prefix;
 
-		return NextResponse.json({ form: rest, message: "School Created" }, { status: 200 });
+		return NextResponse.json({ form: rest, message: "Prefix Created" }, { status: 200 });
 	} catch (error) {
 		return NextResponse.json({ message: error }, { status: 500 });
 	}
@@ -36,13 +35,10 @@ export async function GET() {
 	if (!session) {
 		return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
 	}
-	const school = await db.school.findMany({
-		include: {
-			programs: true,
-		},
-	});
 
-	return NextResponse.json(school);
+	const prefix = await db.prefix.findMany({});
+
+	return NextResponse.json(prefix);
 }
 
 export async function PATCH(req: Request) {
@@ -54,32 +50,31 @@ export async function PATCH(req: Request) {
 		}
 
 		const body = await req.json();
-		const { id, schoolNameTH, schoolNameEN, instituteID } = body;
+		const { id, prefixTH, prefixEN } = body;
 
 		if (!id) {
-			return NextResponse.json({ message: "School ID is required for update" }, { status: 400 });
+			return NextResponse.json({ message: "Prefix ID is required for update" }, { status: 400 });
 		}
 
-		const existingSchool = await db.school.findUnique({
+		const existingPrefix = await db.prefix.findUnique({
 			where: { id: id },
 		});
 
-		if (!existingSchool) {
-			return NextResponse.json({ user: null, message: "School not found" }, { status: 404 });
+		if (!existingPrefix) {
+			return NextResponse.json({ user: null, message: "Prefix not found" }, { status: 404 });
 		}
 
-		const school = await db.school.update({
+		const prefix = await db.prefix.update({
 			where: { id: id },
 			data: {
-				schoolNameTH: schoolNameTH == "" ? existingSchool.schoolNameTH : schoolNameTH,
-				schoolNameEN: schoolNameEN == "" ? existingSchool.schoolNameEN : schoolNameEN,
-				instituteID: instituteID == 0 ? existingSchool.instituteID : instituteID,
+				prefixTH:  existingPrefix.prefixTH || prefixTH,
+				prefixEN:  existingPrefix.prefixEN || prefixEN,
 			},
 		});
 
-		const { ...rest } = school;
+		const { ...rest } = prefix;
 
-		return NextResponse.json({ form: rest, message: "School Updated" }, { status: 200 });
+		return NextResponse.json({ form: rest, message: "Prefix Updated" }, { status: 200 });
 	} catch (error) {
 		return NextResponse.json({ message: error }, { status: 500 });
 	}

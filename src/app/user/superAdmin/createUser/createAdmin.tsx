@@ -23,7 +23,7 @@ import { IInstitute } from "@/interface/institute";
 import { ISchool } from "@/interface/school";
 
 const formSchema = z.object({
-	prefix: z.string().min(1, { message: "กรุณาเลือกคำนำหน้า / Please select prefix" }),
+	prefixTH: z.string().min(1, { message: "กรุณาเลือกคำนำหน้า / Please select prefix" }),
 	firstNameTH: z.string().min(1, { message: "กรุณากรอกชื่อ / First name requierd" }),
 	lastNameTH: z.string().min(1, { message: "กรุณากรอกนามสกุล / Last name requierd" }),
 	username: z.string().min(1, { message: "กรุณากรอกรชื่อผู้ใช้ / Username requierd" }),
@@ -59,7 +59,7 @@ export default function CreateAdmin() {
 	const form = useForm({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			prefix: "",
+			prefixTH: "",
 			firstNameTH: "",
 			lastNameTH: "",
 			username: "",
@@ -120,7 +120,7 @@ export default function CreateAdmin() {
 				<div className="w-full 2xl:w-1/2 px-4 mx-auto">
 					<FormField
 						control={form.control}
-						name="prefix"
+						name="prefixTH"
 						render={({ field }) => (
 							<div className="space-y-1 mb-2">
 								<FormLabel htmlFor="prefix">
@@ -135,9 +135,6 @@ export default function CreateAdmin() {
 											<SelectItem value="นาย">นาย</SelectItem>
 											<SelectItem value="นาง">นาง</SelectItem>
 											<SelectItem value="นางสาว">นางสาว</SelectItem>
-											<SelectItem value="Mr.">Mr.</SelectItem>
-											<SelectItem value="Ms.">Ms.</SelectItem>
-											<SelectItem value="Miss">Miss</SelectItem>
 										</SelectGroup>
 									</SelectContent>
 								</Select>
@@ -259,8 +256,10 @@ export default function CreateAdmin() {
 									</SelectTrigger>
 									<SelectContent>
 										<SelectGroup>
+											<SelectItem value="NONE">พนักงาน</SelectItem>
 											<SelectItem value="ADVISOR">อาจารย์ที่ปรึกษา</SelectItem>
 											<SelectItem value="HEAD_OF_SCHOOL">หัวหน้าสาขา</SelectItem>
+											<SelectItem value="HEAD_OF_INSTITUTE">หัวหน้าสำนักวิชา</SelectItem>
 										</SelectGroup>
 									</SelectContent>
 								</Select>
@@ -283,16 +282,12 @@ export default function CreateAdmin() {
 											<Button
 												variant="outline"
 												role="combobox"
-												className={cn(
-													"w-full justify-between",
-													!field.value && "text-muted-foreground"
-												)}
+												className={cn("w-full justify-between", !field.value && "text-muted-foreground")}
 											>
 												{field.value
 													? `${
-															instituteData?.find(
-																(instituteData) => instituteData.id === field.value
-															)?.instituteNameTH
+															instituteData?.find((instituteData) => instituteData.id === field.value)
+																?.instituteNameTH
 													  } `
 													: "เลือกสำนักวิชา"}
 												<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -315,9 +310,7 @@ export default function CreateAdmin() {
 														<Check
 															className={cn(
 																"mr-2 h-4 w-4",
-																field.value === instituteData.id
-																	? "opacity-100"
-																	: "opacity-0"
+																field.value === instituteData.id ? "opacity-100" : "opacity-0"
 															)}
 														/>
 														{instituteData.instituteNameTH}
@@ -345,17 +338,10 @@ export default function CreateAdmin() {
 											<Button
 												variant="outline"
 												role="combobox"
-												className={cn(
-													"w-full justify-between",
-													!field.value && "text-muted-foreground"
-												)}
+												className={cn("w-full justify-between", !field.value && "text-muted-foreground")}
 											>
 												{field.value
-													? `${
-															schoolData?.find(
-																(schoolData) => schoolData.id === field.value
-															)?.schoolNameTH
-													  } `
+													? `${schoolData?.find((schoolData) => schoolData.id === field.value)?.schoolNameTH} `
 													: "เลือกสาขาวิชา"}
 												<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 											</Button>
@@ -367,10 +353,7 @@ export default function CreateAdmin() {
 											<CommandList>
 												<CommandEmpty>ไม่พบสาขาวิชา</CommandEmpty>
 												{schoolData
-													?.filter(
-														(schoolData) =>
-															schoolData.instituteID == form.watch("instituteID")
-													)
+													?.filter((schoolData) => schoolData.instituteID == form.watch("instituteID"))
 													.map((schoolData) => (
 														<CommandItem
 															value={`${schoolData.schoolNameTH}`}
@@ -382,9 +365,7 @@ export default function CreateAdmin() {
 															<Check
 																className={cn(
 																	"mr-2 h-4 w-4",
-																	field.value === schoolData.id
-																		? "opacity-100"
-																		: "opacity-0"
+																	field.value === schoolData.id ? "opacity-100" : "opacity-0"
 																)}
 															/>
 															{schoolData.schoolNameTH}

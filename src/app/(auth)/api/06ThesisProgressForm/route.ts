@@ -59,11 +59,12 @@ export async function GET() {
 		include: {
 			student: {
 				include: {
+					prefix: true,
 					institute: true,
 					school: true,
 					program: true,
 					advisor: true,
-					coAdvisor: true,
+					coAdvisors: true,
 				},
 			},
 		},

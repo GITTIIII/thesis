@@ -24,11 +24,12 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 			id: Number(userId),
 		},
 		include:{
+			prefix: true,
             institute:true,
             school:true,
             program:true,
             advisor:true,
-            coAdvisor:true,
+            coAdvisors:true,
         }
 	});
 

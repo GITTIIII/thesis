@@ -14,8 +14,7 @@ export async function POST(req: Request) {
 
 		const body = await req.json();
 		const {
-			formLanguage,
-			prefix,
+			prefixID,
 			firstNameTH,
 			lastNameTH,
 			firstNameEN,
@@ -35,7 +34,6 @@ export async function POST(req: Request) {
 			signatureUrl,
 			profileUrl,
 			advisorID,
-			coAdvisorID,
 		} = body;
 
 		//check if username already exists
@@ -44,10 +42,7 @@ export async function POST(req: Request) {
 		});
 
 		if (existUsername) {
-			return NextResponse.json(
-				{ user: null, message: "ชื่อผู้ใช้ หรือ รหัสนักศึกษา ถูกใช้เเล้ว" },
-				{ status: 409 }
-			);
+			return NextResponse.json({ user: null, message: "ชื่อผู้ใช้ หรือ รหัสนักศึกษา ถูกใช้เเล้ว" }, { status: 409 });
 		}
 
 		//check if email already exists
@@ -62,8 +57,7 @@ export async function POST(req: Request) {
 		const hashedPassword = await hash(password, 10);
 		const newUser = await db.user.create({
 			data: {
-				formLanguage,
-				prefix,
+				prefixID,
 				firstNameTH,
 				lastNameTH,
 				firstNameEN,
@@ -83,7 +77,6 @@ export async function POST(req: Request) {
 				signatureUrl,
 				profileUrl,
 				advisorID,
-				coAdvisorID,
 			},
 		});
 
@@ -104,6 +97,7 @@ export async function GET() {
 
 	const user = await db.user.findMany({
 		include: {
+			prefix: true,
 			advisor: true,
 			institute: true,
 			school: true,
@@ -127,8 +121,7 @@ export async function PATCH(req: Request) {
 		const body = await req.json();
 		const {
 			id,
-			formLanguage,
-			prefix,
+			prefixID,
 			firstNameTH,
 			lastNameTH,
 			firstNameEN,
@@ -148,7 +141,6 @@ export async function PATCH(req: Request) {
 			signatureUrl,
 			profileUrl,
 			advisorID,
-			coAdvisorID,
 		} = body;
 
 		if (!id) {
@@ -168,8 +160,7 @@ export async function PATCH(req: Request) {
 		const updatedUser = await db.user.update({
 			where: { id: id },
 			data: {
-				formLanguage: formLanguage || existingUser.formLanguage,
-				prefix: prefix || existingUser.prefix,
+				prefixID: prefixID == 0 ? existingUser.prefixID : prefixID,
 				firstNameTH: firstNameTH || existingUser.firstNameTH,
 				lastNameTH: lastNameTH || existingUser.lastNameTH,
 				firstNameEN: firstNameEN || existingUser.firstNameEN,
@@ -189,7 +180,6 @@ export async function PATCH(req: Request) {
 				signatureUrl: signatureUrl || existingUser.signatureUrl,
 				profileUrl: profileUrl || existingUser.profileUrl,
 				advisorID: advisorID == 0 ? existingUser.advisorID : advisorID,
-				coAdvisorID: coAdvisorID == 0 ? existingUser.coAdvisorID : coAdvisorID,
 			},
 		});
 
@@ -197,6 +187,9 @@ export async function PATCH(req: Request) {
 
 		return NextResponse.json({ user: rest, message: "User Updated" }, { status: 200 });
 	} catch (error) {
+		if (error instanceof Error) {
+			console.log({ error: error.message });
+		}
 		return NextResponse.json({ message: error }, { status: 500 });
 	}
 }

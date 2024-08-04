@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 
 import CreateAdmin from "./createAdmin";
 import CreateStudent from "./createStudent";
-import CreateCommittee from "./createCommittee";
+import CreateCommittee from "./createExpert";
 import CreateStudentExel from "./createStudentExel";
 
 const CreateUser = () => {

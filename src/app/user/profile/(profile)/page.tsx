@@ -2,7 +2,7 @@
 import axios from "axios";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { GoPencil } from "react-icons/go";
+import { GoFileDirectory, GoPencil, GoUpload } from "react-icons/go";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -11,54 +11,28 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import Signature from "@/components/signature/signature";
 import Cropper, { Area, Point } from "react-easy-crop";
 import getCroppedImg from "@/lib/cropImage";
 import { Slider } from "@/components/ui/slider";
 import qs from "query-string";
 import { useToast } from "@/components/ui/use-toast";
 import { IUser } from "@/interface/user";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import signature from "@/../../public/asset/signature.png";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User } from "lucide-react";
+import { Check, ChevronsUpDown, User } from "lucide-react";
+import useSWR, { useSWRConfig } from "swr";
+import SignatureCanvas from "react-signature-canvas";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { IPrefix } from "@/interface/prefix";
 
-const prefixMapToEN: { [key: string]: string } = {
-	นาย: "Mr.",
-	นาง: "Miss",
-	นางสาว: "Ms.",
-	"Mr.": "Mr.",
-	Miss: "Miss",
-	"Ms.": "Ms.",
-};
-
-const prefixMapToTH: { [key: string]: string } = {
-	"Mr.": "นาย",
-	Miss: "นาง",
-	"Ms.": "นางสาว",
-	นาย: "นาย",
-	นาง: "นาง",
-	นางสาว: "นางสาว",
-};
-
-async function getCurrentUser() {
-	const res = await fetch("/api/getCurrentUser", {
-		next: { revalidate: 10 },
-	});
-	return res.json();
-}
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function Profile() {
-	const [user, setUser] = useState<IUser>();
-
-	useEffect(() => {
-		async function fetchData() {
-			const data = await getCurrentUser();
-			setUser(data);
-		}
-		fetchData();
-	}, []);
+	const { data: user, isLoading } = useSWR("/api/getCurrentUser", fetcher);
 
 	return (
 		<>
@@ -83,15 +57,11 @@ export default function Profile() {
 						<div className="mt-4 sm:flex ">
 							<section className=" flex flex-col sm:w-1/2 gap-4">
 								<p className=" text-lg">{`รหัสนักศึกษา: ${user?.username} `}</p>
-								<p className=" text-lg">{`ชื่อ: ${prefixMapToTH[user?.prefix ? user?.prefix : ""]}${
-									user?.firstNameTH
-								} ${user?.lastNameTH} `}</p>
-								<p className=" text-lg">{`ชื่ออังกฤษ: ${
-									prefixMapToEN[user?.prefix ? user?.prefix : ""]
-								}${user?.firstNameEN ? user?.firstNameEN : ""} ${
-									user?.lastNameEN ? user?.lastNameEN : ""
-								} `}</p>
-								<p className=" text-lg">{`เพศ: ${user?.sex} `}</p>
+								<p className=" text-lg">{`ชื่อ - สกุล (ไทย): ${user?.prefix.prefixTH}${user?.firstNameTH} ${user?.lastNameTH} `}</p>
+								<p className=" text-lg">{`ชื่อ - สกุล (อังกฤษ): ${user?.prefix.prefixEN}${
+									user?.firstNameEN ? user?.firstNameEN : ""
+								} ${user?.lastNameEN ? user?.lastNameEN : ""} `}</p>
+								<p className=" text-lg">{`เพศ: ${user?.sex == "Male" ? "ชาย" : "หญิง"} `}</p>
 							</section>
 							<section className="flex flex-col sm:mt-0 mt-3 sm:w-1/2 gap-4  ">
 								<p className=" text-lg">{`อีเมล: ${user?.email} `}</p>
@@ -111,7 +81,7 @@ export default function Profile() {
 							<p className=" text-lg ">{`ระดับการศึกษา: ${
 								user?.degree.toLowerCase() === "master" ? "ปริญญาโท" : "ปริญญาเอก"
 							} `}</p>
-							<p className=" text-lg ">{`อ.ที่ปรึกษา: ${user?.advisor.prefix} ${user?.advisor.firstNameTH} ${user?.advisor.lastNameTH}`}</p>
+							<p className=" text-lg ">{`อ.ที่ปรึกษา: ${user?.advisor.prefix.prefixTH} ${user?.advisor.firstNameTH} ${user?.advisor.lastNameTH}`}</p>
 						</section>
 					</div>
 					<div className="md:col-span-2 md:row-span-4 md:col-start-3 md:row-start-4 overflow-clip  row-start-12  col-span-4 p-8 relative">
@@ -119,7 +89,7 @@ export default function Profile() {
 						<div className=" absolute right-0 top-0">
 							<EditSignature user={user} />
 						</div>
-						<div className="mt-4 flex justify-center">
+						<div className="w-full h-full flex justify-center items-center">
 							<Image
 								src={user?.signatureUrl ? user?.signatureUrl : signature}
 								width={200}
@@ -141,19 +111,17 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 	const { toast } = useToast();
 	const router = useRouter();
 	const [open, setOpen] = useState(false);
-
+	const { mutate } = useSWRConfig();
+	const { data: prefix, isLoading } = useSWR("/api/prefix", fetcher);
 	const formSchema = z.object({
 		id: z.number(),
-		username: z.string({ message: "กรุณากรอกรหัสนักศึกษา" }).min(1, { message: "กรุณากรอกรหัสนักศึกษา" }),
-		firstNameTH: z.string({ message: "กรุณากรอกชื่อ" }).min(1, { message: "กรุณากรอกชื่อ" }),
-		lastNameTH: z.string({ message: "กรุณากรอกนามสกุล" }).min(1, { message: "กรุณากรอกนามสกุล" }),
-		firstNameEN: z
-			.string({ message: "Please enter your first name" })
-			.min(1, { message: "Please enter your first name" }),
-		lastNameEN: z
-			.string({ message: "Please enter your first name" })
-			.min(1, { message: "Please enter your last name" }),
-		sex: z.string().min(1, { message: "กรุณาระบุเพศ" }),
+		prefixID: z.number(),
+		username: z.string(),
+		firstNameTH: z.string(),
+		lastNameTH: z.string(),
+		firstNameEN: z.string(),
+		lastNameEN: z.string(),
+		sex: z.string(),
 		email: z.string().email({ message: "กรุณากรอกอีเมลให้ถูกต้อง" }),
 		phone: z
 			.string()
@@ -165,6 +133,7 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			id: 0,
+			prefixID: 0,
 			username: "",
 			firstNameTH: "",
 			lastNameTH: "",
@@ -177,6 +146,7 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		console.log(values);
 		const url = qs.stringifyUrl({
 			url: `/api/user`,
 		});
@@ -189,6 +159,7 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 			});
 			form.reset();
 			router.refresh();
+			mutate("/api/getCurrentUser");
 			setOpen(false);
 		} else {
 			toast({
@@ -206,6 +177,7 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 			reset({
 				...form.getValues(),
 				id: user.id,
+				prefixID: user.prefixID,
 				username: user.username,
 				firstNameTH: user.firstNameTH,
 				lastNameTH: user.lastNameTH,
@@ -216,7 +188,7 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 				phone: user.phone,
 			});
 		}
-	}, [user, reset]);
+	}, []);
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
@@ -225,7 +197,7 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 					<GoPencil size={20} />
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="md:max-w-[500px] md:max-h-max max-w-[350px] max-h-[550px]  overflow-auto rounded-lg">
+			<DialogContent className="md:max-w-[750px] md:max-h-max max-w-[350px] max-h-[550px]  overflow-auto rounded-lg">
 				<DialogHeader>
 					<DialogTitle className=" text-2xl">แก้ไขข้อมูลส่วนตัว</DialogTitle>
 				</DialogHeader>
@@ -245,6 +217,60 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 							)}
 						/>
 						<div className="flex justify-between md:flex-row flex-col">
+							<FormField
+								control={form.control}
+								name="prefixID"
+								render={({ field }) => (
+									<FormItem className="md:w-2/5">
+										<FormLabel>คำนำหน้าชื่อ (ไทย)</FormLabel>
+										<Popover>
+											<PopoverTrigger asChild>
+												<FormControl>
+													<Button
+														variant="outline"
+														role="combobox"
+														className={cn("w-full justify-between", !field.value && "text-muted-foreground")}
+													>
+														{field.value
+															? `${
+																	prefix?.find((prefix: IPrefix) => prefix.id === field.value)
+																		?.prefixTH
+															  } `
+															: "เลือกคำนำหน้า"}
+														<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+													</Button>
+												</FormControl>
+											</PopoverTrigger>
+											<PopoverContent className="w-full p-0">
+												<Command>
+													<CommandInput placeholder="ค้นหาคำนำหน้า" />
+													<CommandList>
+														<CommandEmpty>ไม่พบคำนำหน้า</CommandEmpty>
+														{prefix?.map((prefix: IPrefix) => (
+															<CommandItem
+																value={`${prefix.prefixTH}`}
+																key={prefix.id}
+																onSelect={() => {
+																	form.setValue("prefixID", prefix.id);
+																}}
+															>
+																<Check
+																	className={cn(
+																		"mr-2 h-4 w-4",
+																		field.value === prefix.id ? "opacity-100" : "opacity-0"
+																	)}
+																/>
+																{prefix.prefixTH}
+															</CommandItem>
+														))}
+													</CommandList>
+												</Command>
+											</PopoverContent>
+										</Popover>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
 							<FormField
 								control={form.control}
 								name="firstNameTH"
@@ -275,12 +301,63 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 						<div className="flex justify-between  md:flex-row flex-col">
 							<FormField
 								control={form.control}
+								name="prefixID"
+								render={({ field }) => (
+									<FormItem className="md:w-2/5">
+										<FormLabel>คำนำหน้าชื่อ (อังกฤษ)</FormLabel>
+										<Popover>
+											<PopoverTrigger asChild>
+												<FormControl>
+													<Button
+														variant="outline"
+														role="combobox"
+														className={cn("w-full justify-between", !field.value && "text-muted-foreground")}
+													>
+														{field.value
+															? `${prefix?.find((prefix: IPrefix) => prefix.id === field.value)?.prefixEN} `
+															: "เลือกคำนำหน้า"}
+														<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+													</Button>
+												</FormControl>
+											</PopoverTrigger>
+											<PopoverContent className="w-full p-0">
+												<Command>
+													<CommandInput placeholder="ค้นหาคำนำหน้า" />
+													<CommandList>
+														<CommandEmpty>ไม่พบคำนำหน้า</CommandEmpty>
+														{prefix?.map((prefix: IPrefix) => (
+															<CommandItem
+																value={`${prefix.prefixEN}`}
+																key={prefix.id}
+																onSelect={() => {
+																	form.setValue("prefixID", prefix.id);
+																}}
+															>
+																<Check
+																	className={cn(
+																		"mr-2 h-4 w-4",
+																		field.value === prefix.id ? "opacity-100" : "opacity-0"
+																	)}
+																/>
+																{prefix.prefixEN}
+															</CommandItem>
+														))}
+													</CommandList>
+												</Command>
+											</PopoverContent>
+										</Popover>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
 								name="firstNameEN"
 								render={({ field }) => (
 									<FormItem className=" md:w-52">
 										<FormLabel>First name</FormLabel>
 										<FormControl>
-											<Input placeholder="First name" {...field} />
+											<Input {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -293,7 +370,7 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 									<FormItem className=" md:w-52">
 										<FormLabel>Last name</FormLabel>
 										<FormControl>
-											<Input placeholder="Last name" {...field} />
+											<Input {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -307,14 +384,14 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 								<FormItem className=" md:w-52">
 									<FormLabel>เพศ</FormLabel>
 									<FormControl>
-										<Select {...field}>
+										<Select onValueChange={(value) => field.onChange(value)} value={field.value}>
 											<SelectTrigger>
 												<SelectValue placeholder="เพศ" />
 											</SelectTrigger>
 											<SelectContent>
 												<SelectGroup>
-													<SelectItem value="male">ชาย</SelectItem>
-													<SelectItem value="female">หญิง</SelectItem>
+													<SelectItem value="Male">ชาย</SelectItem>
+													<SelectItem value="Female">หญิง</SelectItem>
 												</SelectGroup>
 											</SelectContent>
 										</Select>
@@ -361,6 +438,109 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 
 const EditSignature = ({ user }: { user: IUser | undefined }) => {
 	const [open, setOpen] = useState(false);
+	const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
+	const [zoom, setZoom] = useState<number>(1);
+	const [rotation, setRotation] = useState<number>(0);
+	const [image, setImage] = useState<string>("");
+	const [active, setActive] = useState(1);
+	const { toast } = useToast();
+	const router = useRouter();
+	const { mutate } = useSWRConfig();
+	const sigCanvas = useRef<SignatureCanvas>(null);
+	const clear = () => {
+		if (sigCanvas.current) {
+			sigCanvas.current.clear();
+		}
+	};
+	const formSchema = z.object({
+		id: z.number(),
+		signatureUrl: z.string(),
+	});
+
+	const form = useForm({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			id: 0,
+			signatureUrl: "",
+		},
+	});
+
+	const handleDrawingSign = () => {
+		if (active == 2 && sigCanvas.current?.isEmpty()) {
+			toast({
+				title: "Error",
+				description: "กรุณาวาดลายเซ็น",
+				variant: "destructive",
+			});
+			return;
+		} else if (active == 2 && sigCanvas.current && !sigCanvas.current.isEmpty()) {
+			setImage(sigCanvas.current.getTrimmedCanvas().toDataURL("image/png"));
+			setActive(3);
+		}
+	};
+
+	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		const url = qs.stringifyUrl({
+			url: `/api/user`,
+		});
+		// const aTag = document.createElement("a");
+		// aTag.href = values.signatureUrl;
+		// aTag.download = "test";
+		// aTag.click();
+		const res = await axios.patch(url, values);
+		if (res.status === 200) {
+			toast({
+				title: "Success",
+				description: "บันทึกสำเร็จแล้ว",
+				variant: "default",
+			});
+			form.reset();
+			router.refresh();
+			mutate("/api/getCurrentUser");
+			setOpen(false);
+		} else {
+			toast({
+				title: "Error",
+				description: res.statusText,
+				variant: "destructive",
+			});
+		}
+	};
+
+	const { reset } = form;
+
+	useEffect(() => {
+		if (user) {
+			reset({
+				...form.getValues(),
+				id: user.id,
+			});
+		}
+	}, [user, reset]);
+
+	const onCropComplete = async (croppedArea: Area, croppedAreaPixels: Area) => {
+		try {
+			const croppedImage = await getCroppedImg(image, croppedAreaPixels, rotation);
+			console.log("donee", { croppedImage });
+			reset({
+				...form.getValues(),
+				signatureUrl: croppedImage!,
+			});
+		} catch (e) {
+			console.error(e);
+		}
+	};
+	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (e.target.files) {
+			const file = e.target.files[0];
+			const reader = new FileReader();
+
+			reader.onloadend = () => {
+				setImage(reader.result as string);
+			};
+			reader.readAsDataURL(file);
+		}
+	};
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
 			<DialogTrigger asChild>
@@ -373,7 +553,167 @@ const EditSignature = ({ user }: { user: IUser | undefined }) => {
 					<DialogTitle className=" text-2xl">ลายเซ็น</DialogTitle>
 				</DialogHeader>
 				<div className=" lg:w-[950px] lg:h-[650px] md:w-[700px] w-[520px] h-[500px]">
-					<Signature user={user} />
+					<div className="w-full h-full bg-transparent ">
+						<div className="w-full h-full bg-[#ffffff] pb-8 rounded-md">
+							<div className="w-full h-fit mt-2 flex">
+								<button
+									onClick={() => setActive(1)}
+									className={`w-full flex justify-center items-center text-sm bg-white-500 border-black  ${
+										active === 1 ? "border-x border-t border-b-white text-[#F26522]" : "border-b"
+									}`}
+								>
+									<GoFileDirectory size={30} color={active == 1 ? "#F26522" : "#000"} />
+									<label className=" text-base ml-1">ลายเซ็นของคุณที่มีในระบบ</label>
+								</button>
+								<button
+									onClick={() => setActive(2)}
+									className={`w-full    flex justify-center items-center text-sm bg-white-500 border-black p-2 ${
+										active === 2 ? "border-x border-t border-b-white text-[#F26522]" : "border-b"
+									}`}
+								>
+									<GoPencil size={30} color={active === 2 ? "#F26522" : "#000"} />
+									<label className="ml-2">วาดลายเซ็นตัวเอง</label>
+								</button>
+								<button
+									onClick={() => setActive(3)}
+									className={`w-full    flex justify-center items-center text-sm bg-white-500 border-black p-2 ${
+										active === 3 ? "border-x border-t border-b-white text-[#F26522]" : "border-b"
+									}`}
+								>
+									<GoUpload size={30} color={active === 3 ? "#F26522" : "#000"} />
+									<label className="ml-2">อัปโหลดรูปภาพ</label>
+								</button>
+								<div className="bg-white-500 border-b border-black w-0  2xl:w-1/5 py-4"></div>
+								<div className="bg-white-500 border-b border-black w-0  2xl:w-1/5 py-4"></div>
+							</div>
+
+							{/* main */}
+							<div className="w-full h-full">
+								{active == 1 && (
+									<div className="w-full h-full p-2">
+										<div className="w-full h-1/2 flex justify-center border-2 p-4 rounded-md">
+											<Image
+												src={user?.signatureUrl ? user?.signatureUrl : signature}
+												width={100}
+												height={100}
+												style={{
+													width: "auto",
+													height: "auto",
+												}}
+												alt="signature"
+											/>
+										</div>
+									</div>
+								)}
+								{active == 2 && (
+									<div className="w-full h-full py-2 m-auto">
+										<Form {...form}>
+											<div className="w-full h-full flex justify-center mb-6">
+												<form
+													onSubmit={form.handleSubmit(onSubmit)}
+													className="w-full h-full flex flex-col justify-center border-2 border-dashed border-[#F26522] bg-[#f2642229] relative"
+												>
+													<div className="w-full h-max flex justify-center mb-2">
+														<SignatureCanvas
+															ref={sigCanvas}
+															backgroundColor="white"
+															throttle={8}
+															canvasProps={{
+																style: {
+																	width: "400px",
+																	height: "400px",
+																},
+															}}
+														/>
+													</div>
+													<div className="w-full flex justify-center">
+														<Button
+															variant="outline"
+															type="button"
+															onClick={() => clear()}
+															className="bg-[#F26522] w-auto px-6 text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
+														>
+															ล้าง
+														</Button>
+														<Button
+															variant="outline"
+															type="button"
+															onClick={() => handleDrawingSign()}
+															className="bg-[#F26522] w-auto text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
+														>
+															ต่อไป
+														</Button>
+													</div>
+												</form>
+											</div>
+										</Form>
+									</div>
+								)}
+								{active == 3 && (
+									<div className="w-full h-full py-2">
+										<div className="w-full h-full flex flex-col justify-center border-2 border-dashed border-[#F26522] bg-[#f2642229] relative">
+											<div className=" block h-full">
+												<Cropper
+													image={image}
+													crop={crop}
+													zoom={zoom}
+													aspect={3 / 1}
+													rotation={rotation}
+													onCropChange={setCrop}
+													onCropComplete={onCropComplete}
+													onZoomChange={setZoom}
+													onRotationChange={setRotation}
+													restrictPosition={false}
+												/>
+											</div>
+											<div className=" w-full flex gap-2 px-3 absolute bottom-1 right-0">
+												{/* <Button className="  bg-white p-3 rounded-xl"> */}
+												<Input
+													type="file"
+													accept="image/*"
+													onChange={handleFileChange}
+													className="h-auto text-sm text-grey-500 rounded-xl file:border-0 file:text-md file:w-fit file:h-full file:text-[#F26522] bg-white hover:file:cursor-pointer hover:file:opacity-80"
+												/>
+												{/* </Button> */}
+												<div className=" flex w-full  bg-white p-3 rounded-xl">
+													<Label className="mr-4 content-center inline-block text-[#F26522]">Zoom</Label>
+													<Slider
+														defaultValue={[zoom]}
+														value={[zoom]}
+														max={3}
+														min={1}
+														step={0.01}
+														className=" w-full "
+														onValueChange={(values) => setZoom(values[0])}
+													/>
+												</div>
+												<div className=" w-full  flex bg-white p-3 rounded-xl">
+													<Label className="mr-4 content-center inline-block text-[#F26522]">Rotation</Label>
+													<Slider
+														defaultValue={[rotation]}
+														value={[rotation]}
+														max={360}
+														min={0}
+														step={1}
+														className=" w-full "
+														onValueChange={(values) => setRotation(values[0])}
+													/>
+												</div>
+												<Button
+													variant="outline"
+													type="button"
+													onClick={() => onSubmit(form.getValues())}
+													className="bg-[#F26522] w-auto text-lg text-white rounded-xl  border-[#F26522] "
+												>
+													ยืนยัน
+												</Button>
+											</div>
+										</div>
+									</div>
+								)}
+							</div>
+						</div>
+					</div>
 				</div>
 				<DialogFooter>{/* <Button type="submit">Save changes</Button> */}</DialogFooter>
 			</DialogContent>
@@ -390,7 +730,7 @@ const EditProfile = ({ user }: { user: IUser | undefined }) => {
 	const { toast } = useToast();
 	const [open, setOpen] = useState(false);
 	const router = useRouter();
-
+	const { mutate } = useSWRConfig();
 	const formSchema = z.object({
 		id: z.number(),
 		profileUrl: z.string(),
@@ -449,10 +789,7 @@ const EditProfile = ({ user }: { user: IUser | undefined }) => {
 		const url = qs.stringifyUrl({
 			url: `/api/user`,
 		});
-		// const aTag = document.createElement("a");
-		// aTag.href = cropImage;
-		// aTag.download = "test";
-		// aTag.click();
+		console.log(values);
 		const res = await axios.patch(url, values);
 		if (res.status === 200) {
 			toast({
@@ -462,6 +799,7 @@ const EditProfile = ({ user }: { user: IUser | undefined }) => {
 			});
 			form.reset();
 			router.refresh();
+			mutate("/api/getCurrentUser");
 			setOpen(false);
 		} else {
 			toast({

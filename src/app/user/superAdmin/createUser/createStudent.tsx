@@ -30,7 +30,7 @@ import { ISchool } from "@/interface/school";
 import { IUser } from "@/interface/user";
 
 const formSchema = z.object({
-	prefix: z.string().min(1, { message: "กรุณาเลือกคำนำหน้า / Please select prefix" }),
+	prefixTH: z.string().min(1, { message: "กรุณาเลือกคำนำหน้า / Please select prefix" }),
 	firstNameTH: z.string().min(1, { message: "กรุณากรอกชื่อ / First name requierd" }),
 	lastNameTH: z.string().min(1, { message: "กรุณากรอกนามสกุล / Last name requierd" }),
 	username: z.string().min(1, { message: "กรุณากรอกรหัสนักศึกษา / Student ID requierd" }),
@@ -85,7 +85,7 @@ export default function CreateStudent() {
 	const form = useForm({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			prefix: "",
+			prefixTH: "",
 			firstNameTH: "",
 			lastNameTH: "",
 			username: "",
@@ -160,7 +160,7 @@ export default function CreateStudent() {
 				<div className="w-full 2xl:w-1/2 px-4 mx-auto mb-4">
 					<FormField
 						control={form.control}
-						name="prefix"
+						name="prefixTH"
 						render={({ field }) => (
 							<div className="space-y-1 mb-2">
 								<FormLabel htmlFor="prefix">
@@ -175,9 +175,6 @@ export default function CreateStudent() {
 											<SelectItem value="นาย">นาย</SelectItem>
 											<SelectItem value="นาง">นาง</SelectItem>
 											<SelectItem value="นางสาว">นางสาว</SelectItem>
-											<SelectItem value="Mr.">Mr.</SelectItem>
-											<SelectItem value="Ms.">Ms.</SelectItem>
-											<SelectItem value="Miss">Miss</SelectItem>
 										</SelectGroup>
 									</SelectContent>
 								</Select>

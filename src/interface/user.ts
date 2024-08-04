@@ -1,12 +1,13 @@
 import { IInstitute } from "./institute";
 import { ISchool } from "./school";
 import { IProgram } from "./program";
+import { IPrefix } from "./prefix";
 
 export type IUser = {
 	map(arg0: (data: IUser) => import("react").JSX.Element): import("react").ReactNode;
 	id: number;
-	formLanguage: string;
-	prefix: string;
+	prefixID: number;
+	prefix :IPrefix
 	firstNameTH: string;
 	lastNameTH: string;
 	firstNameEN: string;
@@ -27,13 +28,11 @@ export type IUser = {
 	programID: number;
 	program: IProgram;
 
-	position: Position | Position.NONE;
-	role: Role | Role.STUDENT;
+	position: Position;
+	role: Role;
 	formState: number;
 	signatureUrl: string;
 	profileUrl: string;
-	approvedExpert: string;
-	committeeType: string;
 
 	advisorID: number;
 	advisor: IUser;
@@ -46,14 +45,11 @@ enum Position {
 	NONE,
 	ADVISOR,
 	HEAD_OF_SCHOOL,
-	COMMOTTEE_OUTLINE,
-	COMMOTTEE_INSTITUTE,
-	COMMOTTEE_EXAMING,
+	HEAD_OF_INSTITUTE
 }
 
 enum Role {
 	STUDENT,
-	COMMOTTEE,
 	ADMIN,
 	SUPER_ADMIN,
 }

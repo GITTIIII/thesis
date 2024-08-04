@@ -37,7 +37,11 @@ export async function GET() {
 		return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
 	}
 
-	const program = await db.program.findMany({});
+	const program = await db.program.findMany({
+		include:{
+			schools: true,
+		}
+	});
 
 	return NextResponse.json(program);
 }
