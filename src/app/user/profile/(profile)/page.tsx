@@ -62,7 +62,10 @@ const prefixMapToTH: { [key: string]: string } = {
   นาง: "นาง",
   นางสาว: "นางสาว",
 };
-
+const sexMapToTH: { [key: string]: string } = {
+  Male: "ชาย",
+  Female: "หญิง",
+};
 async function getCurrentUser() {
   const res = await fetch("/api/getCurrentUser", {
     next: { revalidate: 10 },
@@ -87,20 +90,20 @@ export default function Profile() {
         <div className="lg:w-[950px] md:w-[750px] sm:w-[550px] w-[350px]  [&>div]:bg-white [&>div]:border [&>div]:overflow-hidden  [&>div]:rounded-lg [&>div]:shadow-[0px_0px_5px_1px_#e2e8f0] mt-12 grid md:grid-cols-4 md:grid-rows-9  gap-4">
           <div className=" md:row-span-3 md:col-start-1 md:row-start-1 md:col-span-1 col-start-2 row-span-3  col-span-2  overflow-clip  content-center justify-center flex relative ">
             <Image
-              src={user?.profileUrl ? user?.profileUrl : profile}
+              src={user?.profileUrl ? user?.profileUrl : ""}
               width={75}
               height={75}
               className="h-auto w-auto self-center rounded-full"
               alt="Profile"
             />
             <div className=" absolute right-0 top-0">
-              <EditProfile user={user} />
+              <EditProfile user={user} setUser={setUser} />
             </div>
           </div>
           <div className=" md:col-span-3 md:row-span-3 row-start-4 row-span-3  col-span-4 p-8 relative ">
             <label className=" text-xl ">ข้อมูลส่วนตัว</label>
             <div className=" absolute right-0 top-0">
-              <EditPersonalInformation user={user} />
+              <EditPersonalInformation user={user} setUser={setUser} />
             </div>
             <div className="mt-4 sm:flex ">
               <section className=" flex flex-col sm:w-1/2 gap-4">
@@ -113,7 +116,9 @@ export default function Profile() {
                 }${user?.firstNameEN ? user?.firstNameEN : ""} ${
                   user?.lastNameEN ? user?.lastNameEN : ""
                 } `}</p>
-                <p className=" text-lg">{`เพศ: ${user?.sex} `}</p>
+                <p className=" text-lg">{`เพศ: ${
+                  sexMapToTH[user?.sex ? user?.sex : ""]
+                } `}</p>
               </section>
               <section className="flex flex-col sm:mt-0 mt-3 sm:w-1/2 gap-4  ">
                 <p className=" text-lg">{`อีเมล: ${user?.email} `}</p>
@@ -139,15 +144,15 @@ export default function Profile() {
           <div className="md:col-span-2 md:row-span-4 md:col-start-3 md:row-start-4 overflow-clip  row-start-12  col-span-4 p-8 relative">
             <label className=" text-xl ">ลายเซ็น</label>
             <div className=" absolute right-0 top-0">
-              <EditSignature user={user} />
+              <EditSignature user={user} setUser={setUser} />
             </div>
-            <div className=" mt-4 flex justify-center">
+            <div className=" flex justify-center items-center h-full ">
               <Image
                 src={user?.signatureUrl ? user?.signatureUrl : signature}
-                width={100}
-                height={100}
+                width={0}
+                height={0}
                 alt="Profile"
-                className=" border w-60 h-60"
+                className="  w-96"
               />
             </div>
           </div>
@@ -156,7 +161,13 @@ export default function Profile() {
     </>
   );
 }
-const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
+const EditPersonalInformation = ({
+  user,
+  setUser,
+}: {
+  user: IUser | undefined;
+  setUser: React.Dispatch<React.SetStateAction<IUser | undefined>>;
+}) => {
   const { toast } = useToast();
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -212,6 +223,7 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
         description: "บันทึกสำเร็จแล้ว",
         variant: "default",
       });
+      setUser({ ...user!, ...values });
       form.reset();
       router.refresh();
       setOpen(false);
@@ -332,14 +344,14 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
                 <FormItem className=" md:w-52">
                   <FormLabel>เพศ</FormLabel>
                   <FormControl>
-                    <Select {...field}>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
                       <SelectTrigger>
                         <SelectValue placeholder="เพศ" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          <SelectItem value="male">ชาย</SelectItem>
-                          <SelectItem value="female">หญิง</SelectItem>
+                          <SelectItem value="Male">ชาย</SelectItem>
+                          <SelectItem value="Female">หญิง</SelectItem>
                         </SelectGroup>
                       </SelectContent>
                     </Select>
@@ -384,7 +396,13 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
   );
 };
 
-const EditSignature = ({ user }: { user: IUser | undefined }) => {
+const EditSignature = ({
+  user,
+  setUser,
+}: {
+  user: IUser | undefined;
+  setUser: React.Dispatch<React.SetStateAction<IUser | undefined>>;
+}) => {
   const [open, setOpen] = useState(false);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -398,7 +416,7 @@ const EditSignature = ({ user }: { user: IUser | undefined }) => {
           <DialogTitle className=" text-2xl">ลายเซ็น</DialogTitle>
         </DialogHeader>
         <div className=" lg:w-[950px] lg:h-[650px] md:w-[700px] w-[520px] h-[500px]">
-          <Signature user={user} />
+          <Signature user={user} setUser={setUser} />
         </div>
         <DialogFooter>{/* <Button type="submit">Save changes</Button> */}</DialogFooter>
       </DialogContent>
@@ -406,7 +424,13 @@ const EditSignature = ({ user }: { user: IUser | undefined }) => {
   );
 };
 
-const EditProfile = ({ user }: { user: IUser | undefined }) => {
+const EditProfile = ({
+  user,
+  setUser,
+}: {
+  user: IUser | undefined;
+  setUser: React.Dispatch<React.SetStateAction<IUser | undefined>>;
+}) => {
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState<number>(1);
   const [rotation, setRotation] = useState<number>(0);
@@ -472,10 +496,7 @@ const EditProfile = ({ user }: { user: IUser | undefined }) => {
     const url = qs.stringifyUrl({
       url: `/api/user`,
     });
-    // const aTag = document.createElement("a");
-    // aTag.href = cropImage;
-    // aTag.download = "test";
-    // aTag.click();
+
     const res = await axios.patch(url, values);
     if (res.status === 200) {
       toast({
@@ -483,6 +504,7 @@ const EditProfile = ({ user }: { user: IUser | undefined }) => {
         description: "บันทึกสำเร็จแล้ว",
         variant: "default",
       });
+      setUser({ ...user!, profileUrl: values.profileUrl });
       form.reset();
       router.refresh();
       setOpen(false);

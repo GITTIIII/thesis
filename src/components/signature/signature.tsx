@@ -90,6 +90,9 @@ export default function Signature({
           return { ...prevUser, ...values };
         });
       }
+      if (setUser) {
+        setUser({ ...user!, signatureUrl: values.signatureUrl });
+      }
       form.reset();
       router.refresh();
       setTimeout(() => {
@@ -252,11 +255,10 @@ export default function Signature({
                       onCropComplete={onCropComplete}
                       onZoomChange={setZoom}
                       onRotationChange={setRotation}
-                      restrictPosition={false}
+                      // restrictPosition={false}
                     />
                   </div>
                   <div className=" w-full flex gap-2 px-3 absolute bottom-1 right-0">
-                    {/* <Button className="  bg-white p-3 rounded-xl"> */}
                     <Input
                       type="file"
                       accept="image/*"
