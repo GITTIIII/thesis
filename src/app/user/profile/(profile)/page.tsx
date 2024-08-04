@@ -36,7 +36,7 @@ export default function Profile() {
 
 	return (
 		<>
-			<div className="w-full md:h-full flex justify-center">
+			<div className="w-full h-full flex justify-center">
 				<div className="lg:w-[950px] md:w-[750px] sm:w-[550px] w-[350px]  [&>div]:bg-white [&>div]:border [&>div]:overflow-hidden  [&>div]:rounded-lg [&>div]:shadow-[0px_0px_5px_1px_#e2e8f0] mt-12 grid md:grid-cols-4 md:grid-rows-9  gap-4">
 					<div className="md:row-span-3 md:col-start-1 md:row-start-1 md:col-span-1 col-start-2 row-span-3  col-span-2  overflow-clip  content-center justify-center flex relative ">
 						<Avatar className="w-[128px] h-auto my-auto">
@@ -56,7 +56,7 @@ export default function Profile() {
 						</div>
 						<div className="mt-4 sm:flex ">
 							<section className=" flex flex-col sm:w-1/2 gap-4">
-								<p className=" text-lg">{`รหัสนักศึกษา: ${user?.username} `}</p>
+								{user?.role.toString() === "STUDENT" && <p className=" text-lg">{`รหัสนักศึกษา: ${user?.username} `}</p>}
 								<p className=" text-lg">{`ชื่อ - สกุล (ไทย): ${user?.prefix.prefixTH}${user?.firstNameTH} ${user?.lastNameTH} `}</p>
 								<p className=" text-lg">{`ชื่อ - สกุล (อังกฤษ): ${user?.prefix.prefixEN}${
 									user?.firstNameEN ? user?.firstNameEN : ""
@@ -77,11 +77,17 @@ export default function Profile() {
 						<section className="mt-4  gap-4 flex  flex-col self-center">
 							<p className=" text-lg ">{`สำนักวิชา: ${user?.institute.instituteNameTH} `}</p>
 							<p className=" text-lg ">{`สาขาวิชา: ${user?.school.schoolNameTH} `}</p>
-							<p className=" text-lg ">{`หลักสูตร: ${user?.program.programNameTH} ${user?.program.programYear} `}</p>
-							<p className=" text-lg ">{`ระดับการศึกษา: ${
-								user?.degree.toLowerCase() === "master" ? "ปริญญาโท" : "ปริญญาเอก"
-							} `}</p>
-							<p className=" text-lg ">{`อ.ที่ปรึกษา: ${user?.advisor.prefix.prefixTH} ${user?.advisor.firstNameTH} ${user?.advisor.lastNameTH}`}</p>
+							{user?.role.toString() == "STUDENT" && (
+								<>
+									<p className=" text-lg ">{`หลักสูตร: ${user?.program ? user?.program.programNameTH : ""} ${
+										user?.program ? user?.program.programYear : ""
+									} `}</p>
+									<p className=" text-lg ">{`ระดับการศึกษา: ${
+										user?.degree.toLowerCase() === "master" ? "ปริญญาโท" : "ปริญญาเอก"
+									} `}</p>
+									<p className=" text-lg ">{`อ.ที่ปรึกษา: ${user?.advisor.prefix.prefixTH} ${user?.advisor.firstNameTH} ${user?.advisor.lastNameTH}`}</p>
+								</>
+							)}
 						</section>
 					</div>
 					<div className="md:col-span-2 md:row-span-4 md:col-start-3 md:row-start-4 overflow-clip  row-start-12  col-span-4 p-8 relative">
@@ -197,7 +203,7 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 					<GoPencil size={20} />
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="md:max-w-[750px] md:max-h-max max-w-[350px] max-h-[550px]  overflow-auto rounded-lg">
+			<DialogContent className="md:max-w-[800px] md:h-[750px] overflow-auto rounded-lg">
 				<DialogHeader>
 					<DialogTitle className=" text-2xl">แก้ไขข้อมูลส่วนตัว</DialogTitle>
 				</DialogHeader>
@@ -545,172 +551,169 @@ const EditSignature = ({ user }: { user: IUser | undefined }) => {
 					<GoPencil size={20} />
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="max-w-fit  max-h-fit">
+			<DialogContent className="max-w-fit max-h-fit rounded-lg">
 				<DialogHeader>
 					<DialogTitle className=" text-2xl">ลายเซ็น</DialogTitle>
 				</DialogHeader>
-				<div className="lg:w-[950px] lg:h-[650px] md:w-[700px] w-[520px] h-[500px]">
-					<div className="w-full h-full bg-transparent ">
-						<div className="w-full h-full bg-[#ffffff] pb-8 rounded-md">
-							<div className="w-full h-fit mt-2 flex">
-								<button
-									onClick={() => setActive(1)}
-									className={`w-full flex justify-center items-center text-sm bg-white-500 border-black  ${
-										active === 1 ? "border-x border-t border-b-white text-[#F26522]" : "border-b"
-									}`}
-								>
-									<GoFileDirectory className="hidden md:block" size={30} color={active == 1 ? "#F26522" : "#000"} />
-									<label className="ml-1">ลายเซ็นของคุณที่มีในระบบ</label>
-								</button>
-								<button
-									onClick={() => setActive(2)}
-									className={`w-full    flex justify-center items-center text-sm bg-white-500 border-black p-2 ${
-										active === 2 ? "border-x border-t border-b-white text-[#F26522]" : "border-b"
-									}`}
-								>
-									<GoPencil className="hidden md:block" size={30} color={active === 2 ? "#F26522" : "#000"} />
-									<label className="ml-2">วาดลายเซ็นตัวเอง</label>
-								</button>
-								<button
-									onClick={() => setActive(3)}
-									className={`w-full    flex justify-center items-center text-sm bg-white-500 border-black p-2 ${
-										active === 3 ? "border-x border-t border-b-white text-[#F26522]" : "border-b"
-									}`}
-								>
-									<GoUpload className="hidden md:block" size={30} color={active === 3 ? "#F26522" : "#000"} />
-									<label className="ml-2">อัปโหลดรูปภาพ</label>
-								</button>
-							</div>
+				<div className="w-[400px] sm:w-[600px] lg:w-[800px]  h-[600px] bg-transparent ">
+					<div className="w-full h-full bg-[#ffffff] pb-8 rounded-md">
+						<div className="w-full h-fit mt-2 flex">
+							<button
+								onClick={() => setActive(1)}
+								className={`w-full flex justify-center items-center text-sm bg-white-500 border-black  ${
+									active === 1 ? "border-x border-t border-b-white text-[#F26522]" : "border-b"
+								}`}
+							>
+								<GoFileDirectory className="hidden md:block" size={30} color={active == 1 ? "#F26522" : "#000"} />
+								<label className="ml-1">ลายเซ็นของคุณที่มีในระบบ</label>
+							</button>
+							<button
+								onClick={() => setActive(2)}
+								className={`w-full    flex justify-center items-center text-sm bg-white-500 border-black p-2 ${
+									active === 2 ? "border-x border-t border-b-white text-[#F26522]" : "border-b"
+								}`}
+							>
+								<GoPencil className="hidden md:block" size={30} color={active === 2 ? "#F26522" : "#000"} />
+								<label className="ml-2">วาดลายเซ็นตัวเอง</label>
+							</button>
+							<button
+								onClick={() => setActive(3)}
+								className={`w-full    flex justify-center items-center text-sm bg-white-500 border-black p-2 ${
+									active === 3 ? "border-x border-t border-b-white text-[#F26522]" : "border-b"
+								}`}
+							>
+								<GoUpload className="hidden md:block" size={30} color={active === 3 ? "#F26522" : "#000"} />
+								<label className="ml-2">อัปโหลดรูปภาพ</label>
+							</button>
+						</div>
 
-							{/* main */}
-							<div className="w-full h-full">
-								{active == 1 && (
-									<div className="w-full h-full p-2">
-										<div className="w-full h-1/2 flex justify-center border-2 p-4 rounded-md">
-											<Image
-												src={user?.signatureUrl ? user?.signatureUrl : signature}
-												width={100}
-												height={100}
-												style={{
-													width: "auto",
-													height: "auto",
-												}}
-												alt="signature"
+						{/* main */}
+						<div className="w-full h-full">
+							{active == 1 && (
+								<div className="w-full h-full p-2">
+									<div className="w-auto h-auto flex justify-center border-2 p-4 rounded-md">
+										<Image
+											src={user?.signatureUrl ? user?.signatureUrl : signature}
+											width={100}
+											height={100}
+											style={{
+												width: "auto",
+												height: "auto",
+											}}
+											alt="signature"
+										/>
+									</div>
+								</div>
+							)}
+							{active == 2 && (
+								<div className="w-full h-full py-2 m-auto">
+									<Form {...form}>
+										<div className="w-full h-full flex justify-center mb-6">
+											<form
+												onSubmit={form.handleSubmit(onSubmit)}
+												className="w-full h-full flex flex-col justify-center border-2 border-dashed border-[#F26522] bg-[#f2642229] relative"
+											>
+												<div className="w-full h-max flex justify-center mb-2">
+													<SignatureCanvas
+														ref={sigCanvas}
+														backgroundColor="white"
+														throttle={8}
+														canvasProps={{
+															style: {
+																width: "400px",
+																height: "400px",
+															},
+														}}
+													/>
+												</div>
+												<div className="w-full flex justify-center">
+													<Button
+														variant="outline"
+														type="button"
+														onClick={() => clear()}
+														className="bg-[#F26522] w-auto px-6 text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
+													>
+														ล้าง
+													</Button>
+													<Button
+														variant="outline"
+														type="button"
+														onClick={() => handleDrawingSign()}
+														className="bg-[#F26522] w-auto text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
+													>
+														ต่อไป
+													</Button>
+												</div>
+											</form>
+										</div>
+									</Form>
+								</div>
+							)}
+							{active == 3 && (
+								<div className="w-full h-full py-2">
+									<div className="w-full h-full flex flex-col justify-center border-2 border-dashed border-[#F26522] bg-[#f2642229] relative">
+										<div className=" block h-full">
+											<Cropper
+												image={image}
+												crop={crop}
+												zoom={zoom}
+												aspect={3 / 2}
+												rotation={rotation}
+												onCropChange={setCrop}
+												onCropComplete={onCropComplete}
+												onZoomChange={setZoom}
+												onRotationChange={setRotation}
+												// restrictPosition={false}
 											/>
 										</div>
-									</div>
-								)}
-								{active == 2 && (
-									<div className="w-full h-full py-2 m-auto">
-										<Form {...form}>
-											<div className="w-full h-full flex justify-center mb-6">
-												<form
-													onSubmit={form.handleSubmit(onSubmit)}
-													className="w-full h-full flex flex-col justify-center border-2 border-dashed border-[#F26522] bg-[#f2642229] relative"
-												>
-													<div className="w-full h-max flex justify-center mb-2">
-														<SignatureCanvas
-															ref={sigCanvas}
-															backgroundColor="white"
-															throttle={8}
-															canvasProps={{
-																style: {
-																	width: "400px",
-																	height: "400px",
-																},
-															}}
-														/>
-													</div>
-													<div className="w-full flex justify-center">
-														<Button
-															variant="outline"
-															type="button"
-															onClick={() => clear()}
-															className="bg-[#F26522] w-auto px-6 text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-														>
-															ล้าง
-														</Button>
-														<Button
-															variant="outline"
-															type="button"
-															onClick={() => handleDrawingSign()}
-															className="bg-[#F26522] w-auto text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-														>
-															ต่อไป
-														</Button>
-													</div>
-												</form>
-											</div>
-										</Form>
-									</div>
-								)}
-								{active == 3 && (
-									<div className="w-full h-full py-2">
-										<div className="w-full h-full flex flex-col justify-center border-2 border-dashed border-[#F26522] bg-[#f2642229] relative">
-											<div className=" block h-full">
-												<Cropper
-													image={image}
-													crop={crop}
-													zoom={zoom}
-													aspect={3 / 1}
-													rotation={rotation}
-													onCropChange={setCrop}
-													onCropComplete={onCropComplete}
-													onZoomChange={setZoom}
-													onRotationChange={setRotation}
-													restrictPosition={false}
+										<div className=" w-full flex gap-2 px-3 absolute bottom-1 right-0">
+											{/* <Button className="  bg-white p-3 rounded-xl"> */}
+											<Input
+												type="file"
+												accept="image/*"
+												onChange={handleFileChange}
+												className="h-auto text-sm text-grey-500 rounded-xl file:border-0 file:text-md file:w-fit file:h-full file:text-[#F26522] bg-white hover:file:cursor-pointer hover:file:opacity-80"
+											/>
+											{/* </Button> */}
+											<div className=" flex w-full  bg-white p-3 rounded-xl">
+												<Label className="mr-4 content-center inline-block text-[#F26522]">Zoom</Label>
+												<Slider
+													defaultValue={[zoom]}
+													value={[zoom]}
+													max={3}
+													min={1}
+													step={0.01}
+													className=" w-full "
+													onValueChange={(values) => setZoom(values[0])}
 												/>
 											</div>
-											<div className=" w-full flex gap-2 px-3 absolute bottom-1 right-0">
-												{/* <Button className="  bg-white p-3 rounded-xl"> */}
-												<Input
-													type="file"
-													accept="image/*"
-													onChange={handleFileChange}
-													className="h-auto text-sm text-grey-500 rounded-xl file:border-0 file:text-md file:w-fit file:h-full file:text-[#F26522] bg-white hover:file:cursor-pointer hover:file:opacity-80"
+											<div className=" w-full  flex bg-white p-3 rounded-xl">
+												<Label className="mr-4 content-center inline-block text-[#F26522]">Rotation</Label>
+												<Slider
+													defaultValue={[rotation]}
+													value={[rotation]}
+													max={360}
+													min={0}
+													step={1}
+													className=" w-full "
+													onValueChange={(values) => setRotation(values[0])}
 												/>
-												{/* </Button> */}
-												<div className=" flex w-full  bg-white p-3 rounded-xl">
-													<Label className="mr-4 content-center inline-block text-[#F26522]">Zoom</Label>
-													<Slider
-														defaultValue={[zoom]}
-														value={[zoom]}
-														max={3}
-														min={1}
-														step={0.01}
-														className=" w-full "
-														onValueChange={(values) => setZoom(values[0])}
-													/>
-												</div>
-												<div className=" w-full  flex bg-white p-3 rounded-xl">
-													<Label className="mr-4 content-center inline-block text-[#F26522]">Rotation</Label>
-													<Slider
-														defaultValue={[rotation]}
-														value={[rotation]}
-														max={360}
-														min={0}
-														step={1}
-														className=" w-full "
-														onValueChange={(values) => setRotation(values[0])}
-													/>
-												</div>
-												<Button
-													variant="outline"
-													type="button"
-													onClick={() => onSubmit(form.getValues())}
-													className="bg-[#F26522] w-auto text-lg text-white rounded-xl  border-[#F26522] "
-												>
-													ยืนยัน
-												</Button>
 											</div>
+											<Button
+												variant="outline"
+												type="button"
+												onClick={() => onSubmit(form.getValues())}
+												className="bg-[#F26522] w-auto text-lg text-white rounded-xl  border-[#F26522] "
+											>
+												ยืนยัน
+											</Button>
 										</div>
 									</div>
-								)}
-							</div>
+								</div>
+							)}
 						</div>
 					</div>
 				</div>
-				<DialogFooter>{/* <Button type="submit">Save changes</Button> */}</DialogFooter>
 			</DialogContent>
 		</Dialog>
 	);
@@ -795,6 +798,7 @@ const EditProfile = ({ user }: { user: IUser | undefined }) => {
 			});
 			form.reset();
 			router.refresh();
+			mutate("/api/getCurrentUser");
 			setOpen(false);
 		} else {
 			toast({

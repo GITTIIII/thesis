@@ -10,27 +10,13 @@ import { useEffect, useState } from "react";
 import { IOutlineForm } from "@/interface/form";
 import ThesisProcessPlan from "../thesisProcessPlan";
 import { Input } from "@/components/ui/input";
+import useSWR from "swr";
 
-async function get05FormById(formId: number): Promise<IOutlineForm> {
-	const res = await fetch(`/api/get05FormById/${formId}`, {
-		next: { revalidate: 10 },
-	});
-	return res.json();
-}
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const OutlineFormRead = ({ formId }: { formId: number }) => {
 	const router = useRouter();
-	const [formData, setFormData] = useState<IOutlineForm>();
-
-	useEffect(() => {
-		async function fetchData() {
-			const data = await get05FormById(formId);
-			setFormData(data);
-		}
-		fetchData();
-	}, [formId]);
-
-	console.log(formData);
+	const { data: formData } = useSWR<IOutlineForm>(`/api/get05FormById/${formId}`, fetcher);
 
 	return (
 		<>
@@ -51,11 +37,7 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 						<div className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</div>
 
 						<InputForm
-							value={
-								formData?.student.formLanguage == "en"
-									? `${formData?.student.firstNameEN} ${formData?.student.lastNameEN}`
-									: `${formData?.student.firstNameTH} ${formData?.student.lastNameTH}`
-							}
+							value={`${formData?.student.firstNameTH} ${formData?.student.lastNameTH}`}
 							label="ชื่อ-นามสกุล / Fullname"
 						/>
 						<InputForm value={`${formData?.student?.username}`} label="รหัสนักศึกษา / StudentID" />
@@ -67,35 +49,15 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 									<Label className="ml-2 font-normal">ปริญญาโท (Master Degree)</Label>
 								</div>
 								<div>
-									<RadioGroupItem
-										checked={formData?.student?.degree === "Doctoral"}
-										value="Doctoral"
-									/>
+									<RadioGroupItem checked={formData?.student?.degree === "Doctoral"} value="Doctoral" />
 									<Label className="ml-2 font-normal">ปริญญาเอก (Doctoral Degree)</Label>
 								</div>
 							</RadioGroup>
 						</div>
 
-						<InputForm
-							value={
-								formData?.student.formLanguage == "en"
-									? `${formData?.student?.school.schoolNameEN}`
-									: `${formData?.student?.school.schoolNameTH}`
-							}
-							label="สาขาวิชา / School"
-						/>
-						<InputForm
-							value={
-								formData?.student.formLanguage == "en"
-									? `${formData?.student?.program.programNameEN}`
-									: `${formData?.student?.program.programNameTH}`
-							}
-							label="หลักสูตร / Program"
-						/>
-						<InputForm
-							value={`${formData?.student?.program.programYear}`}
-							label="ปีหลักสูตร / Program Year"
-						/>
+						<InputForm value={`${formData?.student?.school.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${formData?.student?.program.programNameTH}`} label="หลักสูตร / Program" />
+						<InputForm value={`${formData?.student?.program.programYear}`} label="ปีหลักสูตร / Program Year" />
 					</div>
 
 					{/* ฝั่งขวา */}
@@ -104,19 +66,11 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 						<InputForm value={`${formData?.thesisNameTH}`} label="ชื่อภาษาไทย / ThesisName(TH)" />
 						<InputForm value={`${formData?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / ThesisName(EN)" />
 						<InputForm
-							value={
-								formData?.student?.formLanguage == "en"
-									? `${formData?.student?.advisor?.firstNameEN} ${formData?.student?.advisor?.lastNameEN}`
-									: `${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`
-							}
+							value={`${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษา / Advisor"
 						/>
 						<InputForm
-							value={
-								formData?.student?.formLanguage == "en"
-									? `${formData?.student?.advisor?.firstNameEN} ${formData?.student?.advisor?.lastNameEN}`
-									: `${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`
-							}
+							value={`${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษาร่วม / Co-advisor"
 						/>
 						<div className="flex flex-col items-center mt-6 justify-center">
@@ -124,8 +78,12 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 							<Button variant="outline" type="button" className="w-60 my-4 h-max">
 								<Image
 									src={formData?.student.signatureUrl ? formData?.student.signatureUrl : signature}
-									width={100}
+									width={200}
 									height={100}
+									style={{
+										width: "auto",
+										height: "auto",
+									}}
 									alt="signature"
 								/>
 							</Button>
@@ -142,19 +100,11 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 						<div className="flex flex-col items-center justify-center">
 							<RadioGroup disabled className="flex my-6">
 								<div className="flex items-center justify-center">
-									<RadioGroupItem
-										checked={formData?.outlineCommitteeStatus == "NOT_APPROVED"}
-										value="NOT_APPROVED"
-									/>
-									<div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">
-										ไม่อนุมัติ
-									</div>
+									<RadioGroupItem checked={formData?.outlineCommitteeStatus == "NOT_APPROVED"} value="NOT_APPROVED" />
+									<div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">ไม่อนุมัติ</div>
 								</div>
 								<div className="ml-4 mt-0 flex items-center justify-center">
-									<RadioGroupItem
-										checked={formData?.outlineCommitteeStatus == "APPROVED"}
-										value="APPROVED"
-									/>
+									<RadioGroupItem checked={formData?.outlineCommitteeStatus == "APPROVED"} value="APPROVED" />
 									<div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
 										อนุมัติ
 									</div>
@@ -174,42 +124,34 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 								src={formData?.outlineCommitteeSignUrl ? formData?.outlineCommitteeSignUrl : signature}
 								width={100}
 								height={100}
+								style={{
+									width: "auto",
+									height: "auto",
+								}}
 								alt="signature"
 							/>
 						</Button>
 						<Label className="mb-2">
 							{formData?.outlineCommittee
-								? formData.student.formLanguage == "en"
-									? `${formData?.outlineCommittee.firstNameEN} ${formData?.outlineCommittee.lastNameEN}`
-									: `${formData?.outlineCommittee.firstNameTH} ${formData?.outlineCommittee.lastNameTH}`
+								? `${formData?.outlineCommittee.prefix}${formData?.outlineCommittee.firstName} ${formData?.outlineCommittee.lastName}`
 								: ""}
 						</Label>
-						<Label className="mb-2">
-							{formData?.student.formLanguage == "en" ? `(Chair of the Committee)` : `(ประธานคณะกรรมการ)`}
-						</Label>
+						<Label className="mb-2">{`(ประธานคณะกรรมการ)`}</Label>
 					</div>
 
 					<div className="flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
 						<h1 className="mb-2 font-bold">มติคณะกรรมการประจำสำนักวิชาวิศวกรรมศาสตร์</h1>
-						<Label className="mt-2">{`ครั้งที่ ${formData?.times}  วันที่ ${
+						<Label className="mt-2">{`ครั้งที่ ${formData?.times != 0 ? formData?.times : "__"}  วันที่ ${
 							formData?.dateInstituteCommitteeSign ? formData?.dateInstituteCommitteeSign : "__________"
 						}`}</Label>
 						<div className="flex flex-col items-center justify-center">
 							<RadioGroup disabled className="flex my-6">
 								<div className="flex items-center justify-center">
-									<RadioGroupItem
-										checked={formData?.instituteCommitteeStatus == "NOT_APPROVED"}
-										value="NOT_APPROVED"
-									/>
-									<div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">
-										ไม่อนุมัติ
-									</div>
+									<RadioGroupItem checked={formData?.instituteCommitteeStatus == "NOT_APPROVED"} value="NOT_APPROVED" />
+									<div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">ไม่อนุมัติ</div>
 								</div>
 								<div className="ml-4 mt-0 flex items-center justify-center">
-									<RadioGroupItem
-										checked={formData?.instituteCommitteeStatus == "APPROVED"}
-										value="APPROVED"
-									/>
+									<RadioGroupItem checked={formData?.instituteCommitteeStatus == "APPROVED"} value="APPROVED" />
 									<div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
 										อนุมัติ
 									</div>
@@ -226,26 +168,22 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 						</div>
 						<Button variant="outline" type="button" className="w-60 my-4 h-max">
 							<Image
-								src={
-									formData?.instituteCommitteeSignUrl
-										? formData?.instituteCommitteeSignUrl
-										: signature
-								}
+								src={formData?.instituteCommitteeSignUrl ? formData?.instituteCommitteeSignUrl : signature}
 								width={100}
 								height={100}
+								style={{
+									width: "auto",
+									height: "auto",
+								}}
 								alt="signature"
 							/>
 						</Button>
 						<Label className="mb-2">
 							{formData?.instituteCommittee
-								? formData.student.formLanguage == "en"
-									? `${formData?.instituteCommittee.firstNameEN} ${formData?.instituteCommittee.lastNameEN}`
-									: `${formData?.instituteCommittee.firstNameTH} ${formData?.instituteCommittee.lastNameTH}`
+								? `${formData?.instituteCommittee.prefix.prefixTH}${formData?.instituteCommittee.firstNameTH} ${formData?.instituteCommittee.lastNameTH}`
 								: ""}
 						</Label>
-						<Label className="mb-2">
-							{formData?.student.formLanguage == "en" ? `(Chair of the Committee)` : `(ประธานคณะกรรมการ)`}
-						</Label>
+						<Label className="mb-2">{`(ประธานคณะกรรมการ)`}</Label>
 					</div>
 				</div>
 			</div>
@@ -276,11 +214,7 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 				</div>
 				<div className="w-full h-max overflow-auto flex justify-center">
 					{formData && (
-						<ThesisProcessPlan
-							canEdit={false}
-							degree={formData?.student.degree}
-							processPlans={formData?.processPlan}
-						/>
+						<ThesisProcessPlan canEdit={false} degree={formData?.student.degree} processPlans={formData?.processPlan} />
 					)}
 				</div>
 			</div>

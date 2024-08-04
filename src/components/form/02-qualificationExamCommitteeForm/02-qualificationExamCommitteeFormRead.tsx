@@ -5,25 +5,13 @@ import InputForm from "../../inputForm/inputForm";
 import { CircleAlert } from "lucide-react";
 import Link from "next/link";
 import { IQualificationExamCommitteeForm } from "@/interface/form";
+import useSWR from "swr";
 
-async function get02FormById(formId: number): Promise<IQualificationExamCommitteeForm> {
-	const res = await fetch(`/api/get02FormById/${formId}`, {
-		next: { revalidate: 10 },
-	});
-	return res.json();
-}
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 	const router = useRouter();
-	const [formData, setFormData] = useState<IQualificationExamCommitteeForm>();
-
-	useEffect(() => {
-		async function fetchData() {
-			const data = await get02FormById(formId);
-			setFormData(data);
-		}
-		fetchData();
-	}, [formId]);
+	const { data: formData } = useSWR<IQualificationExamCommitteeForm>(`/api/get02FormById/${formId}`, fetcher);
 
 	return (
 		<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg">
@@ -47,34 +35,10 @@ const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 
 					<h1 className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</h1>
 					<InputForm value={`${formData?.student.username}`} label="รหัสนักศึกษา / Student ID" />
-					<InputForm
-						value={
-							formData?.student.formLanguage == "en"
-								? `${formData?.student.firstNameEN} ${formData?.student.lastNameEN}`
-								: `${formData?.student.firstNameTH} ${formData?.student.lastNameTH}`
-						}
-						label="ชื่อ-นามสกุล / Fullname"
-					/>
-					<InputForm
-						value={
-							formData?.student.formLanguage == "en"
-								? `${formData?.student?.school.schoolNameEN}`
-								: `${formData?.student?.school.schoolNameTH}`
-						}
-						label="สาขาวิชา / School"
-					/>
-					<InputForm
-						value={
-							formData?.student.formLanguage == "en"
-								? `${formData?.student?.program.programNameEN}`
-								: `${formData?.student?.program.programNameTH}`
-						}
-						label="หลักสูตร / Program"
-					/>
-					<InputForm
-						value={`${formData?.student.program.programYear}`}
-						label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)"
-					/>
+					<InputForm value={`${formData?.student.firstNameTH} ${formData?.student.lastNameTH}`} label="ชื่อ-นามสกุล / Fullname" />
+					<InputForm value={`${formData?.student?.school.schoolNameTH}`} label="สาขาวิชา / School" />
+					<InputForm value={`${formData?.student?.program.programNameTH}`} label="หลักสูตร / Program" />
+					<InputForm value={`${formData?.student.program.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
 				</div>
 
 				<div className="w-full sm:2/4">

@@ -12,16 +12,15 @@ export async function POST(req: Request) {
 		}
 
 		const body = await req.json();
-		const {
-			date,
-			thesisNameTH,
-			thesisNameEN,
-			abstract,
-			processPlan,
-			times,
-			thesisStartMonth,
-			thesisStartYear,
-			studentID,
+		const { 
+			date, 
+			thesisNameTH, 
+			thesisNameEN, 
+			abstract, 
+			processPlan, 
+			thesisStartMonth, 
+			thesisStartYear, 
+			studentID 
 		} = body;
 
 		const newForm = await db.outlineForm.create({
@@ -31,7 +30,6 @@ export async function POST(req: Request) {
 				thesisNameEN,
 				abstract,
 				processPlan,
-				times,
 				thesisStartMonth,
 				thesisStartYear,
 				studentID: studentID === 0 ? null : studentID,
@@ -125,24 +123,21 @@ export async function PATCH(req: Request) {
 				thesisNameEN: thesisNameEN || existingOutlineForm.thesisNameEN,
 				abstract: abstract || existingOutlineForm.abstract,
 				processPlan: processPlan || existingOutlineForm.processPlan,
-				times: times === 0 ? existingOutlineForm.times : times,
+				times: times || existingOutlineForm.times,
 				thesisStartMonth: thesisStartMonth || existingOutlineForm.thesisStartMonth,
 				thesisStartYear: thesisStartYear || existingOutlineForm.thesisStartYear,
 				studentID: studentID === 0 ? existingOutlineForm.studentID : studentID,
 
-				outlineCommitteeID:
-					outlineCommitteeID == 0 ? existingOutlineForm.outlineCommitteeID : outlineCommitteeID,
+				outlineCommitteeID: outlineCommitteeID == 0 ? existingOutlineForm.outlineCommitteeID : outlineCommitteeID,
 				outlineCommitteeStatus: outlineCommitteeStatus || existingOutlineForm.outlineCommitteeStatus,
 				outlineCommitteeComment: outlineCommitteeComment || existingOutlineForm.outlineCommitteeComment,
 				outlineCommitteeSignUrl: outlineCommitteeSignUrl || existingOutlineForm.outlineCommitteeSignUrl,
 				dateOutlineCommitteeSign: dateOutlineCommitteeSign || existingOutlineForm.dateOutlineCommitteeSign,
-				instituteCommitteeID:
-					instituteCommitteeID == 0 ? existingOutlineForm.instituteCommitteeID : instituteCommitteeID,
+				instituteCommitteeID: instituteCommitteeID == 0 ? existingOutlineForm.instituteCommitteeID : instituteCommitteeID,
 				instituteCommitteeStatus: instituteCommitteeStatus || existingOutlineForm.instituteCommitteeStatus,
 				instituteCommitteeComment: instituteCommitteeComment || existingOutlineForm.instituteCommitteeComment,
 				instituteCommitteeSignUrl: instituteCommitteeSignUrl || existingOutlineForm.instituteCommitteeSignUrl,
-				dateInstituteCommitteeSign:
-					dateInstituteCommitteeSign || existingOutlineForm.dateInstituteCommitteeSign,
+				dateInstituteCommitteeSign: dateInstituteCommitteeSign || existingOutlineForm.dateInstituteCommitteeSign,
 			},
 		});
 

@@ -86,7 +86,7 @@ const SignInForm = () => {
 								<FormItem className="w-3/4">
 									<FormLabel>รหัสผ่าน</FormLabel>
 									<FormControl>
-										<Input type="password" className="text-sm p-2 w-full rounded-lg" {...field} />
+										<Input type="password" autoComplete="true" className="text-sm p-2 w-full rounded-lg" {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>

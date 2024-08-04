@@ -7,7 +7,7 @@ import { Download } from "lucide-react";
 import { IComprehensiveExamCommitteeForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 
-async function getFormDataByStdId(stdId: number | undefined) {
+async function get01FormByStdId(stdId: number | undefined) {
 	if (stdId) {
 		const res = await fetch(`/api/get01FormByStdId/${stdId}`, {
 			next: { revalidate: 10 },
@@ -29,7 +29,7 @@ export default function ComprehensiveExamCommitteeFormTable({ userData }: { user
 	useEffect(() => {
 		async function fetchData() {
 			if (userData?.role.toString() === "STUDENT") {
-				const formData = await getFormDataByStdId(userData?.id);
+				const formData = await get01FormByStdId(userData?.id);
 				setFormData(formData);
 			} else {
 				const formData = await get01FormData();

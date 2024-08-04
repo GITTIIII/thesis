@@ -1,4 +1,3 @@
-import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,51 +10,15 @@ import InputForm from "@/components/inputForm/inputForm";
 import { IOutlineForm, IThesisProgressForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 import { Label } from "@/components/ui/label";
+import useSWR from "swr";
 
-async function get05ApprovedFormByStdId(StdId: number): Promise<IOutlineForm> {
-	const res = await fetch(`/api/get05ApprovedFormByStdId/${StdId}`, {
-		next: { revalidate: 10 },
-	});
-	return res.json();
-}
-
-async function get06FormById(formId: number): Promise<IThesisProgressForm> {
-	const res = await fetch(`/api/get06FormById/${formId}`, {
-		next: { revalidate: 10 },
-	});
-	return res.json();
-}
-
-async function getUser() {
-	const res = await fetch("/api/getCurrentUser");
-	return res.json();
-}
-
-const userPromise = getUser();
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 	const router = useRouter();
-	const user: IUser = use(userPromise);
-	const [approvedForm, setApprovedForm] = useState<IOutlineForm>();
-	const [formData, setFormData] = useState<IThesisProgressForm>();
-
-	useEffect(() => {
-		async function fetchData() {
-			const data = await get06FormById(formId);
-			setFormData(data);
-		}
-		fetchData();
-	}, [formId]);
-
-	useEffect(() => {
-		async function fetchData() {
-			if (formData) {
-				const data = await get05ApprovedFormByStdId(formData?.student.id);
-				setApprovedForm(data);
-			}
-		}
-		fetchData();
-	}, [formData]);
+	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
+	const { data: approvedForm } = useSWR<IOutlineForm>(`/api/get05ApprovedFormByStdId/${user?.id}`, fetcher);
+	const { data: formData } = useSWR<IThesisProgressForm>(`/api/get06FormById/${formId}`, fetcher);
 
 	return (
 		<>
@@ -78,31 +41,13 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 						<InputForm value={`${formData?.trimester} `} label="ภาคเรียน / Trimester" />
 
 						<h1 className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</h1>
-						<InputForm value={user.username} label="รหัสนักศึกษา / Student ID" />
+						<InputForm value={`${user?.username}`} label="รหัสนักศึกษา / Student ID" />
 						<InputForm
-							value={
-								formData?.student?.formLanguage == "en"
-									? `${formData?.student?.firstNameEN} ${formData?.student?.lastNameEN}`
-									: `${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`
-							}
+							value={`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 							label="ชื่อ-นามสกุล / Fullname"
 						/>
-						<InputForm
-							value={
-								formData?.student?.formLanguage == "en"
-									? `${formData?.student?.school.schoolNameEN}`
-									: `${formData?.student?.school.schoolNameTH}`
-							}
-							label="สาขาวิชา / School"
-						/>
-						<InputForm
-							value={
-								formData?.student?.formLanguage == "en"
-									? `${formData?.student?.program.programNameEN}`
-									: `${formData?.student?.program.programNameTH}`
-							}
-							label="หลักสูตร / Program"
-						/>
+						<InputForm value={`${formData?.student?.school.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${formData?.student?.program.programNameTH}`} label="หลักสูตร / Program" />
 						<InputForm value={`${formData?.student?.program.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
 
 						<div className="flex flex-col items-center mb-6 justify-center">
@@ -129,11 +74,7 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 					{/* ฝั่งขวา */}
 					<div className="w-full sm:2/4">
 						<InputForm
-							value={
-								formData?.student.formLanguage == "en"
-									? `${formData?.student.advisor?.firstNameEN} ${formData?.student.advisor?.lastNameEN}`
-									: `${formData?.student.advisor?.firstNameTH} ${formData?.student.advisor?.lastNameTH}`
-							}
+							value={`${formData?.student.advisor?.firstNameTH} ${formData?.student.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษา / Advisor"
 						/>
 
@@ -191,7 +132,7 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 							<Button variant="outline" type="button" className="w-60 mt-4 h-max">
 								<Image
 									src={formData?.student.signatureUrl ? formData?.student.signatureUrl : signature}
-									width={100}
+									width={200}
 									height={100}
 									style={{ width: "auto", height: "auto" }}
 									alt="signature"
@@ -208,7 +149,7 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 					<h1 className="mb-2 font-bold text-center">ผลการประเมินความคืบหน้าของการทำวิทยานิพนธ์โดยอาจารย์ที่ปรึกษา</h1>
 
 					<div className="w-full sm:w-2/4 h-max">
-						<Textarea  disabled defaultValue={formData?.percentageComment} />
+						<Textarea disabled defaultValue={formData?.percentageComment} />
 					</div>
 
 					<Button variant="outline" type="button" className="w-60 my-4 h-max">
@@ -220,11 +161,7 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 						/>
 					</Button>
 
-					<Label className="mb-2">
-						{formData?.student.formLanguage == "en"
-							? `${formData?.student?.advisor?.firstNameEN} ${formData?.student?.advisor?.lastNameEN}`
-							: `${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}
-					</Label>
+					<Label className="mb-2">{`${formData?.student?.advisor?.prefix.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
 
 					<Label className="mt-2">{`วันที่ ${formData?.dateAdvisor ? formData?.dateAdvisor : "__________"}`}</Label>
 				</div>
@@ -234,7 +171,7 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 					<h1 className="mb-2 font-bold text-center">ความเห็นของหัวหน้าสาขาวิชา</h1>
 
 					<div className="w-full sm:w-2/4 h-max">
-						<Textarea  disabled defaultValue={formData?.headSchoolComment} />
+						<Textarea disabled defaultValue={formData?.headSchoolComment} />
 					</div>
 
 					<Button variant="outline" type="button" className="w-60 my-4 h-max">
@@ -247,9 +184,9 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 					</Button>
 
 					<Label className="mb-2">
-						{formData?.student.formLanguage == "en"
-							? `${formData?.headSchool?.firstNameEN} ${formData?.headSchool?.lastNameEN}`
-							: `${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`}
+						{formData?.headSchool
+							? `${formData?.headSchool.prefix.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`
+							: ""}
 					</Label>
 
 					<Label className="mt-2">{`วันที่ ${formData?.dateHeadSchool ? formData?.dateHeadSchool : "__________"}`}</Label>

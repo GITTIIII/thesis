@@ -10,10 +10,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 
 interface DatePickerProps {
 	onDateChange: (dateString: string) => void;
-	language: string;
 }
 
-export function DatePicker({ onDateChange, language }: DatePickerProps) {
+export function DatePicker({ onDateChange }: DatePickerProps) {
 	const [date, setDate] = React.useState<Date>();
 
 	const handleDateChange = (selectedDate: Date | undefined) => {
@@ -41,7 +40,7 @@ export function DatePicker({ onDateChange, language }: DatePickerProps) {
 					mode="single"
 					selected={date}
 					onSelect={handleDateChange}
-					locale={language == "en" ? undefined : th}
+					locale={th}
 				/>
 			</PopoverContent>
 		</Popover>

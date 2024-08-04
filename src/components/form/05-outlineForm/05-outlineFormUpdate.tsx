@@ -24,9 +24,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { IExpert } from "@/interface/expert";
+import { DatePicker } from "@/components/datePicker/datePicker";
+import useSWR from "swr";
 
 const formSchema = z.object({
 	id: z.number(),
+	times: z.string(),
 	outlineCommitteeID: z.number(),
 	outlineCommitteeStatus: z.string(),
 	outlineCommitteeComment: z.string(),
@@ -39,42 +43,17 @@ const formSchema = z.object({
 	dateInstituteCommitteeSign: z.string(),
 });
 
-async function get05FormById(formId: number): Promise<IOutlineForm> {
-	const res = await fetch(`/api/get05FormById/${formId}`, {
-		next: { revalidate: 10 },
-	});
-	return res.json();
-}
-
-async function getCurrentUser() {
-	const res = await fetch("/api/getCurrentUser");
-	return res.json();
-}
-
-async function getOutlineCommittee() {
-	const res = await fetch("/api/getOutlineCommittee");
-	return res.json();
-}
-
-async function getInstituteCommittee() {
-	const res = await fetch("/api/getInstituteCommittee");
-	return res.json();
-}
-
-const userPromise = getCurrentUser();
-const outlineCommitteePromise = getOutlineCommittee();
-const instituteCommitteePromise = getInstituteCommittee();
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const OutlineFormUpdate = ({ formId }: { formId: number }) => {
+	const { data: formData } = useSWR<IOutlineForm>(`/api/get05FormById/${formId}`, fetcher);
+	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
+	const { data: expert } = useSWR<IExpert[]>("/api/getExpert", fetcher);
+	const { data: instituteCommittee } = useSWR<IUser[]>("/api/getInstituteCommittee", fetcher);
 	const router = useRouter();
 	const { toast } = useToast();
-	const [formData, setFormData] = useState<IOutlineForm>();
 	const [openOutline, setOpenOutline] = useState(false);
 	const [openInstitute, setOpenInstitute] = useState(false);
-	const [currentDate, setCurrentDate] = useState("");
-	const user: IUser = use(userPromise);
-	const outlineCommittee: IUser[] = use(outlineCommitteePromise);
-	const instituteCommittee: IUser[] = use(instituteCommitteePromise);
 	const [loading, setLoading] = useState(false);
 
 	const sigCanvas = useRef<SignatureCanvas>(null);
@@ -114,6 +93,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			id: 0,
+			times: "",
 			outlineCommitteeID: 0,
 			outlineCommitteeStatus: "",
 			outlineCommitteeComment: "",
@@ -130,12 +110,6 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
-		if (values.outlineCommitteeID != 0) {
-			values.dateOutlineCommitteeSign = currentDate;
-		}
-		if (values.instituteCommitteeID != 0) {
-			values.dateInstituteCommitteeSign = currentDate;
-		}
 		if (
 			(values.outlineCommitteeStatus == "" && values.outlineCommitteeID != 0) ||
 			(values.instituteCommitteeStatus == "" && values.instituteCommitteeID != 0)
@@ -187,43 +161,11 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 	const { reset } = form;
 
 	useEffect(() => {
-		const today = new Date();
-		const month = today.getMonth() + 1;
-		const year = today.getFullYear();
-		const date = today.getDate();
-		const currentDate = date + "/" + month + "/" + year;
-		setCurrentDate(currentDate);
-		if (user && user.position.toString() == "OUTLINE_COMMITTEE" && !formData?.outlineCommitteeID) {
-			reset({
-				...form.getValues(),
-				outlineCommitteeID: user.id,
-				dateOutlineCommitteeSign: currentDate,
-			});
-		} else if (user && user.position.toString() == "INSTITUTE_COMMITTEE" && !formData?.instituteCommitteeID) {
-			reset({
-				...form.getValues(),
-				instituteCommitteeID: user.id,
-				dateInstituteCommitteeSign: currentDate,
-			});
-		}
-	}, [user, formData, reset]);
-
-	useEffect(() => {
-		async function fetchData() {
-			const data = await get05FormById(formId);
-			setFormData(data);
-		}
-		fetchData();
-
 		reset({
 			...form.getValues(),
 			id: formId,
 		});
 	}, [formId]);
-
-	useEffect(() => {
-		console.log(form.getValues());
-	}, []);
 
 	return (
 		<Form {...form}>
@@ -286,8 +228,12 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 							<Button variant="outline" type="button" className="w-60 my-4 h-max">
 								<Image
 									src={formData?.student.signatureUrl ? formData?.student.signatureUrl : signature}
-									width={100}
+									width={200}
 									height={100}
+									style={{
+										width: "auto",
+										height: "auto",
+									}}
 									alt="signature"
 								/>
 							</Button>
@@ -301,18 +247,34 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 
 					<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
 						<h1 className="mb-2 font-bold">ความเห็นของคณะกรรมการพิจารณาโครงร่างวิทยานิพนธ์</h1>
-						<Label className="mt-2">{`วันที่ ${
-							formData?.dateOutlineCommitteeSign
-								? formData?.dateOutlineCommitteeSign
-								: form.getValues().dateOutlineCommitteeSign
-								? form.getValues().dateOutlineCommitteeSign
-								: currentDate
-						}`}</Label>
-
+						<div className="w-max h-max flex mt-2 items-center">
+							<Label className="mr-2">วันที่</Label>
+							{formData?.outlineCommitteeID ? (
+								<Label>{formData?.dateOutlineCommitteeSign ? formData.dateOutlineCommitteeSign : "__________"}</Label>
+							) : (
+								<FormField
+									control={form.control}
+									name="dateOutlineCommitteeSign"
+									render={({ field }) => (
+										<div className="flex flex-row items-center justify-center">
+											<FormItem>
+												<DatePicker onDateChange={field.onChange} />
+												<FormMessage />
+											</FormItem>
+										</div>
+									)}
+								/>
+							)}
+						</div>
 						{formData?.outlineCommitteeID ? (
 							<div className="flex flex-col items-center justify-center">
 								<RadioGroup
-									disabled={user.position.toString() != "OUTLINE_COMMITTEE" || user.role.toString() != "SUPER_ADMIN"}
+									disabled={
+										formData?.outlineCommitteeStatus ||
+										(user?.role.toString() != "SUPER_ADMIN" && user?.role.toString() != "ADMIN")
+											? true
+											: false
+									}
 									className="flex my-6"
 								>
 									<div className="flex items-center justify-center">
@@ -336,7 +298,10 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 										<FormControl>
 											<RadioGroup
 												disabled={
-													user.position.toString() != "OUTLINE_COMMITTEE" && user.role.toString() != "SUPER_ADMIN"
+													formData?.outlineCommitteeStatus ||
+													(user?.role.toString() != "SUPER_ADMIN" && user?.role.toString() != "ADMIN")
+														? true
+														: false
 												}
 												onValueChange={field.onChange}
 												className="flex my-4"
@@ -369,11 +334,10 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 									<FormControl>
 										<Textarea
 											disabled={
-												formData?.outlineCommitteeID
+												formData?.outlineCommitteeComment ||
+												(user?.role.toString() != "SUPER_ADMIN" && user?.role.toString() != "ADMIN")
 													? true
-													: false ||
-													  (user.position.toString() != "OUTLINE_COMMITTEE" &&
-															user.role.toString() != "SUPER_ADMIN")
+													: false
 											}
 											placeholder="ความเห็น..."
 											className="resize-none h-full text-md mb-2"
@@ -389,13 +353,13 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 							<DialogTrigger
 								onClick={() => setOpenOutline(!openOutline)}
 								disabled={
-									(formData?.outlineCommitteeSignUrl || user.position.toString() != "OUTLINE_COMMITTEE") &&
-									user.role.toString() != "SUPER_ADMIN"
+									formData?.outlineCommitteeSignUrl ||
+									(user?.role.toString() != "SUPER_ADMIN" && user?.role.toString() != "ADMIN")
 										? true
 										: false
 								}
 							>
-								<Button variant="outline" type="button" className="w-60 my-4 h-max">
+								<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
 									<Image
 										src={
 											formData?.outlineCommitteeSignUrl
@@ -406,9 +370,13 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 										}
 										width={100}
 										height={100}
+										style={{
+											width: "auto",
+											height: "auto",
+										}}
 										alt="signature"
 									/>
-								</Button>
+								</div>
 							</DialogTrigger>
 							<DialogContent className="w-max">
 								<DialogHeader>
@@ -420,8 +388,8 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 										backgroundColor="white"
 										throttle={8}
 										canvasProps={{
-											width: 250,
-											height: 200,
+											width: 400,
+											height: 400,
 											className: "sigCanvas",
 										}}
 									/>
@@ -448,7 +416,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 						</Dialog>
 						{formData?.outlineCommitteeID ? (
 							<Label className="mb-2">
-								{`${formData?.outlineCommittee.firstNameTH} ${formData?.outlineCommittee.lastNameTH}`}
+								{`${formData?.outlineCommittee.prefix}${formData?.outlineCommittee.firstName} ${formData?.outlineCommittee.lastName}`}
 							</Label>
 						) : (
 							<FormField
@@ -457,23 +425,20 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 								render={({ field }) => (
 									<>
 										<Popover>
-											<PopoverTrigger asChild disabled={user.role.toString() != "SUPER_ADMIN"}>
+											<PopoverTrigger
+												asChild
+												disabled={user?.role.toString() != "SUPER_ADMIN" && user?.role.toString() != "ADMIN"}
+											>
 												<FormControl>
 													<Button
 														variant="outline"
 														role="combobox"
-														className={cn("w-[180px] justify-between", !field.value && "text-muted-foreground")}
+														className={cn("w-[300px] justify-between", !field.value && "text-muted-foreground")}
 													>
 														{field.value
-															? `${
-																	outlineCommittee?.find(
-																		(outlineCommittee) => outlineCommittee.id === field.value
-																	)?.firstNameTH
-															  } ${
-																	outlineCommittee?.find(
-																		(outlineCommittee) => outlineCommittee.id === field.value
-																	)?.lastNameTH
-															  } `
+															? `${expert?.find((expert) => expert.id === field.value)?.prefix}${
+																	expert?.find((expert) => expert.id === field.value)?.firstName
+															  } ${expert?.find((expert) => expert.id === field.value)?.lastName} `
 															: "เลือกประธานกรรมการ"}
 														<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 													</Button>
@@ -484,21 +449,21 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 													<CommandInput placeholder="ค้นหากรรมการ" />
 													<CommandList>
 														<CommandEmpty>ไม่พบกรรมการ</CommandEmpty>
-														{outlineCommittee.map((outlineCommittee) => (
+														{expert?.map((expert) => (
 															<CommandItem
-																value={`${outlineCommittee.firstNameTH} ${outlineCommittee.lastNameTH}`}
-																key={outlineCommittee.id}
+																value={`${expert.prefix}${expert.firstName} ${expert.lastName}`}
+																key={expert.id}
 																onSelect={() => {
-																	form.setValue("outlineCommitteeID", outlineCommittee.id);
+																	form.setValue("outlineCommitteeID", expert.id);
 																}}
 															>
 																<Check
 																	className={cn(
 																		"mr-2 h-4 w-4",
-																		field.value === outlineCommittee.id ? "opacity-100" : "opacity-0"
+																		field.value === expert.id ? "opacity-100" : "opacity-0"
 																	)}
 																/>
-																{`${outlineCommittee.firstNameTH} ${outlineCommittee.lastNameTH}`}
+																{`${expert.prefix}${expert.firstName} ${expert.lastName}`}
 															</CommandItem>
 														))}
 													</CommandList>
@@ -514,24 +479,55 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 					</div>
 
 					{/* กรรมการสำนักวิชา */}
-					{(user?.position.toString() == "INSTITUTE_COMMITTEE" ||
-						user?.role.toString() == "SUPER_ADMIN" ||
-						formData?.instituteCommitteeID) && (
+					{(user?.role.toString() == "SUPER_ADMIN" || formData?.instituteCommitteeID) && (
 						<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
 							<h1 className="mb-2 font-bold">มติคณะกรรมการประจำสำนักวิชาวิศวกรรมศาสตร์</h1>
-							<Label className="mt-2">{`วันที่ ${
-								formData?.dateInstituteCommitteeSign
-									? formData?.dateInstituteCommitteeSign
-									: form.getValues().dateInstituteCommitteeSign
-									? form.getValues().dateInstituteCommitteeSign
-									: currentDate
-							}`}</Label>
+							<div className="w-max h-max flex mt-2 items-center">
+								<Label className="mr-2">ครั้งที่</Label>
+								{formData?.instituteCommitteeID ? (
+									<Label>{formData?.times ? formData?.times : "__________"}</Label>
+								) : (
+									<FormField
+										control={form.control}
+										name="times"
+										render={({ field }) => (
+											<div className="w-[100px] flex flex-row items-center justify-center">
+												<FormItem>
+													<Input {...field} />
+													<FormMessage />
+												</FormItem>
+											</div>
+										)}
+									/>
+								)}
+							</div>
+							<div className="w-max h-max flex mt-2 items-center">
+								<Label className="mr-2">วันที่</Label>
+								{formData?.instituteCommitteeID ? (
+									<Label>
+										{formData?.dateInstituteCommitteeSign ? formData.dateInstituteCommitteeSign : "__________"}
+									</Label>
+								) : (
+									<FormField
+										control={form.control}
+										name="dateInstituteCommitteeSign"
+										render={({ field }) => (
+											<div className="flex flex-row items-center justify-center">
+												<FormItem>
+													<DatePicker onDateChange={field.onChange} />
+													<FormMessage />
+												</FormItem>
+											</div>
+										)}
+									/>
+								)}
+							</div>
 
 							{formData?.instituteCommitteeID ? (
 								<div className="flex flex-col items-center justify-center">
 									<RadioGroup
 										disabled={
-											user.position.toString() != "INSTITUTE_COMMITTEE" || user.role.toString() != "SUPER_ADMIN"
+											formData?.instituteCommitteeStatus || user?.role.toString() != "SUPER_ADMIN" ? true : false
 										}
 										className="flex my-6"
 									>
@@ -560,11 +556,12 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 										<FormItem>
 											<FormControl>
 												<RadioGroup
-													onValueChange={field.onChange}
 													disabled={
-														user.position.toString() != "INSTITUTE_COMMITTEE" &&
-														user.role.toString() != "SUPER_ADMIN"
+														formData?.instituteCommitteeStatus || user?.role.toString() != "SUPER_ADMIN"
+															? true
+															: false
 													}
+													onValueChange={field.onChange}
 													className="flex my-4"
 												>
 													<FormItem className="flex items-center justify-center">
@@ -594,6 +591,11 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 									<FormItem className="w-1/2">
 										<FormControl>
 											<Textarea
+												disabled={
+													formData?.instituteCommitteeComment || user?.role.toString() != "SUPER_ADMIN"
+														? true
+														: false
+												}
 												placeholder="ความเห็น..."
 												className="resize-none h-full text-md mb-2"
 												value={
@@ -609,14 +611,9 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 							<Dialog open={openInstitute} onOpenChange={setOpenInstitute}>
 								<DialogTrigger
 									onClick={() => setOpenInstitute(!openInstitute)}
-									disabled={
-										(formData?.instituteCommitteeSignUrl || user.position.toString() != "INSTITUTE_COMMITTEE") &&
-										user.role.toString() != "SUPER_ADMIN"
-											? true
-											: false
-									}
+									disabled={formData?.instituteCommitteeSignUrl || user?.role.toString() != "SUPER_ADMIN" ? true : false}
 								>
-									<Button variant="outline" type="button" className="w-60 my-4 h-max">
+									<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
 										<Image
 											src={
 												formData?.instituteCommitteeSignUrl
@@ -627,9 +624,13 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 											}
 											width={100}
 											height={100}
+											style={{
+												width: "auto",
+												height: "auto",
+											}}
 											alt="signature"
 										/>
-									</Button>
+									</div>
 								</DialogTrigger>
 								<DialogContent className="w-max">
 									<DialogHeader>
@@ -641,8 +642,8 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 											backgroundColor="white"
 											throttle={8}
 											canvasProps={{
-												width: 250,
-												height: 200,
+												width: 400,
+												height: 400,
 												className: "sigCanvas",
 											}}
 										/>
@@ -669,7 +670,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 							</Dialog>
 							{formData?.instituteCommitteeID ? (
 								<Label className="mb-2">
-									{`${formData?.instituteCommittee.firstNameTH} ${formData?.instituteCommittee.lastNameTH}`}
+									{`${formData?.instituteCommittee.prefix.prefixTH}${formData?.instituteCommittee.firstNameTH} ${formData?.instituteCommittee.lastNameTH}`}
 								</Label>
 							) : (
 								<FormField
@@ -678,7 +679,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 									render={({ field }) => (
 										<>
 											<Popover>
-												<PopoverTrigger asChild disabled={user.role.toString() != "SUPER_ADMIN"}>
+												<PopoverTrigger asChild disabled={user?.role.toString() != "SUPER_ADMIN"}>
 													<FormControl>
 														<Button
 															variant="outline"
@@ -690,6 +691,10 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 														>
 															{field.value
 																? `${
+																		instituteCommittee?.find(
+																			(instituteCommittee) => instituteCommittee.id === field.value
+																		)?.prefix.prefixTH
+																  } ${
 																		instituteCommittee?.find(
 																			(instituteCommittee) => instituteCommittee.id === field.value
 																		)?.firstNameTH
@@ -708,9 +713,9 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 														<CommandInput placeholder="ค้นหากรรมการ" />
 														<CommandList>
 															<CommandEmpty>ไม่พบกรรมการ</CommandEmpty>
-															{instituteCommittee.map((instituteCommittee) => (
+															{instituteCommittee?.map((instituteCommittee) => (
 																<CommandItem
-																	value={`${instituteCommittee.firstNameTH} ${instituteCommittee.lastNameTH}`}
+																	value={`${instituteCommittee.prefix.prefixTH}${instituteCommittee.firstNameTH} ${instituteCommittee.lastNameTH}`}
 																	key={instituteCommittee.id}
 																	onSelect={() => {
 																		form.setValue("instituteCommitteeID", instituteCommittee.id);
@@ -724,7 +729,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 																				: "opacity-0"
 																		)}
 																	/>
-																	{`${instituteCommittee.firstNameTH} ${instituteCommittee.lastNameTH}`}
+																	{`${instituteCommittee.prefix.prefixTH}${instituteCommittee.firstNameTH} ${instituteCommittee.lastNameTH}`}
 																</CommandItem>
 															))}
 														</CommandList>
@@ -741,8 +746,8 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 					)}
 				</div>
 
-				{(!formData?.outlineCommitteeID && user?.position.toString() === "OUTLINE_COMMITTEE") ||
-				(!formData?.instituteCommitteeID && user?.position.toString() === "INSTITUTE_COMMITTEE") ||
+				{(!formData?.outlineCommitteeID && user?.role.toString() === "ADMIN") ||
+				(!formData?.instituteCommitteeID && user?.position.toString() === "HEAD_OF_SCHOOL") ||
 				user?.role.toString() === "SUPER_ADMIN" ? (
 					<div className="w-full flex px-20 mt-4 lg:flex justify-center">
 						<Button
@@ -754,6 +759,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 							ยกเลิก
 						</Button>
 						<Button
+							disabled={loading}
 							variant="outline"
 							type="submit"
 							className="bg-[#A67436] w-auto text-lg text-white rounded-xl ml-4 border-[#A67436] mr-4"

@@ -203,7 +203,6 @@ model OutlineForm {
   thesisNameEN                 String
   abstract                     String @db.Text
   processPlan                  Json
-  times                        Int
   thesisStartMonth             String
   thesisStartYear              String
 
@@ -217,6 +216,7 @@ model OutlineForm {
   
 
   //กรรมการสำนัก
+  times                       String?
   instituteCommitteeStatus    String?
   instituteCommitteeComment   String?
   instituteCommitteeSignUrl   String? @db.LongText

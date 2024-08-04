@@ -1,3 +1,4 @@
+import { IExpert } from "./expert";
 import { IUser } from "./user";
 
 export interface IProcessPlan {
@@ -56,7 +57,7 @@ export type IOutlineForm = {
 	student: IUser;
 
 	outlineCommitteeID: number;
-	outlineCommittee: IUser;
+	outlineCommittee: IExpert;
 	outlineCommitteeStatus: string;
 	outlineCommitteeComment: string;
 	outlineCommitteeSignUrl: string;

@@ -15,7 +15,7 @@ import {
 } from "../ui/dropdown-menu";
 import { Menu, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import useSWR from 'swr'
+import useSWR from "swr";
 import { useRouter } from "next/navigation";
 
 interface Message {
@@ -31,11 +31,11 @@ type Props = {
 	notification?: boolean;
 };
 
-const fetcher = (url: string) => fetch(url).then((res)=> res.json())
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function Navbar({ menu, notification = false }: Props) {
-	const { data: user, isLoading } = useSWR("/api/getCurrentUser", fetcher)
-	const router = useRouter()
+	const { data: user, isLoading } = useSWR("/api/getCurrentUser", fetcher);
+	const router = useRouter();
 
 	const { ref, isComponentVisible, setIsComponentVisible } = useComponentVisible();
 	const message = [
@@ -84,14 +84,8 @@ export default function Navbar({ menu, notification = false }: Props) {
 					<li className="hidden md:flex text-gray-700">
 						<div>
 							{user?.role.toString() === "STUDENT"
-								? `${user?.username} ${
-										user.formLanguage === "en"
-											? `${user?.firstNameEN} ${user?.lastNameEN}`
-											: `${user?.firstNameTH} ${user?.lastNameTH}`
-								  }`
-								: user
-								? `${user?.firstNameTH} ${user?.lastNameTH}`
-								: ""}
+								? `${user?.username} ${user?.firstNameTH} ${user?.lastNameTH}`
+								: `${user?.prefix ? user?.prefix.prefixTH : ""}${user?.firstNameTH} ${user?.lastNameTH}`}
 						</div>
 					</li>
 					<li className="hover:cursor-pointer">
@@ -99,13 +93,15 @@ export default function Navbar({ menu, notification = false }: Props) {
 							<DropdownMenuTrigger asChild>
 								<Avatar>
 									<AvatarImage src={user?.profileUrl} alt="Profile" />
-									<AvatarFallback><User /></AvatarFallback>
+									<AvatarFallback>
+										<User />
+									</AvatarFallback>
 								</Avatar>
 							</DropdownMenuTrigger>
 							<DropdownMenuContent align="end">
 								<DropdownMenuLabel>บัญชีของฉัน</DropdownMenuLabel>
 								<DropdownMenuSeparator />
-								<DropdownMenuItem onClick={()=> router.push("/user/profile")}>โปรไฟล์</DropdownMenuItem>
+								<DropdownMenuItem onClick={() => router.push("/user/profile")}>โปรไฟล์</DropdownMenuItem>
 								<DropdownMenuSeparator />
 								<DropdownMenuItem
 									onClick={() =>
@@ -146,14 +142,8 @@ export default function Navbar({ menu, notification = false }: Props) {
 						className="block px-4 py-2  hover:bg-gray-100 border-b-2 text-center md:hidden transition-colors duration-200"
 					>
 						{user?.role.toString() === "STUDENT"
-							? `${user?.username} ${
-									user.formLanguage === "th"
-										? `${user?.firstNameTH} ${user?.lastNameTH}`
-										: `${user?.firstNameEN} ${user?.lastNameEN}`
-							  }`
-							: user
-							? `${user?.firstNameTH} ${user?.lastNameTH}`
-							: ""}
+							? `${user?.username} ${user?.firstNameTH} ${user?.lastNameTH}`
+							: `${user?.prefix ? user?.prefix.prefixTH : ""}${user?.firstNameTH} ${user?.lastNameTH}`}
 					</Link>
 					<Link
 						href="/"
@@ -220,10 +210,7 @@ const Notification: React.FC<{ messages: Message[] }> = ({ messages }) => {
 				>
 					<ul>
 						{messages.map((msg: Message, index: number) => (
-							<li
-								key={index}
-								className="block px-4 py-2 transition-colors duration-200 text-gray-700 hover:bg-gray-100"
-							>
+							<li key={index} className="block px-4 py-2 transition-colors duration-200 text-gray-700 hover:bg-gray-100">
 								<h3>{msg.topic}</h3>
 								<p className="text-sm h-6 truncate">{msg.information}</p>
 							</li>

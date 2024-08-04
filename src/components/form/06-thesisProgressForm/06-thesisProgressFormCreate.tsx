@@ -19,6 +19,7 @@ import InputForm from "@/components/inputForm/inputForm";
 import { IOutlineForm, IProcessPlan, IThesisProgressForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 import { Label } from "@/components/ui/label";
+import useSWR from "swr";
 
 
 const formSchema = z.object({
@@ -37,30 +38,13 @@ const formSchema = z.object({
 	studentID: z.number(),
 });
 
-async function getUser() {
-	const res = await fetch("/api/getCurrentUser");
-	return res.json();
-}
-
-async function get05ApprovedFormByStdId(StdId: number): Promise<IOutlineForm> {
-	const res = await fetch(`/api/get05ApprovedFormByStdId/${StdId}`,{
-		next: { revalidate: 10 },
-	});
-	return res.json();
-}
-
-async function getLast06Form() {
-	const res = await fetch("/api/getLast06Form");
-	return res.json();
-}
-
-const userPromise = getUser();
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const ThesisProgressFormCreate = () => {
 	const router = useRouter();
-	const user: IUser = use(userPromise);
-	const [approvedForm, setApprovedForm] = useState<IOutlineForm>();
-	const [last06Form, setLast06Form] = useState<IThesisProgressForm>();
+	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
+	const { data: approvedForm } = useSWR<IOutlineForm>(`/api/get05ApprovedFormByStdId/${user?.id}`, fetcher);
+	const { data: last06Form } = useSWR<IThesisProgressForm>("/api/getLast06Form", fetcher);
 	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
 	const [loading, setLoading] = useState(false);
 	const [isDisabled, setIsDisabled] = useState(false);
@@ -137,22 +121,6 @@ const ThesisProgressFormCreate = () => {
 		}
 	}, [user, reset]);
 
-	useEffect(() => {
-		async function fetchData() {
-			const formData = await getLast06Form();
-			setLast06Form(formData);
-		}
-		fetchData();
-	}, []);
-
-	useEffect(() => {
-		async function fetchData() {
-			const data = await get05ApprovedFormByStdId(user.id);
-			setApprovedForm(data);
-		}
-		fetchData();
-	}, [user]);
-
 	const handleRadioChange = (value: string) => {
 		if (value === "Adjustments") {
 			setIsDisabled(false);
@@ -217,28 +185,25 @@ const ThesisProgressFormCreate = () => {
 							/>
 						</div>
 						<h1 className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</h1>
-						<InputForm value={user.username} label="รหัสนักศึกษา / Student ID" />
+						<InputForm value={`${user?.username}`} label="รหัสนักศึกษา / Student ID" />
 						<InputForm
 							value={
-								user?.formLanguage == "en"
-									? `${user?.firstNameEN} ${user?.lastNameEN}`
-									: `${user?.firstNameTH} ${user?.lastNameTH}`
+							
+									`${user?.firstNameTH} ${user?.lastNameTH}`
 							}
 							label="ชื่อ-นามสกุล / Fullname"
 						/>
 						<InputForm
 							value={
-								user.formLanguage == "en"
-									? `${user?.school.schoolNameEN}`
-									: `${user?.school.schoolNameTH}`
+								
+									`${user?.school.schoolNameTH}`
 							}
 							label="สาขาวิชา / School"
 						/>
 						<InputForm
 							value={
-								user.formLanguage == "en"
-									? `${user?.program.programNameEN}`
-									: `${user?.program.programNameTH}`
+							
+									 `${user?.program.programNameTH}`
 							}
 							label="หลักสูตร / Program"
 						/>
@@ -276,9 +241,8 @@ const ThesisProgressFormCreate = () => {
 					<div className="w-full sm:2/4">
 						<InputForm
 							value={
-								user?.formLanguage == "en"
-									? `${user?.advisor?.firstNameEN} ${user?.advisor?.lastNameEN}`
-									: `${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`
+								
+									 `${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`
 							}
 							label="อาจารย์ที่ปรึกษา / Advisor"
 						/>

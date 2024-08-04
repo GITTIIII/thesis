@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +24,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import useSWR from "swr";
+import { DatePicker } from "@/components/datePicker/datePicker";
 
 const formSchema = z.object({
 	id: z.number(),
@@ -38,44 +40,18 @@ const formSchema = z.object({
 	headSchoolID: z.number(),
 });
 
-async function get05ApprovedFormByStdId(StdId: number): Promise<IOutlineForm> {
-	const res = await fetch(`/api/get05ApprovedFormByStdId/${StdId}`, {
-		next: { revalidate: 10 },
-	});
-	return res.json();
-}
-
-async function get06FormById(formId: number): Promise<IThesisProgressForm> {
-	const res = await fetch(`/api/get06FormById/${formId}`, {
-		next: { revalidate: 10 },
-	});
-	return res.json();
-}
-
-async function getUser() {
-	const res = await fetch("/api/getCurrentUser");
-	return res.json();
-}
-
-async function getHeadSchool() {
-	const res = await fetch("/api/getHeadSchool");
-	return res.json();
-}
-
-const userPromise = getUser();
-const headSchoolPromise = getHeadSchool();
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 	const router = useRouter();
-	const user: IUser = use(userPromise);
-	const headSchool: IUser[] = use(headSchoolPromise);
-	const [approvedForm, setApprovedForm] = useState<IOutlineForm>();
+	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
+	const { data: headSchool } = useSWR<IUser[]>("/api/getHeadSchool", fetcher);
+	const { data: formData } = useSWR<IThesisProgressForm>(formId ? `/api/get06FormById/${formId}` : "", fetcher);
+	const { data: approvedForm } = useSWR<IOutlineForm>(formData ? `/api/get05ApprovedFormByStdId/${formData?.student.id}` : "", fetcher);
 	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
-	const [formData, setFormData] = useState<IThesisProgressForm>();
 	const [openAdvisor, setOpenAdvisor] = useState(false);
 	const [openSchool, setOpenSchool] = useState(false);
 	const [loading, setLoading] = useState(false);
-	const [currentDate, setCurrentDate] = useState("");
 	const { toast } = useToast();
 
 	const sigCanvas = useRef<SignatureCanvas>(null);
@@ -129,13 +105,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
-		if (values.headSchoolID != 0) {
-			values.dateHeadSchool = currentDate;
-		}
-		if (
-			(values.advisorSignUrl == "" && values.dateAdvisor != "") ||
-			(values.headSchoolSignUrl == "" && values.headSchoolID != 0)
-		) {
+		if ((values.advisorSignUrl == "" && values.dateAdvisor != "") || (values.headSchoolSignUrl == "" && values.headSchoolID != 0)) {
 			toast({
 				title: "Error",
 				description: "ไม่พบลายเซ็น",
@@ -147,8 +117,6 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 		if (processPlans) {
 			values.processPlan = processPlans;
 		}
-		console.log(values)
-		console.log(form.getValues())
 		const url = qs.stringifyUrl({
 			url: `/api/06ThesisProgressForm`,
 		});
@@ -176,33 +144,6 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 	const { reset } = form;
 
 	useEffect(() => {
-		const today = new Date();
-		const month = today.getMonth() + 1;
-		const year = today.getFullYear();
-		const date = today.getDate();
-		const currentDate = date + "/" + month + "/" + year;
-		setCurrentDate(currentDate);
-		if (user && user.position.toString() == "ADVISOR" && !formData?.dateAdvisor) {
-			reset({
-				...form.getValues(),
-				dateAdvisor: currentDate,
-			});
-		} else if (user && user.position.toString() == "HEAD_OF_SCHOOL" && !formData?.headSchoolID) {
-			reset({
-				...form.getValues(),
-				dateHeadSchool: currentDate,
-				headSchoolID: user.id,
-			});
-		}
-	}, [user, reset]);
-
-	useEffect(() => {
-		async function fetchData() {
-			const data = await get06FormById(formId);
-			setFormData(data);
-		}
-		fetchData();
-
 		reset({
 			...form.getValues(),
 			id: formId,
@@ -210,13 +151,6 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 	}, [formId]);
 
 	useEffect(() => {
-		async function fetchData() {
-			if (formData) {
-				const data = await get05ApprovedFormByStdId(formData?.student.id);
-				setApprovedForm(data);
-			}
-		}
-		fetchData();
 		reset({
 			...form.getValues(),
 			percentage: formData?.percentage,
@@ -244,35 +178,14 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 						<InputForm value={`${formData?.trimester} `} label="ภาคเรียน / Trimester" />
 
 						<h1 className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</h1>
-						<InputForm value={user.username} label="รหัสนักศึกษา / Student ID" />
+						<InputForm value={`${user?.username}`} label="รหัสนักศึกษา / Student ID" />
 						<InputForm
-							value={
-								formData?.student?.formLanguage == "en"
-									? `${formData?.student?.firstNameEN} ${formData?.student?.lastNameEN}`
-									: `${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`
-							}
+							value={`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 							label="ชื่อ-นามสกุล / Fullname"
 						/>
-						<InputForm
-							value={
-								formData?.student?.formLanguage == "en"
-									? `${formData?.student?.school.schoolNameEN}`
-									: `${formData?.student?.school.schoolNameTH}`
-							}
-							label="สาขาวิชา / School"
-						/>
-						<InputForm
-							value={
-								formData?.student?.formLanguage == "en"
-									? `${formData?.student?.program.programNameEN}`
-									: `${formData?.student?.program.programNameTH}`
-							}
-							label="หลักสูตร / Program"
-						/>
-						<InputForm
-							value={`${formData?.student?.program.programYear}`}
-							label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)"
-						/>
+						<InputForm value={`${formData?.student?.school.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${formData?.student?.program.programNameTH}`} label="หลักสูตร / Program" />
+						<InputForm value={`${formData?.student?.program.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
 
 						<div className="flex flex-col items-center mb-6 justify-center">
 							<FormLabel className="font-normal">ระดับการศึกษา / Education Level</FormLabel>
@@ -282,10 +195,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 									<FormLabel className="ml-2 font-normal">ปริญญาโท (Master Degree)</FormLabel>
 								</div>
 								<div>
-									<RadioGroupItem
-										checked={formData?.student?.degree === "Doctoral"}
-										value="Doctoral"
-									/>
+									<RadioGroupItem checked={formData?.student?.degree === "Doctoral"} value="Doctoral" />
 									<FormLabel className="ml-2 font-normal">ปริญญาเอก (Doctoral Degree)</FormLabel>
 								</div>
 							</RadioGroup>
@@ -294,21 +204,14 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 						<div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
 							<div className="text-center font-semibold mb-2">ชื่อโครงร่างวิทยานิพนธ์</div>
 							<InputForm value={`${approvedForm?.thesisNameTH}`} label="ชื่อภาษาไทย / ThesisName(TH)" />
-							<InputForm
-								value={`${approvedForm?.thesisNameEN}`}
-								label="ชื่อภาษาอังกฤษ / ThesisName(EN)"
-							/>
+							<InputForm value={`${approvedForm?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / ThesisName(EN)" />
 						</div>
 					</div>
 					<div className="border-l border-[#eeee]"></div>
 					{/* ฝั่งขวา */}
 					<div className="w-full sm:2/4">
 						<InputForm
-							value={
-								formData?.student.formLanguage == "en"
-									? `${formData?.student.advisor?.firstNameEN} ${formData?.student.advisor?.lastNameEN}`
-									: `${formData?.student.advisor?.firstNameTH} ${formData?.student.advisor?.lastNameTH}`
-							}
+							value={`${formData?.student.advisor?.prefix.prefixTH}${formData?.student.advisor?.firstNameTH} ${formData?.student.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษา / Advisor"
 						/>
 
@@ -336,9 +239,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 							/>
 						</div>
 						<div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
-							<div className="w-full text-center font-normal mb-6">
-								2. ผลการดำเนินงานที่ผ่านมาในครั้งนี้
-							</div>
+							<div className="w-full text-center font-normal mb-6">2. ผลการดำเนินงานที่ผ่านมาในครั้งนี้</div>
 
 							<FormField
 								control={form.control}
@@ -384,7 +285,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 							<Button variant="outline" type="button" className="w-60 mt-4 h-max">
 								<Image
 									src={formData?.student.signatureUrl ? formData?.student.signatureUrl : signature}
-									width={100}
+									width={200}
 									height={100}
 									style={{ width: "auto", height: "auto" }}
 									alt="signature"
@@ -398,9 +299,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 
 				{/* อาจารย์ที่ปรึกษา */}
 				<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
-					<h1 className="mb-2 font-bold text-center">
-						ผลการประเมินความคืบหน้าของการทำวิทยานิพนธ์โดยอาจารย์ที่ปรึกษา
-					</h1>
+					<h1 className="mb-2 font-bold text-center">ผลการประเมินความคืบหน้าของการทำวิทยานิพนธ์โดยอาจารย์ที่ปรึกษา</h1>
 					<FormField
 						control={form.control}
 						name="assessmentResult"
@@ -412,8 +311,9 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 											formData?.assessmentResult
 												? true
 												: false ||
-												  (user.position.toString() != "ADVISOR" &&
-														user.role.toString() != "SUPER_ADMIN")
+												  (user?.position.toString() != "ADVISOR" &&
+														user?.position.toString() != "HEAD_OF_SCHOOL" &&
+														user?.role.toString() != "SUPER_ADMIN")
 										}
 										placeholder="ความเห็น..."
 										className="resize-none h-full text-md mb-2"
@@ -429,13 +329,15 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 						<DialogTrigger
 							onClick={() => setOpenAdvisor(!openAdvisor)}
 							disabled={
-								(formData?.advisorSignUrl || user.position.toString() != "ADVISOR") &&
-								user.role.toString() != "SUPER_ADMIN"
+								formData?.advisorSignUrl
 									? true
-									: false
+									: false ||
+									  (user?.position.toString() != "ADVISOR" &&
+											user?.position.toString() != "HEAD_OF_SCHOOL" &&
+											user?.role.toString() != "SUPER_ADMIN")
 							}
 						>
-							<Button variant="outline" type="button" className="w-60 my-4 h-max">
+							<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
 								<Image
 									src={
 										formData?.advisorSignUrl
@@ -446,9 +348,10 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 									}
 									width={100}
 									height={100}
+									style={{ width: "auto", height: "auto" }}
 									alt="signature"
 								/>
-							</Button>
+							</div>
 						</DialogTrigger>
 						<DialogContent className="w-max">
 							<DialogHeader>
@@ -460,8 +363,8 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 									backgroundColor="white"
 									throttle={8}
 									canvasProps={{
-										width: 250,
-										height: 200,
+										width: 400,
+										height: 400,
 										className: "sigCanvas",
 									}}
 								/>
@@ -487,19 +390,27 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 						</DialogContent>
 					</Dialog>
 
-					<Label className="mb-2">
-						{formData?.student.formLanguage == "en"
-							? `${formData?.student?.advisor?.firstNameEN} ${formData?.student?.advisor?.lastNameEN}`
-							: `${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}
-					</Label>
+					<Label className="mb-2">{`${formData?.student?.advisor?.prefix.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
 
-					<Label className="mt-2">{`วันที่ ${
-						formData?.dateAdvisor
-							? formData?.dateAdvisor
-							: form.getValues().dateAdvisor
-							? form.getValues().dateAdvisor
-							: currentDate
-					}`}</Label>
+					<div className="w-max h-max flex mt-2 items-center">
+						<Label className="mr-2">วันที่</Label>
+						{formData?.dateAdvisor ? (
+							<Label>{formData?.dateAdvisor ? formData?.dateAdvisor : "__________"}</Label>
+						) : (
+							<FormField
+								control={form.control}
+								name="dateAdvisor"
+								render={({ field }) => (
+									<div className="flex flex-row items-center justify-center">
+										<FormItem>
+											<DatePicker onDateChange={field.onChange} />
+											<FormMessage />
+										</FormItem>
+									</div>
+								)}
+							/>
+						)}
+					</div>
 				</div>
 
 				{/* หัวหน้าสาขา */}
@@ -512,6 +423,12 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 							<FormItem className="w-3/4 h-[100px]">
 								<FormControl>
 									<Textarea
+										disabled={
+											formData?.headSchoolComment
+												? true
+												: false ||
+												  (user?.position.toString() != "HEAD_OF_SCHOOL" && user?.role.toString() != "SUPER_ADMIN")
+										}
 										placeholder="ความเห็น..."
 										className="resize-none h-full text-md mb-2"
 										value={formData?.headSchoolComment ? formData?.headSchoolComment : field.value}
@@ -526,13 +443,13 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 						<DialogTrigger
 							onClick={() => setOpenSchool(!openSchool)}
 							disabled={
-								(formData?.headSchoolSignUrl || user.position.toString() != "HEAD_OF_SCHOOL") &&
-								user.role.toString() != "SUPER_ADMIN"
+								(formData?.headSchoolSignUrl || user?.position.toString() != "HEAD_OF_SCHOOL") &&
+								user?.role.toString() != "SUPER_ADMIN"
 									? true
 									: false
 							}
 						>
-							<Button variant="outline" type="button" className="w-60 my-4 h-max">
+							<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
 								<Image
 									src={
 										formData?.headSchoolSignUrl
@@ -543,9 +460,10 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 									}
 									width={100}
 									height={100}
+									style={{ width: "auto", height: "auto" }}
 									alt="signature"
 								/>
-							</Button>
+							</div>
 						</DialogTrigger>
 						<DialogContent className="w-max">
 							<DialogHeader>
@@ -557,8 +475,8 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 									backgroundColor="white"
 									throttle={8}
 									canvasProps={{
-										width: 250,
-										height: 200,
+										width: 400,
+										height: 400,
 										className: "sigCanvas",
 									}}
 								/>
@@ -584,11 +502,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 						</DialogContent>
 					</Dialog>
 					{formData?.headSchoolID ? (
-						<Label className="mb-2">
-							{formData.student.formLanguage == "en"
-								? `${formData?.headSchool?.firstNameEN} ${formData?.headSchool?.lastNameEN}`
-								: `${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`}
-						</Label>
+						<Label className="mb-2">{`${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`}</Label>
 					) : (
 						<FormField
 							control={form.control}
@@ -596,26 +510,22 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 							render={({ field }) => (
 								<>
 									<Popover>
-										<PopoverTrigger asChild disabled={user.role.toString() != "SUPER_ADMIN"}>
+										<PopoverTrigger
+											asChild
+											disabled={
+												user?.position.toString() != "HEAD_OF_SCHOOL" && user?.role.toString() != "SUPER_ADMIN"
+											}
+										>
 											<FormControl>
 												<Button
 													variant="outline"
 													role="combobox"
-													className={cn(
-														"w-[180px] justify-between",
-														!field.value && "text-muted-foreground"
-													)}
+													className={cn("w-[180px] justify-between", !field.value && "text-muted-foreground")}
 												>
 													{field.value
 														? `${
-																headSchool?.find(
-																	(headSchool) => headSchool.id === field.value
-																)?.firstNameTH
-														  } ${
-																headSchool?.find(
-																	(headSchool) => headSchool.id === field.value
-																)?.lastNameTH
-														  } `
+																headSchool?.find((headSchool) => headSchool.id === field.value)?.firstNameTH
+														  } ${headSchool?.find((headSchool) => headSchool.id === field.value)?.lastNameTH} `
 														: "ค้นหาหัวหน้าสาขา"}
 													<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 												</Button>
@@ -626,7 +536,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 												<CommandInput placeholder="ค้นหาหัวหน้าสาขา" />
 												<CommandList>
 													<CommandEmpty>ไม่พบหัวหน้าสาขา</CommandEmpty>
-													{headSchool.map((headSchool) => (
+													{headSchool?.map((headSchool) => (
 														<CommandItem
 															value={`${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
 															key={headSchool.id}
@@ -637,9 +547,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 															<Check
 																className={cn(
 																	"mr-2 h-4 w-4",
-																	field.value === headSchool.id
-																		? "opacity-100"
-																		: "opacity-0"
+																	field.value === headSchool.id ? "opacity-100" : "opacity-0"
 																)}
 															/>
 															{`${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
@@ -675,14 +583,14 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 						{formData && (
 							<ThesisProcessPlan
 								degree={user!.degree}
-								canEdit={user.position.toString() === "ADVISOR"}
+								canEdit={user?.position.toString() === "ADVISOR"}
 								processPlans={formData?.processPlan}
 								setProcessPlans={setProcessPlans}
 							/>
 						)}
 					</div>
 				</div>
-				{(formData?.student.advisorID == user.id && user?.position.toString() === "ADVISOR") ||
+				{(formData?.student.advisorID == user?.id && user?.position.toString() === "ADVISOR") ||
 				(!formData?.headSchoolID && user?.position.toString() === "HEAD_OF_SCHOOL") ||
 				user?.role.toString() === "SUPER_ADMIN" ? (
 					<div className="w-full flex px-20 mt-4 lg:flex justify-center">

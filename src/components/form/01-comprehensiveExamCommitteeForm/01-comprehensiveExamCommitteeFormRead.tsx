@@ -5,25 +5,13 @@ import InputForm from "../../inputForm/inputForm";
 import { CircleAlert } from "lucide-react";
 import Link from "next/link";
 import { IComprehensiveExamCommitteeForm } from "@/interface/form";
+import useSWR from "swr";
 
-async function get01FormById(formId: number): Promise<IComprehensiveExamCommitteeForm> {
-	const res = await fetch(`/api/get01FormById/${formId}`, {
-		next: { revalidate: 10 },
-	});
-	return res.json();
-}
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const ComprehensiveExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 	const router = useRouter();
-	const [formData, setFormData] = useState<IComprehensiveExamCommitteeForm>();
-
-	useEffect(() => {
-		async function fetchData() {
-			const data = await get01FormById(formId);
-			setFormData(data);
-		}
-		fetchData();
-	}, [formId]);
+	const { data: formData } = useSWR<IComprehensiveExamCommitteeForm>(`/api/get01FormById/${formId}`, fetcher);
 
 	return (
 		<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg">

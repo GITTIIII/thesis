@@ -16,6 +16,7 @@ import ThesisProgressFormTable from "@/components/formTable/06-thesisProgressFor
 import ExamAppointmentFormTable from "@/components/formTable/07-thesisExamAppointmentFormTable";
 import studentFormPage from "@/../../public/asset/studentFormPage.png";
 import createForm from "@/../../public/asset/createForm.png";
+import useSWR from "swr";
 
 const labels: { [key: string]: string } = {
 	comprehensiveExamCommitteeForm: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบประมวลความรู้",
@@ -32,14 +33,11 @@ async function get05ApprovedForm() {
 	return res.json();
 }
 
-async function getCurrentUser() {
-	const res = await fetch("/api/getCurrentUser");
-	return res.json();
-}
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function StudentTablePage() {
 	const searchParams = useSearchParams().get("formType");
-	const [userData, setUserData] = useState<IUser>();
+	const { data: userData } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const [formType, setFormType] = useState(searchParams ? searchParams : "comprehensiveExamCommitteeForm");
 	const [isDisabled, setIsDisabled] = useState(false);
 	const router = useRouter();
@@ -60,14 +58,6 @@ export default function StudentTablePage() {
 		}
 		setIsDisabled(false);
 	}, [formType, userData]);
-
-	useEffect(() => {
-		async function fetchData() {
-			const userData = await getCurrentUser();
-			setUserData(userData);
-		}
-		fetchData();
-	}, []);
 
 	return (
 		<>

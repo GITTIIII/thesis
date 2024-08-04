@@ -21,6 +21,7 @@ import { IProcessPlan } from "@/interface/form";
 import { Select } from "@radix-ui/react-select";
 import { SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import useSWR from "swr";
 
 const defaultProcessPlans: IProcessPlan[] = [
 	{
@@ -77,7 +78,7 @@ const defaultProcessPlans: IProcessPlan[] = [
 	},
 ];
 
-const MONTHS_TH = [
+const MONTHS = [
 	"มกราคม",
 	"กุมภาพันธ์",
 	"มีนาคม",
@@ -92,21 +93,6 @@ const MONTHS_TH = [
 	"ธันวาคม",
 ];
 
-const MONTHS_EN = [
-	"January",
-	"February",
-	"March",
-	"April",
-	"May",
-	"June",
-	"July",
-	"August",
-	"September",
-	"October",
-	"November",
-	"December",
-];
-
 const formSchema = z.object({
 	date: z.string(),
 	thesisNameTH: z.string().min(1, { message: "กรุณากรอกชื่อวิทยานิพนธ์ / Thesis name requierd" }),
@@ -119,19 +105,13 @@ const formSchema = z.object({
 	studentID: z.number(),
 });
 
-async function getUser() {
-	const res = await fetch("/api/getCurrentUser");
-	return res.json();
-}
-
-const userPromise = getUser();
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const OutlineFormCreate = () => {
 	const router = useRouter();
-	const user: IUser = use(userPromise);
+	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const [loading, setLoading] = useState(false);
 	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
-	const months = user.formLanguage === "en" ? MONTHS_EN : MONTHS_TH;
 
 	const { toast } = useToast();
 	const form = useForm({
@@ -163,7 +143,6 @@ const OutlineFormCreate = () => {
 		if (processPlans) {
 			values.processPlan = processPlans;
 		}
-		console.log(values);
 		const url = qs.stringifyUrl({
 			url: `/api/05OutlineForm`,
 		});
@@ -205,18 +184,6 @@ const OutlineFormCreate = () => {
 		}
 	}, [user, reset]);
 
-	useEffect(() => {
-		async function getTimes() {
-			const res = await fetch("/api/getTimesForm05");
-			const data = await res.json();
-			reset({
-				...form.getValues(),
-				times: data.formCount + 1,
-			});
-		}
-		getTimes();
-	}, []);
-
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">
@@ -224,14 +191,7 @@ const OutlineFormCreate = () => {
 					{/* ฝั่งซ้าย */}
 					<div className="w-full sm:2/4">
 						<h1 className="mb-2 font-bold text-center">ข้อมูลนักศึกษา</h1>
-						<InputForm
-							value={
-								user.formLanguage == "en"
-									? `${user?.firstNameEN} ${user?.lastNameEN}`
-									: `${user?.firstNameTH} ${user?.lastNameTH}`
-							}
-							label="ชื่อ-นามสกุล / Full Name"
-						/>
+						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Full Name" />
 						<InputForm value={`${user?.username} `} label="รหัสนักศึกษา / Student ID" />
 
 						<div className="flex flex-col items-center mb-6 justify-center">
@@ -248,22 +208,8 @@ const OutlineFormCreate = () => {
 							</RadioGroup>
 						</div>
 
-						<InputForm
-							value={
-								user.formLanguage == "en"
-									? `${user?.school.schoolNameEN}`
-									: `${user?.school.schoolNameTH}`
-							}
-							label="สาขาวิชา / School"
-						/>
-						<InputForm
-							value={
-								user.formLanguage == "en"
-									? `${user?.program.programNameEN}`
-									: `${user?.program.programNameTH}`
-							}
-							label="หลักสูตร / Program"
-						/>
+						<InputForm value={`${user?.school.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${user?.program.programNameTH}`} label="หลักสูตร / Program" />
 						<InputForm value={`${user?.program.programYear}`} label="ปีหลักสูตร / Program Year" />
 					</div>
 
@@ -305,19 +251,11 @@ const OutlineFormCreate = () => {
 							)}
 						/>
 						<InputForm
-							value={
-								user.formLanguage == "en"
-									? `${user?.advisor?.firstNameEN} ${user?.advisor?.lastNameEN}`
-									: `${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`
-							}
+							value={`${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษา / Advisor"
 						/>
 						<InputForm
-							value={
-								user.formLanguage == "en"
-									? `${user?.advisor?.firstNameEN} ${user?.advisor?.lastNameEN}`
-									: `${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`
-							}
+							value={`${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษาร่วม / Co-advisor"
 						/>
 						<div className="flex flex-col items-center mb-6 justify-center">
@@ -325,9 +263,12 @@ const OutlineFormCreate = () => {
 							<Button variant="outline" type="button" className="w-60 mt-4 h-max">
 								<Image
 									src={user?.signatureUrl ? user?.signatureUrl : signature}
-									width={100}
+									width={200}
 									height={100}
-									style={{ width: 'auto', height: 'auto' }}
+									style={{
+										width: "auto",
+										height: "auto",
+									}}
 									alt="signature"
 								/>
 							</Button>
@@ -385,7 +326,7 @@ const OutlineFormCreate = () => {
 										</SelectTrigger>
 										<SelectContent>
 											<SelectGroup>
-												{months.map((month) => (
+												{MONTHS.map((month) => (
 													<SelectItem key={month} value={month}>
 														{month}
 													</SelectItem>
@@ -413,12 +354,14 @@ const OutlineFormCreate = () => {
 					/>
 				</div>
 				<div className="w-full h-auto overflow-auto">
-					<ThesisProcessPlan
-						degree={user!.degree}
-						canEdit={true}
-						processPlans={defaultProcessPlans}
-						setProcessPlans={setProcessPlans}
-					/>
+					{user && (
+						<ThesisProcessPlan
+							degree={user!.degree}
+							canEdit={true}
+							processPlans={defaultProcessPlans}
+							setProcessPlans={setProcessPlans}
+						/>
+					)}
 				</div>
 
 				<div className="w-full flex mt-4 px-20 lg:flex justify-center">

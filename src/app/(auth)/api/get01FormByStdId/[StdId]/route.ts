@@ -13,10 +13,7 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 	const session = await getServerSession(authOptions);
 
 	if (!session) {
-		return NextResponse.json(
-			{ user: null, message: "Session not found" },
-			{ status: 404 }
-		);
+		return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
 	}
 
 	const formData = await db.comprehensiveExamCommitteeForm.findMany({
@@ -24,13 +21,27 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 			studentID: Number(StdId),
 		},
 		include: {
-			student:{
-				include:{
+			student: {
+				include: {
 					prefix: true,
-					institute:true,
-					school:true,
-					program:true,
-				}
+					institute: true,
+					school: true,
+					program: true,
+					advisor: {
+						include: {
+							prefix: true,
+						},
+					},
+					coAdvisors: {
+						include: {
+							coAdvisor: {
+								include: {
+									prefix: true,
+								},
+							},
+						},
+					},
+				},
 			},
 		},
 	});
