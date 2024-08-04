@@ -549,7 +549,7 @@ const EditSignature = ({ user }: { user: IUser | undefined }) => {
 				<DialogHeader>
 					<DialogTitle className=" text-2xl">ลายเซ็น</DialogTitle>
 				</DialogHeader>
-				<div className=" lg:w-[950px] lg:h-[650px] md:w-[700px] w-[520px] h-[500px]">
+				<div className="lg:w-[950px] lg:h-[650px] md:w-[700px] w-[520px] h-[500px]">
 					<div className="w-full h-full bg-transparent ">
 						<div className="w-full h-full bg-[#ffffff] pb-8 rounded-md">
 							<div className="w-full h-fit mt-2 flex">
@@ -559,8 +559,8 @@ const EditSignature = ({ user }: { user: IUser | undefined }) => {
 										active === 1 ? "border-x border-t border-b-white text-[#F26522]" : "border-b"
 									}`}
 								>
-									<GoFileDirectory size={30} color={active == 1 ? "#F26522" : "#000"} />
-									<label className=" text-base ml-1">ลายเซ็นของคุณที่มีในระบบ</label>
+									<GoFileDirectory className="hidden md:block" size={30} color={active == 1 ? "#F26522" : "#000"} />
+									<label className="ml-1">ลายเซ็นของคุณที่มีในระบบ</label>
 								</button>
 								<button
 									onClick={() => setActive(2)}
@@ -568,7 +568,7 @@ const EditSignature = ({ user }: { user: IUser | undefined }) => {
 										active === 2 ? "border-x border-t border-b-white text-[#F26522]" : "border-b"
 									}`}
 								>
-									<GoPencil size={30} color={active === 2 ? "#F26522" : "#000"} />
+									<GoPencil className="hidden md:block" size={30} color={active === 2 ? "#F26522" : "#000"} />
 									<label className="ml-2">วาดลายเซ็นตัวเอง</label>
 								</button>
 								<button
@@ -577,11 +577,9 @@ const EditSignature = ({ user }: { user: IUser | undefined }) => {
 										active === 3 ? "border-x border-t border-b-white text-[#F26522]" : "border-b"
 									}`}
 								>
-									<GoUpload size={30} color={active === 3 ? "#F26522" : "#000"} />
+									<GoUpload className="hidden md:block" size={30} color={active === 3 ? "#F26522" : "#000"} />
 									<label className="ml-2">อัปโหลดรูปภาพ</label>
 								</button>
-								<div className="bg-white-500 border-b border-black w-0  2xl:w-1/5 py-4"></div>
-								<div className="bg-white-500 border-b border-black w-0  2xl:w-1/5 py-4"></div>
 							</div>
 
 							{/* main */}

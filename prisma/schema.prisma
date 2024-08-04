@@ -35,6 +35,9 @@ model Institute{
   user              User[]   @relation("userInstitute")
   
   school            School[]   @relation("school")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model School {
@@ -46,6 +49,9 @@ model School {
 
   user          User[]    @relation("userSchool")
   programs      SchoolProgram[] @relation("SchoolProgram")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Program {
@@ -56,6 +62,9 @@ model Program {
 
   user         User[]    @relation("userProgram")
   schools      SchoolProgram[]  @relation("SchoolProgram")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model SchoolProgram {
@@ -66,6 +75,9 @@ model SchoolProgram {
   program   Program  @relation("SchoolProgram",fields: [programID], references: [id])
 
   @@id([schoolID, programID])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Prefix{
@@ -73,6 +85,9 @@ model Prefix{
   prefixTH        String?
   prefixEN        String?
   userPrefix      User[]      @relation("userPrefix")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model User {
