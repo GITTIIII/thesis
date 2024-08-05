@@ -36,10 +36,10 @@ export default function Profile() {
 
 	return (
 		<>
-			<div className="w-full h-full flex justify-center">
-				<div className="lg:w-[950px] md:w-[750px] sm:w-[550px] w-[350px]  [&>div]:bg-white [&>div]:border [&>div]:overflow-hidden  [&>div]:rounded-lg [&>div]:shadow-[0px_0px_5px_1px_#e2e8f0] mt-12 grid md:grid-cols-4 md:grid-rows-9  gap-4">
-					<div className="md:row-span-3 md:col-start-1 md:row-start-1 md:col-span-1 col-start-2 row-span-3  col-span-2  overflow-clip  content-center justify-center flex relative ">
-						<Avatar className="w-[128px] h-auto my-auto">
+			<div className="w-full h-max flex justify-center items-center p-10">
+				<div className="h-max lg:w-[950px] md:w-[750px] w-[400px]  [&>div]:bg-white [&>div]:border [&>div]:overflow-hidden  [&>div]:rounded-lg [&>div]:shadow-[0px_0px_5px_1px_#e2e8f0] grid md:grid-cols-4 md:grid-rows-9 gap-4">
+					<div className="lg:row-span-3 md:col-start-1 md:row-start-1 md:col-span-1 col-start-1 row-span-3  col-span-4  content-center justify-center flex relative p-4">
+						<Avatar className="w-[128px] h-max my-auto">
 							<AvatarImage src={user?.profileUrl} alt="Profile" />
 							<AvatarFallback>
 								<User className="w-[128px] h-auto" />
@@ -49,23 +49,23 @@ export default function Profile() {
 							<EditProfile user={user} />
 						</div>
 					</div>
-					<div className=" md:col-span-3 md:row-span-3 row-start-4 row-span-3  col-span-4 p-8 relative ">
+					<div className="md:col-span-3 md:row-span-3 row-start-4 row-span-3  col-span-4 p-8 relative ">
 						<label className=" text-xl ">ข้อมูลส่วนตัว</label>
 						<div className=" absolute right-0 top-0">
 							<EditPersonalInformation user={user} />
 						</div>
-						<div className="mt-4 sm:flex ">
-							<section className=" flex flex-col sm:w-1/2 gap-4">
-								{user?.role.toString() === "STUDENT" && <p className=" text-lg">{`รหัสนักศึกษา: ${user?.username} `}</p>}
-								<p className=" text-lg">{`ชื่อ - สกุล (ไทย): ${user?.prefix.prefixTH}${user?.firstNameTH} ${user?.lastNameTH} `}</p>
-								<p className=" text-lg">{`ชื่อ - สกุล (อังกฤษ): ${user?.prefix.prefixEN}${
-									user?.firstNameEN ? user?.firstNameEN : ""
-								} ${user?.lastNameEN ? user?.lastNameEN : ""} `}</p>
-								<p className=" text-lg">{`เพศ: ${user?.sex == "Male" ? "ชาย" : "หญิง"} `}</p>
+						<div className="mt-4 md:flex ">
+							<section className="flex flex-col sm:w-max gap-4">
+								{user?.role.toString() === "STUDENT" && <p>{`รหัสนักศึกษา:  ${user?.username} `}</p>}
+								<p>{`ชื่อ - สกุล (ไทย):  ${user?.prefix.prefixTH}${user?.firstNameTH} ${user?.lastNameTH} `}</p>
+								<p>{`ชื่อ - สกุล (อังกฤษ):  ${user?.prefix.prefixEN}${user?.firstNameEN ? user?.firstNameEN : ""} ${
+									user?.lastNameEN ? user?.lastNameEN : ""
+								} `}</p>
+								<p>{`เพศ:  ${user?.sex == "Male" ? "ชาย" : "หญิง"} `}</p>
 							</section>
-							<section className="flex flex-col sm:mt-0 mt-3 sm:w-1/2 gap-4  ">
-								<p className=" text-lg">{`อีเมล: ${user?.email} `}</p>
-								<p className=" text-lg">{`เบอร์โทรศัพท์: ${user?.phone} `}</p>
+							<section className="flex flex-col mt-3 md:mt-0 sm:w-max gap-4 md:ml-8 sm:ml-0">
+								<p>{`อีเมล:  ${user?.email} `}</p>
+								<p>{`เบอร์โทรศัพท์:  ${user?.phone} `}</p>
 							</section>
 						</div>
 					</div>
@@ -75,17 +75,15 @@ export default function Profile() {
 							<label className=" text-xl ">ข้อมูลด้านการศึกษา</label>
 						</div>
 						<section className="mt-4  gap-4 flex  flex-col self-center">
-							<p className=" text-lg ">{`สำนักวิชา: ${user?.institute.instituteNameTH} `}</p>
-							<p className=" text-lg ">{`สาขาวิชา: ${user?.school.schoolNameTH} `}</p>
+							<p>{`สำนักวิชา: ${user?.institute.instituteNameTH} `}</p>
+							<p>{`สาขาวิชา: ${user?.school.schoolNameTH} `}</p>
 							{user?.role.toString() == "STUDENT" && (
 								<>
-									<p className=" text-lg ">{`หลักสูตร: ${user?.program ? user?.program.programNameTH : ""} ${
+									<p>{`หลักสูตร: ${user?.program ? user?.program.programNameTH : ""} ${
 										user?.program ? user?.program.programYear : ""
 									} `}</p>
-									<p className=" text-lg ">{`ระดับการศึกษา: ${
-										user?.degree.toLowerCase() === "master" ? "ปริญญาโท" : "ปริญญาเอก"
-									} `}</p>
-									<p className=" text-lg ">{`อ.ที่ปรึกษา: ${user?.advisor.prefix.prefixTH} ${user?.advisor.firstNameTH} ${user?.advisor.lastNameTH}`}</p>
+									<p>{`ระดับการศึกษา: ${user?.degree.toLowerCase() === "master" ? "ปริญญาโท" : "ปริญญาเอก"} `}</p>
+									<p>{`อ.ที่ปรึกษา: ${user?.advisor.prefix.prefixTH} ${user?.advisor.firstNameTH} ${user?.advisor.lastNameTH}`}</p>
 								</>
 							)}
 						</section>

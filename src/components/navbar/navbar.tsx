@@ -91,7 +91,7 @@ export default function Navbar({ menu, notification = false }: Props) {
 					<li className="hover:cursor-pointer">
 						<DropdownMenu>
 							<DropdownMenuTrigger asChild>
-								<Avatar>
+								<Avatar className="hidden sm:block">
 									<AvatarImage src={user?.profileUrl} alt="Profile" />
 									<AvatarFallback>
 										<User />

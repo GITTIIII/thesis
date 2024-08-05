@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { useState } from "react";
+import { LoaderCircle } from "lucide-react";
 
 const formSchema = z.object({
 	username: z.string().min(1, { message: "กรุณากรอกชื่อผู้ใช้" }),
@@ -18,7 +18,6 @@ const formSchema = z.object({
 const SignInForm = () => {
 	const router = useRouter();
 	const { toast } = useToast();
-	const [loading, setLoading] = useState(false);
 	const form = useForm({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -28,7 +27,6 @@ const SignInForm = () => {
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		setLoading(true);
 		const signInData = await signIn("credentials", {
 			username: values.username,
 			password: values.password,
@@ -41,7 +39,6 @@ const SignInForm = () => {
 				description: signInData?.error,
 				variant: "destructive",
 			});
-			setLoading(false);
 		} else {
 			toast({
 				title: "Success",
@@ -51,7 +48,7 @@ const SignInForm = () => {
 			const session = await getSession();
 			if (session?.user.role == "STUDENT") {
 				router.push("/user/student");
-			} else if (session?.user.role == "ADMIN" || session?.user.role == "COMMITTEE") {
+			} else if (session?.user.role == "ADMIN") {
 				router.push("/user/table");
 			} else if (session?.user.role == "SUPER_ADMIN") {
 				router.push("/user/superAdmin");
@@ -94,7 +91,8 @@ const SignInForm = () => {
 						)}
 					/>
 				</div>
-				<Button disabled={loading} className="bg-[#F26522] w-2/4 mx-auto text-white rounded-xl">
+				<Button disabled={form.formState.isSubmitting} className="bg-[#F26522] w-2/4 mx-auto text-white rounded-xl">
+					{form.formState.isSubmitting && <LoaderCircle className="mr-2 animate-spin" />}
 					เข้าสู่ระบบ
 				</Button>
 			</form>
