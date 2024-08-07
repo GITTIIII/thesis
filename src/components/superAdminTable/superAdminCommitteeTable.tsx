@@ -18,49 +18,42 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { IExpert } from "@/interface/expert";
 
-async function getAllUser() {
-	const res = await fetch("/api/user");
+async function getAllExpert() {
+	const res = await fetch("/api/expert");
 	return res.json();
 }
 
 export default function SuperAdminCommitteeTable({ filterRole }: { filterRole: string }) {
-	const [userData, setUserData] = useState<IUser[]>([]);
+	const [expert, setExpert] = useState<IExpert[]>([]);
 	const [studentFilter, setStudentFilter] = useState("All");
 	const [searchQuery, setSearchQuery] = useState("");
 	const [username, setUsername] = useState("");
 
-	const filteredData = userData.filter(
-		(user) =>
-			user.firstNameTH.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			user.lastNameTH.toLowerCase().includes(searchQuery.toLowerCase())
+	const filteredData = expert.filter(
+		(expert) =>
+			expert.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+			expert.lastName.toLowerCase().includes(searchQuery.toLowerCase())
 	);
 
 	useEffect(() => {
 		async function fetchData() {
-			const data = await getAllUser();
-			setUserData(data);
-			setUsername(data[0].username);
+			const data = await getAllExpert();
+			setExpert(data);
+			// setUsername(data[0].username);
 		}
 		fetchData();
 	}, []);
 
 	const [selectedUser, setSelectedUser] = useState<IUser>();
 
-	useEffect(() => {
-		const user = userData.find((u) => u.username === username);
-		setSelectedUser(user);
-		console.log(user);
-	}, [userData, username]);
+	// useEffect(() => {
+	// 	const expert = expertData.find((u) => u.username === username);
+	// 	setSelectedUser(expert);
+	// 	console.log(expert);
+	// }, [userData, username]);
 
 	return (
 		<div>
@@ -108,45 +101,40 @@ export default function SuperAdminCommitteeTable({ filterRole }: { filterRole: s
 				</TableHeader>
 				<Dialog>
 					<TableBody>
-						{filteredData
-							.filter((userData) =>
-								filterRole == "COMMITTEE" ? userData?.role.toString() === "COMMITTEE" : null
-							)
-							.map((user, index) => (
-								<TableRow key={index}>
-									<TableCell>
-										{user.firstNameTH} {user.lastNameTH}
-									</TableCell>
-									<TableCell>{user.email}</TableCell>
-									<TableCell>{user.phone}</TableCell>
-									<TableCell>
-										<DialogTrigger asChild className="hover:cursor-pointer">
-											<Button aria-haspopup="true" size="icon" variant="ghost">
-												<Eye className="h-4 w-4" />
+						{filteredData.map((user, index) => (
+							<TableRow key={index}>
+								<TableCell>
+									{user.firstName} {user.lastName}
+								</TableCell>
+
+								<TableCell>
+									<DialogTrigger asChild className="hover:cursor-pointer">
+										<Button aria-haspopup="true" size="icon" variant="ghost">
+											<Eye className="h-4 w-4" />
+											<span className="sr-only">Toggle menu</span>
+										</Button>
+									</DialogTrigger>
+									<DropdownMenu>
+										<DropdownMenuTrigger asChild>
+											<Button
+												aria-haspopup="true"
+												size="icon"
+												variant="ghost"
+												// onClick={() => setUsername(user.username)}
+											>
+												<MoreHorizontal className="h-4 w-4" />
 												<span className="sr-only">Toggle menu</span>
 											</Button>
-										</DialogTrigger>
-										<DropdownMenu>
-											<DropdownMenuTrigger asChild>
-												<Button
-													aria-haspopup="true"
-													size="icon"
-													variant="ghost"
-													onClick={() => setUsername(user.username)}
-												>
-													<MoreHorizontal className="h-4 w-4" />
-													<span className="sr-only">Toggle menu</span>
-												</Button>
-											</DropdownMenuTrigger>
-											<DropdownMenuContent align="end">
-												<DropdownMenuLabel>ตัวเลือก</DropdownMenuLabel>
-												<DropdownMenuItem>แก้ไข</DropdownMenuItem>
-												<DropdownMenuItem>ลบข้อมูล</DropdownMenuItem>
-											</DropdownMenuContent>
-										</DropdownMenu>
-									</TableCell>
-								</TableRow>
-							))}
+										</DropdownMenuTrigger>
+										<DropdownMenuContent align="end">
+											<DropdownMenuLabel>ตัวเลือก</DropdownMenuLabel>
+											<DropdownMenuItem>แก้ไข</DropdownMenuItem>
+											<DropdownMenuItem>ลบข้อมูล</DropdownMenuItem>
+										</DropdownMenuContent>
+									</DropdownMenu>
+								</TableCell>
+							</TableRow>
+						))}
 					</TableBody>
 
 					<DialogContent className="max-w-[60%] sm:min-w-[425px]">

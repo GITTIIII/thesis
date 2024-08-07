@@ -201,7 +201,7 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 					<GoPencil size={20} />
 				</Button>
 			</DialogTrigger>
-			<DialogContent className="md:max-w-[800px] md:h-[750px] overflow-auto rounded-lg">
+			<DialogContent className="md:max-w-[800px] h-max overflow-auto rounded-lg">
 				<DialogHeader>
 					<DialogTitle className=" text-2xl">แก้ไขข้อมูลส่วนตัว</DialogTitle>
 				</DialogHeader>
