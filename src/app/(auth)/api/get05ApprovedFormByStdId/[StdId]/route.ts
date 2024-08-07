@@ -8,24 +8,20 @@ type Params = {
 	StdId: number;
 };
 
-export async function GET(req: NextApiRequest, context: { params: Params }){
-    const StdId = context.params.StdId;
-    const session = await getServerSession(authOptions);
+export async function GET(req: NextApiRequest, context: { params: Params }) {
+	const StdId = context.params.StdId;
+	const session = await getServerSession(authOptions);
 
 	if (!session) {
-		return NextResponse.json(
-			{ user: null, message: "Session not found" },
-			{ status: 404 }
-		);
+		return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
 	}
-    const form = await db.outlineForm.
-    findFirst({
-        where: {
-            studentID: Number(StdId),
-            outlineCommitteeStatus: "APPROVED",
-            instituteCommitteeStatus: "APPROVED",
-        }
-    });
-    
-    return NextResponse.json(form);
-} 
+	const form = await db.outlineForm.findFirst({
+		where: {
+			studentID: Number(StdId),
+			outlineCommitteeStatus: "APPROVED",
+			instituteCommitteeStatus: "APPROVED",
+		},
+	});
+
+	return NextResponse.json(form);
+}

@@ -47,7 +47,11 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 				},
 			},
 			outlineCommittee: true,
-			instituteCommittee: true,
+			instituteCommittee: {
+				include:{
+					prefix: true,
+				}
+			},
 		},
 	});
 

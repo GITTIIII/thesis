@@ -91,9 +91,7 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 								<TableCell className="text-center">{formData?.thesisNameEN}</TableCell>
 								<TableCell className="text-center">{formData?.student.username}</TableCell>
 								<TableCell className="text-center">
-									{formData.student.formLanguage == "en"
-										? `${formData?.student?.firstNameEN} ${formData?.student?.lastNameEN}`
-										: `${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
+									{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 								</TableCell>
 								<TableCell className="flex justify-center">
 									<FindStatus formData={formData} />

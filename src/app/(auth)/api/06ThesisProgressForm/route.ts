@@ -63,8 +63,20 @@ export async function GET() {
 					institute: true,
 					school: true,
 					program: true,
-					advisor: true,
-					coAdvisors: true,
+					advisor: {
+						include:{
+							prefix: true,
+						}
+					},
+					coAdvisedStudents:{
+						include:{
+							coAdvisor:{
+								include:{
+									prefix: true,
+								}
+							}
+						}
+					},
 				},
 			},
 		},

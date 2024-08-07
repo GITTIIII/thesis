@@ -12,9 +12,9 @@ export async function GET(){
     const session = await getServerSession(authOptions);
     const username = session?.user.username
 
-    if(!session) {
-        return null;
-    }
+    if (!session) {
+		return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
+	}
 
     const user = await db.user.
     findUnique({
@@ -33,7 +33,11 @@ export async function GET(){
             },
             coAdvisedStudents:{
                 include:{
-                    coAdvisor:true
+                    coAdvisor:{
+                        include:{
+                            prefix:true
+                        }
+                    }
                 }
             }
         }

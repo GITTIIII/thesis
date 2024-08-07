@@ -141,7 +141,7 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 
 					<div className="flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
 						<h1 className="mb-2 font-bold">มติคณะกรรมการประจำสำนักวิชาวิศวกรรมศาสตร์</h1>
-						<Label className="mt-2">{`ครั้งที่ ${formData?.times != 0 ? formData?.times : "__"}  วันที่ ${
+						<Label className="mt-2">{`ครั้งที่ ${formData?.times ? formData?.times : "__"}  วันที่ ${
 							formData?.dateInstituteCommitteeSign ? formData?.dateInstituteCommitteeSign : "__________"
 						}`}</Label>
 						<div className="flex flex-col items-center justify-center">
