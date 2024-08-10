@@ -112,7 +112,7 @@ const OutlineFormCreate = () => {
 	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const [loading, setLoading] = useState(false);
 	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
-
+	
 	const { toast } = useToast();
 	const form = useForm({
 		resolver: zodResolver(formSchema),
