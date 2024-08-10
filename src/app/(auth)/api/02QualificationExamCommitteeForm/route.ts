@@ -62,9 +62,14 @@ export async function GET() {
 	const qualificationExamCommitteeForm = await db.qualificationExamCommitteeForm.findMany({
 		include: {
 			student: {
-				include:{
-					prefix:true,
-				}
+				include: {
+					prefix: true,
+				},
+			},
+			headSchool: {
+				include: {
+					prefix: true,
+				},
 			},
 		},
 	});
@@ -95,6 +100,8 @@ export async function PATCH(req: Request) {
 			times,
 			examDay,
 			studentID,
+			headSchoolID,
+			headSchoolSignUrl,
 		} = body;
 
 		if (!id) {
@@ -124,6 +131,8 @@ export async function PATCH(req: Request) {
 				times: times == 0 ? existingQualificationExamCommitteeForm.times : times,
 				examDay: examDay || existingQualificationExamCommitteeForm.examDay,
 				studentID: studentID == 0 ? existingQualificationExamCommitteeForm.studentID : studentID,
+				headSchoolID: headSchoolID == 0 ? existingQualificationExamCommitteeForm.headSchoolID : headSchoolID,
+				headSchoolSignUrl: headSchoolSignUrl || existingQualificationExamCommitteeForm.headSchoolSignUrl,
 			},
 		});
 

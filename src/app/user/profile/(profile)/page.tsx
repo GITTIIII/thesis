@@ -192,7 +192,7 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 				phone: user.phone,
 			});
 		}
-	}, []);
+	}, [form, reset, user]);
 
 	return (
 		<Dialog open={open} onOpenChange={setOpen}>
@@ -428,7 +428,7 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 							)}
 						/>
 						<DialogFooter className=" mt-4">
-							<Button type="submit">ยืนยัน</Button>
+							<Button disabled={form.formState.isSubmitting} type="submit">ยืนยัน</Button>
 						</DialogFooter>
 					</form>
 				</Form>
@@ -861,7 +861,7 @@ const EditProfile = ({ user }: { user: IUser | undefined }) => {
 						onChange={handleFileChange}
 						className=" mt-2 text-sm text-grey-500 rounded-md file:border-0 file:text-md file:w-fit file:h-full file:text-[#F26522] bg-white hover:file:cursor-pointer hover:file:opacity-80"
 					/>
-					<Button type="submit" className=" mt-2 w-full" onClick={() => onSubmit(form.getValues())}>
+					<Button type="submit"  className=" mt-2 w-full" onClick={() => onSubmit(form.getValues())}>
 						ยืนยัน
 					</Button>
 				</DialogContent>

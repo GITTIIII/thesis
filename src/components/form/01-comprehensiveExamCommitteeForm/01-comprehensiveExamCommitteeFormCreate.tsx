@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -38,8 +38,8 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const ComprehensiveExamCommitteeFormCreate = () => {
 	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
-	const router = useRouter();
 	const [loading, setLoading] = useState(false);
+	const router = useRouter();
 
 	const { toast } = useToast();
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -94,7 +94,7 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 		const year = today.getFullYear();
 		const date = today.getDate();
 		const currentDate = date + "/" + month + "/" + year;
-		if (user) {
+		if (user && user.role.toString() === "STUDENT") {
 			reset({
 				...form.getValues(),
 				studentID: user.id,

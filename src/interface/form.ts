@@ -19,6 +19,9 @@ export type IComprehensiveExamCommitteeForm = {
 	numberStudent: number;
 	times: number;
 	examDay: string;
+	headSchoolID: number;
+	headSchoolSignUrl: string;
+	headSchool: IUser;
 
 	studentID: number;
 	student: IUser;
@@ -37,6 +40,9 @@ export type IQualificationExamCommitteeForm = {
 	numberStudent: number;
 	times: number;
 	examDay: string;
+	headSchoolID: number;
+	headSchoolSignUrl: string;
+	headSchool: IUser;
 
 	studentID: number;
 	student: IUser;

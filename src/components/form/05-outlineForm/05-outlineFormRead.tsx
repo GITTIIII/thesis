@@ -6,7 +6,6 @@ import signature from "@/../../public/asset/signature.png";
 import InputForm from "@/components/inputForm/inputForm";
 import Image from "next/image";
 import { Textarea } from "../../ui/textarea";
-import { useEffect, useState } from "react";
 import { IOutlineForm } from "@/interface/form";
 import ThesisProcessPlan from "../thesisProcessPlan";
 import { Input } from "@/components/ui/input";
