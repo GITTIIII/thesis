@@ -49,8 +49,7 @@ export default function QualificationExamCommitteeFormTable({ userData }: { user
 						{formData
 							?.filter(
 								(formData) =>
-									(userData?.role.toString() === "STUDENT" &&
-										userData?.id === formData?.student?.id) ||
+									(userData?.role.toString() === "STUDENT" && userData?.id === formData?.student?.id) ||
 									userData?.role.toString() != "STUDENT"
 							)
 							.map((formData, index) => (
@@ -61,16 +60,12 @@ export default function QualificationExamCommitteeFormTable({ userData }: { user
 									<TableCell className="text-center">{formData.academicYear}</TableCell>
 									<TableCell className="text-center">{formData?.student.username}</TableCell>
 									<TableCell className="text-center">
-										{formData.student.formLanguage == "en"
-											? `${formData?.student?.firstNameEN} ${formData?.student?.lastNameEN}`
-											: `${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
+										{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 									</TableCell>
 									<TableCell className="text-center">{formData.times}</TableCell>
 									<TableCell className="text-center">{formData.examDay}</TableCell>
 									<TableCell className="text-[#F26522] text-center">
-										<Link href={`/user/form/qualificationExamCommitteeForm/${formData.id}`}>
-											คลิกเพื่อดูเพิ่มเติม
-										</Link>
+										<Link href={`/user/form/qualificationExamCommitteeForm/${formData.id}`}>คลิกเพื่อดูเพิ่มเติม</Link>
 									</TableCell>
 									<TableCell className="text-center">
 										<Button type="button" variant="outline">

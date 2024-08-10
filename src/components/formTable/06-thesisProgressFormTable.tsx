@@ -64,25 +64,24 @@ export default function ThesisProgressFormTable({ userData }: { userData: IUser 
 								<TableCell className="text-center">{index + 1}</TableCell>
 								<TableCell className="text-center">{formData.trimester}</TableCell>
 								<TableCell className="text-center">
-									{formData.status === "Adjustments"
-										? "เปลี่ยนเเปลงเเผนงาน"
-										: "เป็นไปตามเเผนงานที่วางไว้"}
+									{formData.status === "Adjustments" ? "เปลี่ยนเเปลงเเผนงาน" : "เป็นไปตามเเผนงานที่วางไว้"}
 								</TableCell>
 								<TableCell className="text-center">{formData.percentage}%</TableCell>
 								<TableCell className="text-center">{formData.date}</TableCell>
 								<TableCell className="text-center">{formData?.student.username}</TableCell>
 								<TableCell className="text-center">
-									{formData.student.formLanguage == "en"
-										? `${formData?.student?.firstNameEN} ${formData?.student?.lastNameEN}`
-										: `${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
+									{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 								</TableCell>
 								<TableCell className="text-[#F26522] text-center">
-									<Link href={
-											(formData.dateAdvisor && formData.dateHeadSchool) ||
-											userData?.role.toString() == "STUDENT"
+									<Link
+										href={
+											(formData.dateAdvisor && formData.dateHeadSchool) || userData?.role.toString() == "STUDENT"
 												? `/user/form/thesisProgressForm/${formData.id}`
 												: `/user/form/thesisProgressForm/update/${formData.id}`
-										}>คลิกเพื่อดูเพิ่มเติม</Link>
+										}
+									>
+										คลิกเพื่อดูเพิ่มเติม
+									</Link>
 								</TableCell>
 								<TableCell hidden={userData?.role.toString() != "STUDENT"} className="text-center">
 									<Button type="button" variant="outline">

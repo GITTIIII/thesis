@@ -2,6 +2,7 @@ import { IInstitute } from "./institute";
 import { ISchool } from "./school";
 import { IProgram } from "./program";
 import { IPrefix } from "./prefix";
+import { ICoAdvisorStudents } from "./coAdvisorStudents";
 
 export type IUser = {
 	map(arg0: (data: IUser) => import("react").JSX.Element): import("react").ReactNode;
@@ -37,8 +38,7 @@ export type IUser = {
 	advisorID: number;
 	advisor: IUser;
 
-	coAdvisorID: number;
-	coAdvisor: IUser;
+	coAdvisedStudents: ICoAdvisorStudents
 };
 
 enum Position {

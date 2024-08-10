@@ -18,15 +18,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 async function getAllUser() {
 	const res = await fetch("/api/user");
@@ -110,9 +102,7 @@ export default function SuperAdminAdvisorTable({ filterRole }: { filterRole: str
 				<Dialog>
 					<TableBody>
 						{filteredData
-							.filter((userData) =>
-								filterRole == "ADMIN" ? userData?.role.toString() === "ADMIN" : null
-							)
+							.filter((userData) => (filterRole == "ADMIN" ? userData?.role.toString() === "ADMIN" : null))
 							.map((user, index) => (
 								<TableRow key={index}>
 									<TableCell className="font-medium">{user.username}</TableCell>
@@ -121,7 +111,11 @@ export default function SuperAdminAdvisorTable({ filterRole }: { filterRole: str
 									</TableCell>
 									<TableCell>{user.email}</TableCell>
 									<TableCell>{user.phone}</TableCell>
-									<TableCell className="hidden md:table-cell">{user.school.schoolNameTH}</TableCell>
+
+									<TableCell className="hidden md:table-cell">
+										{user.school ? user.school.schoolNameTH : ""}
+									</TableCell>
+
 									<TableCell>
 										<DialogTrigger asChild className="hover:cursor-pointer">
 											<Button
@@ -170,17 +164,9 @@ export default function SuperAdminAdvisorTable({ filterRole }: { filterRole: str
 								<Label className="text-right">เบอร์ติดต่อ</Label>
 								<Input value={selectedUser?.phone} className="col-span-3 disabled" readOnly />
 								<Label className="text-right">สำนักวิชา</Label>
-								<Input
-									value={selectedUser?.institute.instituteNameTH}
-									className="col-span-3 disabled"
-									readOnly
-								/>
+								<Input value={selectedUser?.institute.instituteNameTH} className="col-span-3 disabled" readOnly />
 								<Label className="text-right">สาขาวิชา</Label>
-								<Input
-									value={selectedUser?.school.schoolNameTH}
-									className="col-span-3 disabled"
-									readOnly
-								/>
+								<Input value={selectedUser?.school.schoolNameTH} className="col-span-3 disabled" readOnly />
 								<Label className="text-right">ตำเเหน่ง</Label>
 								<Input value={selectedUser?.position} className="col-span-3 disabled" readOnly />
 							</div>

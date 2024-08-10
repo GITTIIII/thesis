@@ -27,6 +27,20 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 					institute: true,
 					school: true,
 					program: true,
+					advisor: {
+						include: {
+							prefix: true,
+						},
+					},
+					coAdvisedStudents: {
+						include: {
+							coAdvisor: {
+								include: {
+									prefix: true,
+								},
+							},
+						},
+					},
 				},
 			},
 		},

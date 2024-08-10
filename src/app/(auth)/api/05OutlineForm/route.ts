@@ -12,16 +12,7 @@ export async function POST(req: Request) {
 		}
 
 		const body = await req.json();
-		const { 
-			date, 
-			thesisNameTH, 
-			thesisNameEN, 
-			abstract, 
-			processPlan, 
-			thesisStartMonth, 
-			thesisStartYear, 
-			studentID 
-		} = body;
+		const { date, thesisNameTH, thesisNameEN, abstract, processPlan, thesisStartMonth, thesisStartYear, studentID } = body;
 
 		const newForm = await db.outlineForm.create({
 			data: {
@@ -59,12 +50,28 @@ export async function GET() {
 					institute: true,
 					school: true,
 					program: true,
-					advisor: true,
-					coAdvisors: true,
+					advisor: {
+						include: {
+							prefix: true,
+						},
+					},
+					coAdvisedStudents: {
+						include: {
+							coAdvisor: {
+								include: {
+									prefix: true,
+								},
+							},
+						},
+					},
 				},
 			},
 			outlineCommittee: true,
-			instituteCommittee: true,
+			instituteCommittee: {
+				include: {
+					prefix: true,
+				},
+			},
 		},
 	});
 

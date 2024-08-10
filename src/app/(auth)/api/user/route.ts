@@ -98,10 +98,23 @@ export async function GET() {
 	const user = await db.user.findMany({
 		include: {
 			prefix: true,
-			advisor: true,
 			institute: true,
 			school: true,
 			program: true,
+			advisor: {
+				include:{
+					prefix: true,
+				}
+			},
+			coAdvisedStudents:{
+				include:{
+					coAdvisor:{
+						include:{
+							prefix: true,
+						}
+					}
+				}
+			}
 		},
 	});
 
