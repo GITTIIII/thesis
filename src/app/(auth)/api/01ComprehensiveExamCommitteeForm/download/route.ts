@@ -57,7 +57,7 @@ export async function GET(request: NextRequest) {
     examYear: Number(examDay[2]) + 543,
   };
   try {
-    const file = await genDocx("src/lib/formToDocx/docTemplate/FM-ENG-GRD-01.docx", data);
+    const file = await genDocx("FM-ENG-GRD-01.docx", data);
     return new NextResponse(file, {
       headers: {
         "Content-Type":

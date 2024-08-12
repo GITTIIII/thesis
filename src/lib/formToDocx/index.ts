@@ -2,9 +2,10 @@ import { throws } from "assert";
 import createReport from "docx-templates";
 import fs from "fs";
 
-export const genDocx = async (path: string, data: object) => {
+const path = "src/lib/formToDocx/docTemplate/";
+export const genDocx = async (docxName: string, data: object) => {
   try {
-    const template = fs.readFileSync(path);
+    const template = fs.readFileSync(`${path}${docxName}`);
     const buffer = await createReport({
       template,
       data: data,
