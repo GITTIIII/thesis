@@ -73,7 +73,9 @@ const ComprehensiveExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 							/>
 						</div>
 						<Label className="mb-2">
-							{`${formData?.headSchool.prefix.prefixTH}${formData?.headSchool.firstNameTH} ${formData?.headSchool.lastNameTH}`}
+							{formData?.headSchool
+								? `${formData?.headSchool.prefix?.prefixTH}${formData?.headSchool.firstNameTH} ${formData?.headSchool.lastNameTH}`
+								: ""}
 						</Label>
 						<Label className="my-2">{`หัวหน้าสาขาวิชา ${
 							formData?.headSchool ? formData?.headSchool?.school?.schoolNameTH : ""
