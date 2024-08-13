@@ -90,6 +90,18 @@ model Prefix{
   updatedAt DateTime @updatedAt
 }
 
+model Expert{
+  id                          Int        @id @default(autoincrement())
+  prefix                      String?
+  firstName                   String?
+  lastName                    String?
+  //เป็นกรรมการโครงร่างในฟอมโครงร่าง
+  outlineCommittee                           OutlineForm[]      @relation("outlineCommittee")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model User {
   id Int            @id @default(autoincrement())
   prefixID          Int?
@@ -140,8 +152,11 @@ model User {
 
  //เป็นกรรมการสำนักในฟอมโครงร่าง
   instituteCommittee                         OutlineForm[]      @relation("instituteCommittee")
+
   //เป็นหัวหน้าสาชา
-  headSchool                                 ThesisProgressForm[]      @relation("headSchool")
+  headSchool01                                 ComprehensiveExamCommitteeForm[]      @relation("headSchool")
+  headSchool02                                 QualificationExamCommitteeForm[]      @relation("headSchool")
+  headSchool06                                 ThesisProgressForm[]                  @relation("headSchool")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -169,6 +184,9 @@ model ComprehensiveExamCommitteeForm{
   committeeName5      String
   numberStudent       Int
   examDay             String
+  headSchoolID        Int?
+  headSchoolSignUrl       String? @db.LongText
+  headSchool          User?   @relation(fields: [headSchoolID], references: [id], name: "headSchool")
 
   studentID           Int
   student             User      @relation(fields: [studentID], references: [id], name: "comprehensiveExamCommitteeFormOwner")
@@ -189,6 +207,9 @@ model QualificationExamCommitteeForm{
   committeeName5      String
   numberStudent       Int
   examDay             String
+  headSchoolID        Int?
+  headSchoolSignUrl       String?   @db.LongText
+  headSchool          User?     @relation(fields: [headSchoolID], references: [id], name: "headSchool")
 
   studentID           Int
   student             User     @relation(fields: [studentID], references: [id], name: "qualificationExamCommitteeFormOwner")
@@ -254,18 +275,6 @@ model ThesisProgressForm{
   dateHeadSchool              String?
   headSchoolID                Int?
   headSchool                  User? @relation(fields: [headSchoolID], references: [id], name: "headSchool")
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model Expert{
-  id                          Int        @id @default(autoincrement())
-  prefix                      String?
-  firstName                   String?
-  lastName                    String?
-  //เป็นกรรมการโครงร่างในฟอมโครงร่าง
-  outlineCommittee                           OutlineForm[]      @relation("outlineCommittee")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -17,6 +17,8 @@ export async function GET() {
 		},
 		include: {
 			prefix: true,
+			institute: true,
+			school: true,
 		},
 	});
 

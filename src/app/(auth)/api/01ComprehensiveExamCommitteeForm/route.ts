@@ -66,6 +66,11 @@ export async function GET() {
 					prefix:true,
 				}
 			},
+			headSchool:{
+				include:{
+					prefix:true,
+				}
+			}
 		},
 	});
 
@@ -99,6 +104,8 @@ export async function PATCH(req: Request) {
 			times,
 			examDay,
 			studentID,
+			headSchoolID,
+			headSchoolSignUrl,
 		} = body;
 
 		if (!id) {
@@ -128,6 +135,8 @@ export async function PATCH(req: Request) {
 				times: times == 0 ? existingComprehensiveExamCommitteeForm.times : times,
 				examDay: examDay || existingComprehensiveExamCommitteeForm.examDay,
 				studentID: studentID == 0 ? existingComprehensiveExamCommitteeForm.studentID : studentID,
+				headSchoolID: headSchoolID == 0 ? existingComprehensiveExamCommitteeForm.headSchoolID : headSchoolID,
+				headSchoolSignUrl: headSchoolSignUrl || existingComprehensiveExamCommitteeForm.headSchoolSignUrl
 			},
 		});
 
