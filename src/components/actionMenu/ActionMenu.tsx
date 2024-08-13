@@ -1,6 +1,7 @@
 "use client";
 
 import axios from "axios";
+import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 import {
   AlertDialog,
@@ -25,9 +26,11 @@ import { MoreHorizontal } from "lucide-react";
 
 interface ActionMenuProps {
   deleteAPI: string;
+  updatePath: string;
 }
 
-export default function ActionMenu({ deleteAPI }: ActionMenuProps) {
+export default function ActionMenu({ deleteAPI, updatePath }: ActionMenuProps) {
+  const router = useRouter();
   const { toast } = useToast();
   const handleDelete = () => {
     axios.delete(deleteAPI).then((res) => {
@@ -61,7 +64,7 @@ export default function ActionMenu({ deleteAPI }: ActionMenuProps) {
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>ตัวเลือก</DropdownMenuLabel>
           <DropdownMenuItem>ดาวน์โหลด</DropdownMenuItem>
-          <DropdownMenuItem>แก้ไข</DropdownMenuItem>
+          <DropdownMenuItem onClick={() => router.push(updatePath)}>แก้ไข</DropdownMenuItem>
           <AlertDialogTrigger className="w-full">
             <DropdownMenuItem className="text-red-500">ลบ</DropdownMenuItem>
           </AlertDialogTrigger>

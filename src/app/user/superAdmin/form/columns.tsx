@@ -71,9 +71,9 @@ const form01Columns: ColumnDef<IComprehensiveExamCommitteeForm>[] = [
     id: "actions",
     cell: ({ row }) => {
       const form01 = row.original.id;
-      console.log("Hel1111111111111111111", form01);
       const deleteAPI = `/api/delete01FormById/${form01}`;
-      return <ActionMenu deleteAPI={deleteAPI} />;
+      const updatePath = `/user/form/comprehensiveExamCommitteeForm/update/${form01}`;
+      return <ActionMenu deleteAPI={deleteAPI} updatePath={updatePath} />;
     },
   },
 ];
@@ -140,7 +140,7 @@ const form02Columns: ColumnDef<IQualificationExamCommitteeForm>[] = [
     cell: (row) => (
       <Link
         className="text-[#F26522] text-center"
-        href={`/user/form/qualificationExamCommitteeForm/${row.row.original.id}`}
+        href={`/user/form/qualifyingExamCommitteeForm/update/${row.row.original.id}`}
       >
         คลิกเพื่อดูเพิ่มเติม
       </Link>
@@ -150,9 +150,9 @@ const form02Columns: ColumnDef<IQualificationExamCommitteeForm>[] = [
     id: "actions",
     cell: ({ row }) => {
       const form02 = row.original.id;
-      console.log("Hel2222222222222222222", form02);
       const deleteAPI = `/api/delete02FormById/${form02}`;
-      return <ActionMenu deleteAPI={deleteAPI} />;
+      const updatePath = `/api/update01FormById/${form02}`;
+      return <ActionMenu deleteAPI={deleteAPI} updatePath={updatePath} />;
     },
   },
 ];
@@ -214,9 +214,9 @@ const form05Columns: ColumnDef<IOutlineForm>[] = [
     id: "actions",
     cell: ({ row }) => {
       const form05 = row.original.id;
-      console.log("55555555555555555555", form05);
       const deleteAPI = `/api/delete05FormById/${form05}`;
-      return <ActionMenu deleteAPI={deleteAPI} />;
+      const updatePath = `/user/form/outlineForm/update/${form05}`;
+      return <ActionMenu deleteAPI={deleteAPI} updatePath={updatePath} />;
     },
   },
 ];
@@ -276,9 +276,9 @@ const form06Columns: ColumnDef<IThesisProgressForm>[] = [
     id: "actions",
     cell: ({ row }) => {
       const form06 = row.original.id;
-      console.log("666666666666666666666", form06);
       const deleteAPI = `/api/delete06FormById/${form06}`;
-      return <ActionMenu deleteAPI={deleteAPI} />;
+      const updatePath = `/user/form/thesisProgressForm/update/${form06}`;
+      return <ActionMenu deleteAPI={deleteAPI} updatePath={updatePath} />;
     },
   },
 ];
