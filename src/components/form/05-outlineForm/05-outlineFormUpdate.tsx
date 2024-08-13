@@ -389,7 +389,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 										throttle={8}
 										canvasProps={{
 											width: 400,
-											height: 400,
+											height: 150,
 											className: "sigCanvas",
 										}}
 									/>
@@ -643,7 +643,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 											throttle={8}
 											canvasProps={{
 												width: 400,
-												height: 400,
+												height: 150,
 												className: "sigCanvas",
 											}}
 										/>

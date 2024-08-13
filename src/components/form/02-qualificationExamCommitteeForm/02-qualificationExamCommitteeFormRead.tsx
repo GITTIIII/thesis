@@ -6,6 +6,9 @@ import { CircleAlert } from "lucide-react";
 import Link from "next/link";
 import { IQualificationExamCommitteeForm } from "@/interface/form";
 import useSWR from "swr";
+import { Label } from "@/components/ui/label";
+import Image from "next/image";
+import signature from "@/../../public/asset/signature.png";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -42,7 +45,7 @@ const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 				</div>
 
 				<div className="w-full sm:2/4">
-					<h1 className="text-center font-semibold mb-2">ขอเสนอเเต่งตั้งคณะกรรมการสอบประมวลความรู้</h1>
+					<h1 className="text-center font-semibold mb-2">แบบคำขออนุมัติแต่งตั้งกรรมการสอบวัดคุณสมบัติ</h1>
 					<div className="flex items-center justify-center text-sm">
 						<CircleAlert className="mr-1" />
 						สามารถดูรายชื่อกรรมการที่ได้รับการรับรองเเล้ว
@@ -55,6 +58,27 @@ const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 					<InputForm value={`${formData?.committeeName3}`} label="กรรมการ / Member of the Committee" />
 					<InputForm value={`${formData?.committeeName4}`} label="กรรมการ / Member of the Committee" />
 					<InputForm value={`${formData?.committeeName5}`} label="กรรมการ / Member of the Committee" />
+					<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
+						<h1 className="font-bold">ลายเซ็นหัวหน้าสาขาวิชา</h1>
+						<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
+							<Image
+								src={formData?.headSchoolSignUrl ? formData?.headSchoolSignUrl : signature}
+								width={100}
+								height={100}
+								style={{
+									width: "auto",
+									height: "auto",
+								}}
+								alt="signature"
+							/>
+						</div>
+						<Label className="mb-2">
+							{`${formData?.headSchool.prefix.prefixTH}${formData?.headSchool.firstNameTH} ${formData?.headSchool.lastNameTH}`}
+						</Label>
+						<Label className="my-2">{`หัวหน้าสาขาวิชา ${
+							formData?.headSchool ? formData?.headSchool?.school?.schoolNameTH : ""
+						}`}</Label>
+					</div>
 				</div>
 			</div>
 		</div>

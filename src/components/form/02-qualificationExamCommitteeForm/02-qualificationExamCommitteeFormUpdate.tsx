@@ -31,8 +31,8 @@ const formSchema = z.object({
 	headSchoolSignUrl: z.string(),
 });
 
-const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) => {
-	const { data: formData } = useSWR<IComprehensiveExamCommitteeForm>(`/api/get01FormById/${formId}`, fetcher);
+const QualificationExamCommitteeFormUpdate = ({ formId }: { formId: number }) => {
+	const { data: formData } = useSWR<IComprehensiveExamCommitteeForm>(`/api/get02FormById/${formId}`, fetcher);
 	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const { data: headSchool } = useSWR<IUser[]>("/api/getHeadSchool", fetcher);
 	const [loading, setLoading] = useState(false);
@@ -86,7 +86,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 			return;
 		}
 		const url = qs.stringifyUrl({
-			url: `/api/01ComprehensiveExamCommitteeForm`,
+			url: `/api/02QualificationExamCommitteeForm`,
 		});
 		const res = await axios.patch(url, values);
 		if (res.status === 200) {
@@ -98,7 +98,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 			setTimeout(() => {
 				form.reset();
 				router.refresh();
-				router.push("/user/table?formType=comprehensiveExamCommitteeForm");
+				router.push("/user/table?formType=qualificationExamCommitteeForm");
 			}, 1000);
 		} else {
 			toast({
@@ -131,7 +131,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push("/user/table?formType=comprehensiveExamCommitteeForm")}
+						onClick={() => router.push("/user/table?formType=qualificationExamCommitteeForm")}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436]"
 					>
 						ย้อนกลับ
@@ -157,7 +157,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 					</div>
 
 					<div className="w-full sm:2/4">
-						<h1 className="text-center font-semibold mb-2">ขอเสนอเเต่งตั้งคณะกรรมการสอบประมวลความรู้</h1>
+						<h1 className="text-center font-semibold mb-2">แบบคำขออนุมัติแต่งตั้งกรรมการสอบวัดคุณสมบัติ</h1>
 						<div className="flex items-center justify-center text-sm">
 							<CircleAlert className="mr-1" />
 							สามารถดูรายชื่อกรรมการที่ได้รับการรับรองเเล้ว
@@ -303,7 +303,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push(`/user/table?formType=comprehensiveExamCommitteeForm`)}
+						onClick={() => router.push(`/user/table?formType=qualificationExamCommitteeForm`)}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436] md:ml-auto"
 					>
 						ยกเลิก
@@ -322,4 +322,4 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 	);
 };
 
-export default ComprehensiveExamCommitteeFormUpdate;
+export default QualificationExamCommitteeFormUpdate;

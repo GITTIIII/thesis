@@ -114,7 +114,8 @@ export async function GET() {
 						}
 					}
 				}
-			}
+			},
+			certificate: true,
 		},
 	});
 

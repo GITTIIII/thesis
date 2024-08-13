@@ -102,6 +102,19 @@ model Expert{
   updatedAt DateTime @updatedAt
 }
 
+model Certificate {
+  id            Int       @id @default(autoincrement())
+  type          String    
+  fileUrl       String    @db.LongText
+  description   String?
+
+  userID        Int
+  user          User      @relation(fields: [userID], references: [id])
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
 model User {
   id Int            @id @default(autoincrement())
   prefixID          Int?
@@ -116,6 +129,7 @@ model User {
   phone             String?
   sex               String?
   degree            String?
+  certificate       Certificate[]
 
   instituteID       Int?
   institute         Institute?   @relation("userInstitute", fields: [instituteID], references: [id])
@@ -160,6 +174,7 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
 }
 
 model CoAdvisorStudent{

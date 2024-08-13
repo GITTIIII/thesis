@@ -7,7 +7,7 @@ import { Download } from "lucide-react";
 import { IQualificationExamCommitteeForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 
-async function getFormData(stdId: number | undefined) {
+async function get02FormByStdId(stdId: number | undefined) {
 	if (stdId) {
 		const res = await fetch(`/api/get02FormByStdId/${stdId}`, {
 			next: { revalidate: 10 },
@@ -16,13 +16,25 @@ async function getFormData(stdId: number | undefined) {
 	}
 }
 
+async function get02FormData() {
+	const res = await fetch(`/api/02QualificationExamCommitteeForm`, {
+		next: { revalidate: 10 },
+	});
+	return res.json();
+}
+
 export default function QualificationExamCommitteeFormTable({ userData }: { userData: IUser | undefined }) {
 	const [formData, setFormData] = useState<IQualificationExamCommitteeForm[]>();
 
 	useEffect(() => {
 		async function fetchData() {
-			const formData = await getFormData(userData?.id);
-			setFormData(formData);
+			if (userData?.role.toString() === "STUDENT") {
+				const formData = await get02FormByStdId(userData?.id);
+				setFormData(formData);
+			} else {
+				const formData = await get02FormData();
+				setFormData(formData);
+			}
 		}
 		fetchData();
 	}, [userData]);
@@ -65,10 +77,14 @@ export default function QualificationExamCommitteeFormTable({ userData }: { user
 									<TableCell className="text-center">{formData.times}</TableCell>
 									<TableCell className="text-center">{formData.examDay}</TableCell>
 									<TableCell className="text-[#F26522] text-center">
-										<Link href={`/user/form/qualificationExamCommitteeForm/${formData.id}`}>คลิกเพื่อดูเพิ่มเติม</Link>
+										<Link href={
+												formData.headSchoolID || userData?.role.toString() == "STUDENT"
+													? `/user/form/qualificationExamCommitteeForm/${formData.id}`
+													: `/user/form/qualificationExamCommitteeForm/update/${formData.id}`
+											}>คลิกเพื่อดูเพิ่มเติม</Link>
 									</TableCell>
 									<TableCell className="text-center">
-										<Button type="button" variant="outline">
+										<Button disabled={!formData.headSchoolID} type="button" variant="outline">
 											<Download className="mr-2" />
 											ดาวน์โหลด
 										</Button>

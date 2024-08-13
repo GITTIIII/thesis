@@ -28,6 +28,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { cn } from "@/lib/utils";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { IPrefix } from "@/interface/prefix";
+import Link from "next/link";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -36,7 +37,7 @@ export default function Profile() {
 
 	return (
 		<>
-			<div className="w-full h-max flex justify-center items-center p-10">
+			<div className="w-full h-max flex flex-col justify-center items-center p-10">
 				<div className="h-max lg:w-[950px] md:w-[750px] w-[400px]  [&>div]:bg-white [&>div]:border [&>div]:overflow-hidden  [&>div]:rounded-lg [&>div]:shadow-[0px_0px_5px_1px_#e2e8f0] grid md:grid-cols-4 md:grid-rows-9 gap-4">
 					<div className="lg:row-span-3 md:col-start-1 md:row-start-1 md:col-span-1 col-start-1 row-span-3  col-span-4  content-center justify-center flex relative p-4">
 						<Avatar className="w-[128px] h-max my-auto">
@@ -106,6 +107,38 @@ export default function Profile() {
 							/>
 						</div>
 					</div>
+					{user?.role.toString() === "STUDENT" && (
+						<div className="md:col-span-4 md:row-span-4 row-start-4 row-span-3 col-span-4 p-8 relative ">
+							<label className=" text-xl ">ทุนการศึกษา</label>
+							<div className=" absolute right-0 top-0">
+								<EditCertificate user={user} />
+							</div>
+							<div className="mt-4 flex flex-col">
+								<div>
+									<label>{`ทุน OROG ${
+										user?.degree == "Master"
+											? `(ป.โท วารสารระดับชาติ หรือ ประชุมวิชาการระดับนานาชาติ)`
+											: `(ป.เอก วารสารระดับนานาชาติ)`
+									}`}</label>
+								</div>
+								<div>
+									<label>{`ทุนกิตติบัณฑิต / ทุนวิเทศบัณฑิต ${
+										user?.degree == "Master"
+											? `(ป.โท ประชุมวิชาการระดับชาติ / นานาชาติ เเละ วารสารระดับชาติ / นานาชาติ)`
+											: `(ป.เอก นำเสนอผลงานระดับชาติ / นานาชาติ เเละ วารสารระดับนานาชาติ)`
+									}`}</label>
+								</div>
+								<div>
+									<label>{`ทุนศักยภาพ / ทุนเรียนดี / ทุนส่วนตัว ${
+										user?.degree == "Master" ? `(ป.โท ประชุมวิชาการระดับชาติ)` : `(ป.เอก วารสารระดับชาติ)`
+									}`}</label>
+								</div>
+								<div>
+									<label>{`ทุนอื่นๆ`}</label>
+								</div>
+							</div>
+						</div>
+					)}
 				</div>
 			</div>
 		</>
@@ -428,7 +461,9 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 							)}
 						/>
 						<DialogFooter className=" mt-4">
-							<Button disabled={form.formState.isSubmitting} type="submit">ยืนยัน</Button>
+							<Button disabled={form.formState.isSubmitting} type="submit">
+								ยืนยัน
+							</Button>
 						</DialogFooter>
 					</form>
 				</Form>
@@ -619,7 +654,7 @@ const EditSignature = ({ user }: { user: IUser | undefined }) => {
 														canvasProps={{
 															style: {
 																width: "400px",
-																height: "400px",
+																height: "150px",
 															},
 														}}
 													/>
@@ -655,7 +690,7 @@ const EditSignature = ({ user }: { user: IUser | undefined }) => {
 												image={image}
 												crop={crop}
 												zoom={zoom}
-												aspect={3 / 2}
+												aspect={5 / 2}
 												rotation={rotation}
 												onCropChange={setCrop}
 												onCropComplete={onCropComplete}
@@ -861,7 +896,79 @@ const EditProfile = ({ user }: { user: IUser | undefined }) => {
 						onChange={handleFileChange}
 						className=" mt-2 text-sm text-grey-500 rounded-md file:border-0 file:text-md file:w-fit file:h-full file:text-[#F26522] bg-white hover:file:cursor-pointer hover:file:opacity-80"
 					/>
-					<Button type="submit"  className=" mt-2 w-full" onClick={() => onSubmit(form.getValues())}>
+					<Button type="submit" className=" mt-2 w-full" onClick={() => onSubmit(form.getValues())}>
+						ยืนยัน
+					</Button>
+				</DialogContent>
+			</Dialog>
+		</>
+	);
+};
+
+const EditCertificate = ({ user }: { user: IUser | undefined }) => {
+	const [file, setFile] = useState<File | null>(null);
+	const [loading, setLoading] = useState<boolean>(false);
+	const [fileUrl, setFileUrl] = useState<string | null>(null);
+	const [open, setOpen] = useState(false);
+	const { toast } = useToast();
+	const router = useRouter();
+	const { mutate } = useSWRConfig();
+	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		if (e.target.files && e.target.files[0]) {
+			setFile(e.target.files[0]);
+		}
+	};
+
+	const handleUpload = async () => {
+		if (!file) return;
+
+		const formData = new FormData();
+		formData.append("file", file);
+
+		setLoading(true);
+
+		const url = qs.stringifyUrl({
+			url: `/api/upload`,
+		});
+		const res = await axios.post(url, formData);
+		if (res.status === 200) {
+			toast({
+				title: "Success",
+				description: "บันทึกสำเร็จแล้ว",
+				variant: "default",
+			});
+			router.refresh();
+			mutate("/api/getCurrentUser");
+			setOpen(false);
+			setLoading(false);
+		} else {
+			toast({
+				title: "Error",
+				description: res.statusText,
+				variant: "destructive",
+			});
+			setLoading(false);
+		}
+	};
+
+	return (
+		<>
+			<Dialog open={open} onOpenChange={setOpen}>
+				<DialogTrigger asChild>
+					<Button variant="link">
+						<GoPencil size={20} />
+					</Button>
+				</DialogTrigger>
+				<DialogContent className="md:max-w-[500px] md:max-h-max sm:max-w-[425px]  inline rounded-lg">
+					<DialogHeader>
+						<DialogTitle className=" text-2xl">ไฟล์</DialogTitle>
+					</DialogHeader>
+					<Input
+						type="file"
+						onChange={handleFileChange}
+						className=" mt-2 text-sm text-grey-500 rounded-md file:border-0 file:text-md file:w-fit file:h-full file:text-[#F26522] bg-white hover:file:cursor-pointer hover:file:opacity-80"
+					/>
+					<Button disabled={loading} type="submit" className=" mt-2 w-full" onClick={() => handleUpload()}>
 						ยืนยัน
 					</Button>
 				</DialogContent>

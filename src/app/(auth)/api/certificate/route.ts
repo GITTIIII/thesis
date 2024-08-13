@@ -12,19 +12,20 @@ export async function POST(req: Request) {
 		}
 
 		const body = await req.json();
-		const { prefix, firstName, lastName } = body;
+		const { type, fileUrl, description, userID } = body;
 
-		const expert = await db.expert.create({
+		const certificate = await db.certificate.create({
 			data: {
-				prefix,
-				firstName,
-				lastName,
+				type,
+				fileUrl,
+				description,
+				userID,
 			},
 		});
 
-		const { ...rest } = expert;
+		const { ...rest } = certificate;
 
-		return NextResponse.json({ form: rest, message: "Expert Created" }, { status: 200 });
+		return NextResponse.json({ form: rest, message: "Certificate Created" }, { status: 200 });
 	} catch (error) {
 		return NextResponse.json({ message: error }, { status: 500 });
 	}
@@ -37,9 +38,9 @@ export async function GET() {
 		return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
 	}
 
-	const expert = await db.expert.findMany({});
+	const certificate = await db.certificate.findMany({});
 
-	return NextResponse.json(expert);
+	return NextResponse.json(certificate);
 }
 
 export async function PATCH(req: Request) {
@@ -51,32 +52,32 @@ export async function PATCH(req: Request) {
 		}
 
 		const body = await req.json();
-		const { id, prefix, firstName, lastName } = body;
+		const { id, type, fileUrl, description } = body;
 
 		if (!id) {
-			return NextResponse.json({ message: "Expert ID is required for update" }, { status: 400 });
+			return NextResponse.json({ message: "Certificate ID is required for update" }, { status: 400 });
 		}
 
-		const existingExpert = await db.expert.findUnique({
+		const existingCertificate = await db.certificate.findUnique({
 			where: { id: id },
 		});
 
-		if (!existingExpert) {
-			return NextResponse.json({ user: null, message: "Expert not found" }, { status: 404 });
+		if (!existingCertificate) {
+			return NextResponse.json({ user: null, message: "Certificate not found" }, { status: 404 });
 		}
 
-		const expert = await db.expert.update({
+		const certificate = await db.certificate.update({
 			where: { id: id },
 			data: {
-				prefix: existingExpert.prefix || prefix,
-				firstName: existingExpert.firstName || firstName,
-				lastName: existingExpert.lastName || lastName,
+				type: existingCertificate.type || type,
+				fileUrl: existingCertificate.fileUrl || fileUrl,
+				description: existingCertificate.description || description,
 			},
 		});
 
-		const { ...rest } = expert;
+		const { ...rest } = certificate;
 
-		return NextResponse.json({ form: rest, message: "Expert Updated" }, { status: 200 });
+		return NextResponse.json({ form: rest, message: "Certificate Updated" }, { status: 200 });
 	} catch (error) {
 		return NextResponse.json({ message: error }, { status: 500 });
 	}

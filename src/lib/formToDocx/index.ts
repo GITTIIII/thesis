@@ -14,7 +14,7 @@ export const genDocx = async (path: string, data: any) => {
 			additionalJsContext: {
 				image: (url: string) => {
 					const data = url.slice("data:image/png;base64,".length);
-					return { width: 5, height: 3, data, extension: ".png" };
+					return { width: 5, height: 2, data, extension: ".png" };
 				},
 			},
 		});

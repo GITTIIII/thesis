@@ -109,7 +109,11 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 									</Link>
 								</TableCell>
 								<TableCell className="text-center">
-									<Button type="button" variant="outline">
+									<Button
+										disabled={!formData.outlineCommitteeID && !formData.instituteCommitteeID}
+										type="button"
+										variant="outline"
+									>
 										<Download className="mr-2" />
 										ดาวน์โหลด
 									</Button>
