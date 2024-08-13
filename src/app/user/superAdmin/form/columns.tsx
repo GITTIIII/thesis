@@ -1,21 +1,83 @@
 "use client";
 
+import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
-import { IComprehensiveExamCommitteeForm, IOutlineForm, IQualificationExamCommitteeForm } from "@/interface/form";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  IComprehensiveExamCommitteeForm,
+  IQualificationExamCommitteeForm,
+  IOutlineForm,
+  IThesisProgressForm,
+} from "@/interface/form";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import ActionMenu from "@/components/actionMenu/ActionMenu";
 import { FindStatus05 } from "@/components/formStatus/FormStatus";
-import { ArrowUpDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
+
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export const form01Columns: ColumnDef<IComprehensiveExamCommitteeForm>[] = [
+
+const form01Columns: ColumnDef<IComprehensiveExamCommitteeForm>[] = [
+  {
+    header: "ลำดับ",
+    cell: (row) => row.row.index + 1,
+  },
+  {
+    header: "วันที่สร้าง",
+    accessorKey: "date",
+  },
+  {
+    header: "ภาคการศึกษา",
+    accessorFn: (row) => `${row.trimester}/${row.academicYear}`,
+  },
+  {
+    id: "studentID",
+    header: ({ column }) => {
+      return (
+        <Button className="p-0" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          รหัศนักศึกษา
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    accessorKey: "student.username",
+  },
+  {
+    id: "studentName",
+    header: "ชื่อนักศึกษา",
+    accessorFn: (row) =>
+      `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
+  },
+  {
+    header: "ครั้งที่สอบ",
+    accessorKey: "times",
+  },
+  {
+    header: "วันที่สอบ",
+    accessorKey: "examDay",
+  },
+  {
+    header: "รายละเอียด",
+    cell: (row) => (
+      <Link
+        className="text-[#F26522] text-center"
+        href={`/user/form/comprehensiveExamCommitteeForm/${row.row.original.id}`}
+      >
+        คลิกเพื่อดูเพิ่มเติม
+      </Link>
+    ),
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const form01 = row.original.id;
+      console.log("Hel1111111111111111111", form01);
+      const deleteAPI = `/api/delete01FormById/${form01}`;
+      return <ActionMenu deleteAPI={deleteAPI} />;
+    },
+  },
+];
+const form02Columns: ColumnDef<IQualificationExamCommitteeForm>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -36,330 +98,105 @@ export const form01Columns: ColumnDef<IComprehensiveExamCommitteeForm>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "id",
     header: "ลำดับ",
+    cell: (row) => row.row.index + 1,
   },
   {
-    accessorKey: "date",
     header: "วันที่สร้าง",
+    accessorKey: "date",
   },
   {
-    accessorKey: "trimester",
     header: "ภาคการศึกษา",
-  },
-  {
-    accessorKey: "academicYear",
-    header: "ปีการศึกษา",
+    accessorFn: (row) => `${row.trimester}/${row.academicYear}`,
   },
   {
     id: "studentID",
-    accessorKey: "student.username",
     header: ({ column }) => {
       return (
-        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+        <Button className="p-0" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
           รหัศนักศึกษา
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
+    accessorKey: "student.username",
   },
   {
-    accessorFn: (row) =>
-      `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
     id: "studentName",
     header: "ชื่อนักศึกษา",
+    accessorFn: (row) =>
+      `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
   },
   {
+    header: "ครั้งที่สอบ",
     accessorKey: "times",
-    header: "สอบครั้งที่",
   },
   {
-    accessorKey: "examDay",
     header: "วันที่สอบ",
+    accessorKey: "examDay",
   },
   {
     header: "รายละเอียด",
-    cell: () => {
-      return <div>ดูรายละเอียด</div>;
-    },
+    cell: (row) => (
+      <Link
+        className="text-[#F26522] text-center"
+        href={`/user/form/qualificationExamCommitteeForm/${row.row.original.id}`}
+      >
+        คลิกเพื่อดูเพิ่มเติม
+      </Link>
+    ),
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      //อาจจะนำไปใช้ในการดาวน์โหลดเลือก id ที่อยู่ใน row
-      const form01 = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">เปิดเมนู</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>ตัวเลือก</DropdownMenuLabel>
-            <DropdownMenuItem>ดาวน์โหลด</DropdownMenuItem>
-            <DropdownMenuItem>แก้ไขฟอร์ม</DropdownMenuItem>
-            <DropdownMenuItem>ลบฟอร์ม</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+      const form02 = row.original.id;
+      console.log("Hel2222222222222222222", form02);
+      const deleteAPI = `/api/delete02FormById/${form02}`;
+      return <ActionMenu deleteAPI={deleteAPI} />;
     },
   },
 ];
-export const form02Columns: ColumnDef<IQualificationExamCommitteeForm>[] = [
+const form03Columns: ColumnDef<any>[] = [];
+const form04Columns: ColumnDef<any>[] = [];
+const form05Columns: ColumnDef<IOutlineForm>[] = [
   {
-    accessorKey: "id",
     header: "ลำดับ",
+    cell: (row) => row.row.index + 1,
   },
   {
-    accessorKey: "date",
     header: "วันที่สร้าง",
+    accessorKey: "date",
   },
   {
-    accessorKey: "trimester",
     header: "ภาคการศึกษา",
-  },
-  {
-    accessorKey: "academicYear",
-    header: "ปีการศึกษา",
+    // accessorFn: (row) => `${row.trimester}/${row.academicYear}`,
   },
   {
     id: "studentID",
-    accessorKey: "student.username",
     header: ({ column }) => {
       return (
-        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+        <Button className="p-0" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
           รหัศนักศึกษา
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
     },
+    accessorKey: "student.username",
   },
   {
-    accessorFn: (row) =>
-      `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
     id: "studentName",
     header: "ชื่อนักศึกษา",
+    accessorFn: (row) =>
+      `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
   },
   {
-    accessorKey: "times",
-    header: "สอบครั้งที่",
-  },
-  {
-    accessorKey: "examDay",
-    header: "วันที่สอบ",
-  },
-  {
-    header: "รายละเอียด",
-    cell: () => {
-      return <div>ดูรายละเอียด</div>;
-    },
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      //อาจจะนำไปใช้ในการดาวน์โหลดเลือก id ที่อยู่ใน row
-      const form01 = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">เปิดเมนู</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>ตัวเลือก</DropdownMenuLabel>
-            <DropdownMenuItem>ดาวน์โหลด</DropdownMenuItem>
-            <DropdownMenuItem>แก้ไขฟอร์ม</DropdownMenuItem>
-            <DropdownMenuItem>ลบฟอร์ม</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
-export const form03Columns: ColumnDef<IOutlineForm>[] = [
-  {
-    accessorKey: "id",
-    header: "ลำดับ",
-  },
-  {
-    accessorKey: "date",
-    header: "วันที่สร้าง",
-  },
-  {
-    accessorKey: "thesisNameTH",
     header: "ชื่อวิทยานิพนธ์",
-  },
-  {
-    id: "studentID",
-    accessorKey: "student.username",
-    header: ({ column }) => {
-      return (
-        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          รหัศนักศึกษา
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-  },
-  {
-    accessorFn: (row) =>
-      `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
-    id: "studentName",
-    header: "ชื่อนักศึกษา",
-  },
-  {
-    accessorKey: "thesisStartMonth",
-    header: "เดือนที่เริ่ม",
-  },
-  {
-    accessorKey: "thesisStartYear",
-    header: "ปีที่เริ่ม",
-  },
-  {
-    header: "รายละเอียด",
-    cell: () => {
-      return <div>ดูรายละเอียด</div>;
-    },
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      //อาจจะนำไปใช้ในการดาวน์โหลดเลือก id ที่อยู่ใน row
-      const form01 = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">เปิดเมนู</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>ตัวเลือก</DropdownMenuLabel>
-            <DropdownMenuItem>ดาวน์โหลด</DropdownMenuItem>
-            <DropdownMenuItem>แก้ไขฟอร์ม</DropdownMenuItem>
-            <DropdownMenuItem>ลบฟอร์ม</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
-export const form04Columns: ColumnDef<IOutlineForm>[] = [
-  {
-    accessorKey: "id",
-    header: "ลำดับ",
-  },
-  {
-    accessorKey: "date",
-    header: "วันที่สร้าง",
-  },
-  {
     accessorKey: "thesisNameTH",
-    header: "ชื่อวิทยานิพนธ์",
   },
   {
-    id: "studentID",
-    accessorKey: "student.username",
-    header: ({ column }) => {
-      return (
-        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          รหัศนักศึกษา
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-  },
-  {
+    header: "วันที่เริ่ม",
     accessorFn: (row) =>
-      `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
-    id: "studentName",
-    header: "ชื่อนักศึกษา",
-  },
-  {
-    accessorKey: "thesisStartMonth",
-    header: "เดือนที่เริ่ม",
-  },
-  {
-    accessorKey: "thesisStartYear",
-    header: "ปีที่เริ่ม",
-  },
-  {
-    header: "รายละเอียด",
-    cell: () => {
-      return <div>ดูรายละเอียด</div>;
-    },
-  },
-  {
-    id: "actions",
-    cell: ({ row }) => {
-      //อาจจะนำไปใช้ในการดาวน์โหลดเลือก id ที่อยู่ใน row
-      const form01 = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">เปิดเมนู</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>ตัวเลือก</DropdownMenuLabel>
-            <DropdownMenuItem>ดาวน์โหลด</DropdownMenuItem>
-            <DropdownMenuItem>แก้ไขฟอร์ม</DropdownMenuItem>
-            <DropdownMenuItem>ลบฟอร์ม</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
-    },
-  },
-];
-export const form05Columns: ColumnDef<IOutlineForm>[] = [
-  {
-    accessorKey: "id",
-    header: "ลำดับ",
-  },
-  {
-    accessorKey: "date",
-    header: "วันที่สร้าง",
-  },
-  {
-    accessorKey: "thesisNameTH",
-    header: "ชื่อวิทยานิพนธ์",
-  },
-  {
-    id: "studentID",
-    accessorKey: "student.username",
-    header: ({ column }) => {
-      return (
-        <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          รหัศนักศึกษา
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      );
-    },
-  },
-  {
-    accessorFn: (row) =>
-      `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
-    id: "studentName",
-    header: "ชื่อนักศึกษา",
-  },
-  {
-    accessorKey: "thesisStartMonth",
-    header: "เดือนที่เริ่ม",
-  },
-  {
-    accessorKey: "thesisStartYear",
-    header: "ปีที่เริ่ม",
+      `${row.thesisStartMonth} ${row.thesisStartYear}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
   },
   {
     header: "สถานะ",
@@ -367,32 +204,94 @@ export const form05Columns: ColumnDef<IOutlineForm>[] = [
   },
   {
     header: "รายละเอียด",
-    cell: () => {
-      return <div>ดูรายละเอียด</div>;
-    },
+    cell: (row) => (
+      <Link className="text-[#F26522] text-center" href={`/user/form/outlineForm/${row.row.original.id}`}>
+        คลิกเพื่อดูเพิ่มเติม
+      </Link>
+    ),
   },
   {
     id: "actions",
     cell: ({ row }) => {
-      //อาจจะนำไปใช้ในการดาวน์โหลดเลือก id ที่อยู่ใน row
-      const form01 = row.original;
-
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">เปิดเมนู</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>ตัวเลือก</DropdownMenuLabel>
-            <DropdownMenuItem>ดาวน์โหลด</DropdownMenuItem>
-            <DropdownMenuItem>แก้ไขฟอร์ม</DropdownMenuItem>
-            <DropdownMenuItem>ลบฟอร์ม</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      );
+      const form05 = row.original.id;
+      console.log("55555555555555555555", form05);
+      const deleteAPI = `/api/delete05FormById/${form05}`;
+      return <ActionMenu deleteAPI={deleteAPI} />;
     },
   },
 ];
+const form06Columns: ColumnDef<IThesisProgressForm>[] = [
+  {
+    header: "ลำดับ",
+    cell: (row) => row.row.index + 1,
+  },
+  {
+    header: "วันที่สร้าง",
+    accessorKey: "date",
+  },
+  {
+    header: "ภาคการศึกษา",
+    accessorFn: (row) => `${row.trimester}`,
+    // accessorFn: (row) => `${row.trimester}/${row.academicYear}`,
+  },
+  {
+    id: "studentID",
+    header: ({ column }) => {
+      return (
+        <Button className="p-0" variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
+          รหัศนักศึกษา
+          <ArrowUpDown className="ml-2 h-4 w-4" />
+        </Button>
+      );
+    },
+    accessorKey: "student.username",
+  },
+  {
+    id: "studentName",
+    header: "ชื่อนักศึกษา",
+    accessorFn: (row) =>
+      `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
+  },
+  {
+    header: "ชื่อวิทยานิพนธ์",
+    accessorKey: "thesisNameTH" != null ? "thesisNameTH" : "thesisNameEN",
+  },
+  {
+    header: "เปอร์เซ็นต์",
+    accessorKey: "percentage",
+  },
+  {
+    header: "สถานะ",
+    accessorKey: "status",
+  },
+  {
+    header: "รายละเอียด",
+    cell: (row) => (
+      <Link className="text-[#F26522] text-center" href={`/user/form/thesisProgressForm/${row.row.original.id}`}>
+        คลิกเพื่อดูเพิ่มเติม
+      </Link>
+    ),
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const form06 = row.original.id;
+      console.log("666666666666666666666", form06);
+      const deleteAPI = `/api/delete06FormById/${form06}`;
+      return <ActionMenu deleteAPI={deleteAPI} />;
+    },
+  },
+];
+const form07Columns: ColumnDef<any>[] = [];
+const form08Columns: ColumnDef<any>[] = [];
+
+export const formColumns = {
+  form01Columns,
+  form02Columns,
+  form03Columns,
+  form04Columns,
+  form05Columns,
+  form06Columns,
+  form07Columns,
+  form08Columns,
+};
