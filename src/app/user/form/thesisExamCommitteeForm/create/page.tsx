@@ -3,7 +3,7 @@ import learning1 from "@/../../public/asset/learning1.png";
 import ThesisExamCommitteeFormFormCreate from "@/components/form/04-thesisExamCommitteeForm/04-thesisExamCommitteeFormCreate";
 import Image from "next/image";
 
-const ThesisExamCommitteeFormFormCreatePage = () => {
+const ThesisExamCommitteeFormCreatePage = () => {
 	return (
 		<>
 			<div className="w-full h-max bg-transparent py-12 px-2 lg:px-28">
@@ -26,4 +26,4 @@ const ThesisExamCommitteeFormFormCreatePage = () => {
 	);
 };
 
-export default ThesisExamCommitteeFormFormCreatePage;
+export default ThesisExamCommitteeFormCreatePage;

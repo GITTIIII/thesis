@@ -5,6 +5,7 @@ import { IPrefix } from "./prefix";
 import { ICoAdvisorStudents } from "./coAdvisorStudents";
 
 export type IUser = {
+	name: string;
 	map(arg0: (data: IUser) => import("react").JSX.Element): import("react").ReactNode;
 	id: number;
 	prefixID: number;
