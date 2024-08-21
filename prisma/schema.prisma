@@ -103,10 +103,11 @@ model Expert{
 }
 
 model Certificate {
-  id            Int       @id @default(autoincrement())
-  type          String    
-  fileUrl       String    @db.LongText
-  description   String?
+  id                       Int       @id @default(autoincrement())
+  certificateType          String    
+  fileName                 String    
+  fileType                 String 
+  description              String?
 
   userID        Int
   user          User      @relation(fields: [userID], references: [id])
@@ -188,6 +189,7 @@ model CoAdvisorStudent{
     @@id([studentID, coAdvisorID])
 }
 
+// 01
 model ComprehensiveExamCommitteeForm{
   id                  Int       @id @default(autoincrement())
   date                String
@@ -211,6 +213,7 @@ model ComprehensiveExamCommitteeForm{
   updatedAt           DateTime  @updatedAt
 }
 
+// 02
 model QualificationExamCommitteeForm{
   id                  Int       @id @default(autoincrement())
   date                String
@@ -234,6 +237,7 @@ model QualificationExamCommitteeForm{
   updatedAt DateTime  @updatedAt
 }
 
+// 05
 model OutlineForm {
   id                           Int       @id @default(autoincrement())
   date                         String
@@ -269,6 +273,7 @@ model OutlineForm {
   updatedAt DateTime @updatedAt
 }
 
+// 06
 model ThesisProgressForm{
   id                          Int        @id @default(autoincrement())
   times                       Int

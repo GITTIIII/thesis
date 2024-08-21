@@ -3,6 +3,7 @@ import { ISchool } from "./school";
 import { IProgram } from "./program";
 import { IPrefix } from "./prefix";
 import { ICoAdvisorStudents } from "./coAdvisorStudents";
+import { ICertificate } from "./certificate";
 
 export type IUser = {
 	name: string;
@@ -20,6 +21,7 @@ export type IUser = {
 	phone: string;
 	sex: string;
 	degree: string;
+	certificate: ICertificate;
 
 	instituteID: number;
 	institute: IInstitute;

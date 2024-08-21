@@ -1,7 +1,10 @@
 import { authOptions } from "@/lib/auth";
-import { db } from "@/lib/db";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { uploadFileToBucket } from "@/lib/file";
+
+const MAX_FILE_SIZE = 1024 * 1024 * 5;
 
 export async function POST(req: Request) {
 	try {
@@ -11,23 +14,43 @@ export async function POST(req: Request) {
 			return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
 		}
 
-		const body = await req.json();
-		const { type, fileUrl, description, userID } = body;
+		const formData = await req.formData();
+		const file: File | null = formData.get("file") as File | null;
+		const certificateType = formData.get("certificateType") as string;
+		const description = formData.get("description") as string | null;
+		const userID = formData.get("id") as string | null;
+
+		if (!userID) {
+			return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+		}
+
+		if (!file) {
+			return NextResponse.json({ error: "File is required" }, { status: 400 });
+		}
+
+		if (file.size > MAX_FILE_SIZE) {
+			throw new Error("File size should be less than 5MB.");
+		}
+
+		await uploadFileToBucket(file, file.name);
 
 		const certificate = await db.certificate.create({
 			data: {
-				type,
-				fileUrl,
-				description,
-				userID,
+				certificateType: certificateType,
+				fileName: file.name,
+				fileType: file.type,
+				description: description,
+				userID: Number(userID),
 			},
 		});
 
 		const { ...rest } = certificate;
 
-		return NextResponse.json({ form: rest, message: "Certificate Created" }, { status: 200 });
+		return NextResponse.json({ form: rest, message: "File Uploaded" }, { status: 200 });
 	} catch (error) {
-		return NextResponse.json({ message: error }, { status: 500 });
+		const err = error as Error;
+		console.log(err.message);
+		return NextResponse.json({ error: err.message }, { status: 400 });
 	}
 }
 
@@ -52,7 +75,7 @@ export async function PATCH(req: Request) {
 		}
 
 		const body = await req.json();
-		const { id, type, fileUrl, description } = body;
+		const { id, certificateType, fileName, fileType, description } = body;
 
 		if (!id) {
 			return NextResponse.json({ message: "Certificate ID is required for update" }, { status: 400 });
@@ -69,8 +92,9 @@ export async function PATCH(req: Request) {
 		const certificate = await db.certificate.update({
 			where: { id: id },
 			data: {
-				type: existingCertificate.type || type,
-				fileUrl: existingCertificate.fileUrl || fileUrl,
+				certificateType: existingCertificate.certificateType || certificateType,
+				fileName: existingCertificate.fileName || fileName,
+				fileType: existingCertificate.fileType || fileType,
 				description: existingCertificate.description || description,
 			},
 		});

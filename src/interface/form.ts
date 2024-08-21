@@ -6,6 +6,7 @@ export interface IProcessPlan {
 	months: number[];
 }
 
+// 01
 export type IComprehensiveExamCommitteeForm = {
 	id: number;
 	date: string;
@@ -27,6 +28,7 @@ export type IComprehensiveExamCommitteeForm = {
 	student: IUser;
 };
 
+// 02
 export type IQualificationExamCommitteeForm = {
 	id: number;
 	date: string;
@@ -48,6 +50,7 @@ export type IQualificationExamCommitteeForm = {
 	student: IUser;
 };
 
+// 05
 export type IOutlineForm = {
 	id: number;
 	date: string;
@@ -77,6 +80,7 @@ export type IOutlineForm = {
 	dateInstituteCommitteeSign: string;
 };
 
+// 06
 export type IThesisProgressForm = {
 	id: number;
 	times: number;

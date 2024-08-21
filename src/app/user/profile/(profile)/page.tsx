@@ -21,7 +21,7 @@ import React, { useState, useEffect, useRef } from "react";
 import signature from "@/../../public/asset/signature.png";
 import { useRouter } from "next/navigation";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Check, ChevronsUpDown, User } from "lucide-react";
+import { Check, ChevronsUpDown, Plus, Trash2, User } from "lucide-react";
 import useSWR, { useSWRConfig } from "swr";
 import SignatureCanvas from "react-signature-canvas";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -29,11 +29,47 @@ import { cn } from "@/lib/utils";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { IPrefix } from "@/interface/prefix";
 import Link from "next/link";
+import { Textarea } from "@/components/ui/textarea";
+import { ICertificate } from "@/interface/certificate";
+import pdfIcon from "@/../../public/asset/pdf.png";
+import pngIcon from "@/../../public/asset/png.png";
+import jpgIcon from "@/../../public/asset/jpg.png";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function Profile() {
 	const { data: user, isLoading } = useSWR("/api/getCurrentUser", fetcher);
+	const [loading, setLoading] = useState<boolean>(false);
+	const { toast } = useToast();
+	const { mutate } = useSWRConfig();
+	const router = useRouter();
+
+	const handleDeleteCertificate = async (certificateID: Number) => {
+		if (!certificateID) return;
+		setLoading(true);
+
+		const url = qs.stringifyUrl({
+			url: `/api/deleteCertificateById/${certificateID}`,
+		});
+		const res = await axios.delete(url);
+		if (res.status === 200) {
+			toast({
+				title: "Success",
+				description: "ลบไฟล์แล้ว",
+				variant: "default",
+			});
+			router.refresh();
+			mutate("/api/getCurrentUser");
+			setLoading(false);
+		} else {
+			toast({
+				title: "Error",
+				description: res.statusText,
+				variant: "destructive",
+			});
+			setLoading(false);
+		}
+	};
 
 	return (
 		<>
@@ -110,9 +146,6 @@ export default function Profile() {
 					{user?.role.toString() === "STUDENT" && (
 						<div className="md:col-span-4 md:row-span-4 row-start-4 row-span-3 col-span-4 p-8 relative ">
 							<label className=" text-xl ">ทุนการศึกษา</label>
-							<div className=" absolute right-0 top-0">
-								<EditCertificate user={user} />
-							</div>
 							<div className="mt-4 flex flex-col">
 								<div>
 									<label>{`ทุน OROG ${
@@ -120,6 +153,78 @@ export default function Profile() {
 											? `(ป.โท วารสารระดับชาติ หรือ ประชุมวิชาการระดับนานาชาติ)`
 											: `(ป.เอก วารสารระดับนานาชาติ)`
 									}`}</label>
+									<div>
+										<EditCertificate user={user} certificateType="1" />
+										{user.certificate.length === 0 ? null : (
+											<>
+												{user.certificate
+													.filter((certificate: ICertificate) => certificate.certificateType === "1")
+													.map((certificate: ICertificate) => (
+														<div key={certificate.id} className="flex">
+															{certificate.fileName ? (
+																<>
+																	<div className="w-full h-max my-2 flex justify-start items-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
+																		{certificate.fileType === "image/jpeg" && (
+																			<Image
+																				src={jpgIcon}
+																				width={32}
+																				height={32}
+																				style={{
+																					width: "auto",
+																					height: "auto",
+																				}}
+																				alt="jpeg"
+																			/>
+																		)}
+																		{certificate.fileType === "application/pdf" && (
+																			<Image
+																				src={pdfIcon}
+																				width={32}
+																				height={32}
+																				style={{
+																					width: "auto",
+																					height: "auto",
+																				}}
+																				alt="pdf"
+																			/>
+																		)}
+																		{certificate.fileType === "image/png" && (
+																			<Image
+																				src={pngIcon}
+																				width={32}
+																				height={32}
+																				style={{
+																					width: "auto",
+																					height: "auto",
+																				}}
+																				alt="png"
+																			/>
+																		)}
+																		<Link
+																			href={`/api/getFileUrl/${certificate.fileName}`}
+																			target="_blank"
+																			rel="noopener noreferrer"
+																			className="hover:text-[#F26522] hover:cursor-pointer hover:underline ml-2"
+																		>
+																			{certificate.fileName}
+																		</Link>
+																		<div className="ml-auto">
+																			<Button
+																				type="button"
+																				variant="outline"
+																				onClick={() => handleDeleteCertificate(certificate.id)}
+																			>
+																				<Trash2 width={18} height={18} />
+																			</Button>
+																		</div>
+																	</div>
+																</>
+															) : null}
+														</div>
+													))}
+											</>
+										)}
+									</div>
 								</div>
 								<div>
 									<label>{`ทุนกิตติบัณฑิต / ทุนวิเทศบัณฑิต ${
@@ -127,14 +232,23 @@ export default function Profile() {
 											? `(ป.โท ประชุมวิชาการระดับชาติ / นานาชาติ เเละ วารสารระดับชาติ / นานาชาติ)`
 											: `(ป.เอก นำเสนอผลงานระดับชาติ / นานาชาติ เเละ วารสารระดับนานาชาติ)`
 									}`}</label>
+									<div className="">
+										<EditCertificate user={user} certificateType="2" />
+									</div>
 								</div>
 								<div>
 									<label>{`ทุนศักยภาพ / ทุนเรียนดี / ทุนส่วนตัว ${
 										user?.degree == "Master" ? `(ป.โท ประชุมวิชาการระดับชาติ)` : `(ป.เอก วารสารระดับชาติ)`
 									}`}</label>
+									<div className="">
+										<EditCertificate user={user} certificateType="3" />
+									</div>
 								</div>
 								<div>
 									<label>{`ทุนอื่นๆ`}</label>
+									<div className="">
+										<EditCertificate user={user} certificateType="4" />
+									</div>
 								</div>
 							</div>
 						</div>
@@ -905,30 +1019,62 @@ const EditProfile = ({ user }: { user: IUser | undefined }) => {
 	);
 };
 
-const EditCertificate = ({ user }: { user: IUser | undefined }) => {
-	const [file, setFile] = useState<File | null>(null);
+const EditCertificate = ({ user, certificateType }: { user: IUser | undefined; certificateType: string }) => {
 	const [loading, setLoading] = useState<boolean>(false);
-	const [fileUrl, setFileUrl] = useState<string | null>(null);
 	const [open, setOpen] = useState(false);
 	const { toast } = useToast();
-	const router = useRouter();
 	const { mutate } = useSWRConfig();
-	const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files && e.target.files[0]) {
-			setFile(e.target.files[0]);
+	const router = useRouter();
+
+	const formSchema = z.object({
+		file: z
+			.instanceof(File)
+			.refine((file) => file.size <= 5 * 1024 * 1024, {
+				message: "ไฟล์ต้องมีขนาดไม่เกิน 5MB.",
+			})
+			.refine((file) => ["image/png", "image/jpeg", "application/pdf"].includes(file.type), {
+				message: "ประเภทไฟล์ต้องเป็น PNG, JPEG, เเละ PDF",
+			}),
+		certificateType: z.string(),
+		description: z.string(),
+		id: z.number(),
+	});
+
+	const form = useForm<z.infer<typeof formSchema>>({
+		resolver: zodResolver(formSchema),
+		defaultValues: {
+			id: 0,
+			description: "",
+			certificateType: "",
+			file: undefined as unknown as File,
+		},
+	});
+
+	const { reset } = form;
+
+	useEffect(() => {
+		if (user) {
+			reset({
+				...form.getValues(),
+				id: user.id,
+				certificateType: certificateType,
+			});
 		}
-	};
+	}, [user, reset, certificateType]);
 
-	const handleUpload = async () => {
-		if (!file) return;
-
-		const formData = new FormData();
-		formData.append("file", file);
-
+	const onSubmit = async (values: z.infer<typeof formSchema>) => {
+		if (!values.file) return;
 		setLoading(true);
 
+		const formData = new FormData();
+		formData.append("file", values.file);
+		formData.append("certificateType", values.certificateType);
+		formData.append("description", values.description);
+		formData.append("id", values.id.toString());
+		console.log(formData);
+
 		const url = qs.stringifyUrl({
-			url: `/api/upload`,
+			url: `/api/certificate`,
 		});
 		const res = await axios.post(url, formData);
 		if (res.status === 200) {
@@ -955,22 +1101,60 @@ const EditCertificate = ({ user }: { user: IUser | undefined }) => {
 		<>
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogTrigger asChild>
-					<Button variant="link">
-						<GoPencil size={20} />
+					<Button variant="outline" className="h-max w-full my-2">
+						<Plus width={50} height={50} />
 					</Button>
 				</DialogTrigger>
-				<DialogContent className="md:max-w-[500px] md:max-h-max sm:max-w-[425px]  inline rounded-lg">
+				<DialogContent className="md:max-w-[500px] md:h-max sm:max-w-[425px]  inline rounded-lg">
 					<DialogHeader>
-						<DialogTitle className=" text-2xl">ไฟล์</DialogTitle>
+						<DialogTitle className="text-2xl">ไฟล์</DialogTitle>
 					</DialogHeader>
-					<Input
-						type="file"
-						onChange={handleFileChange}
-						className=" mt-2 text-sm text-grey-500 rounded-md file:border-0 file:text-md file:w-fit file:h-full file:text-[#F26522] bg-white hover:file:cursor-pointer hover:file:opacity-80"
-					/>
-					<Button disabled={loading} type="submit" className=" mt-2 w-full" onClick={() => handleUpload()}>
-						ยืนยัน
-					</Button>
+					<Form {...form}>
+						<form onSubmit={form.handleSubmit(onSubmit)} className="h-max w-full">
+							<FormField
+								control={form.control}
+								name="file"
+								render={({ field }) => (
+									<FormItem>
+										<FormControl>
+											<Input
+												type="file"
+												className="mt-2 text-sm text-grey-500 rounded-md file:border-0 file:text-md file:w-fit file:h-full file:text-[#F26522] bg-white hover:file:cursor-pointer hover:file:opacity-80"
+												onChange={(e) => {
+													const files = e.target.files;
+													if (files && files.length > 0) {
+														field.onChange(files[0]);
+													}
+												}}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<FormField
+								control={form.control}
+								name="description"
+								render={({ field }) => (
+									<FormItem>
+										<FormControl>
+											<Textarea
+												className="mt-2 resize-none"
+												placeholder="รายละเอียด..."
+												value={field.value}
+												onChange={field.onChange}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+
+							<Button disabled={loading} type="submit" className="mt-2 w-full">
+								ยืนยัน
+							</Button>
+						</form>
+					</Form>
 				</DialogContent>
 			</Dialog>
 		</>
