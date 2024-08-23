@@ -41,7 +41,7 @@ export type IUser = {
 	advisorID: number;
 	advisor: IUser;
 
-	coAdvisedStudents: ICoAdvisorStudents
+	coAdvisedStudents: ICoAdvisorStudents[]
 };
 
 enum Position {

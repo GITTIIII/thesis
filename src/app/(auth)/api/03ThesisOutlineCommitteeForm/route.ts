@@ -14,26 +14,25 @@ export async function POST(req: Request) {
 		const body = await req.json();
 		const {
 			date,
-            trimester,
-            times,
-            academicYear,
-			
-			committeeMembers,
-			examDate,
-			studentID,
+      		trimester,
+      		times,
+      		academicYear,
+      		committeeMembers, // ตรวจสอบว่าเป็น JSON ที่ถูกต้อง
+      		examDate,
+      		studentID,
 		} = body;
 
 		const newForm = await db.thesisOutlineCommittee.create({
 			data: {
-				date,
-				trimester,
-				academicYear,
-				committeeMembers,
-				times,
-				examDate,
-				studentID,
+			  date,
+			  trimester,
+			  academicYear,
+			  committeeMembers,  // ข้อมูล JSON
+			  times,
+			  examDate,
+			  studentID,
 			},
-		});
+		  });
 
 		const { ...rest } = newForm;
 

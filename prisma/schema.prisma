@@ -306,13 +306,15 @@ model ThesisProgressForm{
 model ThesisOutlineCommittee {
   id              Int      @id @default(autoincrement())
   date            String
-  trimester       String
-  times            String
-  academicYear    String
+  trimester       Int
+  times           Int
+  academicYear    Int
   committeeMembers Json
-  examDate String
-  studentID           Int
-  student             User      @relation(fields: [studentID], references: [id], name: "thesisOutlineCommitteeFormOwner")
+  examDate        String
+  studentID       Int
+  student         User     @relation(fields: [studentID], references: [id], name: "thesisOutlineCommitteeFormOwner")
 
-  // Add any other fields or relationships as needed
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
+
