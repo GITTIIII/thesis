@@ -14,6 +14,8 @@ import { IUser } from "@/interface/user";
 import { ICoAdvisorStudents } from "@/interface/coAdvisorStudents";
 import { Textarea } from "@/components/ui/textarea";
 import { DatePicker } from "@/components/datePicker/datePicker";
+import { CircleAlert } from "lucide-react";
+import Link from "next/link";
 
 const formSchema = z.object({
     date: z.string(),
@@ -26,7 +28,7 @@ const formSchema = z.object({
     academicYear: z.number().min(1, { message: "กรุณากรอกปีการศึกษา / Academic year required" }),
     committeeMembers: z
         .array(z.object({ name: z.string().min(1, { message: "กรุณากรอกชื่อกรรมการ / Committee member required" }) }))
-        .min(4, { message: "กรุณาเพิ่มกรรมการอย่างน้อย 4 คน / At least 4 committee members required" }),
+        .min(5, { message: "กรุณาเพิ่มกรรมการอย่างน้อย 5 คน / At least 5 committee members required" }),
         examDate: z.string().min(1, { message: "กรุณาเลือกวันที่สอบ / Exam's date is required." })
 });
 
@@ -61,6 +63,7 @@ const ThesisOutlineCommitteeFormCreate = () => {
             committeeMembers: [{ name: "" }],
             examDate: ""
         },
+        mode: "onSubmit",
     });
 
     const { control, handleSubmit, reset } = form;
@@ -219,7 +222,14 @@ const ThesisOutlineCommitteeFormCreate = () => {
 
                     <div className="w-full sm:2/4">
                         <div className="w-full flex justify-center item-center flex-col h-auto border-2 rounded-lg py-5 border-[#eeee]">
-                            <h1 className="text-center font-semibold mb-2">แบบคำขออนุมัติแต่งตั้งกรรมการสอบวัดคุณสมบัติ</h1>
+                            <h1 className="text-center font-semibold mb-2">แบบคำขออนุมัติแต่งตั้งกรรมการสอบโครงร่างวิทบยานิพนธ์</h1>
+                            <div className="flex items-center justify-center text-sm">
+							    <CircleAlert className="mr-1" />
+							    สามารถดูรายชื่อกรรมการที่ได้รับการรับรองเเล้ว
+							    <Button variant="link" type="button" className="p-1 text-[#A67436]">
+								    <Link href="/user/expertTable">คลิกที่นี่</Link>
+							    </Button>
+						    </div>
                             <div>
                                 {fields.map((field, index) => (
                                     <FormField
@@ -227,26 +237,26 @@ const ThesisOutlineCommitteeFormCreate = () => {
                                         control={form.control}
                                         name={`committeeMembers.${index}.name`}
                                         render={({ field }) => (
-                                            <FormItem className="m-5 w-full flex justify-center">
-                                                <div className="flex items-center space-x-3">
-                                                    <Input
-                                                        value={field.value ? field.value : ""}
-                                                        onChange={field.onChange}
-                                                        className="w-[300px]"
-                                                    />
-                                                    <Button
-                                                        type="button"
-                                                        onClick={() => remove(index)}
-                                                        className="bg-[#fff] hover:text-black hover:bg-white text-[#A67436] border-2 border-[#A67436] rounded-lg"
-                                                    >
-                                                        ลบ
-                                                    </Button>
-                                                </div>
-                                                <FormMessage />
-                                            </FormItem>
+                                        <FormItem className="m-5 w-full flex flex-col justify-center"> {/* เปลี่ยนเป็น flex-col */}
+                                        <div className="flex items-center justify-center space-x-3">
+                                        <Input
+                                            value={field.value ? field.value : ""}
+                                            onChange={field.onChange}
+                                            className="w-[300px]"
+                                        />
+                                        <Button
+                                            type="button"
+                                            onClick={() => remove(index)}
+                                            className="bg-[#fff] hover:text-black hover:bg-white text-[#A67436] border-2 border-[#A67436] rounded-lg"
+                                        >
+                                            ลบ
+                                        </Button>
+                                        </div>
+                                        <FormMessage className="flex item-center justify-center" />
+                                        </FormItem>
                                         )}
-                                    />
-                                ))}
+                                        />
+                                    ))}
                                 <div className="w-full flex justify-center items-center">
                                     <Button
                                         type="button"

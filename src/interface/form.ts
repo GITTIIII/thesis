@@ -50,6 +50,22 @@ export type IQualificationExamCommitteeForm = {
 	student: IUser;
 };
 
+//03
+export type IOutlineCommitteeForm = {
+	id: number;
+	date: string;
+	trimester: number;
+	academicYear: string;
+	committeeMembers: { name: string }[];
+	times: number;
+	examDate: string;
+	headSchoolID: number;
+	headSchoolSignUrl: string;
+	headSchool: IUser;
+
+	studentID: number;
+	student: IUser;
+};
 // 05
 export type IOutlineForm = {
 	id: number;

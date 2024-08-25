@@ -4,12 +4,12 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-	try {
-		const session = await getServerSession(authOptions);
+	// try {
+	// 	const session = await getServerSession(authOptions);
 
-		if (!session) {
-			return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
-		}
+	// 	if (!session) {
+	// 		return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
+	// 	}
 
 		const body = await req.json();
 		const {
@@ -22,7 +22,7 @@ export async function POST(req: Request) {
       		studentID,
 		} = body;
 
-		const newForm = await db.thesisOutlineCommittee.create({
+		const newForm = await db.thesisOutlineCommitteeForm.create({
 			data: {
 			  date,
 			  trimester,
@@ -37,35 +37,35 @@ export async function POST(req: Request) {
 		const { ...rest } = newForm;
 
 		return NextResponse.json({ form: rest, message: "Form Created" }, { status: 200 });
-	} catch (error) {
-		return NextResponse.json({ message: error }, { status: 500 });
-	}
+	// } catch (error) {
+	// 	return NextResponse.json({ message: error }, { status: 500 });
+	// }
 }
 
-// export async function GET() {
-// 	const session = await getServerSession(authOptions);
+export async function GET() {
+	// const session = await getServerSession(authOptions);
 
-// 	if (!session) {
-// 		return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
-// 	}
+	// if (!session) {
+	// 	return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
+	// }
 
-// 	const qualificationExamCommitteeForm = await db.qualificationExamCommitteeForm.findMany({
-// 		include: {
-// 			student: {
-// 				include: {
-// 					prefix: true,
-// 				},
-// 			},
-// 			headSchool: {
-// 				include: {
-// 					prefix: true,
-// 				},
-// 			},
-// 		},
-// 	});
+	const thesisOutlineCommitteeForm = await db.thesisOutlineCommitteeForm.findMany({
+		include: {
+			student: {
+				include: {
+					prefix: true,
+				},
+			},
+			// headSchool: {
+			// 	include: {
+			// 		prefix: true,
+			// 	},
+			// },
+		},
+	});
 
-// 	return NextResponse.json(qualificationExamCommitteeForm);
-// }
+	return NextResponse.json(thesisOutlineCommitteeForm);
+}
 
 // export async function PATCH(req: Request) {
 // 	try {

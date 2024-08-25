@@ -5,20 +5,20 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 type Params = {
-	StdId: number;
+	formId: number;
 };
 
 export async function GET(req: NextApiRequest, context: { params: Params }) {
-	const StdId = context.params.StdId;
+	const formId = context.params.formId;
 	const session = await getServerSession(authOptions);
 
-	if (!session) {
-		return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
-	}
+	// if (!session) {
+	// 	return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
+	// }
 
-	const formData = await db.thesisOutlineCommitteeForm.findMany({
+	const thesisOutlineCommitteeForm = await db.thesisOutlineCommitteeForm.findUnique({
 		where: {
-			studentID: Number(StdId),
+			id: Number(formId),
 		},
 		include: {
 			student: {
@@ -46,9 +46,9 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 		},
 	});
 
-	if (!formData) {
+	if (!thesisOutlineCommitteeForm) {
 		return NextResponse.json({ error: "Form not found" }, { status: 404 });
 	}
 
-	return NextResponse.json(formData);
+	return NextResponse.json(thesisOutlineCommitteeForm);
 }

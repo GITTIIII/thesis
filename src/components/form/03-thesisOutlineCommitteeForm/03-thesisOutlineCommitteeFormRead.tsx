@@ -4,17 +4,17 @@ import { Button } from "@/components/ui/button";
 import InputForm from "../../inputForm/inputForm";
 import { CircleAlert } from "lucide-react";
 import Link from "next/link";
-import { IQualificationExamCommitteeForm } from "@/interface/form";
+import { IOutlineCommitteeForm } from "@/interface/form";
 import useSWR from "swr";
-import { Label } from "@/components/ui/label";
 import Image from "next/image";
-import signature from "@/../../public/asset/signature.png";
+import signature from "../../../../public/asset/signature.png";
+import { Label } from "@/components/ui/label";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
+const ThesisOutlineCommitteeFormRead = ({ formId }: { formId: number }) => {
 	const router = useRouter();
-	const { data: formData } = useSWR<IQualificationExamCommitteeForm>(`/api/get02FormById/${formId}`, fetcher);
+	const { data: formData } = useSWR<IOutlineCommitteeForm>(`/api/get03FormById/${formId}`, fetcher);
 
 	return (
 		<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg">
@@ -22,7 +22,7 @@ const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 				<Button
 					variant="outline"
 					type="reset"
-					onClick={() => router.push("/user/table?formType=qualificationExamCommitteeForm")}
+					onClick={() => router.push("/user/table?formType=thesisOutlineCommitteeForm")}
 					className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436]"
 				>
 					ย้อนกลับ
@@ -34,7 +34,7 @@ const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 					<InputForm value={`${formData?.times}`} label="สอบครั้งที่ / Exam. No." />
 					<InputForm value={`${formData?.trimester}`} label="ภาคเรียน / Trimester" />
 					<InputForm value={`${formData?.academicYear}`} label="ปีการศึกษา / Academic year" />
-					<InputForm value={`${formData?.examDay}`} label="วันที่สอบ / Date of the examination" />
+					<InputForm value={`${formData?.examDate}`} label="วันที่สอบ / Date of the examination" />
 
 					<h1 className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</h1>
 					<InputForm value={`${formData?.student.username}`} label="รหัสนักศึกษา / Student ID" />
@@ -45,7 +45,7 @@ const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 				</div>
 
 				<div className="w-full sm:2/4">
-					<h1 className="text-center font-semibold mb-2">แบบคำขออนุมัติแต่งตั้งกรรมการสอบวัดคุณสมบัติ</h1>
+					<h1 className="text-center font-semibold mb-2">ขอเสนอเเต่งตั้งคณะกรรมการสอบประมวลความรู้</h1>
 					<div className="flex items-center justify-center text-sm">
 						<CircleAlert className="mr-1" />
 						สามารถดูรายชื่อกรรมการที่ได้รับการรับรองเเล้ว
@@ -53,11 +53,15 @@ const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 							<Link href="/user/expertTable">คลิกที่นี่</Link>
 						</Button>
 					</div>
-					<InputForm value={`${formData?.committeeName1}`} label="ประธานกรรมการ / Head of the Committee" />
+					{/* <InputForm value={`${formData?.committeeName1}`} label="ประธานกรรมการ / Head of the Committee" />
 					<InputForm value={`${formData?.committeeName2}`} label="กรรมการ / Member of the Committee" />
 					<InputForm value={`${formData?.committeeName3}`} label="กรรมการ / Member of the Committee" />
 					<InputForm value={`${formData?.committeeName4}`} label="กรรมการ / Member of the Committee" />
-					<InputForm value={`${formData?.committeeName5}`} label="กรรมการ / Member of the Committee" />
+					<InputForm value={`${formData?.committeeName5}`} label="กรรมการ / Member of the Committee" /> */}
+					 {
+						formData?.committeeMembers.map((member, index: number) => (
+                                <InputForm key={index} value={`${member.name}`} label="กรรมการ / Committee" />
+                    ))}
 					<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
 						<h1 className="font-bold">ลายเซ็นหัวหน้าสาขาวิชา</h1>
 						<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
@@ -73,7 +77,9 @@ const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 							/>
 						</div>
 						<Label className="mb-2">
-							{`${formData?.headSchool.prefix.prefixTH}${formData?.headSchool.firstNameTH} ${formData?.headSchool.lastNameTH}`}
+							{formData?.headSchool
+								? `${formData?.headSchool.prefix?.prefixTH}${formData?.headSchool.firstNameTH} ${formData?.headSchool.lastNameTH}`
+								: ""}
 						</Label>
 						<Label className="my-2">{`หัวหน้าสาขาวิชา ${
 							formData?.headSchool ? formData?.headSchool?.school?.schoolNameTH : ""
@@ -85,4 +91,4 @@ const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 	);
 };
 
-export default QualificationExamCommitteeFormRead;
+export default ThesisOutlineCommitteeFormRead;
