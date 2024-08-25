@@ -21,7 +21,7 @@ export type IUser = {
 	phone: string;
 	sex: string;
 	degree: string;
-	certificate: ICertificate;
+	certificate: ICertificate[];
 
 	instituteID: number;
 	institute: IInstitute;
