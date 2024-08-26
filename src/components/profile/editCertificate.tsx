@@ -133,7 +133,7 @@ const EditCertificate = ({ user, certificateType }: { user: IUser | undefined; c
 								render={({ field }) => (
 									<FormItem
 										onClick={() => document.querySelector<HTMLInputElement>(".input-field")?.click()}
-										className="h-[300px] w-full flex flex-col justify-center items-center border-2 border-dashed border-[#F26522] cursor-pointer rounded-xl"
+										className="h-[300px] w-full flex flex-col justify-center items-center border-2 border-dashed border-[#F26522] cursor-pointer rounded-xl hover:bg-accent"
 									>
 										<Image
 											src={uploadOrange}
