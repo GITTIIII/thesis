@@ -5,7 +5,6 @@ import signature from "@/../../public/asset/signature.png";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User } from "lucide-react";
 import useSWR from "swr";
-import EditCertificate from "@/components/profile/editCertificate";
 import EditSignature from "@/components/profile/editSignature";
 import EditPersonalInformation from "@/components/profile/editPersonalInfomation";
 import EditProfilePic from "@/components/profile/editProfilePic";
