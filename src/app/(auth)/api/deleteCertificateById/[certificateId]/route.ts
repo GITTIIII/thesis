@@ -2,6 +2,7 @@ import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { deleteFileFromBucket } from "@/lib/file";
 
 export async function DELETE(req: Request, { params }: { params: { certificateId: string } }) {
 	try {
@@ -24,6 +25,8 @@ export async function DELETE(req: Request, { params }: { params: { certificateId
 		if (!existingCertificate) {
 			return NextResponse.json({ user: null, message: "Certificate not found" }, { status: 404 });
 		}
+
+		await deleteFileFromBucket(existingCertificate.fileName);
 
 		const certificate = await db.certificate.delete({
 			where: { id: id },

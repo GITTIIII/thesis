@@ -162,7 +162,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 							<CircleAlert className="mr-1" />
 							สามารถดูรายชื่อกรรมการที่ได้รับการรับรองเเล้ว
 							<Button variant="link" className="p-1 text-[#A67436]">
-								<Link href="">คลิกที่นี่</Link>
+								<Link href="/user/expertTable">คลิกที่นี่</Link>
 							</Button>
 						</div>
 						<InputForm value={`${formData?.committeeName1}`} label="ประธานกรรมการ / Head of the Committee" />

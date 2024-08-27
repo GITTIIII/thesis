@@ -177,7 +177,7 @@ model User {
   updatedAt DateTime @updatedAt
 
 
-  ThesisOutlineCommittee ThesisOutlineCommittee[] @relation(name: "thesisOutlineCommitteeFormOwner")
+  ThesisOutlineCommittee ThesisOutlineCommitteeForm[] @relation(name: "thesisOutlineCommitteeFormOwner")
 }
 
 model CoAdvisorStudent{
@@ -303,7 +303,7 @@ model ThesisProgressForm{
 }
 
 
-model ThesisOutlineCommittee {
+model ThesisOutlineCommitteeForm {
   id              Int      @id @default(autoincrement())
   date            String
   trimester       Int
