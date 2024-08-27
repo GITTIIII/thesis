@@ -2,12 +2,7 @@
 
 import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
-import {
-  IComprehensiveExamCommitteeForm,
-  IQualificationExamCommitteeForm,
-  IOutlineForm,
-  IThesisProgressForm,
-} from "@/interface/form";
+import { IComprehensiveExamCommitteeForm, IQualificationExamCommitteeForm, IOutlineForm, IThesisProgressForm } from "@/interface/form";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import ActionMenu from "@/components/actionMenu/ActionMenu";
@@ -45,8 +40,7 @@ const form01Columns: ColumnDef<IComprehensiveExamCommitteeForm>[] = [
   {
     id: "studentName",
     header: "ชื่อนักศึกษา",
-    accessorFn: (row) =>
-      `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
+    accessorFn: (row) => `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
   },
   {
     header: "ครั้งที่สอบ",
@@ -59,10 +53,7 @@ const form01Columns: ColumnDef<IComprehensiveExamCommitteeForm>[] = [
   {
     header: "รายละเอียด",
     cell: (row) => (
-      <Link
-        className="text-[#F26522] text-center"
-        href={`/user/form/comprehensiveExamCommitteeForm/${row.row.original.id}`}
-      >
+      <Link className="text-[#F26522] text-center" href={`/user/form/comprehensiveExamCommitteeForm/${row.row.original.id}`}>
         คลิกเพื่อดูเพิ่มเติม
       </Link>
     ),
@@ -72,7 +63,7 @@ const form01Columns: ColumnDef<IComprehensiveExamCommitteeForm>[] = [
     cell: ({ row }) => {
       const form01 = row.original.id;
       const deleteAPI = `/api/delete01FormById/${form01}`;
-      const updatePath = `/user/form/comprehensiveExamCommitteeForm/update/${form01}`;
+      const updatePath = `/user/form/comprehensiveExamCommitteeForm/superAdmin/update/${form01}`;
       return <ActionMenu deleteAPI={deleteAPI} updatePath={updatePath} />;
     },
   },
@@ -88,11 +79,7 @@ const form02Columns: ColumnDef<IQualificationExamCommitteeForm>[] = [
       />
     ),
     cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value: any) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
+      <Checkbox checked={row.getIsSelected()} onCheckedChange={(value: any) => row.toggleSelected(!!value)} aria-label="Select row" />
     ),
     enableSorting: false,
     enableHiding: false,
@@ -124,8 +111,7 @@ const form02Columns: ColumnDef<IQualificationExamCommitteeForm>[] = [
   {
     id: "studentName",
     header: "ชื่อนักศึกษา",
-    accessorFn: (row) =>
-      `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
+    accessorFn: (row) => `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
   },
   {
     header: "ครั้งที่สอบ",
@@ -138,10 +124,7 @@ const form02Columns: ColumnDef<IQualificationExamCommitteeForm>[] = [
   {
     header: "รายละเอียด",
     cell: (row) => (
-      <Link
-        className="text-[#F26522] text-center"
-        href={`/user/form/qualifyingExamCommitteeForm/update/${row.row.original.id}`}
-      >
+      <Link className="text-[#F26522] text-center" href={`/user/form/qualificationExamCommitteeForm/${row.row.original.id}`}>
         คลิกเพื่อดูเพิ่มเติม
       </Link>
     ),
@@ -151,7 +134,7 @@ const form02Columns: ColumnDef<IQualificationExamCommitteeForm>[] = [
     cell: ({ row }) => {
       const form02 = row.original.id;
       const deleteAPI = `/api/delete02FormById/${form02}`;
-      const updatePath = `/api/update01FormById/${form02}`;
+      const updatePath = `/user/form/qualificationExamCommitteeForm/superAdmin/update/${form02}`;
       return <ActionMenu deleteAPI={deleteAPI} updatePath={updatePath} />;
     },
   },
@@ -186,8 +169,7 @@ const form05Columns: ColumnDef<IOutlineForm>[] = [
   {
     id: "studentName",
     header: "ชื่อนักศึกษา",
-    accessorFn: (row) =>
-      `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
+    accessorFn: (row) => `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
   },
   {
     header: "ชื่อวิทยานิพนธ์",
@@ -195,8 +177,7 @@ const form05Columns: ColumnDef<IOutlineForm>[] = [
   },
   {
     header: "วันที่เริ่ม",
-    accessorFn: (row) =>
-      `${row.thesisStartMonth} ${row.thesisStartYear}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
+    accessorFn: (row) => `${row.thesisStartMonth} ${row.thesisStartYear}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
   },
   {
     header: "สถานะ",
@@ -215,7 +196,7 @@ const form05Columns: ColumnDef<IOutlineForm>[] = [
     cell: ({ row }) => {
       const form05 = row.original.id;
       const deleteAPI = `/api/delete05FormById/${form05}`;
-      const updatePath = `/user/form/outlineForm/update/${form05}`;
+      const updatePath = `/user/form/outlineForm/superAdmin/update/${form05}`;
       return <ActionMenu deleteAPI={deleteAPI} updatePath={updatePath} />;
     },
   },
@@ -249,8 +230,7 @@ const form06Columns: ColumnDef<IThesisProgressForm>[] = [
   {
     id: "studentName",
     header: "ชื่อนักศึกษา",
-    accessorFn: (row) =>
-      `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
+    accessorFn: (row) => `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
   },
   {
     header: "ชื่อวิทยานิพนธ์",
@@ -277,7 +257,7 @@ const form06Columns: ColumnDef<IThesisProgressForm>[] = [
     cell: ({ row }) => {
       const form06 = row.original.id;
       const deleteAPI = `/api/delete06FormById/${form06}`;
-      const updatePath = `/user/form/thesisProgressForm/update/${form06}`;
+      const updatePath = `/user/form/thesisProgressForm/superAdmin/update/${form06}`;
       return <ActionMenu deleteAPI={deleteAPI} updatePath={updatePath} />;
     },
   },
