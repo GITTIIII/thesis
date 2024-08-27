@@ -45,10 +45,12 @@ export default function Profile() {
 							<div className="mt-4 md:flex ">
 								<section className="flex flex-col sm:w-max gap-4">
 									{user?.role.toString() === "STUDENT" && <p>{`รหัสนักศึกษา:  ${user?.username} `}</p>}
-									<p>{`ชื่อ - สกุล (ไทย):  ${user?.prefix.prefixTH}${user?.firstNameTH} ${user?.lastNameTH} `}</p>
-									<p>{`ชื่อ - สกุล (อังกฤษ):  ${user?.prefix.prefixEN}${user?.firstNameEN ? user?.firstNameEN : ""} ${
-										user?.lastNameEN ? user?.lastNameEN : ""
+									<p>{`ชื่อ - สกุล (ไทย):  ${user?.prefix.prefixTH ? user?.prefix.prefixTH : ""}${user?.firstNameTH} ${
+										user?.lastNameTH
 									} `}</p>
+									<p>{`ชื่อ - สกุล (อังกฤษ):  ${user?.prefix.prefixEN ? user?.prefix.prefixEN : ""}${
+										user?.firstNameEN ? user?.firstNameEN : ""
+									} ${user?.lastNameEN ? user?.lastNameEN : ""} `}</p>
 									<p>{`เพศ:  ${user?.sex == "Male" ? "ชาย" : "หญิง"} `}</p>
 								</section>
 								<section className="flex flex-col mt-3 md:mt-0 sm:w-max gap-4 md:ml-8 sm:ml-0">
@@ -61,7 +63,7 @@ export default function Profile() {
 
 					{/* เเถว 2 */}
 					<div className="w-full h-max flex flex-col sm:flex-row gap-4 mb-4">
-						<div className="w-full sm:w-2/4 h-max bg-white p-4 rounded-xl shadow-[0px_0px_5px_1px_#e2e8f0]">
+						<div className="w-full sm:w-2/4 h-auto bg-white p-4 rounded-xl shadow-[0px_0px_5px_1px_#e2e8f0]">
 							<div className="w-full flex  justify-between">
 								<label className=" text-xl ">ข้อมูลด้านการศึกษา</label>
 							</div>
@@ -86,7 +88,7 @@ export default function Profile() {
 									<EditSignature user={user} />
 								</div>
 							</div>
-							<div className="w-full h-full flex justify-center items-center">
+							<div className="w-full h-max flex justify-center items-center">
 								<Image
 									src={user?.signatureUrl ? user?.signatureUrl : signature}
 									width={200}

@@ -67,7 +67,7 @@ export default function OutlineCommitteeFormTable({ userData }: { userData: IUse
 							.map((formData, index) => (
 								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
 									<TableCell className="text-center">{index + 1}</TableCell>
-									<TableCell className="text-center">{formData.date}</TableCell>
+									<TableCell className="text-center">{new Date(formData.date).toLocaleDateString("th")}</TableCell>
 									<TableCell className="text-center">{formData.trimester}</TableCell>
 									<TableCell className="text-center">{formData.academicYear}</TableCell>
 									<TableCell className="text-center">{formData?.student.username}</TableCell>
@@ -75,7 +75,7 @@ export default function OutlineCommitteeFormTable({ userData }: { userData: IUse
 										{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 									</TableCell>
 									<TableCell className="text-center">{formData.times}</TableCell>
-									<TableCell className="text-center">{formData.examDate}</TableCell>
+									<TableCell className="text-center">{new Date(formData.examDate).toLocaleDateString("th")}</TableCell>
 									<TableCell className="text-[#F26522] text-center">
 										<Link href={
 												formData.headSchoolID || userData?.role.toString() == "STUDENT"

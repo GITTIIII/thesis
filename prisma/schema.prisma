@@ -158,11 +158,14 @@ model User {
   advisedStudents   User[] @relation("advisor")
   coAdvisedStudents CoAdvisorStudent[] @relation("student")
 
-  //นศ. สร้างฟอร์ม
+  //นศ. สร้างฟอร์ม เรียง 01-08
   comprehensiveExamCommitteeForm             ComprehensiveExamCommitteeForm[]     @relation("comprehensiveExamCommitteeFormOwner")
   qualificationExamCommitteeForm             QualificationExamCommitteeForm[]     @relation("qualificationExamCommitteeFormOwner")
+  // 03
+  // 04
   outlineForm                                OutlineForm[]                        @relation("outlineFormOwner")
   thesisProgressForm                         ThesisProgressForm[]                 @relation("thesisProgressFormOwner")
+  thesisExamAppointmentForm                  ThesisExamAppointmentForm[]          @relation("thesisExamAppointmentFormOwner")
   
 
  //เป็นกรรมการสำนักในฟอมโครงร่าง
@@ -172,6 +175,7 @@ model User {
   headSchool01                                 ComprehensiveExamCommitteeForm[]      @relation("headSchool")
   headSchool02                                 QualificationExamCommitteeForm[]      @relation("headSchool")
   headSchool06                                 ThesisProgressForm[]                  @relation("headSchool")
+  headSchool07                                 ThesisExamAppointmentForm[]           @relation("headSchool")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -192,7 +196,7 @@ model CoAdvisorStudent{
 // 01
 model ComprehensiveExamCommitteeForm{
   id                  Int       @id @default(autoincrement())
-  date                String
+  date                DateTime
   times               Int
   trimester           Int
   academicYear        String
@@ -202,7 +206,7 @@ model ComprehensiveExamCommitteeForm{
   committeeName4      String
   committeeName5      String
   numberStudent       Int
-  examDay             String
+  examDay             DateTime
   headSchoolID        Int?
   headSchoolSignUrl       String? @db.LongText
   headSchool          User?   @relation(fields: [headSchoolID], references: [id], name: "headSchool")
@@ -216,7 +220,7 @@ model ComprehensiveExamCommitteeForm{
 // 02
 model QualificationExamCommitteeForm{
   id                  Int       @id @default(autoincrement())
-  date                String
+  date                DateTime
   times               Int
   trimester           Int
   academicYear        String
@@ -226,7 +230,7 @@ model QualificationExamCommitteeForm{
   committeeName4      String
   committeeName5      String
   numberStudent       Int
-  examDay             String
+  examDay             DateTime
   headSchoolID        Int?
   headSchoolSignUrl       String?   @db.LongText
   headSchool          User?     @relation(fields: [headSchoolID], references: [id], name: "headSchool")
@@ -237,10 +241,29 @@ model QualificationExamCommitteeForm{
   updatedAt DateTime  @updatedAt
 }
 
+// 03
+model ThesisOutlineCommitteeForm {
+  id              Int      @id @default(autoincrement())
+  date            DateTime
+  trimester       Int
+  times           Int
+  academicYear    Int
+  committeeMembers Json
+  examDate        DateTime
+  studentID       Int
+  student         User     @relation(fields: [studentID], references: [id], name: "thesisOutlineCommitteeFormOwner")
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// 04
+
+
 // 05
 model OutlineForm {
   id                           Int       @id @default(autoincrement())
-  date                         String
+  date                         DateTime
   thesisNameTH                 String
   thesisNameEN                 String
   abstract                     String @db.Text
@@ -252,7 +275,7 @@ model OutlineForm {
   outlineCommitteeStatus      String?
   outlineCommitteeComment     String?
   outlineCommitteeSignUrl     String? @db.LongText
-  dateOutlineCommitteeSign    String?
+  dateOutlineCommitteeSign    DateTime?
   outlineCommitteeID          Int?
   outlineCommittee            Expert? @relation(fields: [outlineCommitteeID], references: [id], name: "outlineCommittee")
   
@@ -262,7 +285,7 @@ model OutlineForm {
   instituteCommitteeStatus    String?
   instituteCommitteeComment   String?
   instituteCommitteeSignUrl   String? @db.LongText
-  dateInstituteCommitteeSign  String?
+  dateInstituteCommitteeSign  DateTime?
   instituteCommitteeID        Int?
   instituteCommittee          User? @relation(fields: [instituteCommitteeID], references: [id], name: "instituteCommittee")
 
@@ -283,18 +306,18 @@ model ThesisProgressForm{
   percentage                  Int
   percentageComment           String?
   issues                      String?
-  date                        String
+  date                        DateTime
   processPlan                 Json
   studentID                   Int
   student                     User      @relation(fields: [studentID], references: [id], name: "thesisProgressFormOwner")
 
   assessmentResult            String?
   advisorSignUrl              String? @db.LongText
-  dateAdvisor                 String?
+  dateAdvisor                 DateTime?
 
   headSchoolComment           String?
   headSchoolSignUrl           String? @db.LongText
-  dateHeadSchool              String?
+  dateHeadSchool              DateTime?
   headSchoolID                Int?
   headSchool                  User? @relation(fields: [headSchoolID], references: [id], name: "headSchool")
 
@@ -302,19 +325,32 @@ model ThesisProgressForm{
   updatedAt DateTime @updatedAt
 }
 
+// 07
+model ThesisExamAppointmentForm{
+  id                          Int       @id @default(autoincrement())
+  trimester                   Int
+  academicYear                String
+  gpa                         String
+  credits                     Int
+  date                        DateTime
+  dateExam                    DateTime
+  studentID                   Int
+  student                     User      @relation(fields: [studentID], references: [id], name: "thesisExamAppointmentFormOwner")
 
-model ThesisOutlineCommitteeForm {
-  id              Int      @id @default(autoincrement())
-  date            String
-  trimester       Int
-  times           Int
-  academicYear    Int
-  committeeMembers Json
-  examDate        String
-  studentID       Int
-  student         User     @relation(fields: [studentID], references: [id], name: "thesisOutlineCommitteeFormOwner")
+  // อาจารย์ที่ปรึกษา
+  turnitinApproval            Boolean?
+  advisorSignUrl              String?   @db.LongText
+  dateAdvisor                 DateTime?
 
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  // หัวหน้าสาขา
+  headSchoolComment           String?
+  headSchoolSignUrl           String?   @db.LongText
+  dateHeadSchool              DateTime?
+  headSchoolID                Int?
+  headSchool                  User? @relation(fields: [headSchoolID], references: [id], name: "headSchool")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
+
 

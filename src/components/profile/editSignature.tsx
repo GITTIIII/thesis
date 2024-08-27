@@ -178,7 +178,7 @@ const EditSignature = ({ user }: { user: IUser | undefined }) => {
 									<div className="w-auto h-auto flex justify-center border-2 p-4 rounded-md">
 										<Image
 											src={user?.signatureUrl ? user?.signatureUrl : signature}
-											width={100}
+											width={200}
 											height={100}
 											style={{
 												width: "auto",

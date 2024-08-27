@@ -17,10 +17,11 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 	const router = useRouter();
 	const { data: formData } = useSWR<IOutlineForm>(`/api/get05FormById/${formId}`, fetcher);
 
+	console.log(formData)
 	return (
 		<>
 			<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg">
-				<div className="w-full flex px-0 lg:px-20 mb-2">
+				<div className="w-full flex px-0 xl:px-20 mb-2">
 					<Button
 						variant="outline"
 						type="reset"
@@ -86,7 +87,7 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 									alt="signature"
 								/>
 							</Button>
-							<Label className="mt-2">{`วันที่ ${formData?.date ? formData?.date : "__________"}`}</Label>
+							<Label className="mt-2">{`วันที่ ${formData?.date ? new Date(formData?.date).toLocaleDateString("th") : "__________"}`}</Label>
 						</div>
 					</div>
 				</div>
@@ -94,7 +95,7 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 					<div className="flex flex-col justify-center items-center p-4 lg:px-20">
 						<h1 className="mb-2 font-bold">ความเห็นของคณะกรรมการพิจารณาโครงร่างวิทยานิพนธ์</h1>
 						<Label className="mt-2">{`วันที่ ${
-							formData?.dateOutlineCommitteeSign ? formData?.dateOutlineCommitteeSign : "__________"
+							formData?.dateOutlineCommitteeSign ? new Date(formData?.dateOutlineCommitteeSign).toLocaleDateString("th") : "__________"
 						}`}</Label>
 						<div className="flex flex-col items-center justify-center">
 							<RadioGroup disabled className="flex my-6">
@@ -141,7 +142,7 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 					<div className="flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
 						<h1 className="mb-2 font-bold">มติคณะกรรมการประจำสำนักวิชาวิศวกรรมศาสตร์</h1>
 						<Label className="mt-2">{`ครั้งที่ ${formData?.times ? formData?.times : "__"}  วันที่ ${
-							formData?.dateInstituteCommitteeSign ? formData?.dateInstituteCommitteeSign : "__________"
+							formData?.dateInstituteCommitteeSign ? new Date(formData?.dateInstituteCommitteeSign).toLocaleDateString("th"): "__________"
 						}`}</Label>
 						<div className="flex flex-col items-center justify-center">
 							<RadioGroup disabled className="flex my-6">

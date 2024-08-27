@@ -25,7 +25,7 @@ const labels: { [key: string]: string } = {
 	appointmentThesisExamForm: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบวิทยานิพนธ์",
 	outlineForm: "แบบคำขออนุมัติโครงร่างวิทยานิพนธ์",
 	thesisProgressForm: "เเบบรายงานความคืบหน้าของการทำวิทยานิพนธ์",
-	examAppointment: "คำขอนัดสอบวิทยานิพนธ์",
+	thesisExamAppointmentForm: "คำขอนัดสอบวิทยานิพนธ์",
 };
 
 async function get05ApprovedForm() {
@@ -123,7 +123,7 @@ export default function StudentTablePage() {
 							</SelectItem>
 							<SelectItem
 								// disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 7}
-								value="examAppointment"
+								value="thesisExamAppointmentForm"
 							>
 								คำขอนัดสอบวิทยานิพนธ์
 							</SelectItem>
@@ -153,7 +153,7 @@ export default function StudentTablePage() {
 					{formType == "appointmentThesisExamForm" && <ThesisExamCommitteeFormTable userData={userData} />}
 					{formType == "outlineForm" && <OutlineFormTable userData={userData} />}
 					{formType == "thesisProgressForm" && <ThesisProgressFormTable userData={userData} />}
-					{formType == "examAppointment" && <ExamAppointmentFormTable userData={userData} />}
+					{formType == "thesisExamAppointmentForm" && <ExamAppointmentFormTable userData={userData} />}
 				</div>
 			</div>
 		</>

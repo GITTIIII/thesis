@@ -84,7 +84,7 @@ export default function ComprehensiveExamCommitteeFormTable({ userData }: { user
 							.map((formData, index) => (
 								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
 									<TableCell className="text-center">{index + 1}</TableCell>
-									<TableCell className="text-center">{formData.date}</TableCell>
+									<TableCell className="text-center">{new Date(formData.date).toLocaleDateString("th")}</TableCell>
 									<TableCell className="text-center">{formData.trimester}</TableCell>
 									<TableCell className="text-center">{formData.academicYear}</TableCell>
 									<TableCell className="text-center">{formData?.student.username}</TableCell>
@@ -92,7 +92,7 @@ export default function ComprehensiveExamCommitteeFormTable({ userData }: { user
 										{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 									</TableCell>
 									<TableCell className="text-center">{formData.times}</TableCell>
-									<TableCell className="text-center">{formData.examDay}</TableCell>
+									<TableCell className="text-center">{new Date(formData.examDay).toLocaleDateString("th")}</TableCell>
 									<TableCell className="text-[#F26522] text-center">
 										<Link
 											href={

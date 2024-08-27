@@ -91,7 +91,7 @@ export default function ExpertTable() {
         className="w-full border border-[#E0E0E0] rounded-lg shadow-md min-h-[222px]"
       >
         <TableHeader columns={columns}>
-          {(column) => (
+          {(column: { key: string; label: any; }) => (
             <TableColumn
               key={column.key}
               className={`bg-gray-100 text-left px-4 py-2 text-gray-700 uppercase text-sm font-medium ${

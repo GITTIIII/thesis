@@ -85,7 +85,7 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 							<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
 								<TableCell className="text-center">{index + 1}</TableCell>
 								<TableCell className="text-center">
-									{formData.dateOutlineCommitteeSign ? formData.dateOutlineCommitteeSign : "ยังไม่ทำการสอบ"}
+									{formData.dateOutlineCommitteeSign ? new Date(formData.dateOutlineCommitteeSign).toLocaleDateString("th") : "ยังไม่ทำการสอบ"}
 								</TableCell>
 								<TableCell className="text-center">{formData?.thesisNameTH}</TableCell>
 								<TableCell className="text-center">{formData?.thesisNameEN}</TableCell>

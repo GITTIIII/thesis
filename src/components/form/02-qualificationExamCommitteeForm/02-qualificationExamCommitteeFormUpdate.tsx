@@ -143,7 +143,10 @@ const QualificationExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 						<InputForm value={`${formData?.times}`} label="สอบครั้งที่ / Exam. No." />
 						<InputForm value={`${formData?.trimester}`} label="ภาคเรียน / Trimester" />
 						<InputForm value={`${formData?.academicYear}`} label="ปีการศึกษา / Academic year" />
-						<InputForm value={`${formData?.examDay}`} label="วันที่สอบ / Date of the examination" />
+						<InputForm
+							value={formData?.examDay ? new Date(formData?.examDay).toLocaleDateString("th") : ""}
+							label="วันที่สอบ / Date of the examination"
+						/>
 
 						<h1 className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</h1>
 						<InputForm value={`${formData?.student.username}`} label="รหัสนักศึกษา / Student ID" />

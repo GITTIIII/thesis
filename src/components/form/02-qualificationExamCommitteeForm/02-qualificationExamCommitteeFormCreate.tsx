@@ -17,7 +17,7 @@ import { DatePicker } from "@/components/datePicker/datePicker";
 import useSWR from "swr";
 
 const formSchema = z.object({
-	date: z.string(),
+	date: z.date(),
 	times: z.number().min(1, { message: "กรุณาระบุครั้ง / Times requierd" }),
 	trimester: z
 		.number()
@@ -30,7 +30,7 @@ const formSchema = z.object({
 	committeeName4: z.string().min(1, { message: "กรุณากรอก คำนำหน้า ชื่อ-นามสกุล กรรมการ / Please fill prefix & full name of committee" }),
 	committeeName5: z.string().min(1, { message: "กรุณากรอก คำนำหน้า ชื่อ-นามสกุล กรรมการ / Please fill prefix & full name of committee" }),
 	numberStudent: z.number().min(1, { message: "กรุณาระบุจำนวนนักศึกษา / Number of student requierd" }),
-	examDay: z.string().min(1, { message: "กรุณาเลือกวันที่สอบ / Exam date requierd" }),
+	examDay: z.date(),
 	studentID: z.number(),
 });
 
@@ -45,7 +45,7 @@ const QualificationExamCommitteeFormCreate = () => {
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			date: "",
+			date: undefined as unknown as Date,
 			times: 0,
 			trimester: 0,
 			academicYear: "",
@@ -55,7 +55,7 @@ const QualificationExamCommitteeFormCreate = () => {
 			committeeName4: "",
 			committeeName5: "",
 			numberStudent: 0,
-			examDay: "",
+			examDay: undefined as unknown as Date,
 			studentID: 0,
 		},
 	});
@@ -90,15 +90,11 @@ const QualificationExamCommitteeFormCreate = () => {
 
 	useEffect(() => {
 		const today = new Date();
-		const month = today.getMonth() + 1;
-		const year = today.getFullYear();
-		const date = today.getDate();
-		const currentDate = date + "/" + month + "/" + year;
 		if (user) {
 			reset({
 				...form.getValues(),
 				studentID: user.id,
-				date: currentDate,
+				date: today,
 				numberStudent: 1,
 			});
 		}
