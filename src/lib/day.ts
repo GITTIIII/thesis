@@ -37,3 +37,12 @@ export const monthEN = (date: Date) => {
   dayjs.locale("en");
   return dayjs(date).format("MMMM");
 };
+export const yearEN = (date: Date) => {
+  dayjs.locale("en");
+  return dayjs(date).format("YY");
+};
+
+export const yearTH = (date: Date) => {
+  dayjs.locale("th");
+  return dayjs(date).format("YY");
+};

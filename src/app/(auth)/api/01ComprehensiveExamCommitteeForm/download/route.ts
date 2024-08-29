@@ -1,5 +1,5 @@
 import { authOptions } from "@/lib/auth";
-import { dateShortTH } from "@/lib/day";
+import { dateShortTH, dayOfMonth, monthTH, yearTH } from "@/lib/day";
 import { db } from "@/lib/db";
 import { genDocx } from "@/lib/formToDocx";
 import { getServerSession } from "next-auth";
@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Form not found" }, { status: 404 });
   }
 
-  const examDay = comprehensiveExamCommitteeForm.examDay.split("/");
+  // const examDay = comprehensiveExamCommitteeForm.examDay.split("/");
   const data = {
     createdAt: dateShortTH(comprehensiveExamCommitteeForm.createdAt),
     schoolName: comprehensiveExamCommitteeForm.student.school?.schoolNameTH,
@@ -62,9 +62,9 @@ export async function GET(request: NextRequest) {
     stdLastName: comprehensiveExamCommitteeForm.student.lastNameTH,
     username: comprehensiveExamCommitteeForm.student.username,
     numberStudent: comprehensiveExamCommitteeForm.numberStudent,
-    examDay: examDay[0],
-    examMonth: month[examDay[1] as string],
-    examYear: Number(examDay[2]) + 543,
+    examDay: dayOfMonth(comprehensiveExamCommitteeForm.examDay),
+    examMonth: monthTH(comprehensiveExamCommitteeForm.examDay),
+    examYear: yearTH(comprehensiveExamCommitteeForm.examDay),
     headSignUrl: comprehensiveExamCommitteeForm.headSchoolSignUrl,
     headPrefix: comprehensiveExamCommitteeForm.headSchool?.prefix?.prefixTH,
     headFirstName: comprehensiveExamCommitteeForm.headSchool?.firstNameTH,
