@@ -10,11 +10,12 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Download } from "lucide-react";
+import { Download, DownloadIcon } from "lucide-react";
 import { IQualificationExamCommitteeForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
+import saveAs from "file-saver";
 
-async function getFormData(stdId: number | undefined) {
+async function get02FormByStdId(stdId: number | undefined) {
   if (stdId) {
     const res = await fetch(`/api/get02FormByStdId/${stdId}`, {
       next: { revalidate: 10 },
@@ -30,6 +31,24 @@ async function get02FormData() {
   return res.json();
 }
 
+const handleDownload = async (formData: IQualificationExamCommitteeForm) => {
+  if (formData.headSchoolID) {
+    try {
+      const response = await fetch(
+        `/api/02QualificationExamCommitteeForm/download?id=${formData.id}`
+      );
+      if (response.ok) {
+        const blob = await response.blob();
+        saveAs(blob, "FM-ENG-GRD-02.docx"); // Change the file name if needed
+      } else {
+        console.error("Failed to download file", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error downloading the file", error);
+    }
+  }
+};
+
 export default function QualificationExamCommitteeFormTable({
   userData,
 }: {
@@ -39,8 +58,13 @@ export default function QualificationExamCommitteeFormTable({
 
   useEffect(() => {
     async function fetchData() {
-      const formData = await getFormData(userData?.id);
-      setFormData(formData);
+      if (userData?.role.toString() === "STUDENT") {
+        const formData = await get02FormByStdId(userData?.id);
+        setFormData(formData);
+      } else {
+        const formData = await get02FormData();
+        setFormData(formData);
+      }
     }
     fetchData();
   }, [userData]);
@@ -77,7 +101,9 @@ export default function QualificationExamCommitteeFormTable({
                   className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}
                 >
                   <TableCell className="text-center">{index + 1}</TableCell>
-                  <TableCell className="text-center">{formData.date}</TableCell>
+                  <TableCell className="text-center">
+                    {new Date(formData.date).toLocaleDateString("th")}
+                  </TableCell>
                   <TableCell className="text-center">{formData.trimester}</TableCell>
                   <TableCell className="text-center">{formData.academicYear}</TableCell>
                   <TableCell className="text-center">
@@ -87,23 +113,32 @@ export default function QualificationExamCommitteeFormTable({
                     {`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
                   </TableCell>
                   <TableCell className="text-center">{formData.times}</TableCell>
-                  <TableCell className="text-center">{formData.examDay}</TableCell>
+                  <TableCell className="text-center">
+                    {new Date(formData.examDay).toLocaleDateString("th")}
+                  </TableCell>
                   <TableCell className="text-[#F26522] text-center">
                     <Link
-                      href={`/user/form/qualificationExamCommitteeForm/${formData.id}`}
+                      href={
+                        formData.headSchoolID || userData?.role.toString() == "STUDENT"
+                          ? `/user/form/qualificationExamCommitteeForm/${formData.id}`
+                          : `/user/form/qualificationExamCommitteeForm/update/${formData.id}`
+                      }
                     >
                       คลิกเพื่อดูเพิ่มเติม
                     </Link>
                   </TableCell>
                   <TableCell className="text-center">
-                    <Link
-                      href={`/api/02QualificationExamCommitteeForm/download?id=${formData.id}`}
-                    >
-                      <Button type="button" variant="outline">
-                        <Download className="mr-2" />
+                    {formData && (
+                      <Button
+                        onClick={() => handleDownload(formData)}
+                        disabled={!formData.headSchoolID}
+                        type="button"
+                        variant="outline"
+                      >
+                        <DownloadIcon className="mr-2" />
                         ดาวน์โหลด
                       </Button>
-                    </Link>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
