@@ -1,11 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import useSWR from "swr";
-import { form01Columns, form02Columns, form03Columns, form05Columns } from "./columns";
+import { formColumns } from "./columns";
 import { DataTable } from "./dataTable";
-import { IComprehensiveExamCommitteeForm, IOutlineForm, IQualificationExamCommitteeForm } from "@/interface/form";
+import {
+  IComprehensiveExamCommitteeForm,
+  IQualificationExamCommitteeForm,
+  IOutlineForm,
+  IThesisProgressForm,
+} from "@/interface/form";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import {
@@ -35,13 +40,14 @@ export default function FormDashborad() {
     fetcher
   );
   const { data: form05Data = [] } = useSWR<IOutlineForm[]>("/api/05OutlineForm", fetcher);
+  const { data: form06Data = [] } = useSWR<IThesisProgressForm[]>("/api/06ThesisProgressForm", fetcher);
 
   return (
     <div className="container mx-auto py-10">
       <Card>
         <CardHeader className="p-4">
           <Select onValueChange={handleSelectChange} value={selectedForm}>
-            <SelectTrigger className="w-[40%] border-none shadow-none text-xl focus:outline-none focus:ring-0 focus:ring-ring">
+            <SelectTrigger className="w-max border-none shadow-none text-xl focus:outline-none focus:ring-0 focus:ring-ring">
               <SelectValue defaultValue={selectedForm} />
             </SelectTrigger>
             <SelectContent>
@@ -62,28 +68,28 @@ export default function FormDashborad() {
         <CardContent>
           <Tabs value={selectedForm}>
             <TabsContent value="form01">
-              <DataTable columns={form01Columns} data={form01Data} />
+              <DataTable columns={formColumns.form01Columns} data={form01Data} />
             </TabsContent>
             <TabsContent value="form02">
-              <DataTable columns={form02Columns} data={form02Data} />
+              <DataTable columns={formColumns.form02Columns} data={form02Data} />
             </TabsContent>
             <TabsContent value="form03">
-              <div>FORMMMMMMMMMMMMMMMMMMMM 3</div>
+              <div>FORM 3</div>
             </TabsContent>
             <TabsContent value="form04">
-              <div>FORMMMMMMMMMMMMMMMMMMMM 4</div>
+              <div>FORM 4</div>
             </TabsContent>
             <TabsContent value="form05">
-              <DataTable columns={form05Columns} data={form05Data} />
+              <DataTable columns={formColumns.form05Columns} data={form05Data} />
             </TabsContent>
             <TabsContent value="form06">
-              <div>FORMMMMMMMMMMMMMMMMMMMM 6</div>
+              <DataTable columns={formColumns.form06Columns} data={form06Data} />
             </TabsContent>
             <TabsContent value="form07">
-              <div>FORMMMMMMMMMMMMMMMMMMMM 7</div>
+              <div>FORM 7</div>
             </TabsContent>
             <TabsContent value="form08">
-              <div>FORMMMMMMMMMMMMMMMMMMMM 8</div>
+              <div>FORM 8</div>
             </TabsContent>
           </Tabs>
         </CardContent>

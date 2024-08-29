@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -94,7 +94,7 @@ const MONTHS = [
 ];
 
 const formSchema = z.object({
-	date: z.string(),
+	date: z.date(),
 	thesisNameTH: z.string().min(1, { message: "กรุณากรอกชื่อวิทยานิพนธ์ / Thesis name requierd" }),
 	thesisNameEN: z.string().toUpperCase().min(1, { message: "กรุณากรอกชื่อวิทยานิพนธ์ / Thesis name requierd" }),
 	abstract: z.string().min(1, { message: "กรุณากรอกบทคัดย่อ / Abstract requierd" }),
@@ -112,12 +112,12 @@ const OutlineFormCreate = () => {
 	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const [loading, setLoading] = useState(false);
 	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
-
+	
 	const { toast } = useToast();
 	const form = useForm({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			date: "",
+			date: undefined as unknown as Date,
 			thesisNameTH: "",
 			thesisNameEN: "",
 			abstract: "",
@@ -171,15 +171,11 @@ const OutlineFormCreate = () => {
 
 	useEffect(() => {
 		const today = new Date();
-		const month = today.getMonth() + 1;
-		const year = today.getFullYear();
-		const date = today.getDate();
-		const currentDate = date + "/" + month + "/" + year;
 		if (user) {
 			reset({
 				...form.getValues(),
 				studentID: user.id,
-				date: currentDate,
+				date: today,
 			});
 		}
 	}, [user, reset]);
@@ -221,12 +217,12 @@ const OutlineFormCreate = () => {
 							name="thesisNameTH"
 							render={({ field }) => (
 								<div className="flex flex-row items-center mb-6 justify-center">
-									<FormItem className="w-auto">
+									<FormItem className="w-full sm:w-auto">
 										<FormLabel>
 											ชื่อภาษาไทย / ThesisName(TH) <span className="text-red-500">*</span>
 										</FormLabel>
 										<FormControl>
-											<Input className="text-sm p-2 w-[300px] m-auto  rounded-lg" {...field} />
+											<Input className="text-sm p-2 w-full sm:w-[300px] m-auto  rounded-lg" {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -238,12 +234,12 @@ const OutlineFormCreate = () => {
 							name="thesisNameEN"
 							render={({ field }) => (
 								<div className="flex flex-row items-center mb-6 justify-center">
-									<FormItem className="w-max">
+									<FormItem className="w-full sm:w-auto">
 										<FormLabel>
 											ชื่อภาษาอังกฤษ / ThesisName(EN) <span className="text-red-500">*</span>
 										</FormLabel>
 										<FormControl>
-											<Input className="text-sm p-2 w-[300px] m-auto  rounded-lg" {...field} />
+											<Input className="text-sm p-2 w-full sm:w-[300px] m-auto  rounded-lg" {...field} />
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -272,7 +268,7 @@ const OutlineFormCreate = () => {
 									alt="signature"
 								/>
 							</Button>
-							<Label className="mt-2">{`วันที่ ${form.getValues().date ? form.getValues().date : "__________"}`}</Label>
+							<Label className="mt-2">{`วันที่ ${form.getValues().date ? form.getValues().date.toLocaleDateString("th") : "__________"}`}</Label>
 						</div>
 					</div>
 				</div>

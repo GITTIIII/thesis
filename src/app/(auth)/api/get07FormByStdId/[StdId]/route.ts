@@ -16,7 +16,7 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 		return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
 	}
 
-	const formData = await db.comprehensiveExamCommitteeForm.findMany({
+	const formData = await db.thesisExamAppointmentForm.findMany({
 		where: {
 			studentID: Number(StdId),
 		},
@@ -41,6 +41,11 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 							},
 						},
 					},
+				},
+			},
+			headSchool: {
+				include: {
+					prefix: true,
 				},
 			},
 		},

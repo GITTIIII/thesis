@@ -1,20 +1,27 @@
-import { throws } from "assert";
 import createReport from "docx-templates";
 import fs from "fs";
 
-const path = "src/lib/formToDocx/docTemplate/";
-export const genDocx = async (docxName: string, data: object) => {
+export const genDocx = async (path: string, data: any) => {
   try {
-    const template = fs.readFileSync(`${path}${docxName}`);
+    const template = fs.readFileSync(path);
+
+    // Function to process image data
+
     const buffer = await createReport({
       template,
-      data: data,
+      data,
       cmdDelimiter: ["{", "}"],
+      additionalJsContext: {
+        image: (url: string) => {
+          const data = url.slice("data:image/png;base64,".length);
+          return { width: 5, height: 2, data, extension: ".png" };
+        },
+      },
     });
+
     return buffer;
   } catch (error) {
-    console.log(error);
+    console.log("Error generating DOCX:", error);
     throw error;
   }
-  //   fs.writeFileSync("report.docx", buffer);
 };

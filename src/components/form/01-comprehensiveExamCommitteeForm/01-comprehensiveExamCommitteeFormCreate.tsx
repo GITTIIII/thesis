@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,7 @@ import { DatePicker } from "@/components/datePicker/datePicker";
 import useSWR from "swr";
 
 const formSchema = z.object({
-	date: z.string(),
+	date: z.date(),
 	times: z.number().min(1, { message: "กรุณาระบุครั้ง / Times requierd" }),
 	trimester: z
 		.number()
@@ -30,7 +30,7 @@ const formSchema = z.object({
 	committeeName4: z.string().min(1, { message: "กรุณากรอก คำนำหน้า ชื่อ-นามสกุล กรรมการ / Please fill prefix & full name of committee" }),
 	committeeName5: z.string().min(1, { message: "กรุณากรอก คำนำหน้า ชื่อ-นามสกุล กรรมการ / Please fill prefix & full name of committee" }),
 	numberStudent: z.number().min(1, { message: "กรุณาระบุจำนวนนักศึกษา / Number of student requierd" }),
-	examDay: z.string().min(1, { message: "กรุณาเลือกวันที่สอบ / Exam date requierd" }),
+	examDay: z.date(),
 	studentID: z.number(),
 });
 
@@ -38,14 +38,14 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const ComprehensiveExamCommitteeFormCreate = () => {
 	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
-	const router = useRouter();
 	const [loading, setLoading] = useState(false);
+	const router = useRouter();
 
 	const { toast } = useToast();
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			date: "",
+			date: undefined as unknown as Date,
 			times: 0,
 			trimester: 0,
 			academicYear: "",
@@ -55,7 +55,7 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 			committeeName4: "",
 			committeeName5: "",
 			numberStudent: 0,
-			examDay: "",
+			examDay: undefined as unknown as Date,
 			studentID: 0,
 		},
 	});
@@ -90,19 +90,17 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 
 	useEffect(() => {
 		const today = new Date();
-		const month = today.getMonth() + 1;
-		const year = today.getFullYear();
-		const date = today.getDate();
-		const currentDate = date + "/" + month + "/" + year;
-		if (user) {
+		if (user && user.role.toString() === "STUDENT") {
 			reset({
 				...form.getValues(),
 				studentID: user.id,
-				date: currentDate,
+				date: today,
 				numberStudent: 1,
 			});
 		}
 	}, [user, reset]);
+
+	console.log(form.watch("examDay"))
 
 	return (
 		<Form {...form}>
@@ -190,7 +188,7 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 							<CircleAlert className="mr-1" />
 							สามารถดูรายชื่อกรรมการที่ได้รับการรับรองเเล้ว
 							<Button variant="link" className="p-1 text-[#A67436]">
-								<Link href="">คลิกที่นี่</Link>
+								<Link href="/user/expertTable">คลิกที่นี่</Link>
 							</Button>
 						</div>
 						<FormField

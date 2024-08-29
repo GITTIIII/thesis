@@ -21,7 +21,6 @@ import { IUser } from "@/interface/user";
 import { Label } from "@/components/ui/label";
 import useSWR from "swr";
 
-
 const formSchema = z.object({
 	times: z.number().min(1, { message: "กรุณาระบุครั้ง / Times requierd" }),
 	trimester: z
@@ -33,7 +32,7 @@ const formSchema = z.object({
 	percentage: z.number(),
 	percentageComment: z.string(),
 	issues: z.string(),
-	date: z.string(),
+	date: z.date(),
 	processPlan: z.array(z.any()),
 	studentID: z.number(),
 });
@@ -44,7 +43,7 @@ const ThesisProgressFormCreate = () => {
 	const router = useRouter();
 	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const { data: approvedForm } = useSWR<IOutlineForm>(`/api/get05ApprovedFormByStdId/${user?.id}`, fetcher);
-	const { data: last06Form } = useSWR<IThesisProgressForm>("/api/getLast06Form", fetcher);
+	const { data: last06Form } = useSWR<IThesisProgressForm>(`/api/getLast06FormByStdId/${user?.id}`, fetcher);
 	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
 	const [loading, setLoading] = useState(false);
 	const [isDisabled, setIsDisabled] = useState(false);
@@ -60,7 +59,7 @@ const ThesisProgressFormCreate = () => {
 			percentage: 0,
 			percentageComment: "",
 			issues: "",
-			date: "",
+			date: undefined as unknown as Date,
 			processPlan: [],
 			studentID: 0,
 		},
@@ -108,15 +107,11 @@ const ThesisProgressFormCreate = () => {
 
 	useEffect(() => {
 		const today = new Date();
-		const month = today.getMonth() + 1;
-		const year = today.getFullYear();
-		const date = today.getDate();
-		const currentDate = date + "/" + month + "/" + year;
 		if (user) {
 			reset({
 				...form.getValues(),
 				studentID: user.id,
-				date: currentDate,
+				date: today,
 			});
 		}
 	}, [user, reset]);
@@ -186,31 +181,10 @@ const ThesisProgressFormCreate = () => {
 						</div>
 						<h1 className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</h1>
 						<InputForm value={`${user?.username}`} label="รหัสนักศึกษา / Student ID" />
-						<InputForm
-							value={
-							
-									`${user?.firstNameTH} ${user?.lastNameTH}`
-							}
-							label="ชื่อ-นามสกุล / Fullname"
-						/>
-						<InputForm
-							value={
-								
-									`${user?.school.schoolNameTH}`
-							}
-							label="สาขาวิชา / School"
-						/>
-						<InputForm
-							value={
-							
-									 `${user?.program.programNameTH}`
-							}
-							label="หลักสูตร / Program"
-						/>
-						<InputForm
-							value={`${user?.program.programYear}`}
-							label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)"
-						/>
+						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Fullname" />
+						<InputForm value={`${user?.school.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${user?.program.programNameTH}`} label="หลักสูตร / Program" />
+						<InputForm value={`${user?.program.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
 
 						<div className="flex flex-col items-center mb-6 justify-center">
 							<FormLabel className="font-normal">ระดับการศึกษา / Education Level</FormLabel>
@@ -226,13 +200,10 @@ const ThesisProgressFormCreate = () => {
 							</RadioGroup>
 						</div>
 
-						<div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
+						<div className="w-full sm:w-max mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
 							<div className="text-center font-semibold mb-2">ชื่อโครงร่างวิทยานิพนธ์</div>
 							<InputForm value={`${approvedForm?.thesisNameTH}`} label="ชื่อภาษาไทย / ThesisName(TH)" />
-							<InputForm
-								value={`${approvedForm?.thesisNameEN}`}
-								label="ชื่อภาษาอังกฤษ / ThesisName(EN)"
-							/>
+							<InputForm value={`${approvedForm?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / ThesisName(EN)" />
 						</div>
 					</div>
 					<div className="border-l border-[#eeee]"></div>
@@ -240,17 +211,14 @@ const ThesisProgressFormCreate = () => {
 					{/* ฝั่งขวา */}
 					<div className="w-full sm:2/4">
 						<InputForm
-							value={
-								
-									 `${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`
-							}
+							value={`${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษา / Advisor"
 						/>
 
 						<div className="flex justify-center my-8 bg-[#ffff]  text-[#000] underline rounded-lg">
 							ขอรายงานความคืบหน้าวิทยานิพนธ์ดังนี้
 						</div>
-						<div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
+						<div className="w-full sm:w-max mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
 							<div className="font-normal text-center mb-5">1. ระดับการดำเนินงาน</div>
 							<FormField
 								control={form.control}
@@ -260,15 +228,11 @@ const ThesisProgressFormCreate = () => {
 										<RadioGroup className="space-y-1 mt-2" onValueChange={handleRadioChange}>
 											<div>
 												<RadioGroupItem value="AsPlaned" />
-												<FormLabel className="ml-2 font-normal">
-													เป็นไปตามแผนที่วางไว้ทุกประการ
-												</FormLabel>
+												<FormLabel className="ml-2 font-normal">เป็นไปตามแผนที่วางไว้ทุกประการ</FormLabel>
 											</div>
 											<div>
 												<RadioGroupItem value="Adjustments" />
-												<FormLabel className="ml-2 font-normal mb-6">
-													มีการเปลี่ยนแผนที่วางไว้
-												</FormLabel>
+												<FormLabel className="ml-2 font-normal mb-6">มีการเปลี่ยนแผนที่วางไว้</FormLabel>
 											</div>
 										</RadioGroup>
 										<FormMessage />
@@ -294,17 +258,15 @@ const ThesisProgressFormCreate = () => {
 								)}
 							/>
 						</div>
-						<div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
-							<div className="w-full text-center font-normal mb-6">
-								2. ผลการดำเนินงานที่ผ่านมาในครั้งนี้
-							</div>
+						<div className="w-full sm:w-max mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
+							<div className="w-full text-center font-normal mb-6">2. ผลการดำเนินงานที่ผ่านมาในครั้งนี้</div>
 							<FormField
 								control={form.control}
 								name="percentage"
 								render={({ field }) => (
 									<div className="flex flex-row items-center mb-6 justify-center">
 										<FormItem className="w-auto">
-											<FormLabel>คิดเป็นร้อยละการทำงานของเป้าหมาย</FormLabel>
+											<FormLabel>คิดเป็นร้อยละการทำงานของเป้าหมาย<span className="text-red-500">*</span></FormLabel>
 											<Input
 												value={field.value ? field.value : ""}
 												onChange={(e) => field.onChange(Number(e.target.value))}
@@ -323,7 +285,7 @@ const ThesisProgressFormCreate = () => {
 											<FormLabel>โดยสรุปผลได้ดังนี้</FormLabel>
 											<FormControl>
 												<Textarea
-													className="text-sm p-2 w-[300px] m-auto  rounded-lg"
+													className="text-sm p-2 w-full sm:w-[300px] m-auto  rounded-lg"
 													placeholder="Type your message here."
 													value={field.value}
 													onChange={field.onChange}
@@ -335,7 +297,7 @@ const ThesisProgressFormCreate = () => {
 								)}
 							/>
 						</div>
-						<div className="mt-6 w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
+						<div className="mt-6 w-full sm:w-max mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
 							<div className="w-full text-center font-normal mb-6">3. ปัญหา อุปสรรค และแนวทางแก้ไข</div>
 							<FormField
 								control={form.control}
@@ -345,7 +307,7 @@ const ThesisProgressFormCreate = () => {
 										<FormItem className="w-auto">
 											<FormControl>
 												<Textarea
-													className="text-sm p-2 w-[300px] m-auto  rounded-lg"
+													className="text-sm p-2 w-full sm:w-[300px] m-auto  rounded-lg"
 													placeholder="Type your message here."
 													value={field.value}
 													onChange={field.onChange}
@@ -368,24 +330,32 @@ const ThesisProgressFormCreate = () => {
 									alt="signature"
 								/>
 							</Button>
-							<Label className="mt-2">{`วันที่ ${
-								form.getValues().date ? form.getValues().date : "__________"
-							}`}</Label>
+							<Label className="mt-2">{`วันที่ ${form.getValues().date ? new Date(form.getValues().date).toLocaleDateString("th") : "__________"}`}</Label>
 						</div>
 					</div>
 				</div>
 				<hr className="่่justify-center mx-auto w-3/4 my-5 border-t-2 border-[#eeee]" />
 
-				<div className="flex justify-center  w-full mb-10">
-					{last06Form && approvedForm && (
-						<ThesisProcessPlan
-							degree={user!.degree}
-							canEdit={true}
-							processPlans={last06Form.processPlan ? last06Form.processPlan : approvedForm.processPlan}
-							setProcessPlans={setProcessPlans}
-						/>
-					)}
+				<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg mt-4">
+					<h1 className="mb-2 font-bold text-center">เเผนการดำเนินการจัดทำวิทยานิพนธ์</h1>
+					<div className="w-full flex flex-col sm:flex-row justify-center items-center mb-2 ">
+						<Label className="font-bold">เริ่มทำวิทธายานิพนธ์ เดือน</Label>
+						<Input disabled className="w-max mx-4 my-2 sm:my-0" value={`${approvedForm?.thesisStartMonth}`} />
+						<Label className="mx-4 font-bold"> ปี พ.ศ.</Label>
+						<Input disabled className="w-max my-2 sm:my-0" value={`${approvedForm?.thesisStartYear}`} />
+					</div>
+					<div className="w-full h-max overflow-auto flex justify-center">
+						{last06Form && approvedForm && (
+							<ThesisProcessPlan
+								degree={user!.degree}
+								canEdit={true}
+								processPlans={last06Form.processPlan ? last06Form.processPlan : approvedForm.processPlan}
+								setProcessPlans={setProcessPlans}
+							/>
+						)}
+					</div>
 				</div>
+
 				<div className="w-full flex mt-4 px-20 lg:flex justify-center">
 					<Button
 						variant="outline"

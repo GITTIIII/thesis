@@ -6,9 +6,10 @@ export interface IProcessPlan {
 	months: number[];
 }
 
+// 01
 export type IComprehensiveExamCommitteeForm = {
 	id: number;
-	date: string;
+	date: Date;
 	trimester: number;
 	academicYear: string;
 	committeeName1: string;
@@ -18,15 +19,19 @@ export type IComprehensiveExamCommitteeForm = {
 	committeeName5: string;
 	numberStudent: number;
 	times: number;
-	examDay: string;
+	examDay: Date;
+	headSchoolID: number;
+	headSchoolSignUrl: string;
+	headSchool: IUser;
 
 	studentID: number;
 	student: IUser;
 };
 
+// 02
 export type IQualificationExamCommitteeForm = {
 	id: number;
-	date: string;
+	date: Date;
 	trimester: number;
 	academicYear: string;
 	committeeName1: string;
@@ -36,20 +41,40 @@ export type IQualificationExamCommitteeForm = {
 	committeeName5: string;
 	numberStudent: number;
 	times: number;
-	examDay: string;
+	examDay: Date;
+	headSchoolID: number;
+	headSchoolSignUrl: string;
+	headSchool: IUser;
 
 	studentID: number;
 	student: IUser;
 };
 
+//03
+export type IOutlineCommitteeForm = {
+	id: number;
+	date: Date;
+	trimester: number;
+	academicYear: string;
+	committeeMembers: { name: string }[];
+	times: number;
+	examDate: Date;
+	headSchoolID: number;
+	headSchoolSignUrl: string;
+	headSchool: IUser;
+
+	studentID: number;
+	student: IUser;
+};
+// 05
 export type IOutlineForm = {
 	id: number;
-	date: string;
+	date: Date;
 	thesisNameTH: string;
 	thesisNameEN: string;
 	abstract: string;
 	processPlan: Array<any>;
-	times: number;
+	times: string;
 	thesisStartMonth: string;
 	thesisStartYear: string;
 
@@ -61,16 +86,17 @@ export type IOutlineForm = {
 	outlineCommitteeStatus: string;
 	outlineCommitteeComment: string;
 	outlineCommitteeSignUrl: string;
-	dateOutlineCommitteeSign: string;
+	dateOutlineCommitteeSign: Date;
 
 	instituteCommitteeID: number;
 	instituteCommittee: IUser;
 	instituteCommitteeStatus: string;
 	instituteCommitteeComment: string;
 	instituteCommitteeSignUrl: string;
-	dateInstituteCommitteeSign: string;
+	dateInstituteCommitteeSign: Date;
 };
 
+// 06
 export type IThesisProgressForm = {
 	id: number;
 	times: number;
@@ -80,18 +106,41 @@ export type IThesisProgressForm = {
 	percentage: number;
 	percentageComment: string;
 	issues: string;
-	date: string;
+	date: Date;
 	processPlan: Array<any>;
 	studentID: number;
 	student: IUser;
 
 	assessmentResult: string;
 	advisorSignUrl: string;
-	dateAdvisor: string;
+	dateAdvisor: Date;
 
 	headSchoolComment: string;
 	headSchoolSignUrl: string;
-	dateHeadSchool: string;
+	dateHeadSchool: Date;
+	headSchoolID: number;
+	headSchool: IUser;
+};
+
+// 07
+export type IThesisExamAppointmentForm = {
+	id: number;
+	trimester: number;
+	academicYear: String;
+	gpa: String;
+	credits: number;
+	date: Date;
+  dateExam: Date;
+	studentID: number;
+  student: IUser;
+
+	turnitinApproval: Boolean;
+	advisorSignUrl: string;
+	dateAdvisor: Date;
+
+	headSchoolComment: string;
+	headSchoolSignUrl: string;
+	dateHeadSchool: Date;
 	headSchoolID: number;
 	headSchool: IUser;
 };

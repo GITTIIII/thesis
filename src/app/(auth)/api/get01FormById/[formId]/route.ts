@@ -43,6 +43,13 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 					},
 				},
 			},
+			headSchool:{
+				include:{
+					prefix: true,
+					institute: true,
+					school: true,
+				}
+			}
 		},
 	});
 

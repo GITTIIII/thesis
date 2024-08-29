@@ -3,8 +3,10 @@ import { ISchool } from "./school";
 import { IProgram } from "./program";
 import { IPrefix } from "./prefix";
 import { ICoAdvisorStudents } from "./coAdvisorStudents";
+import { ICertificate } from "./certificate";
 
 export type IUser = {
+	name: string;
 	map(arg0: (data: IUser) => import("react").JSX.Element): import("react").ReactNode;
 	id: number;
 	prefixID: number;
@@ -19,6 +21,7 @@ export type IUser = {
 	phone: string;
 	sex: string;
 	degree: string;
+	certificate: ICertificate[];
 
 	instituteID: number;
 	institute: IInstitute;
@@ -38,7 +41,7 @@ export type IUser = {
 	advisorID: number;
 	advisor: IUser;
 
-	coAdvisedStudents: ICoAdvisorStudents
+	coAdvisedStudents: ICoAdvisorStudents[]
 };
 
 enum Position {

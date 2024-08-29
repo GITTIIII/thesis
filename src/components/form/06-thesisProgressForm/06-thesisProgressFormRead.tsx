@@ -17,13 +17,13 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 	const router = useRouter();
 	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
-	const { data: approvedForm } = useSWR<IOutlineForm>(`/api/get05ApprovedFormByStdId/${user?.id}`, fetcher);
 	const { data: formData } = useSWR<IThesisProgressForm>(`/api/get06FormById/${formId}`, fetcher);
+	const { data: approvedForm } = useSWR<IOutlineForm>(`/api/get05ApprovedFormByStdId/${formData?.studentID}`, fetcher);
 
 	return (
 		<>
 			<div className="w-full h-full bg-white p-4">
-				<div className="w-full flex px-0 lg:px-20 mb-2">
+				<div className="w-full flex px-0 sm:px-10 mb-2">
 					<Button
 						variant="outline"
 						type="reset"
@@ -108,7 +108,7 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 							<div className="flex flex-col items-center mb-6 justify-center">
 								<Label className="mb-2">โดยสรุปผลได้ดังนี้</Label>
 								<Textarea
-									className="text-sm p-2 w-[300px] m-auto  rounded-lg"
+									className="text-sm p-2 w-[300px] m-auto rounded-lg resize-none"
 									placeholder="Type your message here."
 									disabled
 									defaultValue={formData?.percentageComment}
@@ -120,7 +120,7 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 
 							<div className="flex flex-row items-center mb-6 justify-center">
 								<Textarea
-									className="text-sm p-2 w-[300px] m-auto  rounded-lg"
+									className="text-sm p-2 w-[300px] m-auto  rounded-lg resize-none"
 									placeholder="Type your message here."
 									defaultValue={formData?.issues}
 									disabled
@@ -138,7 +138,7 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 									alt="signature"
 								/>
 							</Button>
-							<Label className="mt-4">{`วันที่ ${formData?.date ? formData?.date : "__________"}`}</Label>
+							<Label className="mt-4">{`วันที่ ${formData?.date ? new Date(formData?.date).toLocaleDateString("th"): "__________"}`}</Label>
 						</div>
 					</div>
 				</div>
@@ -149,21 +149,22 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 					<h1 className="mb-2 font-bold text-center">ผลการประเมินความคืบหน้าของการทำวิทยานิพนธ์โดยอาจารย์ที่ปรึกษา</h1>
 
 					<div className="w-full sm:w-2/4 h-max">
-						<Textarea disabled defaultValue={formData?.percentageComment} />
+						<Textarea className="resize-none" disabled defaultValue={formData?.assessmentResult} />
 					</div>
 
 					<Button variant="outline" type="button" className="w-60 my-4 h-max">
 						<Image
 							src={formData?.advisorSignUrl ? formData?.advisorSignUrl : signature}
-							width={100}
+							width={200}
 							height={100}
+							style={{ width: "auto", height: "auto" }}
 							alt="signature"
 						/>
 					</Button>
 
 					<Label className="mb-2">{`${formData?.student?.advisor?.prefix.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
 
-					<Label className="mt-2">{`วันที่ ${formData?.dateAdvisor ? formData?.dateAdvisor : "__________"}`}</Label>
+					<Label className="mt-2">{`วันที่ ${formData?.dateAdvisor ? new Date(formData?.dateAdvisor).toLocaleDateString("th") : "__________"}`}</Label>
 				</div>
 
 				{/* หัวหน้าสาขา */}
@@ -171,13 +172,13 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 					<h1 className="mb-2 font-bold text-center">ความเห็นของหัวหน้าสาขาวิชา</h1>
 
 					<div className="w-full sm:w-2/4 h-max">
-						<Textarea disabled defaultValue={formData?.headSchoolComment} />
+						<Textarea className="resize-none" disabled defaultValue={formData?.headSchoolComment} />
 					</div>
 
 					<Button variant="outline" type="button" className="w-60 my-4 h-max">
 						<Image
 							src={formData?.headSchoolSignUrl ? formData?.headSchoolSignUrl : signature}
-							width={100}
+							width={200}
 							height={100}
 							alt="signature"
 						/>
@@ -189,7 +190,7 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 							: ""}
 					</Label>
 
-					<Label className="mt-2">{`วันที่ ${formData?.dateHeadSchool ? formData?.dateHeadSchool : "__________"}`}</Label>
+					<Label className="mt-2">{`วันที่ ${formData?.dateHeadSchool ? new Date(formData?.dateHeadSchool).toLocaleDateString("th") : "__________"}`}</Label>
 				</div>
 				<hr className="่่justify-center mx-auto w-full sm:w-max my-5 border-t-2 border-[#eeee]" />
 				<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg">

@@ -1,31 +1,31 @@
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ChangeEvent, use, useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { useEffect, useRef, useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { useForm } from "react-hook-form";
-import { useToast } from "@/components/ui/use-toast";
-import { Textarea } from "@/components/ui/textarea";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import Image from "next/image";
-import axios from "axios";
-import qs from "query-string";
-import InputForm from "@/components/inputForm/inputForm";
-import { IOutlineForm } from "@/interface/form";
-import { IUser } from "@/interface/user";
-import { Label } from "../../ui/label";
-import signature from "../../../../public/asset/signature.png";
-import ThesisProcessPlan from "../thesisProcessPlan";
-import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import SignatureCanvas from "react-signature-canvas";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Check, ChevronsUpDown } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { useToast } from "@/components/ui/use-toast";
+import { Textarea } from "@/components/ui/textarea";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Label } from "../../ui/label";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import { IExpert } from "@/interface/expert";
 import { DatePicker } from "@/components/datePicker/datePicker";
+import { IOutlineForm } from "@/interface/form";
+import { IUser } from "@/interface/user";
+import { IExpert } from "@/interface/expert";
+import InputForm from "@/components/inputForm/inputForm";
+import signature from "../../../../public/asset/signature.png";
+import ThesisProcessPlan from "../thesisProcessPlan";
+import SignatureCanvas from "react-signature-canvas";
+import Image from "next/image";
+import axios from "axios";
+import qs from "query-string";
 import useSWR from "swr";
 
 const formSchema = z.object({
@@ -35,12 +35,12 @@ const formSchema = z.object({
 	outlineCommitteeStatus: z.string(),
 	outlineCommitteeComment: z.string(),
 	outlineCommitteeSignUrl: z.string(),
-	dateOutlineCommitteeSign: z.string(),
+	dateOutlineCommitteeSign: z.date().optional(),
 	instituteCommitteeID: z.number(),
 	instituteCommitteeStatus: z.string(),
 	instituteCommitteeComment: z.string(),
 	instituteCommitteeSignUrl: z.string(),
-	dateInstituteCommitteeSign: z.string(),
+	dateInstituteCommitteeSign: z.date().optional(),
 });
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -48,7 +48,7 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 	const { data: formData } = useSWR<IOutlineForm>(`/api/get05FormById/${formId}`, fetcher);
 	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
-	const { data: expert } = useSWR<IExpert[]>("/api/getExpert", fetcher);
+	const { data: expert } = useSWR<IExpert[]>("/api/expert", fetcher);
 	const { data: instituteCommittee } = useSWR<IUser[]>("/api/getInstituteCommittee", fetcher);
 	const router = useRouter();
 	const { toast } = useToast();
@@ -98,13 +98,13 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 			outlineCommitteeStatus: "",
 			outlineCommitteeComment: "",
 			outlineCommitteeSignUrl: "",
-			dateOutlineCommitteeSign: "",
+			dateOutlineCommitteeSign: undefined as unknown as Date,
 
 			instituteCommitteeID: 0,
 			instituteCommitteeStatus: "",
 			instituteCommitteeComment: "",
 			instituteCommitteeSignUrl: "",
-			dateInstituteCommitteeSign: "",
+			dateInstituteCommitteeSign: undefined as unknown as Date,
 		},
 	});
 
@@ -237,7 +237,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 									alt="signature"
 								/>
 							</Button>
-							<Label>{`วันที่ ${formData?.date ? formData?.date : "__________"}`}</Label>
+							<Label>{`วันที่ ${formData?.date ? new Date(formData?.date).toLocaleDateString("th") : "__________"}`}</Label>
 						</div>
 					</div>
 				</div>
@@ -250,7 +250,11 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 						<div className="w-max h-max flex mt-2 items-center">
 							<Label className="mr-2">วันที่</Label>
 							{formData?.outlineCommitteeID ? (
-								<Label>{formData?.dateOutlineCommitteeSign ? formData.dateOutlineCommitteeSign : "__________"}</Label>
+								<Label>
+									{formData?.dateOutlineCommitteeSign
+										? new Date(formData.dateOutlineCommitteeSign).toLocaleDateString("th")
+										: "__________"}
+								</Label>
 							) : (
 								<FormField
 									control={form.control}
@@ -368,7 +372,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 												? form.getValues().outlineCommitteeSignUrl
 												: signature
 										}
-										width={100}
+										width={200}
 										height={100}
 										style={{
 											width: "auto",
@@ -389,7 +393,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 										throttle={8}
 										canvasProps={{
 											width: 400,
-											height: 400,
+											height: 150,
 											className: "sigCanvas",
 										}}
 									/>
@@ -491,7 +495,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 										control={form.control}
 										name="times"
 										render={({ field }) => (
-											<div className="w-[100px] flex flex-row items-center justify-center">
+											<div className="w-[75px] flex flex-row items-center justify-center">
 												<FormItem>
 													<Input {...field} />
 													<FormMessage />
@@ -500,12 +504,13 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 										)}
 									/>
 								)}
-							</div>
-							<div className="w-max h-max flex mt-2 items-center">
-								<Label className="mr-2">วันที่</Label>
+
+								<Label className="mx-2">วันที่</Label>
 								{formData?.instituteCommitteeID ? (
 									<Label>
-										{formData?.dateInstituteCommitteeSign ? formData.dateInstituteCommitteeSign : "__________"}
+										{formData?.dateInstituteCommitteeSign
+											? new Date(formData.dateInstituteCommitteeSign).toLocaleDateString("th")
+											: "__________"}
 									</Label>
 								) : (
 									<FormField
@@ -622,7 +627,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 													? form.getValues().instituteCommitteeSignUrl
 													: signature
 											}
-											width={100}
+											width={200}
 											height={100}
 											style={{
 												width: "auto",
@@ -643,7 +648,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 											throttle={8}
 											canvasProps={{
 												width: 400,
-												height: 400,
+												height: 150,
 												className: "sigCanvas",
 											}}
 										/>

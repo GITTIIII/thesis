@@ -21,11 +21,11 @@ import useSWR from "swr";
 const labels: { [key: string]: string } = {
 	comprehensiveExamCommitteeForm: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบประมวลความรู้",
 	qualificationExamCommitteeForm: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบวัดคุณสมบัติ",
-	outlineExamCommitteeForm: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบโครงร่างวิทยานิพนธ์",
+	thesisOutlineCommitteeForm: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบโครงร่างวิทยานิพนธ์",
 	appointmentThesisExamForm: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบวิทยานิพนธ์",
 	outlineForm: "แบบคำขออนุมัติโครงร่างวิทยานิพนธ์",
 	thesisProgressForm: "เเบบรายงานความคืบหน้าของการทำวิทยานิพนธ์",
-	examAppointment: "คำขอนัดสอบวิทยานิพนธ์",
+	thesisExamAppointmentForm: "คำขอนัดสอบวิทยานิพนธ์",
 };
 
 async function get05ApprovedForm() {
@@ -96,7 +96,7 @@ export default function StudentTablePage() {
 							</SelectItem>
 							<SelectItem
 								// disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 3}
-								value="outlineExamCommitteeForm"
+								value="thesisOutlineCommitteeForm"
 							>
 								แบบคำขออนุมัติแต่งตั้งกรรมการสอบโครงร่างวิทยานิพนธ์
 							</SelectItem>
@@ -123,7 +123,7 @@ export default function StudentTablePage() {
 							</SelectItem>
 							<SelectItem
 								// disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 7}
-								value="examAppointment"
+								value="thesisExamAppointmentForm"
 							>
 								คำขอนัดสอบวิทยานิพนธ์
 							</SelectItem>
@@ -149,11 +149,11 @@ export default function StudentTablePage() {
 					{formType == "qualificationExamCommitteeForm" && (
 						<QualificationExamCommitteeFormTable userData={userData} />
 					)}
-					{formType == "outlineExamCommitteeForm" && <OutlineExamCommitteeFormTable userData={userData} />}
+					{formType == "thesisOutlineCommitteeForm" && <OutlineExamCommitteeFormTable userData={userData} />}
 					{formType == "appointmentThesisExamForm" && <ThesisExamCommitteeFormTable userData={userData} />}
 					{formType == "outlineForm" && <OutlineFormTable userData={userData} />}
 					{formType == "thesisProgressForm" && <ThesisProgressFormTable userData={userData} />}
-					{formType == "examAppointment" && <ExamAppointmentFormTable userData={userData} />}
+					{formType == "thesisExamAppointmentForm" && <ExamAppointmentFormTable userData={userData} />}
 				</div>
 			</div>
 		</>

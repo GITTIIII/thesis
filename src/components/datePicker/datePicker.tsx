@@ -9,7 +9,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 interface DatePickerProps {
-	onDateChange: (dateString: string) => void;
+	onDateChange: (dateString: Date | undefined) => void;
 }
 
 export function DatePicker({ onDateChange }: DatePickerProps) {
@@ -17,9 +17,9 @@ export function DatePicker({ onDateChange }: DatePickerProps) {
 
 	const handleDateChange = (selectedDate: Date | undefined) => {
 		setDate(selectedDate);
-		const formattedDate = selectedDate ? format(selectedDate, "dd/MM/yyyy") : "";
-		onDateChange(formattedDate);
+		onDateChange(selectedDate);
 	};
+	
 
 	return (
 		<Popover>
@@ -27,7 +27,7 @@ export function DatePicker({ onDateChange }: DatePickerProps) {
 				<Button
 					variant={"outline"}
 					className={cn(
-						"w-[300px] justify-start items-center text-left font-normal",
+						"w-full sm:w-max justify-start items-center text-left font-normal",
 						!date && "text-muted-foreground"
 					)}
 				>

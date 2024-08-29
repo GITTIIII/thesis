@@ -1,10 +1,10 @@
 import { authOptions } from "@/lib/auth";
+import { dateShortTH } from "@/lib/day";
 import { db } from "@/lib/db";
+import { genDocx } from "@/lib/formToDocx";
 import { getServerSession } from "next-auth";
-import { useSearchParams } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
-import { genDocx } from "@/lib/formToDocx/index";
-import { dateShortTH, monthTH, dayOfMonth } from "@/lib/day";
+
 export async function GET(request: NextRequest) {
   const comprehensiveExamCommitteeFormId = request.nextUrl.searchParams.get("id");
   const session = await getServerSession(authOptions);
@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
       { status: 404 }
     );
   }
+
   const comprehensiveExamCommitteeForm =
     await db.comprehensiveExamCommitteeForm.findUnique({
       where: {
@@ -28,18 +29,27 @@ export async function GET(request: NextRequest) {
             program: true,
           },
         },
+        headSchool: {
+          include: {
+            prefix: true,
+            institute: true,
+            school: true,
+          },
+        },
       },
     });
 
   if (!comprehensiveExamCommitteeForm) {
     return NextResponse.json({ error: "Form not found" }, { status: 404 });
   }
+
   const examDay = comprehensiveExamCommitteeForm.examDay.split("/");
   const data = {
     createdAt: dateShortTH(comprehensiveExamCommitteeForm.createdAt),
     schoolName: comprehensiveExamCommitteeForm.student.school?.schoolNameTH,
     programNameTH: comprehensiveExamCommitteeForm.student.program?.programNameTH,
     programYear: comprehensiveExamCommitteeForm.student.program?.programYear,
+    times: comprehensiveExamCommitteeForm.times,
     trimester: comprehensiveExamCommitteeForm.trimester,
     academicYear: comprehensiveExamCommitteeForm.academicYear,
     committeeName1: comprehensiveExamCommitteeForm.committeeName1,
@@ -47,17 +57,23 @@ export async function GET(request: NextRequest) {
     committeeName3: comprehensiveExamCommitteeForm.committeeName3,
     committeeName4: comprehensiveExamCommitteeForm.committeeName4,
     committeeName5: comprehensiveExamCommitteeForm.committeeName5,
-    prefix: comprehensiveExamCommitteeForm.student.prefix?.prefixTH,
-    firstName: comprehensiveExamCommitteeForm.student.firstNameTH,
-    lastName: comprehensiveExamCommitteeForm.student.lastNameTH,
+    stdPrefix: comprehensiveExamCommitteeForm.student.prefix?.prefixTH,
+    stdFirstName: comprehensiveExamCommitteeForm.student.firstNameTH,
+    stdLastName: comprehensiveExamCommitteeForm.student.lastNameTH,
     username: comprehensiveExamCommitteeForm.student.username,
     numberStudent: comprehensiveExamCommitteeForm.numberStudent,
     examDay: examDay[0],
     examMonth: month[examDay[1] as string],
     examYear: Number(examDay[2]) + 543,
+    headSignUrl: comprehensiveExamCommitteeForm.headSchoolSignUrl,
+    headPrefix: comprehensiveExamCommitteeForm.headSchool?.prefix?.prefixTH,
+    headFirstName: comprehensiveExamCommitteeForm.headSchool?.firstNameTH,
+    headLastName: comprehensiveExamCommitteeForm.headSchool?.lastNameTH,
+    headSchoolSchool: comprehensiveExamCommitteeForm.headSchool?.school?.schoolNameTH,
   };
+
   try {
-    const file = await genDocx("FM-ENG-GRD-01.docx", data);
+    const file = await genDocx("src/lib/formToDocx/docTemplate/FM-ENG-GRD-01.docx", data);
     return new NextResponse(file, {
       headers: {
         "Content-Type":
@@ -66,9 +82,11 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    return NextResponse.json({ error: error }, { status: 505 });
+    console.error("Error generating DOCX:", error);
+    return NextResponse.json({ error: error }, { status: 500 });
   }
 }
+
 const month: Record<string, string> = {
   "01": "มกราคม",
   "02": "กุมภาพันธ์",
