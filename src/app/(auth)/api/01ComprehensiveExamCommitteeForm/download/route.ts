@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Form not found" }, { status: 404 });
   }
 
-  const examDay = comprehensiveExamCommitteeForm.examDay.split("/");
+  const examDay = new Date(comprehensiveExamCommitteeForm.examDay).toLocaleDateString("th").split("/");
   const data = {
     createdAt: dateShortTH(comprehensiveExamCommitteeForm.createdAt),
     schoolName: comprehensiveExamCommitteeForm.student.school?.schoolNameTH,
@@ -63,8 +63,8 @@ export async function GET(request: NextRequest) {
     username: comprehensiveExamCommitteeForm.student.username,
     numberStudent: comprehensiveExamCommitteeForm.numberStudent,
     examDay: examDay[0],
-    examMonth: month[examDay[1] as string],
-    examYear: Number(examDay[2]) + 543,
+    examMonth: month[examDay[1]],
+    examYear: examDay[2],
     headSignUrl: comprehensiveExamCommitteeForm.headSchoolSignUrl,
     headPrefix: comprehensiveExamCommitteeForm.headSchool?.prefix?.prefixTH,
     headFirstName: comprehensiveExamCommitteeForm.headSchool?.firstNameTH,
@@ -88,15 +88,15 @@ export async function GET(request: NextRequest) {
 }
 
 const month: Record<string, string> = {
-  "01": "มกราคม",
-  "02": "กุมภาพันธ์",
-  "03": "มีนาคม",
-  "04": "เมษายน",
-  "05": "พฤษภาคม",
-  "06": "มิถุนายน",
-  "07": "กรกฎาคม",
-  "08": "สิงหาคม",
-  "09": "กันยายน",
+  "1": "มกราคม",
+  "2": "กุมภาพันธ์",
+  "3": "มีนาคม",
+  "4": "เมษายน",
+  "5": "พฤษภาคม",
+  "6": "มิถุนายน",
+  "7": "กรกฎาคม",
+  "8": "สิงหาคม",
+  "9": "กันยายน",
   "10": "ตุลาคม",
   "11": "พฤศจิกายน",
   "12": "ธันวาคม",
