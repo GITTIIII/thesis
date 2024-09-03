@@ -18,7 +18,7 @@ import { CircleAlert } from "lucide-react";
 import Link from "next/link";
 
 const formSchema = z.object({
-    date: z.string(),
+    date: z.date(),
     studentID: z.number(),
     times: z.number().min(1, { message: "กรุณาระบุครั้ง / Times required" }),
     trimester: z
@@ -29,7 +29,8 @@ const formSchema = z.object({
     committeeMembers: z
         .array(z.object({ name: z.string().min(1, { message: "กรุณากรอกชื่อกรรมการ / Committee member required" }) }))
         .min(5, { message: "กรุณาเพิ่มกรรมการอย่างน้อย 5 คน / At least 5 committee members required" }),
-        examDate: z.string().min(1, { message: "กรุณาเลือกวันที่สอบ / Exam's date is required." })
+    examDate: z.date({ message: "กรุณาเลือกวันที่สอบ / Exam's date is required." }),
+    advisorID: z.number()
 });
 
 async function getUser() {
@@ -55,13 +56,14 @@ const ThesisOutlineCommitteeFormCreate = () => {
     const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            date: "",
+            date: undefined as unknown as Date,
             studentID: 0,
             times: 0,
             trimester: 0,
             academicYear: 0,
             committeeMembers: [{ name: "" }],
-            examDate: ""
+            examDate: undefined as unknown as Date,
+            advisorID:user.advisorID
         },
         mode: "onSubmit",
     });
@@ -89,7 +91,7 @@ const ThesisOutlineCommitteeFormCreate = () => {
                 setTimeout(() => {
                     form.reset();
                     router.refresh();
-                    router.push("/user/table");
+                    router.push("/user/table?formType=thesisOutlineCommitteeForm");
                 }, 1000);
             } else {
                 toast({
@@ -127,7 +129,7 @@ const ThesisOutlineCommitteeFormCreate = () => {
             reset({
                 ...form.getValues(),
                 studentID: user.id,
-                date: currentDateTime, // รวมวันที่และเวลา
+                date: today, // รวมวันที่และเวลา
             });
         }
     }, [user, reset]);
@@ -227,7 +229,7 @@ const ThesisOutlineCommitteeFormCreate = () => {
 							    <CircleAlert className="mr-1" />
 							    สามารถดูรายชื่อกรรมการที่ได้รับการรับรองเเล้ว
 							    <Button variant="link" type="button" className="p-1 text-[#A67436]">
-								    <Link href="/user/expertTable">คลิกที่นี่</Link>
+								    <Link href="/user/expertTable" target="_blank">คลิกที่นี่</Link>
 							    </Button>
 						    </div>
                             <div>

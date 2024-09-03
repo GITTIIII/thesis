@@ -65,7 +65,38 @@ export type IOutlineCommitteeForm = {
 
 	studentID: number;
 	student: IUser;
+	advisorID:number;
+	advisor:IUser;
+	advisorSignUrl: string;
 };
+
+//04
+export type IExamCommitteeForm = {
+	id: number;
+	date: Date;
+	trimester: number;
+	academicYear: string;
+	addNotes: AddNote[];
+	committeeMembers: { name: string }[];
+	times: number;
+	examDate: Date;
+	headSchoolID: number;
+	headSchoolSignUrl: string;
+	headSchool: IUser;
+	chairOfAcademicSignUrl:string;
+	studentID: number;
+	student: IUser;
+	advisorID:number;
+	advisor:IUser;
+	advisorSignUrl: string;
+};
+
+interface AddNote {
+	committeeNumber: number;
+	meetingNumber: number;
+	date: Date;
+}
+
 // 05
 export type IOutlineForm = {
 	id: number;

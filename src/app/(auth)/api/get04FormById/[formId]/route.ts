@@ -12,11 +12,11 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 	const formId = context.params.formId;
 	const session = await getServerSession(authOptions);
 
-	if (!session) {
-		return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
-	}
+	// if (!session) {
+	// 	return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
+	// }
 
-	const thesisOutlineCommitteeForm = await db.thesisOutlineCommitteeForm.findUnique({
+	const thesisExamCommitteeForm = await db.thesisExamCommitteeForm.findUnique({
 		where: {
 			id: Number(formId),
 		},
@@ -46,9 +46,9 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 		},
 	});
 
-	if (!thesisOutlineCommitteeForm) {
+	if (!thesisExamCommitteeForm) {
 		return NextResponse.json({ error: "Form not found" }, { status: 404 });
 	}
 
-	return NextResponse.json(thesisOutlineCommitteeForm);
+	return NextResponse.json(thesisExamCommitteeForm);
 }

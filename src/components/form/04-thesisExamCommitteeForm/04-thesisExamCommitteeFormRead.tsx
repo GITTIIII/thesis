@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import InputForm from "../../inputForm/inputForm";
 import { CircleAlert } from "lucide-react";
 import Link from "next/link";
-import { IOutlineCommitteeForm } from "@/interface/form";
+import { IExamCommitteeForm } from "@/interface/form";
 import useSWR from "swr";
 import Image from "next/image";
 import signature from "../../../../public/asset/signature.png";
@@ -13,7 +13,7 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const ThesisOutlineCommitteeFormRead = ({ formId }: { formId: number }) => {
     const router = useRouter();
-    const { data: formData, error } = useSWR<IOutlineCommitteeForm>(`/api/get03FormById/${formId}`, fetcher);
+    const { data: formData, error } = useSWR<IExamCommitteeForm>(`/api/get04FormById/${formId}`, fetcher);
 
     if (error) {
         return <div>Error loading data</div>;

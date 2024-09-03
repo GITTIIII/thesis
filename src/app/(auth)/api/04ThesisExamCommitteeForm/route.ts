@@ -24,7 +24,7 @@ export async function POST(req: Request) {
             advisorID
         } = body;
 
-        const newForm = await db.thesisOutlineCommitteeForm.create({
+        const newForm = await db.thesisExamCommitteeForm.create({
             data: {
                 date,
                 trimester,
@@ -51,7 +51,7 @@ export async function GET() {
         return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
     }
 
-    const thesisOutlineCommitteeForms = await db.thesisOutlineCommitteeForm.findMany({
+    const thesisExamCommitteeForms = await db.thesisExamCommitteeForm.findMany({
         include: {
             student: {
                 include: {
@@ -71,7 +71,7 @@ export async function GET() {
         },
     });
 
-    return NextResponse.json(thesisOutlineCommitteeForms);
+    return NextResponse.json(thesisExamCommitteeForms);
 }
 
 // PATCH: อัปเดตข้อมูลที่ต้องการ
@@ -79,9 +79,9 @@ export async function PATCH(req: Request) {
     try {
         const session = await getServerSession(authOptions);
 
-        if (!session) {
-            return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
-        }
+        // if (!session) {
+        //     return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
+        // }
 
         const body = await req.json();
         const {
@@ -105,30 +105,30 @@ export async function PATCH(req: Request) {
             return NextResponse.json({ message: "Form ID is required for update" }, { status: 400 });
         }
 
-        const existingOutlineCommitteeForm = await db.thesisOutlineCommitteeForm.findUnique({
+        const existingExamCommitteeForm = await db.thesisExamCommitteeForm.findUnique({
             where: { id },
         });
 
-        if (!existingOutlineCommitteeForm) {
+        if (!existingExamCommitteeForm) {
             return NextResponse.json({ message: "Form not found" }, { status: 404 });
         }
 
         const updatedForm = await db.thesisExamCommitteeForm.update({
             where: { id },
             data: {
-                date: date ?? existingOutlineCommitteeForm.date,
-                trimester: trimester !== undefined ? trimester : existingOutlineCommitteeForm.trimester,
-                academicYear: academicYear ?? existingOutlineCommitteeForm.academicYear,
-                committeeMembers: committeeMembers ?? existingOutlineCommitteeForm.committeeMembers,
-                times: times !== undefined ? times : existingOutlineCommitteeForm.times,
-                examDate: examDate ?? existingOutlineCommitteeForm.examDate,
-                studentID: studentID !== undefined ? studentID : existingOutlineCommitteeForm.studentID,
-                headSchoolID: headSchoolID !== undefined ? headSchoolID : existingOutlineCommitteeForm.headSchoolID,
-                headSchoolSignUrl: headSchoolSignUrl ?? existingOutlineCommitteeForm.headSchoolSignUrl,
-                advisorID: advisorID !== undefined ? advisorID : existingOutlineCommitteeForm.advisorID,
-                advisorSignUrl: advisorSignUrl ?? existingOutlineCommitteeForm.advisorSignUrl,
-                chairOfAcademicSignUrl: chairOfAcademicSignUrl ?? existingOutlineCommitteeForm.chairOfAcademicSignUrl,
-                addNotes: addNotes ?? existingOutlineCommitteeForm.addNotes
+                date: date ?? existingExamCommitteeForm.date,
+                trimester: trimester !== undefined ? trimester : existingExamCommitteeForm.trimester,
+                academicYear: academicYear ?? existingExamCommitteeForm.academicYear,
+                committeeMembers: committeeMembers ?? existingExamCommitteeForm.committeeMembers,
+                times: times !== undefined ? times : existingExamCommitteeForm.times,
+                examDate: examDate ?? existingExamCommitteeForm.examDate,
+                studentID: studentID !== undefined ? studentID : existingExamCommitteeForm.studentID,
+                headSchoolID: headSchoolID !== undefined ? headSchoolID : existingExamCommitteeForm.headSchoolID,
+                headSchoolSignUrl: headSchoolSignUrl ?? existingExamCommitteeForm.headSchoolSignUrl,
+                advisorID: advisorID !== undefined ? advisorID : existingExamCommitteeForm.advisorID,
+                advisorSignUrl: advisorSignUrl ?? existingExamCommitteeForm.advisorSignUrl,
+                chairOfAcademicSignUrl: chairOfAcademicSignUrl ?? existingExamCommitteeForm.chairOfAcademicSignUrl,
+                addNotes: addNotes ?? existingExamCommitteeForm.addNotes
             },
         });
 
