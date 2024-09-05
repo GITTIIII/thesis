@@ -56,13 +56,14 @@ export type IOutlineCommitteeForm = {
 	date: Date;
 	trimester: number;
 	academicYear: string;
+	addNotes: AddNote[];
 	committeeMembers: { name: string }[];
 	times: number;
 	examDate: Date;
 	headSchoolID: number;
 	headSchoolSignUrl: string;
 	headSchool: IUser;
-
+	chairOfAcademicSignUrl:string;
 	studentID: number;
 	student: IUser;
 	advisorID:number;

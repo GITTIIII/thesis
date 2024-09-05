@@ -117,7 +117,7 @@ export default function StudentTablePage() {
 
 							<SelectItem
 								// disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 6}
-								value="thesisProgressForm"
+								value="ThesisProgressForm"
 							>
 								เเบบรายงานความคืบหน้าของการทำวิทยานิพนธ์
 							</SelectItem>
@@ -152,7 +152,7 @@ export default function StudentTablePage() {
 					{formType == "thesisOutlineCommitteeForm" && <OutlineExamCommitteeFormTable userData={userData} />}
 					{formType == "thesisExamCommitteeForm" && <ThesisExamCommitteeFormTable userData={userData} />}
 					{formType == "outlineForm" && <OutlineFormTable userData={userData} />}
-					{formType == "thesisProgressForm" && <ThesisProgressFormTable userData={userData} />}
+					{formType == "ThesisProgressForm" && <ThesisProgressFormTable userData={userData} />}
 					{formType == "thesisExamAppointmentForm" && <ExamAppointmentFormTable userData={userData} />}
 				</div>
 			</div>

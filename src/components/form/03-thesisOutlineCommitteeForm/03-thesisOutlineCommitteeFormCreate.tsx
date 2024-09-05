@@ -203,7 +203,8 @@ const ThesisOutlineCommitteeFormCreate = () => {
                                             <FormLabel>
                                                 วันที่สอบ / Exam's date <span className="text-red-500">*</span>
                                             </FormLabel>
-                                            <DatePicker onDateChange={field.onChange} />
+                                            <div>
+                                            <DatePicker onDateChange={field.onChange} /></div>
                                             <FormMessage />
                                         </FormItem>
                                         </div>

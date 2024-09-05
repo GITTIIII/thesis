@@ -113,7 +113,7 @@ export async function PATCH(req: Request) {
             return NextResponse.json({ message: "Form not found" }, { status: 404 });
         }
 
-        const updatedForm = await db.thesisExamCommitteeForm.update({
+        const updatedForm = await db.thesisOutlineCommitteeForm.update({
             where: { id },
             data: {
                 date: date ?? existingOutlineCommitteeForm.date,

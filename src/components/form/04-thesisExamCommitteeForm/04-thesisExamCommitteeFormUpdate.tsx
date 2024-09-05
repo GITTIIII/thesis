@@ -35,15 +35,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 
 const formSchema = z.object({
     id: z.number(),
-    headSchoolID: z.number(),
+    headSchoolID: z.number().nullable(),
     headSchoolSignUrl: z.string(),
     advisorSignUrl: z.string(),
 	chairOfAcademicSignUrl: z.string(),
 	addNotes: z.array(
 		z.object({
-		  committeeNumber: z.number(), 
-		  meetingNumber: z.number(),  
-		  date: z.date().nullable(),         
+            committeeNumber: z.number().min(1, { message: "กรุณาระบุลำดับของกรรมการ / number of committee requierd" }), 
+            meetingNumber: z.number().min(1, { message: "กรุณาระบุครั้งของการประชุม / number of meeting requierd" }), 
+		    date: z.date().nullable(),         
 		})
 	  ),
 	  
@@ -187,7 +187,7 @@ const ExameCommitteeFormUpdate = ({ formId }: { formId: number }) => {
                 id: formId,
                 headSchoolSignUrl: formData.headSchoolSignUrl || "",
                 advisorSignUrl: formData.advisorSignUrl || "",
-                headSchoolID: formData.headSchoolID || 0,
+                headSchoolID: formData.headSchoolID || null,
                 chairOfAcademicSignUrl: formData.chairOfAcademicSignUrl || "",
                 addNotes: formData.addNotes.length > 0 ? formData.addNotes : [{ committeeNumber: 0, meetingNumber: 0, date: null }]
             });
