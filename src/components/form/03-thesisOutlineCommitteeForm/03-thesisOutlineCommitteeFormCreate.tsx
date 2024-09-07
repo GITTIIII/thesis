@@ -48,10 +48,8 @@ const formSchema = z.object({
       message: "กรุณาเพิ่มกรรมการอย่างน้อย 5 คน / At least 5 committee members required",
     }),
   examDate: z
-    .date({ required_error: "กรุณาเลือกวันที่สอบ / Exam's date is required." })
-    .refine((date) => date >= getStartOfToday(), {
-      message: "กรุณาเลือกวันที่ในอนาคต / Please choose a future date.",
-    }),
+    .string()
+    .min(1, { message: "กรุณาเลือกวันที่สอบ / Exam's date is required." }),
 });
 
 async function getUser() {

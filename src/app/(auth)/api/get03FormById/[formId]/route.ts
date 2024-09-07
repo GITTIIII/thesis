@@ -13,7 +13,7 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 	const session = await getServerSession(authOptions);
 
 	// if (!session) {
-	// 	return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
+		// return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
 	// }
 
 	const thesisOutlineCommitteeForm = await db.thesisOutlineCommitteeForm.findUnique({

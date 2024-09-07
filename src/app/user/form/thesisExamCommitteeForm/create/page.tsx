@@ -18,6 +18,16 @@ const ThesisExamCommitteeFormCreatePage = () => {
 						<div className="p-2 flex justify-center bg-[#A67436] text-white text-lg">
 							กรุณากรอกข้อมูลให้ครบถ้วน และตรวจสอบความถูกต้อง
 						</div>
+						<div className="w-full h-auto bg-[#FFF4EF] text-sm py-2">
+							<div className="text-center">
+								{/* ่ประธานกรรมการหนึ่ง อจทปษหนึ่ง กรรมการสอง ถ้ารวมทปษรเป็นห้าท่าน */}
+								<span className="text-red-500">*</span>ระดับปริญญาโท คณะกรรมการสอบ ไม่น้อยกว่า 3 ท่าน หากมีที่ปรึกษาวิทยานิพนธ์ร่วมต้องมีกรรมการสอบ 5 ท่าน
+							</div>
+							<div className="text-center">
+								{/* ่ประธานกรรมการหนึ่ง อจทปษหนึ่ง กรรมการสาม ถ้ารวมทปษรเป็นหกท่าน */}
+								<span className="text-red-500">*</span>ระดับปริญญาเอก คณะกรรมการสอบ ไม่น้อยกว่า 5 ท่าน หากมีที่ปรึกษาวิทยานิพนธ์ร่วมต้องมีกรรมการสอบไม่น้อยกว่า 6 ท่าน
+							</div>
+						</div>
 						<ThesisExamCommitteeFormFormCreate />
 					</div>
 				</div>
