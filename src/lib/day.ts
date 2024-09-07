@@ -46,3 +46,6 @@ export const yearTH = (date: Date) => {
   dayjs.locale("th");
   return dayjs(date).format("YY");
 };
+export const getStartOfToday = () => {
+  return dayjs().startOf("day").toDate();
+};
