@@ -109,6 +109,8 @@ export type IOutlineForm = {
 	times: string;
 	thesisStartMonth: string;
 	thesisStartYear: string;
+	formStatus: string;
+	editComment: string;
 
 	studentID: number;
 	student: IUser;

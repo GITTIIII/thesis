@@ -299,35 +299,37 @@ model ThesisExamCommitteeForm {
 
 // 05
 model OutlineForm {
-  id                           Int       @id @default(autoincrement())
+  id                           Int        @id @default(autoincrement())
   date                         DateTime
   thesisNameTH                 String
   thesisNameEN                 String
-  abstract                     String @db.Text
+  abstract                     String     @db.Text
   processPlan                  Json
   thesisStartMonth             String
   thesisStartYear              String
+  formStatus                   String
+  editComment                  String?
 
   //กรรมการโครงร่าง
-  outlineCommitteeStatus      String?
-  outlineCommitteeComment     String?
-  outlineCommitteeSignUrl     String? @db.LongText
-  dateOutlineCommitteeSign    DateTime?
-  outlineCommitteeID          Int?
-  outlineCommittee            Expert? @relation(fields: [outlineCommitteeID], references: [id], name: "outlineCommittee")
+  outlineCommitteeStatus       String?
+  outlineCommitteeComment      String?
+  outlineCommitteeSignUrl      String?    @db.LongText
+  dateOutlineCommitteeSign     DateTime?
+  outlineCommitteeID           Int?
+  outlineCommittee             Expert?    @relation(fields: [outlineCommitteeID], references: [id], name: "outlineCommittee")
   
 
   //กรรมการสำนัก
-  times                       String?
-  instituteCommitteeStatus    String?
-  instituteCommitteeComment   String?
-  instituteCommitteeSignUrl   String? @db.LongText
-  dateInstituteCommitteeSign  DateTime?
-  instituteCommitteeID        Int?
-  instituteCommittee          User? @relation(fields: [instituteCommitteeID], references: [id], name: "instituteCommittee")
+  times                        String?
+  instituteCommitteeStatus     String?
+  instituteCommitteeComment    String?
+  instituteCommitteeSignUrl    String?    @db.LongText
+  dateInstituteCommitteeSign   DateTime?
+  instituteCommitteeID         Int?
+  instituteCommittee           User?      @relation(fields: [instituteCommitteeID], references: [id], name: "instituteCommittee")
 
-  studentID                   Int
-  student                     User @relation(fields: [studentID], references: [id], name: "outlineFormOwner")
+  studentID                    Int
+  student                      User       @relation(fields: [studentID], references: [id], name: "outlineFormOwner")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

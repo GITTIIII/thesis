@@ -27,9 +27,12 @@ import Image from "next/image";
 import axios from "axios";
 import qs from "query-string";
 import useSWR from "swr";
+import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
 
 const formSchema = z.object({
 	id: z.number(),
+	formStatus: z.string(),
+	editComment: z.string(),
 	times: z.string(),
 	outlineCommitteeID: z.number(),
 	outlineCommitteeStatus: z.string(),
@@ -55,6 +58,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 	const [openOutline, setOpenOutline] = useState(false);
 	const [openInstitute, setOpenInstitute] = useState(false);
 	const [loading, setLoading] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
 
 	const sigCanvas = useRef<SignatureCanvas>(null);
 	const clear = () => {
@@ -93,6 +97,8 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			id: 0,
+			formStatus: "",
+			editComment: "",
 			times: "",
 			outlineCommitteeID: 0,
 			outlineCommitteeStatus: "",
@@ -110,6 +116,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
+		console.log(values)
 		if (
 			(values.outlineCommitteeStatus == "" && values.outlineCommitteeID != 0) ||
 			(values.instituteCommitteeStatus == "" && values.instituteCommitteeID != 0)
@@ -134,6 +141,24 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 
 			return;
 		}
+
+		if (values.outlineCommitteeStatus == "ไม่อนุมัติ" || values.instituteCommitteeStatus == "ไม่อนุมัติ") {
+			values.formStatus = "ไม่อนุมัติ";
+		} else if (
+			formData?.outlineCommitteeStatus == "อนุมัติ" &&
+			values.instituteCommitteeStatus == "อนุมัติ" &&
+			user?.role.toString() == "SUPER_ADMIN"
+		) {
+			values.formStatus = "อนุมัติ";
+		} else if (formData?.outlineCommitteeStatus == "อนุมัติ" && values.editComment != "" && user?.role.toString() == "SUPER_ADMIN") {
+			values.formStatus = "เเก้ไข";
+			values.instituteCommitteeID = 0;
+			values.instituteCommitteeStatus = "";
+			values.instituteCommitteeComment = "";
+			values.instituteCommitteeSignUrl = "";
+			values.dateInstituteCommitteeSign = undefined as unknown as Date;
+		}
+
 		const url = qs.stringifyUrl({
 			url: `/api/05OutlineForm`,
 		});
@@ -145,6 +170,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 				variant: "default",
 			});
 			setTimeout(() => {
+				handleCancel();
 				form.reset();
 				router.refresh();
 				router.push("/user/table?formType=outlineForm");
@@ -167,9 +193,14 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 		});
 	}, [formId]);
 
+	const handleCancel = () => {
+		setLoading(false);
+		setIsOpen(false);
+	};
+
 	return (
 		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">
+			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4 rounded-xl">
 				<div className="w-full flex px-0 lg:px-20 mb-2">
 					<Button
 						variant="outline"
@@ -180,6 +211,28 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 						ย้อนกลับ
 					</Button>
 				</div>
+				{user?.role.toString() == "SUPER_ADMIN" && (<div className="flex flex-col justify-center md:flex-row my-4">
+					<FormField
+						control={form.control}
+						name="editComment"
+						render={({ field }) => (
+							<FormItem className="w-full sm:w-1/2">
+								<FormControl>
+									<Textarea
+										disabled={
+											user?.role.toString() != "SUPER_ADMIN" ? true : false
+										}
+										placeholder="เเก้ไข..."
+										className="resize-none h-full text-md mb-2"
+										value={formData?.editComment ? formData?.editComment : field.value}
+										onChange={field.onChange}
+									/>
+								</FormControl>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
+				</div>)}
 
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
@@ -282,11 +335,11 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 									className="flex my-6"
 								>
 									<div className="flex items-center justify-center">
-										<RadioGroupItem checked={formData?.outlineCommitteeStatus == "NOT_APPROVED"} value="NOT_APPROVED" />
+										<RadioGroupItem checked={formData?.outlineCommitteeStatus == "ไม่อนุมัติ"} value="ไม่อนุมัติ" />
 										<div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">ไม่อนุมัติ</div>
 									</div>
 									<div className="ml-4 mt-0 flex items-center justify-center">
-										<RadioGroupItem checked={formData?.outlineCommitteeStatus == "APPROVED"} value="APPROVED" />
+										<RadioGroupItem checked={formData?.outlineCommitteeStatus == "อนุมัติ"} value="อนุมัติ" />
 										<div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
 											อนุมัติ
 										</div>
@@ -311,13 +364,13 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 												className="flex my-4"
 											>
 												<FormItem className="flex items-center justify-center">
-													<RadioGroupItem className="mt-2" value="NOT_APPROVED" />
+													<RadioGroupItem className="mt-2" value="ไม่อนุมัติ" />
 													<div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">
 														ไม่อนุมัติ
 													</div>
 												</FormItem>
 												<FormItem className="ml-4 mt-0 flex items-center justify-center">
-													<RadioGroupItem className="mt-2" value="APPROVED" />
+													<RadioGroupItem className="mt-2" value="อนุมัติ" />
 													<div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
 														อนุมัติ
 													</div>
@@ -486,7 +539,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 					{(user?.role.toString() == "SUPER_ADMIN" || formData?.instituteCommitteeID) && (
 						<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
 							<h1 className="mb-2 font-bold">มติคณะกรรมการประจำสำนักวิชาวิศวกรรมศาสตร์</h1>
-							<div className="w-max h-max flex mt-2 items-center">
+							<div className="w-max h-max flex flex-col sm:flex-row mt-2 items-center">
 								<Label className="mr-2">ครั้งที่</Label>
 								{formData?.instituteCommitteeID ? (
 									<Label>{formData?.times ? formData?.times : "__________"}</Label>
@@ -538,15 +591,15 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 									>
 										<div className="flex items-center justify-center">
 											<RadioGroupItem
-												checked={formData?.instituteCommitteeStatus == "NOT_APPROVED"}
-												value="NOT_APPROVED"
+												checked={formData?.instituteCommitteeStatus == "ไม่อนุมัติ"}
+												value="ไม่อนุมัติ"
 											/>
 											<div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">
 												ไม่อนุมัติ
 											</div>
 										</div>
 										<div className="ml-4 mt-0 flex items-center justify-center">
-											<RadioGroupItem checked={formData?.instituteCommitteeStatus == "APPROVED"} value="APPROVED" />
+											<RadioGroupItem checked={formData?.instituteCommitteeStatus == "อนุมัติ"} value="อนุมัติ" />
 											<div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
 												อนุมัติ
 											</div>
@@ -570,13 +623,13 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 													className="flex my-4"
 												>
 													<FormItem className="flex items-center justify-center">
-														<RadioGroupItem className="mt-2" value="NOT_APPROVED" />
+														<RadioGroupItem className="mt-2" value="ไม่อนุมัติ" />
 														<div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">
 															ไม่อนุมัติ
 														</div>
 													</FormItem>
 													<FormItem className="ml-4 mt-0 flex items-center justify-center">
-														<RadioGroupItem className="mt-2" value="APPROVED" />
+														<RadioGroupItem className="mt-2" value="อนุมัติ" />
 														<div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
 															อนุมัติ
 														</div>
@@ -690,7 +743,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 															variant="outline"
 															role="combobox"
 															className={cn(
-																"w-[180px] justify-between",
+																"w-[300px] justify-between",
 																!field.value && "text-muted-foreground"
 															)}
 														>
@@ -763,14 +816,17 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 						>
 							ยกเลิก
 						</Button>
-						<Button
-							disabled={loading}
-							variant="outline"
-							type="submit"
-							className="bg-[#A67436] w-auto text-lg text-white rounded-xl ml-4 border-[#A67436] mr-4"
+						<ConfirmDialog
+							lebel="ยืนยัน"
+							title="ยืนยัน"
+							loading={loading}
+							onConfirm={form.handleSubmit(onSubmit)}
+							onCancel={handleCancel}
+							isOpen={isOpen}
+							setIsOpen={setIsOpen}
 						>
-							ยืนยัน
-						</Button>
+							ยืนยันเเล้วไม่สามารถเเก้ไขได้
+						</ConfirmDialog>
 					</div>
 				) : null}
 			</form>

@@ -12,7 +12,7 @@ export async function POST(req: Request) {
 		}
 
 		const body = await req.json();
-		const { date, thesisNameTH, thesisNameEN, abstract, processPlan, thesisStartMonth, thesisStartYear, studentID } = body;
+		const { date, thesisNameTH, thesisNameEN, abstract, processPlan, thesisStartMonth, thesisStartYear, formStatus, studentID } = body;
 
 		const newForm = await db.outlineForm.create({
 			data: {
@@ -23,6 +23,7 @@ export async function POST(req: Request) {
 				processPlan,
 				thesisStartMonth,
 				thesisStartYear,
+				formStatus,
 				studentID: studentID === 0 ? null : studentID,
 			},
 		});
@@ -97,6 +98,8 @@ export async function PATCH(req: Request) {
 			times,
 			thesisStartMonth,
 			thesisStartYear,
+			formStatus,
+			editComment,
 			studentID,
 			outlineCommitteeID,
 			outlineCommitteeStatus,
@@ -133,6 +136,8 @@ export async function PATCH(req: Request) {
 				times: times || existingOutlineForm.times,
 				thesisStartMonth: thesisStartMonth || existingOutlineForm.thesisStartMonth,
 				thesisStartYear: thesisStartYear || existingOutlineForm.thesisStartYear,
+				formStatus: formStatus || existingOutlineForm.formStatus,
+				editComment: editComment || existingOutlineForm.editComment,
 				studentID: studentID === 0 ? existingOutlineForm.studentID : studentID,
 
 				outlineCommitteeID: outlineCommitteeID == 0 ? existingOutlineForm.outlineCommitteeID : outlineCommitteeID,

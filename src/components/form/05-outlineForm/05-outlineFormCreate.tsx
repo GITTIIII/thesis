@@ -22,6 +22,7 @@ import { Select } from "@radix-ui/react-select";
 import { SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import useSWR from "swr";
+import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
 
 const defaultProcessPlans: IProcessPlan[] = [
 	{
@@ -102,6 +103,7 @@ const formSchema = z.object({
 	times: z.number(),
 	thesisStartMonth: z.string().min(1, { message: "กรุณาเลือกเดือน / Please select month" }),
 	thesisStartYear: z.string().min(1, { message: "กรุณากรอกปี พ.ศ. / Year (B.E.) requierd" }),
+	formStatus: z.string(),
 	studentID: z.number(),
 });
 
@@ -111,8 +113,9 @@ const OutlineFormCreate = () => {
 	const router = useRouter();
 	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const [loading, setLoading] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
 	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
-	
+
 	const { toast } = useToast();
 	const form = useForm({
 		resolver: zodResolver(formSchema),
@@ -125,6 +128,7 @@ const OutlineFormCreate = () => {
 			times: 0,
 			thesisStartMonth: "",
 			thesisStartYear: "",
+			formStatus: "",
 			studentID: 0,
 		},
 	});
@@ -133,7 +137,7 @@ const OutlineFormCreate = () => {
 		setLoading(true);
 		if (!user?.signatureUrl) {
 			toast({
-				title: "Error",
+				title: "เกิดข้อผิดพลาด",
 				description: "ไม่พบลายเซ็น",
 				variant: "destructive",
 			});
@@ -154,6 +158,7 @@ const OutlineFormCreate = () => {
 				variant: "default",
 			});
 			setTimeout(() => {
+				setIsOpen(false);
 				form.reset();
 				router.refresh();
 				router.push("/user/table?formType=outlineForm");
@@ -168,17 +173,40 @@ const OutlineFormCreate = () => {
 	};
 
 	const { reset } = form;
+	const {
+		formState: { errors },
+	} = form;
 
 	useEffect(() => {
 		const today = new Date();
 		if (user) {
 			reset({
 				...form.getValues(),
+				formStatus: "รอดำเนินการ",
 				studentID: user.id,
 				date: today,
 			});
 		}
 	}, [user, reset]);
+
+	const handleCancel = () => {
+		setLoading(false);
+		setIsOpen(false);
+	};
+
+	useEffect(() => {
+		const errorKeys = Object.keys(errors);
+		if (errorKeys.length > 0) {
+			setIsOpen(false);
+			const firstErrorField = errorKeys[0] as keyof typeof errors;
+			const firstErrorMessage = errors[firstErrorField]?.message;
+			toast({
+				title: "เกิดข้อผิดพลาด",
+				description: firstErrorMessage,
+				variant: "destructive",
+			});
+		}
+	}, [errors]);
 
 	return (
 		<Form {...form}>
@@ -268,7 +296,9 @@ const OutlineFormCreate = () => {
 									alt="signature"
 								/>
 							</Button>
-							<Label className="mt-2">{`วันที่ ${form.getValues().date ? form.getValues().date.toLocaleDateString("th") : "__________"}`}</Label>
+							<Label className="mt-2">{`วันที่ ${
+								form.getValues().date ? form.getValues().date.toLocaleDateString("th") : "__________"
+							}`}</Label>
 						</div>
 					</div>
 				</div>
@@ -308,8 +338,8 @@ const OutlineFormCreate = () => {
 				</div>
 
 				<h1 className="mb-2 font-bold text-center">เเผนการดำเนินการจัดทำวิทยานิพนธ์</h1>
-				<div className="w-full flex justify-center items-center mb-2">
-					<Label className="font-bold ">เริ่มทำวิทธายานิพนธ์ เดือน</Label>
+				<div className="w-full flex flex-col sm:flex-row  justify-center items-center mb-2">
+					<Label className="my-2 sm:my-0 font-bold">เริ่มทำวิทธายานิพนธ์ เดือน</Label>
 					<FormField
 						control={form.control}
 						name="thesisStartMonth"
@@ -335,7 +365,7 @@ const OutlineFormCreate = () => {
 							</FormItem>
 						)}
 					/>
-					<Label className="mx-4 font-bold"> ปี พ.ศ.</Label>
+					<Label className="sm:mx-4 my-2 sm:my-0 font-bold"> ปี พ.ศ.</Label>
 					<FormField
 						control={form.control}
 						name="thesisStartYear"
@@ -369,14 +399,17 @@ const OutlineFormCreate = () => {
 					>
 						ยกเลิก
 					</Button>
-					<Button
-						disabled={loading}
-						variant="outline"
-						type="submit"
-						className="bg-[#A67436] w-auto text-lg text-white rounded-xl ml-4 border-[#A67436] mr-4"
+					<ConfirmDialog
+						lebel="ยืนยัน"
+						title="ยืนยัน"
+						loading={loading}
+						onConfirm={form.handleSubmit(onSubmit)}
+						onCancel={handleCancel}
+						isOpen={isOpen}
+						setIsOpen={setIsOpen}
 					>
-						ยืนยัน
-					</Button>
+						ยืนยันเเล้วไม่สามารถเเก้ไขได้
+					</ConfirmDialog>
 				</div>
 			</form>
 		</Form>

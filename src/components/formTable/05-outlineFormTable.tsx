@@ -6,30 +6,7 @@ import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
 import { IOutlineForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
-
-const FindStatus = ({ formData }: { formData: IOutlineForm }) => {
-	let status = "";
-
-	if (formData?.outlineCommitteeStatus === "APPROVED" && formData?.instituteCommitteeStatus === "APPROVED") {
-		status = "approve";
-	} else if (formData?.outlineCommitteeStatus === "NOT_APPROVED" || formData?.instituteCommitteeStatus === "NOT_APPROVED") {
-		status = "notApprove";
-	} else if (formData?.outlineCommitteeStatus === null || formData?.instituteCommitteeStatus === null) {
-		status = "waiting";
-	}
-
-	return (
-		<>
-			{status != "" && status === "approve" ? (
-				<div className="w-24 text-center text-green-500  rounded-xl border-2 border-green-400 py-1">อนุมัติ</div>
-			) : status === "waiting" ? (
-				<div className="w-24 text-center text-yellow-500  rounded-xl border-2 border-yellow-400 py-1">รอดำเนินการ</div>
-			) : status == "notApprove" ? (
-				<div className="w-24 text-center text-red-500  rounded-xl border-2 border-red-400 py-1">ไม่อนุมัติ</div>
-			) : null}
-		</>
-	);
-};
+import FormStatus from "../formStatus/formStatus";
 
 async function getAll05FormByStdId(stdId: number | undefined) {
 	if (stdId) {
@@ -65,7 +42,7 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 
 	return (
 		<>
-			<div className="w-full h-full bg-white shadow-2xl rounded-md p-2 ">
+			<div className="w-full h-full bg-white shadow-2xl rounded-md p-2 overflow-auto ">
 				<Table>
 					<TableHeader>
 						<TableRow>
@@ -94,7 +71,7 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 									{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 								</TableCell>
 								<TableCell className="flex justify-center">
-									<FindStatus formData={formData} />
+									<FormStatus formStatus={formData.formStatus} />
 								</TableCell>
 								<TableCell className="text-[#F26522] text-center">
 									<Link
