@@ -45,13 +45,13 @@ const formSchema = z.object({
   outlineCommitteeStatus: z.string(),
   outlineCommitteeComment: z.string(),
   outlineCommitteeSignUrl: z.string(),
-  dateOutlineCommitteeSign: z.string(),
+  dateOutlineCommitteeSign: z.date(),
 
   instituteCommitteeID: z.number(),
   instituteCommitteeStatus: z.string(),
   instituteCommitteeComment: z.string(),
   instituteCommitteeSignUrl: z.string(),
-  dateInstituteCommitteeSign: z.string(),
+  dateInstituteCommitteeSign: z.date(),
 });
 
 const MONTHS = [
@@ -98,13 +98,13 @@ export default function SuperAdminForm05Update({ formId }: { formId: number }) {
       outlineCommitteeStatus: "",
       outlineCommitteeComment: "",
       outlineCommitteeSignUrl: "",
-      dateOutlineCommitteeSign: "",
+      dateOutlineCommitteeSign: new Date(),
 
       instituteCommitteeID: 0,
       instituteCommitteeStatus: "",
       instituteCommitteeComment: "",
       instituteCommitteeSignUrl: "",
-      dateInstituteCommitteeSign: "",
+      dateInstituteCommitteeSign: new Date(),
     },
   });
 
@@ -216,13 +216,13 @@ export default function SuperAdminForm05Update({ formId }: { formId: number }) {
         outlineCommitteeStatus: formData?.outlineCommitteeStatus || "",
         outlineCommitteeComment: formData?.outlineCommitteeComment || "",
         outlineCommitteeSignUrl: formData?.outlineCommitteeSignUrl || "",
-        dateOutlineCommitteeSign: formData?.dateOutlineCommitteeSign || "",
+        dateOutlineCommitteeSign: new Date(formData?.dateOutlineCommitteeSign) || new Date(),
 
         instituteCommitteeID: formData?.instituteCommitteeID || 0,
         instituteCommitteeStatus: formData?.instituteCommitteeStatus || "",
         instituteCommitteeComment: formData?.instituteCommitteeComment || "",
         instituteCommitteeSignUrl: formData?.instituteCommitteeSignUrl || "",
-        dateInstituteCommitteeSign: formData?.dateInstituteCommitteeSign || "",
+        dateInstituteCommitteeSign: new Date(formData?.dateInstituteCommitteeSign) || new Date(),
       }
     );
 
@@ -342,22 +342,18 @@ export default function SuperAdminForm05Update({ formId }: { formId: number }) {
             <h1 className="mb-2 font-bold">ความเห็นของคณะกรรมการพิจารณาโครงร่างวิทยานิพนธ์</h1>
             <div className="w-max h-max flex mt-2 items-center">
               <Label className="mr-2">วันที่</Label>
-              {formData?.outlineCommitteeID ? (
-                <Label>{formData?.dateOutlineCommitteeSign ? formData.dateOutlineCommitteeSign : "__________"}</Label>
-              ) : (
-                <FormField
-                  control={form.control}
-                  name="dateOutlineCommitteeSign"
-                  render={({ field }) => (
-                    <div className="flex flex-row items-center justify-center">
-                      <FormItem>
-                        <DatePicker onDateChange={field.onChange} />
-                        <FormMessage />
-                      </FormItem>
-                    </div>
-                  )}
-                />
-              )}
+              <FormField
+                control={form.control}
+                name="dateOutlineCommitteeSign"
+                render={({ field }) => (
+                  <div className="flex flex-row items-center justify-center">
+                    <FormItem>
+                      <DatePicker value={field.value} onDateChange={field.onChange} />
+                      <FormMessage />
+                    </FormItem>
+                  </div>
+                )}
+              />
             </div>
 
             <FormField
@@ -550,22 +546,18 @@ export default function SuperAdminForm05Update({ formId }: { formId: number }) {
               </div>
               <div className="w-max h-max flex mt-2 items-center">
                 <Label className="mr-2">วันที่</Label>
-                {formData?.instituteCommitteeID ? (
-                  <Label>{formData?.dateInstituteCommitteeSign ? formData.dateInstituteCommitteeSign : "__________"}</Label>
-                ) : (
-                  <FormField
-                    control={form.control}
-                    name="dateInstituteCommitteeSign"
-                    render={({ field }) => (
-                      <div className="flex flex-row items-center justify-center">
-                        <FormItem>
-                          <DatePicker onDateChange={field.onChange} />
-                          <FormMessage />
-                        </FormItem>
-                      </div>
-                    )}
-                  />
-                )}
+                <FormField
+                  control={form.control}
+                  name="dateInstituteCommitteeSign"
+                  render={({ field }) => (
+                    <div className="flex flex-row items-center justify-center">
+                      <FormItem>
+                        <DatePicker value={field.value} onDateChange={field.onChange} />
+                        <FormMessage />
+                      </FormItem>
+                    </div>
+                  )}
+                />
               </div>
               <FormField
                 control={form.control}

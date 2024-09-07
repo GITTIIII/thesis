@@ -31,14 +31,22 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const formSchema = z.object({
   id: z.number(),
+  times: z.number(),
+  trimester: z.number(),
+  status: z.string(),
+  statusComment: z.string(),
   percentage: z.number(),
+  percentageComment: z.string(),
+  issues: z.string(),
   processPlan: z.array(z.any()),
+
   assessmentResult: z.string(),
   advisorSignUrl: z.string(),
-  dateAdvisor: z.string(),
+  dateAdvisor: z.date(),
+
   headSchoolComment: z.string(),
   headSchoolSignUrl: z.string(),
-  dateHeadSchool: z.string(),
+  dateHeadSchool: z.date(),
   headSchoolID: z.number(),
 });
 
@@ -48,10 +56,10 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
   const { data: formData } = useSWR<IThesisProgressForm>(formId ? `/api/get06FormById/${formId}` : "", fetcher);
   const { data: approvedForm } = useSWR<IOutlineForm>(formData ? `/api/get05ApprovedFormByStdId/${formData?.student.id}` : "", fetcher);
   const { toast } = useToast();
-  const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
   const [openAdvisor, setOpenAdvisor] = useState(false);
   const [openSchool, setOpenSchool] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
   const sigCanvas = useRef<SignatureCanvas>(null);
   const router = useRouter();
 
@@ -59,14 +67,22 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       id: 0,
+      times: 0,
+      trimester: 0,
+      status: "",
+      statusComment: "",
       percentage: 0,
+      percentageComment: "",
+      issues: "",
       processPlan: [],
+
       assessmentResult: "",
       advisorSignUrl: "",
-      dateAdvisor: "",
+      dateAdvisor: new Date(),
+
       headSchoolComment: "",
       headSchoolSignUrl: "",
-      dateHeadSchool: "",
+      dateHeadSchool: new Date(),
       headSchoolID: 0,
     },
   });
@@ -105,7 +121,7 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setLoading(true);
-    if ((values.advisorSignUrl == "" && values.dateAdvisor != "") || (values.headSchoolSignUrl == "" && values.headSchoolID != 0)) {
+    if ((values.advisorSignUrl == "" && values.dateAdvisor != null) || (values.headSchoolSignUrl == "" && values.headSchoolID != 0)) {
       toast({
         title: "Error",
         description: "ไม่พบลายเซ็น",
@@ -133,7 +149,7 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
       setTimeout(() => {
         form.reset();
         router.refresh();
-        router.push("/user/table?formType=thesisProgressForm");
+        router.push("/user/superAdmin/form");
       }, 1000);
     } else {
       toast({
@@ -147,18 +163,36 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
   const { reset } = form;
 
   useEffect(() => {
-    reset({
-      ...form.getValues(),
-      id: formId,
-    });
-  }, [formId]);
+    reset(
+      formData && {
+        ...form.getValues(),
+        times: formData?.times || 0,
+        trimester: formData?.trimester || 0,
+        status: formData?.status || "",
+        statusComment: formData?.statusComment || "",
+        percentage: formData?.percentage || 0,
+        percentageComment: formData?.percentageComment || "",
+        issues: formData?.issues || "",
+        processPlan: formData?.processPlan || [],
 
-  useEffect(() => {
-    reset({
-      ...form.getValues(),
-      percentage: formData?.percentage,
-    });
-  }, [formData]);
+        assessmentResult: formData?.assessmentResult || "",
+        advisorSignUrl: formData?.advisorSignUrl || "",
+        dateAdvisor: new Date(formData?.dateAdvisor) || new Date(),
+
+        headSchoolComment: formData?.headSchoolComment || "",
+        headSchoolSignUrl: formData?.headSchoolSignUrl || "",
+        dateHeadSchool: new Date(formData?.dateHeadSchool) || new Date(),
+        headSchoolID: formData?.headSchoolID || 0,
+      }
+    );
+
+    if (user && user.role.toString() === "SUPER_ADMIN") {
+      reset({
+        ...form.getValues(),
+        id: formId,
+      });
+    }
+  }, [form, formData, formId, reset, user]);
 
   return (
     <Form {...form}>
@@ -386,22 +420,18 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 
           <div className="w-max h-max flex mt-2 items-center">
             <Label className="mr-2">วันที่</Label>
-            {formData?.dateAdvisor ? (
-              <Label>{formData?.dateAdvisor ? formData?.dateAdvisor : "__________"}</Label>
-            ) : (
-              <FormField
-                control={form.control}
-                name="dateAdvisor"
-                render={({ field }) => (
-                  <div className="flex flex-row items-center justify-center">
-                    <FormItem>
-                      <DatePicker onDateChange={field.onChange} />
-                      <FormMessage />
-                    </FormItem>
-                  </div>
-                )}
-              />
-            )}
+            <FormField
+              control={form.control}
+              name="dateAdvisor"
+              render={({ field }) => (
+                <div className="flex flex-row items-center justify-center">
+                  <FormItem>
+                    <DatePicker onDateChange={field.onChange} />
+                    <FormMessage />
+                  </FormItem>
+                </div>
+              )}
+            />
           </div>
         </div>
 
