@@ -21,7 +21,7 @@ const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 				<Button
 					variant="outline"
 					type="reset"
-					onClick={() => router.push("/user/table?formType=qualificationExamCommitteeForm")}
+					onClick={() => router.push("/user/table")}
 					className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436]"
 				>
 					ย้อนกลับ

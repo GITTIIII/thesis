@@ -135,7 +135,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 				form.reset();
 				mutate(`/api/get06FormById/${formId}`);
 				router.refresh();
-				router.push("/user/table?formType=thesisProgressForm");
+				router.back();
 			}, 1000);
 		} else {
 			toast({
@@ -173,7 +173,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push("/user/table?formType=thesisProgressForm")}
+						onClick={() => router.push("/user/table")}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436]"
 					>
 						ย้อนกลับ
@@ -629,7 +629,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 						<Button
 							variant="outline"
 							type="reset"
-							onClick={() => router.push(`/user/table?formType=thesisProgressForm`)}
+							onClick={() => router.back()}
 							className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436] md:ml-auto"
 						>
 							ยกเลิก

@@ -34,7 +34,7 @@ const SignInForm = () => {
 			const signInData = await signIn("credentials", {
 				username: values.username,
 				password: values.password,
-				redirect: false, 
+				redirect: false,
 			});
 
 			if (signInData?.error) {
@@ -55,7 +55,7 @@ const SignInForm = () => {
 				if (session?.user.role === "STUDENT") {
 					router.push("/user/student");
 				} else if (session?.user.role === "ADMIN") {
-					router.push("/user/table");
+					router.back();
 				} else if (session?.user.role === "SUPER_ADMIN") {
 					router.push("/user/superAdmin");
 				}

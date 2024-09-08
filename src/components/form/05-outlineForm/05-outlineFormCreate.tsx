@@ -161,7 +161,7 @@ const OutlineFormCreate = () => {
 				setIsOpen(false);
 				form.reset();
 				router.refresh();
-				router.push("/user/table?formType=outlineForm");
+				router.back();
 			}, 1000);
 		} else {
 			toast({
@@ -394,7 +394,7 @@ const OutlineFormCreate = () => {
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push(`/user/table?formType=outlineForm`)}
+						onClick={() => router.back()}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436] md:ml-auto"
 					>
 						ยกเลิก

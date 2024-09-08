@@ -17,7 +17,7 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 	const router = useRouter();
 	const { data: formData } = useSWR<IOutlineForm>(`/api/get05FormById/${formId}`, fetcher);
 
-	console.log(formData)
+	console.log(formData);
 	return (
 		<>
 			<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg">
@@ -25,7 +25,7 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push(`/user/table?formType=outlineForm`)}
+						onClick={() => router.back()}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436]"
 					>
 						ย้อนกลับ
@@ -87,7 +87,9 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 									alt="signature"
 								/>
 							</Button>
-							<Label className="mt-2">{`วันที่ ${formData?.date ? new Date(formData?.date).toLocaleDateString("th") : "__________"}`}</Label>
+							<Label className="mt-2">{`วันที่ ${
+								formData?.date ? new Date(formData?.date).toLocaleDateString("th") : "__________"
+							}`}</Label>
 						</div>
 					</div>
 				</div>
@@ -95,16 +97,18 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 					<div className="flex flex-col justify-center items-center p-4 lg:px-20">
 						<h1 className="mb-2 font-bold">ความเห็นของคณะกรรมการพิจารณาโครงร่างวิทยานิพนธ์</h1>
 						<Label className="mt-2">{`วันที่ ${
-							formData?.dateOutlineCommitteeSign ? new Date(formData?.dateOutlineCommitteeSign).toLocaleDateString("th") : "__________"
+							formData?.dateOutlineCommitteeSign
+								? new Date(formData?.dateOutlineCommitteeSign).toLocaleDateString("th")
+								: "__________"
 						}`}</Label>
 						<div className="flex flex-col items-center justify-center">
 							<RadioGroup disabled className="flex my-6">
 								<div className="flex items-center justify-center">
-									<RadioGroupItem checked={formData?.outlineCommitteeStatus == "NOT_APPROVED"} value="NOT_APPROVED" />
+									<RadioGroupItem checked={formData?.outlineCommitteeStatus == "ไม่อนุมัติ"} value="ไม่อนุมัติ" />
 									<div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">ไม่อนุมัติ</div>
 								</div>
 								<div className="ml-4 mt-0 flex items-center justify-center">
-									<RadioGroupItem checked={formData?.outlineCommitteeStatus == "APPROVED"} value="APPROVED" />
+									<RadioGroupItem checked={formData?.outlineCommitteeStatus == "อนุมัติ"} value="อนุมัติ" />
 									<div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
 										อนุมัติ
 									</div>
@@ -142,16 +146,18 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 					<div className="flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
 						<h1 className="mb-2 font-bold">มติคณะกรรมการประจำสำนักวิชาวิศวกรรมศาสตร์</h1>
 						<Label className="mt-2">{`ครั้งที่ ${formData?.times ? formData?.times : "__"}  วันที่ ${
-							formData?.dateInstituteCommitteeSign ? new Date(formData?.dateInstituteCommitteeSign).toLocaleDateString("th"): "__________"
+							formData?.dateInstituteCommitteeSign
+								? new Date(formData?.dateInstituteCommitteeSign).toLocaleDateString("th")
+								: "__________"
 						}`}</Label>
 						<div className="flex flex-col items-center justify-center">
 							<RadioGroup disabled className="flex my-6">
 								<div className="flex items-center justify-center">
-									<RadioGroupItem checked={formData?.instituteCommitteeStatus == "NOT_APPROVED"} value="NOT_APPROVED" />
+									<RadioGroupItem checked={formData?.instituteCommitteeStatus == "ไม่อนุมัติ"} value="ไม่อนุมัติ" />
 									<div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">ไม่อนุมัติ</div>
 								</div>
 								<div className="ml-4 mt-0 flex items-center justify-center">
-									<RadioGroupItem checked={formData?.instituteCommitteeStatus == "APPROVED"} value="APPROVED" />
+									<RadioGroupItem checked={formData?.instituteCommitteeStatus == "อนุมัติ"} value="อนุมัติ" />
 									<div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
 										อนุมัติ
 									</div>

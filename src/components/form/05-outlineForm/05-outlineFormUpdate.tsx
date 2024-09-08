@@ -26,7 +26,7 @@ import SignatureCanvas from "react-signature-canvas";
 import Image from "next/image";
 import axios from "axios";
 import qs from "query-string";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
 
 const formSchema = z.object({
@@ -116,7 +116,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
-		console.log(values)
+		console.log(values);
 		if (
 			(values.outlineCommitteeStatus == "" && values.outlineCommitteeID != 0) ||
 			(values.instituteCommitteeStatus == "" && values.instituteCommitteeID != 0)
@@ -150,6 +150,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 			user?.role.toString() == "SUPER_ADMIN"
 		) {
 			values.formStatus = "อนุมัติ";
+			values.editComment = "";
 		} else if (formData?.outlineCommitteeStatus == "อนุมัติ" && values.editComment != "" && user?.role.toString() == "SUPER_ADMIN") {
 			values.formStatus = "เเก้ไข";
 			values.instituteCommitteeID = 0;
@@ -172,8 +173,9 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 			setTimeout(() => {
 				handleCancel();
 				form.reset();
+				mutate(`/api/get05FormById/${formId}`);
 				router.refresh();
-				router.push("/user/table?formType=outlineForm");
+				router.back();
 			}, 1000);
 		} else {
 			toast({
@@ -190,8 +192,9 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 		reset({
 			...form.getValues(),
 			id: formId,
+			editComment: formData?.editComment,
 		});
-	}, [formId]);
+	}, [formId, formData]);
 
 	const handleCancel = () => {
 		setLoading(false);
@@ -205,34 +208,34 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push("/user/table?formType=outlineForm")}
+						onClick={() => router.push("/user/table")}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436]"
 					>
 						ย้อนกลับ
 					</Button>
 				</div>
-				{user?.role.toString() == "SUPER_ADMIN" && (<div className="flex flex-col justify-center md:flex-row my-4">
-					<FormField
-						control={form.control}
-						name="editComment"
-						render={({ field }) => (
-							<FormItem className="w-full sm:w-1/2">
-								<FormControl>
-									<Textarea
-										disabled={
-											user?.role.toString() != "SUPER_ADMIN" ? true : false
-										}
-										placeholder="เเก้ไข..."
-										className="resize-none h-full text-md mb-2"
-										value={formData?.editComment ? formData?.editComment : field.value}
-										onChange={field.onChange}
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-				</div>)}
+				{user?.role.toString() == "SUPER_ADMIN" && (
+					<div className="flex flex-col justify-center md:flex-row my-4">
+						<FormField
+							control={form.control}
+							name="editComment"
+							render={({ field }) => (
+								<FormItem className="w-full sm:w-1/2">
+									<FormControl>
+										<Textarea
+											disabled={user?.role.toString() != "SUPER_ADMIN" ? true : false}
+											placeholder="เเก้ไข..."
+											className="resize-none h-full text-md mb-2"
+											value={field.value}
+											onChange={field.onChange}
+										/>
+									</FormControl>
+									<FormMessage />
+								</FormItem>
+							)}
+						/>
+					</div>
+				)}
 
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
@@ -811,7 +814,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 						<Button
 							variant="outline"
 							type="reset"
-							onClick={() => router.push(`/user/table?formType=outlineForm`)}
+							onClick={() => router.back()}
 							className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436] md:ml-auto"
 						>
 							ยกเลิก

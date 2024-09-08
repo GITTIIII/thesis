@@ -75,7 +75,7 @@ const QualificationExamCommitteeFormCreate = () => {
 			setTimeout(() => {
 				form.reset();
 				router.refresh();
-				router.push("/user/table?formType=qualificationExamCommitteeForm");
+				router.back();
 			}, 1000);
 		} else {
 			toast({
@@ -270,7 +270,7 @@ const QualificationExamCommitteeFormCreate = () => {
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push("/user/table?formType=qualificationExamCommitteeForm")}
+						onClick={() => router.push("/user/table")}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436] md:ml-auto"
 					>
 						ยกเลิก

@@ -98,7 +98,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 			setTimeout(() => {
 				form.reset();
 				router.refresh();
-				router.push("/user/table?formType=comprehensiveExamCommitteeForm");
+				router.back();
 			}, 1000);
 		} else {
 			toast({
@@ -131,7 +131,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push("/user/table?formType=comprehensiveExamCommitteeForm")}
+						onClick={() => router.push("/user/table")}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436]"
 					>
 						ย้อนกลับ
@@ -306,7 +306,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push(`/user/table?formType=comprehensiveExamCommitteeForm`)}
+						onClick={() => router.back()}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436] md:ml-auto"
 					>
 						ยกเลิก

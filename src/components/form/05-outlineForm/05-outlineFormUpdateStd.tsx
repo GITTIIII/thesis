@@ -15,16 +15,20 @@ import signature from "@/../../public/asset/signature.png";
 import InputForm from "@/components/inputForm/inputForm";
 import Image from "next/image";
 import ThesisProcessPlan from "../thesisProcessPlan";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import axios from "axios";
 import qs from "query-string";
 import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
+import { IUser } from "@/interface/user";
+import { CircleAlert } from "lucide-react";
+import FormStatus from "@/components/formStatus/formStatus";
 
 const formSchema = z.object({
 	id: z.number(),
 	thesisNameTH: z.string(),
 	thesisNameEN: z.string().toUpperCase(),
 	abstract: z.string(),
+	formStatus: z.string(),
 });
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -32,6 +36,7 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 	const router = useRouter();
 	const { data: formData } = useSWR<IOutlineForm>(`/api/get05FormById/${formId}`, fetcher);
+	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -43,16 +48,17 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 			thesisNameTH: "",
 			thesisNameEN: "",
 			abstract: "",
+			formStatus: "",
 		},
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
-
+		values.formStatus = "รอดำเนินการ";
 		const url = qs.stringifyUrl({
 			url: `/api/05OutlineForm`,
 		});
-		const res = await axios.post(url, values);
+		const res = await axios.patch(url, values);
 		if (res.status === 200) {
 			toast({
 				title: "Success",
@@ -62,8 +68,9 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 			setTimeout(() => {
 				setIsOpen(false);
 				form.reset();
+				mutate(`/api/get05FormById/${formId}`);
 				router.refresh();
-				router.push("/user/table?formType=outlineForm");
+				router.back();
 			}, 1000);
 		} else {
 			toast({
@@ -80,8 +87,11 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 		reset({
 			...form.getValues(),
 			id: formId,
+			thesisNameTH: formData?.thesisNameTH,
+			thesisNameEN: formData?.thesisNameEN,
+			abstract: formData?.abstract,
 		});
-	}, [formId]);
+	}, [formId, formData]);
 
 	const handleCancel = () => {
 		setLoading(false);
@@ -95,11 +105,23 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push(`/user/table?formType=outlineForm`)}
+						onClick={() => router.back()}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436]"
 					>
 						ย้อนกลับ
 					</Button>
+				</div>
+				<div className="flex flex-col justify-center md:flex-row my-4">
+					<FormItem className="w-full sm:w-1/2">
+						<FormControl>
+							<Textarea
+								disabled
+								className="resize-none h-full text-md mb-2"
+								value={formData?.editComment ? formData?.editComment : ""}
+							/>
+						</FormControl>
+						<FormMessage />
+					</FormItem>
 				</div>
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
@@ -143,7 +165,11 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 											ชื่อภาษาไทย / ThesisName(TH) <span className="text-red-500">*</span>
 										</FormLabel>
 										<FormControl>
-											<Input className="text-sm p-2 w-full sm:w-[300px] m-auto  rounded-lg" {...field} />
+											<Input
+												className="text-sm p-2 w-full sm:w-[300px] m-auto  rounded-lg"
+												value={field.value}
+												onChange={field.onChange}
+											/>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -160,7 +186,11 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 											ชื่อภาษาอังกฤษ / ThesisName(EN) <span className="text-red-500">*</span>
 										</FormLabel>
 										<FormControl>
-											<Input className="text-sm p-2 w-full sm:w-[300px] m-auto  rounded-lg" {...field} />
+											<Input
+												className="text-sm p-2 w-full sm:w-[300px] m-auto  rounded-lg"
+												value={field.value}
+												onChange={field.onChange}
+											/>
 										</FormControl>
 										<FormMessage />
 									</FormItem>
@@ -298,7 +328,7 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push(`/user/table?formType=outlineForm`)}
+						onClick={() => router.back()}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436] md:ml-auto"
 					>
 						ยกเลิก
@@ -316,22 +346,39 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 					</ConfirmDialog>
 				</div>
 
-				<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg mt-4">
-					<div className="w-full h-max flex flex-col items-center">
-						<h1 className="mb-2 font-bold text-center">บทคัดย่อ / Abstract</h1>
-						<Textarea
-							className="text-[16px] resize-none 
-						w-full md:w-[595px] lg:w-[794px] 
-						h-[842px] lg:h-[1123px] 
-						p-[16px] 
-						md:pt-[108px] lg:pt-[144px] 
-						md:pl-[108px] lg:pl-[144px] 
-						md:pr-[72px]  lg:pr-[96px] 
-						md:pb-[72px]  lg:pb-[96px]"
-							defaultValue={formData?.abstract}
-							disabled
-						/>
-					</div>
+				<div className="w-full h-max mb-6">
+					<FormField
+						control={form.control}
+						name="abstract"
+						render={({ field }) => (
+							<FormItem className="w-full h-auto flex flex-col items-center">
+								<FormLabel>
+									บทคัดย่อ / Abstract <span className="text-red-500">*</span>
+								</FormLabel>
+								<FormControl>
+									<Textarea
+										placeholder="บทคัดย่อ..."
+										className="text-[16px] resize-none 
+											w-full md:w-[595px] lg:w-[794px] 
+											h-[842px] lg:h-[1123px] 
+											p-[16px] 
+											md:pt-[108px] lg:pt-[144px] 
+											md:pl-[108px] lg:pl-[144px] 
+											md:pr-[72px]  lg:pr-[96px] 
+											md:pb-[72px]  lg:pb-[96px]"
+										value={field.value}
+										onChange={field.onChange}
+									/>
+								</FormControl>
+								<FormDescription className="flex items-center">
+									{" "}
+									<CircleAlert className="mr-1" />
+									บทคัดย่อต้องมีความยาวไม่เกิน 1 หน้ากระดาษ
+								</FormDescription>
+								<FormMessage />
+							</FormItem>
+						)}
+					/>
 				</div>
 				<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg mt-4">
 					<h1 className="mb-2 font-bold text-center">เเผนการดำเนินการจัดทำวิทยานิพนธ์</h1>

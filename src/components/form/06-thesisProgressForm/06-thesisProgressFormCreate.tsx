@@ -92,7 +92,7 @@ const ThesisProgressFormCreate = () => {
 			setTimeout(() => {
 				form.reset();
 				router.refresh();
-				router.push("/user/table?formType=thesisProgressForm");
+				router.back();
 			}, 1000);
 		} else {
 			toast({
@@ -266,7 +266,9 @@ const ThesisProgressFormCreate = () => {
 								render={({ field }) => (
 									<div className="flex flex-row items-center mb-6 justify-center">
 										<FormItem className="w-auto">
-											<FormLabel>คิดเป็นร้อยละการทำงานของเป้าหมาย<span className="text-red-500">*</span></FormLabel>
+											<FormLabel>
+												คิดเป็นร้อยละการทำงานของเป้าหมาย<span className="text-red-500">*</span>
+											</FormLabel>
 											<Input
 												value={field.value ? field.value : ""}
 												onChange={(e) => field.onChange(Number(e.target.value))}
@@ -330,7 +332,9 @@ const ThesisProgressFormCreate = () => {
 									alt="signature"
 								/>
 							</Button>
-							<Label className="mt-2">{`วันที่ ${form.getValues().date ? new Date(form.getValues().date).toLocaleDateString("th") : "__________"}`}</Label>
+							<Label className="mt-2">{`วันที่ ${
+								form.getValues().date ? new Date(form.getValues().date).toLocaleDateString("th") : "__________"
+							}`}</Label>
 						</div>
 					</div>
 				</div>
@@ -360,7 +364,7 @@ const ThesisProgressFormCreate = () => {
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push(`/user/table?formType=thesisProgressForm`)}
+						onClick={() => router.back()}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436] md:ml-auto"
 					>
 						ยกเลิก

@@ -75,7 +75,7 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 			setTimeout(() => {
 				form.reset();
 				router.refresh();
-				router.push("/user/table?formType=comprehensiveExamCommitteeForm");
+				router.back();
 			}, 1000);
 		} else {
 			toast({
@@ -100,7 +100,7 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 		}
 	}, [user, reset]);
 
-	console.log(form.watch("examDay"))
+	console.log(form.watch("examDay"));
 
 	return (
 		<Form {...form}>
@@ -272,7 +272,7 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push("/user/table?formType=comprehensiveExamCommitteeForm")}
+						onClick={() => router.push("/user/table")}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436] md:ml-auto"
 					>
 						ยกเลิก
