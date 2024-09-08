@@ -29,7 +29,7 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 
 	useEffect(() => {
 		async function fetchData() {
-			if (userData?.role.toString() === "STUDNET") {
+			if (userData?.role.toString() === "STUDENT") {
 				const formData = await getAll05FormByStdId(userData?.id);
 				setFormData(formData);
 			} else {
@@ -62,7 +62,9 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 							<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
 								<TableCell className="text-center">{index + 1}</TableCell>
 								<TableCell className="text-center">
-									{formData.dateOutlineCommitteeSign ? new Date(formData.dateOutlineCommitteeSign).toLocaleDateString("th") : "ยังไม่ทำการสอบ"}
+									{formData.dateOutlineCommitteeSign
+										? new Date(formData.dateOutlineCommitteeSign).toLocaleDateString("th")
+										: "ยังไม่ทำการสอบ"}
 								</TableCell>
 								<TableCell className="text-center">{formData?.thesisNameTH}</TableCell>
 								<TableCell className="text-center">{formData?.thesisNameEN}</TableCell>
@@ -76,9 +78,10 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 								<TableCell className="text-[#F26522] text-center">
 									<Link
 										href={
-											(formData.outlineCommitteeID && formData.instituteCommitteeID) ||
-											userData?.role.toString() == "STUDENT"
+											formData.formStatus == "อนุมัติ"
 												? `/user/form/outlineForm/${formData.id}`
+												: userData?.role.toString() == "STUDENT" && formData.formStatus == "เเก้ไข"
+												? `/user/form/outlineForm/updateStd/${formData.id}`
 												: `/user/form/outlineForm/update/${formData.id}`
 										}
 									>
@@ -87,7 +90,7 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 								</TableCell>
 								<TableCell className="text-center">
 									<Button
-										disabled={!formData.outlineCommitteeID && !formData.instituteCommitteeID}
+										disabled={formData.formStatus != "อนุมัติ"}
 										type="button"
 										variant="outline"
 									>

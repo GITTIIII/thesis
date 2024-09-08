@@ -18,8 +18,7 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 	const form = await db.outlineForm.findFirst({
 		where: {
 			studentID: Number(StdId),
-			outlineCommitteeStatus: "APPROVED",
-			instituteCommitteeStatus: "APPROVED",
+			formStatus: "อนุมัติ"
 		},
 	});
 
