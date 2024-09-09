@@ -15,6 +15,7 @@ import { CircleAlert } from "lucide-react";
 import Link from "next/link";
 import { DatePicker } from "@/components/datePicker/datePicker";
 import useSWR from "swr";
+import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
 
 const formSchema = z.object({
 	date: z.date(),
@@ -39,6 +40,7 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 const ComprehensiveExamCommitteeFormCreate = () => {
 	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const [loading, setLoading] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
 	const router = useRouter();
 
 	const { toast } = useToast();
@@ -100,7 +102,10 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 		}
 	}, [user, reset]);
 
-	console.log(form.watch("examDay"));
+	const handleCancel = () => {
+		setLoading(false);
+		setIsOpen(false);
+	};
 
 	return (
 		<Form {...form}>
@@ -188,7 +193,9 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 							<CircleAlert className="mr-1" />
 							สามารถดูรายชื่อกรรมการที่ได้รับการรับรองเเล้ว
 							<Button variant="link" className="p-1 text-[#A67436]">
-								<Link href="/user/expertTable">คลิกที่นี่</Link>
+								<Link href="/user/expertTable" target="_blank">
+									คลิกที่นี่
+								</Link>
 							</Button>
 						</div>
 						<FormField
@@ -272,19 +279,22 @@ const ComprehensiveExamCommitteeFormCreate = () => {
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push("/user/table")}
+						onClick={() => router.back()}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436] md:ml-auto"
 					>
 						ยกเลิก
 					</Button>
-					<Button
-						disabled={loading}
-						variant="outline"
-						type="submit"
-						className="bg-[#A67436] w-auto text-lg text-white rounded-xl ml-4 border-[#A67436] mr-4"
+					<ConfirmDialog
+						lebel="ยืนยัน"
+						title="ยืนยัน"
+						loading={loading}
+						onConfirm={form.handleSubmit(onSubmit)}
+						onCancel={handleCancel}
+						isOpen={isOpen}
+						setIsOpen={setIsOpen}
 					>
-						ยืนยัน
-					</Button>
+						ยืนยันเเล้วไม่สามารถเเก้ไขได้
+					</ConfirmDialog>
 				</div>
 			</form>
 		</Form>

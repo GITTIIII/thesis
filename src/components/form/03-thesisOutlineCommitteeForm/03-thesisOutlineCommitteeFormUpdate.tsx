@@ -24,6 +24,8 @@ import useSWR from "swr";
 import Link from "next/link";
 import { DatePicker } from "@/components/datePicker/datePicker";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
+import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
 
 const formSchema = z.object({
 	id: z.number(),
@@ -39,28 +41,27 @@ const formSchema = z.object({
 		})
 	),
 });
+
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 	const { data: formData, isLoading } = useSWR<IOutlineCommitteeForm>(`/api/get03FormById/${formId}`, fetcher);
 	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const [loading, setLoading] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
 	const [openHeadSchoolDialog, setOpenHeadSchoolDialog] = useState(false);
 	const [openAdvisorDialog, setOpenAdvisorDialog] = useState(false);
 	const [openChairOfAcademicDialog, setOpenChairOfAcademicDialog] = useState(false);
 	const router = useRouter();
 	const { toast } = useToast();
-	const sigCanvasHeadSchool = useRef<SignatureCanvas>(null);
-	const sigCanvasAdvisor = useRef<SignatureCanvas>(null);
-	const sigCanvasChairOfAcademic = useRef<SignatureCanvas>(null);
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			id: formId,
+			headSchoolID: 0,
 			headSchoolSignUrl: formData?.headSchoolSignUrl || "",
 			advisorSignUrl: formData?.advisorSignUrl || "",
-			headSchoolID: 0,
 			chairOfAcademicSignUrl: formData?.chairOfAcademicSignUrl || "",
 			addNotes:
 				formData?.addNotes && formData.addNotes.length > 0
@@ -74,49 +75,28 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 		name: "addNotes",
 	});
 
-	const clear = (type: "headSchool" | "advisor" | "ChairOfAcademic") => {
-		if (type === "headSchool" && sigCanvasHeadSchool.current) {
-			sigCanvasHeadSchool.current.clear();
-		}
-		if (type === "advisor" && sigCanvasAdvisor.current) {
-			sigCanvasAdvisor.current.clear();
-		}
-		if (type === "ChairOfAcademic" && sigCanvasChairOfAcademic.current) {
-			sigCanvasChairOfAcademic.current.clear();
-		}
+	const handleDrawingSignAdvisor = (signUrl: string) => {
+		reset({
+			...form.getValues(),
+			advisorSignUrl: signUrl,
+		});
+		setOpenAdvisorDialog(false);
 	};
 
-	const handleDrawingSign = (type: "headSchool" | "advisor" | "ChairOfAcademic") => {
-		const canvas =
-			type === "headSchool"
-				? sigCanvasHeadSchool.current
-				: type === "advisor"
-				? sigCanvasAdvisor.current
-				: sigCanvasChairOfAcademic.current;
+	const handleDrawingSignHeadSchool = (signUrl: string) => {
+		reset({
+			...form.getValues(),
+			headSchoolSignUrl: signUrl,
+		});
+		setOpenHeadSchoolDialog(false);
+	};
 
-		if (canvas?.isEmpty()) {
-			toast({
-				title: "Error",
-				description: "กรุณาวาดลายเซ็น",
-				variant: "destructive",
-			});
-			return;
-		}
-
-		if (canvas) {
-			const newSignUrl = canvas.getTrimmedCanvas().toDataURL("image/png");
-
-			if (type === "headSchool") {
-				form.setValue("headSchoolSignUrl", newSignUrl);
-				setOpenHeadSchoolDialog(false);
-			} else if (type === "advisor") {
-				form.setValue("advisorSignUrl", newSignUrl);
-				setOpenAdvisorDialog(false);
-			} else if (type === "ChairOfAcademic") {
-				form.setValue("chairOfAcademicSignUrl", newSignUrl);
-				setOpenChairOfAcademicDialog(false);
-			}
-		}
+	const handleDrawingSignChairOfAcademic = (signUrl: string) => {
+		reset({
+			...form.getValues(),
+			chairOfAcademicSignUrl: signUrl,
+		});
+		setOpenChairOfAcademicDialog(false);
 	};
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -129,7 +109,7 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 				description: "ไม่พบลายเซ็นหัวหน้าสาขาวิชา",
 				variant: "destructive",
 			});
-			setLoading(false);
+			handleCancel()
 			return;
 		}
 
@@ -139,7 +119,7 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 				description: "ไม่พบลายเซ็นอาจารย์ที่ปรึกษา",
 				variant: "destructive",
 			});
-			setLoading(false);
+			handleCancel()
 			return;
 		}
 
@@ -158,7 +138,7 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 				setTimeout(() => {
 					form.reset();
 					router.refresh();
-					router.push("/user/table?formType=thesisOutlineCommitteeForm");
+					router.back();
 				}, 1000);
 			}
 		} catch (error) {
@@ -198,6 +178,11 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 		append({ committeeNumber: 0, meetingNumber: 0, date: null });
 	};
 
+	const handleCancel = () => {
+		setLoading(false);
+		setIsOpen(false);
+	};
+
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">
@@ -205,7 +190,7 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 					<Button
 						type="button"
 						variant="outline"
-						onClick={() => router.push("/user/table")}
+						onClick={() => router.back()}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436]"
 					>
 						ย้อนกลับ
@@ -257,46 +242,12 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 								อาจารย์ที่ปรึกษา / <br />
 								Thesis advisor
 							</div>
-							<Dialog open={openAdvisorDialog} onOpenChange={setOpenAdvisorDialog}>
-								<DialogTrigger onClick={() => setOpenAdvisorDialog(true)}>
-									<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
-										<Image
-											src={form.getValues().advisorSignUrl || "/asset/signature.png"}
-											width={120}
-											height={120}
-											alt="Signature"
-										/>
-									</div>
-								</DialogTrigger>
-								<DialogContent>
-									<DialogHeader>
-										<DialogTitle>เซ็นลายเซ็นอาจารย์ที่ปรึกษา</DialogTitle>
-									</DialogHeader>
-									<div className="w-full h-max flex justify-center mb-6 border-2">
-										<SignatureCanvas
-											ref={sigCanvasAdvisor}
-											penColor="black"
-											canvasProps={{ width: 300, height: 150, className: "signature-canvas" }}
-										/>
-									</div>
-									<div className="w-full h-full flex justify-center">
-										<Button
-											type="button"
-											onClick={() => clear("advisor")}
-											className="bg-[#F26522] w-auto px-6 text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-										>
-											ล้าง
-										</Button>
-										<Button
-											type="button"
-											onClick={() => handleDrawingSign("advisor")}
-											className="bg-[#F26522] w-auto text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-										>
-											บันทึก
-										</Button>
-									</div>
-								</DialogContent>
-							</Dialog>
+							<SignatureDialog
+								signUrl={form.getValues("advisorSignUrl")}
+								onConfirm={handleDrawingSignAdvisor}
+								isOpen={openAdvisorDialog}
+								setIsOpen={setOpenAdvisorDialog}
+							/>
 						</div>
 
 						{/* หัวหน้าสาขาวิชา */}
@@ -305,46 +256,12 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 								หัวหน้าสาขาวิชา / <br />
 								Chair of the School
 							</div>
-							<Dialog open={openHeadSchoolDialog} onOpenChange={setOpenHeadSchoolDialog}>
-								<DialogTrigger onClick={() => setOpenHeadSchoolDialog(true)}>
-									<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
-										<Image
-											src={form.getValues().headSchoolSignUrl || "/asset/signature.png"}
-											width={120}
-											height={120}
-											alt="Signature"
-										/>
-									</div>
-								</DialogTrigger>
-								<DialogContent>
-									<DialogHeader>
-										<DialogTitle>เซ็นลายเซ็นหัวหน้าสาขาวิชา</DialogTitle>
-									</DialogHeader>
-									<div className="w-full h-max flex justify-center mb-6 border-2">
-										<SignatureCanvas
-											ref={sigCanvasHeadSchool}
-											penColor="black"
-											canvasProps={{ width: 300, height: 150, className: "signature-canvas" }}
-										/>
-									</div>
-									<div className="w-full h-full flex justify-center">
-										<Button
-											type="button"
-											onClick={() => clear("headSchool")}
-											className="bg-[#F26522] w-auto px-6 text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-										>
-											ล้าง
-										</Button>
-										<Button
-											type="button"
-											onClick={() => handleDrawingSign("headSchool")}
-											className="bg-[#F26522] w-auto text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-										>
-											บันทึก
-										</Button>
-									</div>
-								</DialogContent>
-							</Dialog>
+							<SignatureDialog
+								signUrl={form.getValues("headSchoolSignUrl")}
+								onConfirm={handleDrawingSignHeadSchool}
+								isOpen={openHeadSchoolDialog}
+								setIsOpen={setOpenHeadSchoolDialog}
+							/>
 						</div>
 
 						{/* ประธานคณะทำงานวิชาการ */}
@@ -353,46 +270,12 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 								ประธานคณะทำงานวิชาการ / <br />
 								Associate Dean for Academic Affairs
 							</div>
-							<Dialog open={openChairOfAcademicDialog} onOpenChange={setOpenChairOfAcademicDialog}>
-								<DialogTrigger onClick={() => setOpenChairOfAcademicDialog(true)}>
-									<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
-										<Image
-											src={form.getValues().chairOfAcademicSignUrl || "/asset/signature.png"}
-											width={120}
-											height={120}
-											alt="Signature"
-										/>
-									</div>
-								</DialogTrigger>
-								<DialogContent>
-									<DialogHeader>
-										<DialogTitle>เซ็นลายเซ็นประธานคณะทำงานวิชาการ</DialogTitle>
-									</DialogHeader>
-									<div className="w-full h-max flex justify-center mb-6 border-2">
-										<SignatureCanvas
-											ref={sigCanvasChairOfAcademic}
-											penColor="black"
-											canvasProps={{ width: 300, height: 150, className: "signature-canvas" }}
-										/>
-									</div>
-									<div className="w-full h-full flex justify-center">
-										<Button
-											type="button"
-											onClick={() => clear("ChairOfAcademic")}
-											className="bg-[#F26522] w-auto px-6 text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-										>
-											ล้าง
-										</Button>
-										<Button
-											type="button"
-											onClick={() => handleDrawingSign("ChairOfAcademic")}
-											className="bg-[#F26522] w-auto text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-										>
-											บันทึก
-										</Button>
-									</div>
-								</DialogContent>
-							</Dialog>
+							<SignatureDialog
+								signUrl={form.getValues("chairOfAcademicSignUrl")}
+								onConfirm={handleDrawingSignChairOfAcademic}
+								isOpen={openChairOfAcademicDialog}
+								setIsOpen={setOpenChairOfAcademicDialog}
+							/>
 						</div>
 					</div>
 				</div>
@@ -511,14 +394,17 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 					>
 						ยกเลิก
 					</Button>
-					<Button
-						disabled={loading}
-						variant="outline"
-						type="submit"
-						className="bg-[#A67436] w-auto text-lg text-white rounded-xl ml-4 border-[#A67436] mr-4"
+					<ConfirmDialog
+						lebel="ยืนยัน"
+						title="ยืนยัน"
+						loading={loading}
+						onConfirm={form.handleSubmit(onSubmit)}
+						onCancel={handleCancel}
+						isOpen={isOpen}
+						setIsOpen={setIsOpen}
 					>
-						ยืนยัน
-					</Button>
+						ยืนยันเเล้วไม่สามารถเเก้ไขได้
+					</ConfirmDialog>
 				</div>
 			</form>
 		</Form>

@@ -9,18 +9,19 @@ import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import qs from "query-string";
 import InputForm from "../../inputForm/inputForm";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { IUser } from "@/interface/user";
 import { ICoAdvisorStudents } from "@/interface/coAdvisorStudents";
-import { Textarea } from "@/components/ui/textarea";
 import { DatePicker } from "@/components/datePicker/datePicker";
 import { CircleAlert } from "lucide-react";
 import Link from "next/link";
-import { getStartOfToday } from "@/lib/day";
+import useSWR from "swr";
+import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
 
 const formSchema = z.object({
-	date: z.string(),
+	date: z.date(),
 	studentID: z.number(),
+	advisorID: z.number(),
 	times: z.number().min(1, { message: "กรุณาระบุครั้ง / Times required" }),
 	trimester: z
 		.number()
@@ -36,51 +37,46 @@ const formSchema = z.object({
 		.min(5, {
 			message: "กรุณาเพิ่มกรรมการอย่างน้อย 5 คน / At least 5 committee members required",
 		}),
-	examDate: z.string().min(1, { message: "กรุณาเลือกวันที่สอบ / Exam's date is required." }),
+	examDate: z.date(),
 });
 
-async function getUser() {
-	const res = await fetch("/api/getCurrentUser");
-	return res.json();
-}
-
-async function getAllAdvisor() {
-	const res = await fetch("/api/getAdvisor");
-	return res.json();
-}
-
-const userPromise = getUser();
-const allAdvisorPromise = getAllAdvisor();
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const ThesisOutlineCommitteeFormCreate = () => {
 	const router = useRouter();
-	const user: IUser = use(userPromise);
-	const allAdvisor: IUser[] = use(allAdvisorPromise);
-	const [loading, setLoading] = useState(false);
 	const { toast } = useToast();
+	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
+	const [loading, setLoading] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
 
 	const form = useForm({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			date: "",
+			date: undefined as unknown as Date,
 			studentID: 0,
+			advisorID: 0,
 			times: 0,
 			trimester: 0,
 			academicYear: 0,
 			committeeMembers: [{ name: "" }],
-			examDate: "",
+			examDate: undefined as unknown as Date,
 		},
 		mode: "onSubmit",
 	});
 
-	const { control, handleSubmit, reset } = form;
+	const {
+		control,
+		handleSubmit,
+		reset,
+		formState: { errors },
+	} = form;
+
 	const { fields, append, remove } = useFieldArray({
 		control,
 		name: "committeeMembers",
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		// Log form values for testing
 		console.log("Form values: ", values);
 
 		try {
@@ -117,26 +113,35 @@ const ThesisOutlineCommitteeFormCreate = () => {
 
 	useEffect(() => {
 		const today = new Date();
-		const month = today.getMonth() + 1; // เดือนเริ่มต้นจาก 0
-		const year = today.getFullYear();
-		const date = today.getDate();
-		const hours = today.getHours();
-		const minutes = today.getMinutes();
-		// const seconds = today.getSeconds();
-
-		// รูปแบบวันที่และเวลา
-		const currentDate = `${date}/${month}/${year}`;
-		const currentTime = `${hours}:${minutes}`;
-		const currentDateTime = `${currentDate} ${currentTime}`;
-
 		if (user) {
 			reset({
 				...form.getValues(),
 				studentID: user.id,
-				date: currentDateTime, // รวมวันที่และเวลา
+				advisorID: user.advisorID,
+				date: today,
 			});
 		}
 	}, [user, reset]);
+
+	const handleCancel = () => {
+		setLoading(false);
+		setIsOpen(false);
+	};
+
+	useEffect(() => {
+		const errorKeys = Object.keys(errors);
+		if (errorKeys.length > 0) {
+			setIsOpen(false);
+			const firstErrorField = errorKeys[0] as keyof typeof errors;
+			const firstErrorMessage = errors[firstErrorField]?.message;
+			console.log(errors)
+			toast({
+				title: "เกิดข้อผิดพลาด",
+				description: firstErrorMessage,
+				variant: "destructive",
+			});
+		}
+	}, [errors]);
 
 	return (
 		<Form {...form}>
@@ -202,10 +207,10 @@ const ThesisOutlineCommitteeFormCreate = () => {
 							control={form.control}
 							name="examDate"
 							render={({ field }) => (
-								<div className="flex flex-row items-center mb-6 justify-center">
-									<FormItem className="w-[300px]">
+								<div className="flex items-center mb-6 justify-center">
+									<FormItem className="w-[300px] flex flex-col">
 										<FormLabel>
-											วันที่สอบ / Exam's date <span className="text-red-500">*</span>
+											วันที่สอบ / Exams date <span className="text-red-500">*</span>
 										</FormLabel>
 										<DatePicker onDateChange={field.onChange} />
 										<FormMessage />
@@ -296,14 +301,17 @@ const ThesisOutlineCommitteeFormCreate = () => {
 					>
 						ยกเลิก
 					</Button>
-					<Button
-						disabled={loading}
-						variant="outline"
-						type="submit"
-						className="bg-[#A67436] w-auto text-lg text-white rounded-xl ml-4 border-[#A67436] mr-4"
+					<ConfirmDialog
+						lebel="ยืนยัน"
+						title="ยืนยัน"
+						loading={loading}
+						onConfirm={form.handleSubmit(onSubmit)}
+						onCancel={handleCancel}
+						isOpen={isOpen}
+						setIsOpen={setIsOpen}
 					>
-						ยืนยัน
-					</Button>
+						ยืนยันเเล้วไม่สามารถเเก้ไขได้
+					</ConfirmDialog>
 				</div>
 			</form>
 		</Form>

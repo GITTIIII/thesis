@@ -14,6 +14,9 @@ import { Download, DownloadIcon } from "lucide-react";
 import { IQualificationExamCommitteeForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 import saveAs from "file-saver";
+import { useSelectForm } from "@/hook/selectFormHook";
+import { FormPath } from "../formPath/formPath";
+
 
 async function get02FormByStdId(stdId: number | undefined) {
   if (stdId) {
@@ -55,6 +58,7 @@ export default function QualificationExamCommitteeFormTable({
   userData: IUser | undefined;
 }) {
   const [formData, setFormData] = useState<IQualificationExamCommitteeForm[]>();
+  const { selectedForm, setSelectedForm } = useSelectForm();
 
   useEffect(() => {
     async function fetchData() {
@@ -120,8 +124,8 @@ export default function QualificationExamCommitteeFormTable({
                     <Link
                       href={
                         formData.headSchoolID || userData?.role.toString() == "STUDENT"
-                          ? `/user/form/qualificationExamCommitteeForm/${formData.id}`
-                          : `/user/form/qualificationExamCommitteeForm/update/${formData.id}`
+                          ? `/user/form/${FormPath[selectedForm]}/${formData.id}`
+                          : `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
                       }
                     >
                       คลิกเพื่อดูเพิ่มเติม

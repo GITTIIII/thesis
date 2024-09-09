@@ -201,7 +201,7 @@ const ExameCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 					<Button
 						type="button"
 						variant="outline"
-						onClick={() => router.push("/user/table")}
+						onClick={() => router.back()}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436]"
 					>
 						ย้อนกลับ

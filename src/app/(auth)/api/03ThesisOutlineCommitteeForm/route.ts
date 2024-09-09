@@ -39,6 +39,8 @@ export async function POST(req: Request) {
 
         return NextResponse.json({ form: newForm, message: "Form Created" }, { status: 200 });
     } catch (error) {
+        const err = error as Error;
+		console.log(err)
         return NextResponse.json({ message: error }, { status: 500 });
     }
 }

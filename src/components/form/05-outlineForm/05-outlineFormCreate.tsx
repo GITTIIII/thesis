@@ -112,9 +112,9 @@ const fetcher = (url: string) => fetch(url).then((res) => res.json());
 const OutlineFormCreate = () => {
 	const router = useRouter();
 	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
+	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
-	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
 
 	const { toast } = useToast();
 	const form = useForm({

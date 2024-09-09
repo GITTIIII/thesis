@@ -7,6 +7,8 @@ import { Download } from "lucide-react";
 import { IOutlineForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 import FormStatus from "../formStatus/formStatus";
+import { useSelectForm } from "@/hook/selectFormHook";
+import { FormPath } from "../formPath/formPath";
 
 async function getAll05FormByStdId(stdId: number | undefined) {
 	if (stdId) {
@@ -26,6 +28,7 @@ async function getAll05Form() {
 
 export default function OutlineFormTable({ userData }: { userData: IUser | undefined }) {
 	const [formData, setFormData] = useState<IOutlineForm[]>();
+	const { selectedForm, setSelectedForm } = useSelectForm();
 
 	useEffect(() => {
 		async function fetchData() {
@@ -79,10 +82,10 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 									<Link
 										href={
 											formData.formStatus == "อนุมัติ"
-												? `/user/form/outlineForm/${formData.id}`
+												? `/user/form/${FormPath[selectedForm]}/${formData.id}`
 												: userData?.role.toString() == "STUDENT" && formData.formStatus == "เเก้ไข"
-												? `/user/form/outlineForm/updateStd/${formData.id}`
-												: `/user/form/outlineForm/update/${formData.id}`
+												? `/user/form/${FormPath[selectedForm]}/updateStd/${formData.id}`
+												: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
 										}
 									>
 										คลิกเพื่อดูเพิ่มเติม

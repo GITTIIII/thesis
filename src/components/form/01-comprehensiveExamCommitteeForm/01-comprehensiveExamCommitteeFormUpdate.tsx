@@ -2,26 +2,24 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
-import InputForm from "../../inputForm/inputForm";
 import { Check, ChevronsUpDown, CircleAlert } from "lucide-react";
-import Link from "next/link";
 import { IComprehensiveExamCommitteeForm } from "@/interface/form";
-import useSWR from "swr";
 import { useToast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import SignatureCanvas from "react-signature-canvas";
-import axios from "axios";
-import qs from "query-string";
 import { Form, FormControl, FormField, FormMessage } from "@/components/ui/form";
-import signature from "../../../../public/asset/signature.png";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import Image from "next/image";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { IUser } from "@/interface/user";
 import { cn } from "@/lib/utils";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
+import axios from "axios";
+import InputForm from "../../inputForm/inputForm";
+import Link from "next/link";
+import useSWR from "swr";
+import qs from "query-string";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -36,35 +34,21 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const { data: headSchool } = useSWR<IUser[]>("/api/getHeadSchool", fetcher);
 	const [loading, setLoading] = useState(false);
-	const [open, setOpen] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
+	const [openSign, setOpenSign] = useState(false);
 	const [schoolName, setSchoolName] = useState("");
 	const router = useRouter();
 	const { toast } = useToast();
-	const sigCanvas = useRef<SignatureCanvas>(null);
-	const clear = () => {
-		if (sigCanvas.current) {
-			sigCanvas.current.clear();
-		}
+
+	const handleDrawingSign = (signUrl: string) => {
+		reset({
+			...form.getValues(),
+			headSchoolSignUrl: signUrl,
+		});
+		setOpenSign(false);
+		console.log(signUrl);
 	};
 
-	const handleDrawingSign = () => {
-		if (sigCanvas.current?.isEmpty()) {
-			toast({
-				title: "Error",
-				description: "กรุณาวาดลายเซ็น",
-				variant: "destructive",
-			});
-			return;
-		} else if (sigCanvas.current && !sigCanvas.current.isEmpty()) {
-			if (open) {
-				reset({
-					...form.getValues(),
-					headSchoolSignUrl: sigCanvas.current.getTrimmedCanvas().toDataURL("image/png"),
-				});
-			}
-			setOpen(false);
-		}
-	};
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -124,6 +108,11 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 		}
 	}, [formId]);
 
+	const handleCancel = () => {
+		setLoading(false);
+		setIsOpen(false);
+	};
+
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4 lg:p-12 rounded-lg">
@@ -131,7 +120,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push("/user/table")}
+						onClick={() => router.back()}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436]"
 					>
 						ย้อนกลับ
@@ -176,57 +165,12 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 
 						<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
 							<h1 className="font-bold">ลายเซ็นหัวหน้าสาขาวิชา</h1>
-							<Dialog open={open} onOpenChange={setOpen}>
-								<DialogTrigger onClick={() => setOpen(!open)}>
-									<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
-										<Image
-											src={form.getValues().headSchoolSignUrl ? form.getValues().headSchoolSignUrl : signature}
-											width={100}
-											height={100}
-											style={{
-												width: "auto",
-												height: "auto",
-											}}
-											alt="signature"
-										/>
-									</div>
-								</DialogTrigger>
-								<DialogContent className="w-max">
-									<DialogHeader>
-										<DialogTitle>ลายเซ็น</DialogTitle>
-									</DialogHeader>
-									<div className="w-full h-max flex justify-center mb-6 border-2">
-										<SignatureCanvas
-											ref={sigCanvas}
-											backgroundColor="white"
-											throttle={8}
-											canvasProps={{
-												width: 400,
-												height: 150,
-												className: "sigCanvas",
-											}}
-										/>
-									</div>
-									<div className="w-full h-full flex justify-center">
-										<Button
-											variant="outline"
-											type="button"
-											onClick={() => clear()}
-											className="bg-[#F26522] w-auto px-6 text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-										>
-											ล้าง
-										</Button>
-										<Button
-											variant="outline"
-											type="button"
-											onClick={() => handleDrawingSign()}
-											className="bg-[#F26522] w-auto text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-										>
-											ยืนยัน
-										</Button>
-									</div>
-								</DialogContent>
-							</Dialog>
+							<SignatureDialog
+								signUrl={form.getValues("headSchoolSignUrl")}
+								onConfirm={handleDrawingSign}
+								isOpen={openSign}
+								setIsOpen={setOpenSign}
+							/>
 							{formData?.headSchoolID ? (
 								<Label className="mb-2">
 									{`${formData?.headSchool.prefix.prefixTH}${formData?.headSchool.firstNameTH} ${formData?.headSchool.lastNameTH}`}
@@ -311,14 +255,17 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 					>
 						ยกเลิก
 					</Button>
-					<Button
-						disabled={loading}
-						variant="outline"
-						type="submit"
-						className="bg-[#A67436] w-auto text-lg text-white rounded-xl ml-4 border-[#A67436] mr-4"
+					<ConfirmDialog
+						lebel="ยืนยัน"
+						title="ยืนยัน"
+						loading={loading}
+						onConfirm={form.handleSubmit(onSubmit)}
+						onCancel={handleCancel}
+						isOpen={isOpen}
+						setIsOpen={setIsOpen}
 					>
-						ยืนยัน
-					</Button>
+						ยืนยันเเล้วไม่สามารถเเก้ไขได้
+					</ConfirmDialog>
 				</div>
 			</form>
 		</Form>

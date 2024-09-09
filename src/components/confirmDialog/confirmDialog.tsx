@@ -14,6 +14,7 @@ interface DialogProps {
 
 export function ConfirmDialog(props: DialogProps) {
 	const { loading, lebel, title, children, onConfirm, onCancel, isOpen, setIsOpen } = props;
+	
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
 			<DialogTrigger asChild>
