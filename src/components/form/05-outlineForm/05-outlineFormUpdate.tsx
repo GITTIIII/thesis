@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { Check, ChevronsUpDown } from "lucide-react";
@@ -19,15 +18,15 @@ import { DatePicker } from "@/components/datePicker/datePicker";
 import { IOutlineForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 import { IExpert } from "@/interface/expert";
+import useSWR, { mutate } from "swr";
+import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
 import InputForm from "@/components/inputForm/inputForm";
 import signature from "../../../../public/asset/signature.png";
 import ThesisProcessPlan from "../thesisProcessPlan";
-import SignatureCanvas from "react-signature-canvas";
 import Image from "next/image";
 import axios from "axios";
 import qs from "query-string";
-import useSWR, { mutate } from "swr";
-import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const formSchema = z.object({
 	id: z.number(),
@@ -60,37 +59,20 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
 
-	const sigCanvas = useRef<SignatureCanvas>(null);
-	const clear = () => {
-		if (sigCanvas.current) {
-			sigCanvas.current.clear();
-		}
+	const handleDrawingSignOutline = (signUrl: string) => {
+		reset({
+			...form.getValues(),
+			outlineCommitteeSignUrl: signUrl,
+		});
+		setOpenOutline(false);
 	};
 
-	const handleDrawingSign = () => {
-		if (sigCanvas.current?.isEmpty()) {
-			toast({
-				title: "Error",
-				description: "กรุณาวาดลายเซ็น",
-				variant: "destructive",
-			});
-			return;
-		} else if (sigCanvas.current && !sigCanvas.current.isEmpty()) {
-			if (openOutline) {
-				reset({
-					...form.getValues(),
-					outlineCommitteeSignUrl: sigCanvas.current.getTrimmedCanvas().toDataURL("image/png"),
-				});
-			}
-			if (openInstitute) {
-				reset({
-					...form.getValues(),
-					instituteCommitteeSignUrl: sigCanvas.current.getTrimmedCanvas().toDataURL("image/png"),
-				});
-			}
-			setOpenOutline(false);
-			setOpenInstitute(false);
-		}
+	const handleDrawingSignInstitute = (signUrl: string) => {
+		reset({
+			...form.getValues(),
+			instituteCommitteeSignUrl: signUrl,
+		});
+		setOpenInstitute(false);
 	};
 
 	const form = useForm({
@@ -186,13 +168,16 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 		}
 	};
 
-	const { reset } = form;
+	const {
+		reset,
+		formState: { errors },
+	} = form;
 
 	useEffect(() => {
 		reset({
 			...form.getValues(),
 			id: formId,
-			editComment: formData?.editComment,
+			editComment: formData?.editComment ? formData?.editComment : "",
 		});
 	}, [formId, formData]);
 
@@ -200,6 +185,21 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 		setLoading(false);
 		setIsOpen(false);
 	};
+
+	useEffect(() => {
+		const errorKeys = Object.keys(errors);
+		if (errorKeys.length > 0) {
+			setIsOpen(false);
+			const firstErrorField = errorKeys[0] as keyof typeof errors;
+			const firstErrorMessage = errors[firstErrorField]?.message;
+			toast({
+				title: "เกิดข้อผิดพลาด",
+				description: firstErrorMessage,
+				variant: "destructive",
+			});
+			console.log(errors);
+		}
+	}, [errors]);
 
 	return (
 		<Form {...form}>
@@ -409,71 +409,12 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 								</FormItem>
 							)}
 						/>
-						<Dialog open={openOutline} onOpenChange={setOpenOutline}>
-							<DialogTrigger
-								onClick={() => setOpenOutline(!openOutline)}
-								disabled={
-									formData?.outlineCommitteeSignUrl ||
-									(user?.role.toString() != "SUPER_ADMIN" && user?.role.toString() != "ADMIN")
-										? true
-										: false
-								}
-							>
-								<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
-									<Image
-										src={
-											formData?.outlineCommitteeSignUrl
-												? formData?.outlineCommitteeSignUrl
-												: form.getValues().outlineCommitteeSignUrl
-												? form.getValues().outlineCommitteeSignUrl
-												: signature
-										}
-										width={200}
-										height={100}
-										style={{
-											width: "auto",
-											height: "auto",
-										}}
-										alt="signature"
-									/>
-								</div>
-							</DialogTrigger>
-							<DialogContent className="w-max">
-								<DialogHeader>
-									<DialogTitle>ลายเซ็น</DialogTitle>
-								</DialogHeader>
-								<div className="w-full h-max flex justify-center mb-6 border-2">
-									<SignatureCanvas
-										ref={sigCanvas}
-										backgroundColor="white"
-										throttle={8}
-										canvasProps={{
-											width: 400,
-											height: 150,
-											className: "sigCanvas",
-										}}
-									/>
-								</div>
-								<div className="w-full h-full flex justify-center">
-									<Button
-										variant="outline"
-										type="button"
-										onClick={() => clear()}
-										className="bg-[#F26522] w-auto px-6 text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-									>
-										ล้าง
-									</Button>
-									<Button
-										variant="outline"
-										type="button"
-										onClick={() => handleDrawingSign()}
-										className="bg-[#F26522] w-auto text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-									>
-										ยืนยัน
-									</Button>
-								</div>
-							</DialogContent>
-						</Dialog>
+						<SignatureDialog
+							signUrl={form.getValues("outlineCommitteeSignUrl")}
+							onConfirm={handleDrawingSignOutline}
+							isOpen={openOutline}
+							setIsOpen={setOpenOutline}
+						/>
 						{formData?.outlineCommitteeID ? (
 							<Label className="mb-2">
 								{`${formData?.outlineCommittee.prefix}${formData?.outlineCommittee.firstName} ${formData?.outlineCommittee.lastName}`}
@@ -669,66 +610,12 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 									</FormItem>
 								)}
 							/>
-							<Dialog open={openInstitute} onOpenChange={setOpenInstitute}>
-								<DialogTrigger
-									onClick={() => setOpenInstitute(!openInstitute)}
-									disabled={formData?.instituteCommitteeSignUrl || user?.role.toString() != "SUPER_ADMIN" ? true : false}
-								>
-									<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
-										<Image
-											src={
-												formData?.instituteCommitteeSignUrl
-													? formData?.instituteCommitteeSignUrl
-													: form.getValues().instituteCommitteeSignUrl
-													? form.getValues().instituteCommitteeSignUrl
-													: signature
-											}
-											width={200}
-											height={100}
-											style={{
-												width: "auto",
-												height: "auto",
-											}}
-											alt="signature"
-										/>
-									</div>
-								</DialogTrigger>
-								<DialogContent className="w-max">
-									<DialogHeader>
-										<DialogTitle>ลายเซ็น</DialogTitle>
-									</DialogHeader>
-									<div className="w-full h-max flex justify-center mb-6 border-2">
-										<SignatureCanvas
-											ref={sigCanvas}
-											backgroundColor="white"
-											throttle={8}
-											canvasProps={{
-												width: 400,
-												height: 150,
-												className: "sigCanvas",
-											}}
-										/>
-									</div>
-									<div className="w-full h-full flex justify-center">
-										<Button
-											variant="outline"
-											type="button"
-											onClick={() => clear()}
-											className="bg-[#F26522] w-auto px-6 text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-										>
-											ล้าง
-										</Button>
-										<Button
-											variant="outline"
-											type="button"
-											onClick={() => handleDrawingSign()}
-											className="bg-[#F26522] w-auto text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-										>
-											ยืนยัน
-										</Button>
-									</div>
-								</DialogContent>
-							</Dialog>
+							<SignatureDialog
+								signUrl={form.getValues("instituteCommitteeSignUrl")}
+								onConfirm={handleDrawingSignInstitute}
+								isOpen={openInstitute}
+								setIsOpen={setOpenInstitute}
+							/>
 							{formData?.instituteCommitteeID ? (
 								<Label className="mb-2">
 									{`${formData?.instituteCommittee.prefix.prefixTH}${formData?.instituteCommittee.firstNameTH} ${formData?.instituteCommittee.lastNameTH}`}

@@ -172,8 +172,8 @@ const OutlineFormCreate = () => {
 		}
 	};
 
-	const { reset } = form;
 	const {
+		reset,
 		formState: { errors },
 	} = form;
 
