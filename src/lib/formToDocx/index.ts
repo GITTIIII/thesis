@@ -1,7 +1,8 @@
 import createReport from "docx-templates";
 import fs from "fs";
 
-export const genDocx = async (path: string, data: any) => {
+export const genDocx = async (docName: string, data: any) => {
+  const path = `src/lib/formToDocx/docTemplate/${docName}`;
   try {
     const template = fs.readFileSync(path);
 

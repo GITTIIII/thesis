@@ -134,7 +134,7 @@ const ThesisExamFormCreate = () => {
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
 
-					<div className="w-full sm:2/4 mt-5">
+					<div className="w-full  mt-5">
 						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Fullname" />
 						<InputForm value={`${user?.username} `} label="รหัสนักศึกษา / StudentID" />
 						<InputForm value={`${user?.email} `} label="อีเมล์ / Email" />
@@ -162,7 +162,7 @@ const ThesisExamFormCreate = () => {
 					<div className="border-l border-[#eeee]"></div>
 
 					{/* ฝั่งขวา */}
-					<div className="w-full sm:2/4">
+					<div className="w-full ">
 						<div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
 							<div className="text-center mb-5">ชื่อโครงร่างวิทยานิพนธ์</div>
 							<FormField
@@ -173,10 +173,7 @@ const ThesisExamFormCreate = () => {
 										<FormItem className="w-auto">
 											<FormLabel>ชื่อภาษาไทย / ThesisName(TH)</FormLabel>
 											<FormControl>
-												<Input
-													className="text-sm p-2 w-[300px] m-auto  rounded-lg"
-													{...field}
-												/>
+												<Input className="text-sm p-2 w-[300px] m-auto  rounded-lg" {...field} />
 											</FormControl>
 											<FormMessage />
 										</FormItem>
@@ -191,10 +188,7 @@ const ThesisExamFormCreate = () => {
 										<FormItem className="w-auto">
 											<FormLabel>ชื่อภาษาอังกฤษ / ThesisName(EN)</FormLabel>
 											<FormControl>
-												<Input
-													className="text-sm p-2 w-[300px] m-auto  rounded-lg"
-													{...field}
-												/>
+												<Input className="text-sm p-2 w-[300px] m-auto  rounded-lg" {...field} />
 											</FormControl>
 											<FormMessage />
 										</FormItem>
@@ -211,8 +205,7 @@ const ThesisExamFormCreate = () => {
 								<div>
 									<RadioGroupItem value="nondisclosure" />
 									<FormLabel className="ml-2 text-sm mb-6">
-										วิทยานิพนธ์ปกปิด (โปรดกรอก ทบ.24) / <br /> This Thesis is subject to
-										nondisclosure <br />
+										วิทยานิพนธ์ปกปิด (โปรดกรอก ทบ.24) / <br /> This Thesis is subject to nondisclosure <br />
 										(Please attach form No.24).
 									</FormLabel>
 								</div>
@@ -225,11 +218,7 @@ const ThesisExamFormCreate = () => {
 										<FormItem className="w-auto">
 											<FormLabel>วันที่สอบ / This Examination Date</FormLabel>
 											<FormControl>
-												<Input
-													type="date"
-													className="text-sm p-2 w-[300px] rounded-lg"
-													{...field}
-												/>
+												<Input type="date" className="text-sm p-2 w-[300px] rounded-lg" {...field} />
 											</FormControl>
 											<FormMessage />
 										</FormItem>
@@ -240,17 +229,17 @@ const ThesisExamFormCreate = () => {
 								<span className="font-bold">หมายเหตุ:</span>&nbsp;กรณีนักศึกษามีส่วนที่ต้องปรับปรุง
 								ต้องดำเนินการให้แล้วเสร็จ
 								<span className="font-bold underline">ภายในระยะเวลา 30 วัน</span>
-								และไม่เกินวันสุดท้ายของภาคการศึกษาที่ขอสอบวิทยานิพนธ์
-								หากดำเนินการไม่ทันภาคการศึกษาดังกล่าว นักศึกษาต้องลงทะเบียนรักษาสภาพในภาคการศึกษาถัดไป
+								และไม่เกินวันสุดท้ายของภาคการศึกษาที่ขอสอบวิทยานิพนธ์ หากดำเนินการไม่ทันภาคการศึกษาดังกล่าว
+								นักศึกษาต้องลงทะเบียนรักษาสภาพในภาคการศึกษาถัดไป
 								และกำหนดให้วันที่นักศึกษาส่งเล่มวิทยานิพนธ์เป็นวันที่สำเร็จการศึกษา
 							</div>
 							<div className="px-4 m-0 text-xs text-justify">
-								<span className="font-bold">Remask:</span>&nbsp;In the event thesis amendments are
-								required, the student&nbsp;
+								<span className="font-bold">Remask:</span>&nbsp;In the event thesis amendments are required, the
+								student&nbsp;
 								<span className="font-bold underline">must complete all amendments within 30 days</span>
-								&nbsp; and no later than the last day of the term in which the thesis examination took
-								place. Failure to do so will result in the student maintaining student status in the
-								following term. The thesis submission date shall be deemed the students graduation date.
+								&nbsp; and no later than the last day of the term in which the thesis examination took place. Failure to do
+								so will result in the student maintaining student status in the following term. The thesis submission date
+								shall be deemed the students graduation date.
 							</div>
 						</div>
 						<div className="flex justify-center my-8 bg-[#ffff]  text-[#000] underline rounded-lg">

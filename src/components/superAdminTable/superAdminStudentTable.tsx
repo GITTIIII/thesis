@@ -18,15 +18,7 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 async function getAllUser() {
 	const res = await fetch("/api/user");
@@ -116,9 +108,8 @@ export default function SuperAdminStudentTable({ filterRole }: { filterRole: str
 						{filteredData
 							.filter((userData) =>
 								filterRole == "STUDENT" && (studentFilter == "Master" || studentFilter == "Doctoral")
-									? userData?.role.toString() === "STUDENT" &&
-									  userData?.degree.toString() === studentFilter
-									: userData?.role.toString() === "STUDENT"
+									? userData?.role === "STUDENT" && userData?.degree === studentFilter
+									: userData?.role === "STUDENT"
 							)
 							.map((user, index) => (
 								<TableRow key={index}>
@@ -131,9 +122,7 @@ export default function SuperAdminStudentTable({ filterRole }: { filterRole: str
 									<TableCell>{user.email}</TableCell>
 									<TableCell>{user.phone}</TableCell>
 									<TableCell>
-										{user.formLanguage == "en"
-											? `${user.school.schoolNameEN}`
-											: `${user.school.schoolNameTH}`}
+										{user.formLanguage == "en" ? `${user.school?.schoolNameEN}` : `${user.school?.schoolNameTH}`}
 									</TableCell>
 									<TableCell>{user.degree}</TableCell>
 									<TableCell>
@@ -177,21 +166,13 @@ export default function SuperAdminStudentTable({ filterRole }: { filterRole: str
 								<Input value={selectedUser?.username} className="col-span-3 disabled" readOnly />
 								<Label className="text-right">ชื่อ</Label>
 								<Input
-									value={
-										selectedUser?.formLanguage == "en"
-											? selectedUser?.firstNameEN
-											: selectedUser?.firstNameTH
-									}
+									value={selectedUser?.formLanguage == "en" ? selectedUser?.firstNameEN : selectedUser?.firstNameTH}
 									className="col-span-3 disabled"
 									readOnly
 								/>
 								<Label className="text-right">นามสกุล</Label>
 								<Input
-									value={
-										selectedUser?.formLanguage == "en"
-											? selectedUser?.lastNameEN
-											: selectedUser?.lastNameTH
-									}
+									value={selectedUser?.formLanguage == "en" ? selectedUser?.lastNameEN : selectedUser?.lastNameTH}
 									className="col-span-3 disabled"
 									readOnly
 								/>
@@ -232,11 +213,7 @@ export default function SuperAdminStudentTable({ filterRole }: { filterRole: str
 									readOnly
 								/>
 								<Label className="text-right">ปีหลักสูตร</Label>
-								<Input
-									value={selectedUser?.program?.programYear}
-									className="col-span-3 disabled"
-									readOnly
-								/>
+								<Input value={selectedUser?.program?.programYear} className="col-span-3 disabled" readOnly />
 							</div>
 						</div>
 						<DialogFooter></DialogFooter>

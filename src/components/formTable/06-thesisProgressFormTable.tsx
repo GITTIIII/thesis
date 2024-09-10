@@ -9,7 +9,6 @@ import { IUser } from "@/interface/user";
 import { useSelectForm } from "@/hook/selectFormHook";
 import { FormPath } from "../formPath/formPath";
 
-
 async function getAll06FormByStdId(stdId: number | undefined) {
 	if (stdId) {
 		const res = await fetch(`/api/get06FormByStdId/${stdId}`, {
@@ -31,7 +30,7 @@ export default function ThesisProgressFormTable({ userData }: { userData: IUser 
 	const { selectedForm, setSelectedForm } = useSelectForm();
 	useEffect(() => {
 		async function fetchData() {
-			if (userData?.role.toString() === "STUDENT") {
+			if (userData?.role === "STUDENT") {
 				const formData = await getAll06FormByStdId(userData?.id);
 				setFormData(formData);
 			} else {
@@ -56,7 +55,7 @@ export default function ThesisProgressFormTable({ userData }: { userData: IUser 
 							<TableHead className="text-center">รหัสนักศึกษา</TableHead>
 							<TableHead className="text-center">ชื่อ นศ.</TableHead>
 							<TableHead className="text-center">รายละเอียด</TableHead>
-							<TableHead hidden={userData?.role.toString() != "STUDENT"} className="text-center">
+							<TableHead hidden={userData?.role != "STUDENT"} className="text-center">
 								ดาวน์โหลดฟอร์ม
 							</TableHead>
 						</TableRow>
@@ -78,7 +77,7 @@ export default function ThesisProgressFormTable({ userData }: { userData: IUser 
 								<TableCell className="text-[#F26522] text-center">
 									<Link
 										href={
-											(formData.dateAdvisor && formData.dateHeadSchool) || userData?.role.toString() == "STUDENT"
+											(formData.dateAdvisor && formData.dateHeadSchool) || userData?.role == "STUDENT"
 												? `/user/form/${FormPath[selectedForm]}/${formData.id}`
 												: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
 										}
@@ -86,7 +85,7 @@ export default function ThesisProgressFormTable({ userData }: { userData: IUser 
 										คลิกเพื่อดูเพิ่มเติม
 									</Link>
 								</TableCell>
-								<TableCell hidden={userData?.role.toString() != "STUDENT"} className="text-center">
+								<TableCell hidden={userData?.role != "STUDENT"} className="text-center">
 									<Button type="button" variant="outline">
 										<Download className="mr-2" />
 										ดาวน์โหลด

@@ -48,7 +48,7 @@ export default function ComprehensiveExamCommitteeFormTable({ userData }: { user
 
 	useEffect(() => {
 		async function fetchData() {
-			if (userData?.role.toString() === "STUDENT") {
+			if (userData?.role === "STUDENT") {
 				const formData = await get01FormByStdId(userData?.id);
 				setFormData(formData);
 			} else {
@@ -81,8 +81,7 @@ export default function ComprehensiveExamCommitteeFormTable({ userData }: { user
 						{formData
 							?.filter(
 								(formData) =>
-									(userData?.role.toString() === "STUDENT" && userData?.id === formData?.student?.id) ||
-									userData?.role.toString() != "STUDENT"
+									(userData?.role === "STUDENT" && userData?.id === formData?.student?.id) || userData?.role != "STUDENT"
 							)
 							.map((formData, index) => (
 								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
@@ -99,7 +98,7 @@ export default function ComprehensiveExamCommitteeFormTable({ userData }: { user
 									<TableCell className="text-[#F26522] text-center">
 										<Link
 											href={
-												formData.headSchoolID || userData?.role.toString() == "STUDENT"
+												formData.headSchoolID || userData?.role == "STUDENT"
 													? `/user/form/${FormPath[selectedForm]}/${formData.id}`
 													: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
 											}

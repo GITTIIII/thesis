@@ -100,7 +100,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 			...form.getValues(),
 			id: formId,
 		});
-		if (user && user.position.toString() === "HEAD_OF_SCHOOL") {
+		if (user && user.position === "HEAD_OF_SCHOOL") {
 			reset({
 				...form.getValues(),
 				headSchoolID: user.id,
@@ -127,7 +127,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 					</Button>
 				</div>
 				<div className="flex flex-col justify-center md:flex-row">
-					<div className="w-full sm:2/4">
+					<div className="w-full">
 						<h1 className="text-center font-semibold mb-2">รายละเอียดการสอบ</h1>
 						<InputForm value={`${formData?.times}`} label="สอบครั้งที่ / Exam. No." />
 						<InputForm value={`${formData?.trimester}`} label="ภาคเรียน / Trimester" />
@@ -143,12 +143,12 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 							value={`${formData?.student.firstNameTH} ${formData?.student.lastNameTH}`}
 							label="ชื่อ-นามสกุล / Fullname"
 						/>
-						<InputForm value={`${formData?.student?.school.schoolNameTH}`} label="สาขาวิชา / School" />
-						<InputForm value={`${formData?.student?.program.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${formData?.student.program.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+						<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
+						<InputForm value={`${formData?.student.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
 					</div>
 
-					<div className="w-full sm:2/4">
+					<div className="w-full">
 						<h1 className="text-center font-semibold mb-2">ขอเสนอเเต่งตั้งคณะกรรมการสอบประมวลความรู้</h1>
 						<div className="flex items-center justify-center text-sm">
 							<CircleAlert className="mr-1" />
@@ -173,7 +173,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 							/>
 							{formData?.headSchoolID ? (
 								<Label className="mb-2">
-									{`${formData?.headSchool.prefix.prefixTH}${formData?.headSchool.firstNameTH} ${formData?.headSchool.lastNameTH}`}
+									{`${formData?.headschool?.prefix.prefixTH}${formData?.headschool?.firstNameTH} ${formData?.headschool?.lastNameTH}`}
 								</Label>
 							) : (
 								<FormField
@@ -182,7 +182,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 									render={({ field }) => (
 										<>
 											<Popover>
-												<PopoverTrigger asChild disabled={user?.role.toString() != "SUPER_ADMIN"}>
+												<PopoverTrigger asChild disabled={user?.role != "SUPER_ADMIN"}>
 													<FormControl>
 														<Button
 															variant="outline"
@@ -194,13 +194,13 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 														>
 															{field.value
 																? `${
-																		headSchool?.find((headSchool) => headSchool.id === field.value)
+																		headSchool?.find((headSchool) => headschool?.id === field.value)
 																			?.prefix.prefixTH
 																  } ${
-																		headSchool?.find((headSchool) => headSchool.id === field.value)
+																		headSchool?.find((headSchool) => headschool?.id === field.value)
 																			?.firstNameTH
 																  } ${
-																		headSchool?.find((headSchool) => headSchool.id === field.value)
+																		headSchool?.find((headSchool) => headschool?.id === field.value)
 																			?.lastNameTH
 																  } `
 																: "เลือกหัวหน้าสาขา"}
@@ -215,20 +215,20 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 															<CommandEmpty>ไม่พบหัวหน้าสาขา</CommandEmpty>
 															{headSchool?.map((headSchool) => (
 																<CommandItem
-																	value={`${headSchool.prefix.prefixTH}${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
-																	key={headSchool.id}
+																	value={`${headschool?.prefix.prefixTH}${headschool?.firstNameTH} ${headschool?.lastNameTH}`}
+																	key={headschool?.id}
 																	onSelect={() => {
-																		form.setValue("headSchoolID", headSchool.id);
-																		setSchoolName(headSchool.school.schoolNameTH);
+																		form.setValue("headSchoolID", headschool?.id);
+																		setSchoolName(headschool?.school?.schoolNameTH);
 																	}}
 																>
 																	<Check
 																		className={cn(
 																			"mr-2 h-4 w-4",
-																			field.value === headSchool.id ? "opacity-100" : "opacity-0"
+																			field.value === headschool?.id ? "opacity-100" : "opacity-0"
 																		)}
 																	/>
-																	{`${headSchool.prefix.prefixTH}${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
+																	{`${headschool?.prefix.prefixTH}${headschool?.firstNameTH} ${headschool?.lastNameTH}`}
 																</CommandItem>
 															))}
 														</CommandList>
@@ -241,7 +241,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 								/>
 							)}
 							<Label className="my-2">{`หัวหน้าสาขาวิชา ${
-								form.getValues().headSchoolID === user?.id ? user.school.schoolNameTH : schoolName
+								form.getValues().headSchoolID === user?.id ? user.school?.schoolNameTH : schoolName
 							}`}</Label>
 						</div>
 					</div>
