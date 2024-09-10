@@ -18,7 +18,7 @@ const formSchema = z.object({
 
 const SignInForm = () => {
 	const router = useRouter();
-	const [ loading, setLoading ] = useState(false)
+	const [loading, setLoading] = useState(false);
 	const { toast } = useToast();
 	const form = useForm({
 		resolver: zodResolver(formSchema),
@@ -28,35 +28,40 @@ const SignInForm = () => {
 		},
 	});
 
-	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		setLoading(true);
-		const signInData = await signIn("credentials", {
-			username: values.username,
-			password: values.password,
-			redirect: false,
-		});
+	const onSubmit: (values: z.infer<typeof formSchema>) => Promise<void> = async (values) => {
+		try {
+			setLoading(true);
+			const signInData = await signIn("credentials", {
+				username: values.username,
+				password: values.password,
+				redirect: false,
+			});
 
-		if (signInData?.error) {
-			toast({
-				title: "Error",
-				description: signInData?.error,
-				variant: "destructive",
-			});
-			setLoading(false);
-		} else {
-			toast({
-				title: "Success",
-				description: "เข้าสู่ระบบสำเร็จ",
-				variant: "default",
-			});
-			const session = await getSession();
-			if (session?.user.role == "STUDENT") {
-				router.push("/user/student");
-			} else if (session?.user.role == "ADMIN") {
-				router.push("/user/table");
-			} else if (session?.user.role == "SUPER_ADMIN") {
-				router.push("/user/superAdmin");
+			if (signInData?.error) {
+				toast({
+					title: "Error",
+					description: signInData?.error,
+					variant: "destructive",
+				});
+				setLoading(false);
+			} else {
+				toast({
+					title: "Success",
+					description: "เข้าสู่ระบบสำเร็จ",
+					variant: "default",
+				});
+
+				const session = await getSession();
+				if (session?.user.role === "STUDENT") {
+					router.push("/user/student");
+				} else if (session?.user.role === "ADMIN") {
+					router.push("/user/table");
+				} else if (session?.user.role === "SUPER_ADMIN") {
+					router.push("/user/superAdmin");
+				}
 			}
+		} catch (error) {
+			console.error("Sign-in failed", error);
 		}
 	};
 

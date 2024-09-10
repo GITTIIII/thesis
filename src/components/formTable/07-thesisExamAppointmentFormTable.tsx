@@ -6,6 +6,9 @@ import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
 import { IThesisExamAppointmentForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
+import { useSelectForm } from "@/hook/selectFormHook";
+import { FormPath } from "../formPath/formPath";
+
 
 async function getAll07FormByStdId(stdId: number | undefined) {
 	if (stdId) {
@@ -25,6 +28,7 @@ async function getAll07Form() {
 
 export default function ThesisExamAppointmentFormTable({ userData }: { userData: IUser | undefined }) {
 	const [formData, setFormData] = useState<IThesisExamAppointmentForm[]>();
+	const { selectedForm, setSelectedForm } = useSelectForm();
 
 	useEffect(() => {
 		async function fetchData() {
@@ -78,8 +82,8 @@ export default function ThesisExamAppointmentFormTable({ userData }: { userData:
 									<Link
 										href={
 											(formData.dateAdvisor && formData.dateHeadSchool) || userData?.role.toString() == "STUDENT"
-												? `/user/form/thesisExamAppointmentForm/${formData.id}`
-												: `/user/form/thesisExamAppointmentForm/update/${formData.id}`
+												? `/user/form/${FormPath[selectedForm]}/${formData.id}`
+												: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
 										}
 									>
 										คลิกเพื่อดูเพิ่มเติม

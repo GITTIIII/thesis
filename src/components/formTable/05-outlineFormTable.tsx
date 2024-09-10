@@ -6,30 +6,9 @@ import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
 import { IOutlineForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
-
-const FindStatus = ({ formData }: { formData: IOutlineForm }) => {
-	let status = "";
-
-	if (formData?.outlineCommitteeStatus === "APPROVED" && formData?.instituteCommitteeStatus === "APPROVED") {
-		status = "approve";
-	} else if (formData?.outlineCommitteeStatus === "NOT_APPROVED" || formData?.instituteCommitteeStatus === "NOT_APPROVED") {
-		status = "notApprove";
-	} else if (formData?.outlineCommitteeStatus === null || formData?.instituteCommitteeStatus === null) {
-		status = "waiting";
-	}
-
-	return (
-		<>
-			{status != "" && status === "approve" ? (
-				<div className="w-24 text-center text-green-500  rounded-xl border-2 border-green-400 py-1">อนุมัติ</div>
-			) : status === "waiting" ? (
-				<div className="w-24 text-center text-yellow-500  rounded-xl border-2 border-yellow-400 py-1">รอดำเนินการ</div>
-			) : status == "notApprove" ? (
-				<div className="w-24 text-center text-red-500  rounded-xl border-2 border-red-400 py-1">ไม่อนุมัติ</div>
-			) : null}
-		</>
-	);
-};
+import FormStatus from "../formStatus/formStatus";
+import { useSelectForm } from "@/hook/selectFormHook";
+import { FormPath } from "../formPath/formPath";
 
 async function getAll05FormByStdId(stdId: number | undefined) {
 	if (stdId) {
@@ -49,10 +28,11 @@ async function getAll05Form() {
 
 export default function OutlineFormTable({ userData }: { userData: IUser | undefined }) {
 	const [formData, setFormData] = useState<IOutlineForm[]>();
+	const { selectedForm, setSelectedForm } = useSelectForm();
 
 	useEffect(() => {
 		async function fetchData() {
-			if (userData?.role.toString() === "STUDNET") {
+			if (userData?.role.toString() === "STUDENT") {
 				const formData = await getAll05FormByStdId(userData?.id);
 				setFormData(formData);
 			} else {
@@ -65,7 +45,7 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 
 	return (
 		<>
-			<div className="w-full h-full bg-white shadow-2xl rounded-md p-2 ">
+			<div className="w-full h-full bg-white shadow-2xl rounded-md p-2 overflow-auto ">
 				<Table>
 					<TableHeader>
 						<TableRow>
@@ -85,7 +65,9 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 							<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
 								<TableCell className="text-center">{index + 1}</TableCell>
 								<TableCell className="text-center">
-									{formData.dateOutlineCommitteeSign ? new Date(formData.dateOutlineCommitteeSign).toLocaleDateString("th") : "ยังไม่ทำการสอบ"}
+									{formData.dateOutlineCommitteeSign
+										? new Date(formData.dateOutlineCommitteeSign).toLocaleDateString("th")
+										: "ยังไม่ทำการสอบ"}
 								</TableCell>
 								<TableCell className="text-center">{formData?.thesisNameTH}</TableCell>
 								<TableCell className="text-center">{formData?.thesisNameEN}</TableCell>
@@ -94,15 +76,16 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 									{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 								</TableCell>
 								<TableCell className="flex justify-center">
-									<FindStatus formData={formData} />
+									<FormStatus formStatus={formData.formStatus} />
 								</TableCell>
 								<TableCell className="text-[#F26522] text-center">
 									<Link
 										href={
-											(formData.outlineCommitteeID && formData.instituteCommitteeID) ||
-											userData?.role.toString() == "STUDENT"
-												? `/user/form/outlineForm/${formData.id}`
-												: `/user/form/outlineForm/update/${formData.id}`
+											formData.formStatus == "อนุมัติ"
+												? `/user/form/${FormPath[selectedForm]}/${formData.id}`
+												: userData?.role.toString() == "STUDENT" && formData.formStatus == "เเก้ไข"
+												? `/user/form/${FormPath[selectedForm]}/updateStd/${formData.id}`
+												: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
 										}
 									>
 										คลิกเพื่อดูเพิ่มเติม
@@ -110,7 +93,7 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 								</TableCell>
 								<TableCell className="text-center">
 									<Button
-										disabled={!formData.outlineCommitteeID && !formData.instituteCommitteeID}
+										disabled={formData.formStatus != "อนุมัติ"}
 										type="button"
 										variant="outline"
 									>

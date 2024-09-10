@@ -27,7 +27,7 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push("/user/table?formType=thesisProgressForm")}
+						onClick={() => router.back()}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436]"
 					>
 						ย้อนกลับ
@@ -138,7 +138,9 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 									alt="signature"
 								/>
 							</Button>
-							<Label className="mt-4">{`วันที่ ${formData?.date ? new Date(formData?.date).toLocaleDateString("th"): "__________"}`}</Label>
+							<Label className="mt-4">{`วันที่ ${
+								formData?.date ? new Date(formData?.date).toLocaleDateString("th") : "__________"
+							}`}</Label>
 						</div>
 					</div>
 				</div>
@@ -164,7 +166,9 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 
 					<Label className="mb-2">{`${formData?.student?.advisor?.prefix.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
 
-					<Label className="mt-2">{`วันที่ ${formData?.dateAdvisor ? new Date(formData?.dateAdvisor).toLocaleDateString("th") : "__________"}`}</Label>
+					<Label className="mt-2">{`วันที่ ${
+						formData?.dateAdvisor ? new Date(formData?.dateAdvisor).toLocaleDateString("th") : "__________"
+					}`}</Label>
 				</div>
 
 				{/* หัวหน้าสาขา */}
@@ -190,7 +194,9 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 							: ""}
 					</Label>
 
-					<Label className="mt-2">{`วันที่ ${formData?.dateHeadSchool ? new Date(formData?.dateHeadSchool).toLocaleDateString("th") : "__________"}`}</Label>
+					<Label className="mt-2">{`วันที่ ${
+						formData?.dateHeadSchool ? new Date(formData?.dateHeadSchool).toLocaleDateString("th") : "__________"
+					}`}</Label>
 				</div>
 				<hr className="่่justify-center mx-auto w-full sm:w-max my-5 border-t-2 border-[#eeee]" />
 				<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg">

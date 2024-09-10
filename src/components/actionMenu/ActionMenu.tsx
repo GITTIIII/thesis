@@ -14,24 +14,21 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "../ui/use-toast";
 import { MoreHorizontal } from "lucide-react";
+import { mutate } from "swr";
 
 interface ActionMenuProps {
   deleteAPI: string;
   updatePath: string;
+  fetchAPI: string;
 }
 
-export default function ActionMenu({ deleteAPI, updatePath }: ActionMenuProps) {
+export default function ActionMenu({ deleteAPI, updatePath, fetchAPI }: ActionMenuProps) {
   const router = useRouter();
   const { toast } = useToast();
+
   const handleDelete = () => {
     axios.delete(deleteAPI).then((res) => {
       if (res.status === 200) {
@@ -40,7 +37,7 @@ export default function ActionMenu({ deleteAPI, updatePath }: ActionMenuProps) {
           variant: "default",
           description: "ลบแบบฟอร์มสำเร็จ",
         });
-        window.location.reload();
+        mutate(fetchAPI);
       } else {
         console.error("Error deleting:", res.data);
         toast({
@@ -72,12 +69,10 @@ export default function ActionMenu({ deleteAPI, updatePath }: ActionMenuProps) {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>คุณแน่ใจที่จะลบแบบฟอร์มนี้ใช่ไหม?</AlertDialogTitle>
-            <AlertDialogDescription>
-              การดำเนินการนี้ไม่สามารถย้อนกลับได้ การดำเนินการนี้จะลบแบบฟอร์มของคุณอย่างถาวร
-            </AlertDialogDescription>
+            <AlertDialogDescription>การดำเนินการนี้ไม่สามารถย้อนกลับได้ การดำเนินการนี้จะลบแบบฟอร์มของคุณอย่างถาวร</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>ยกเลิก</AlertDialogCancel>
+            <AlertDialogCancel className="border-none">ยกเลิก</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete}>ยืนยัน</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

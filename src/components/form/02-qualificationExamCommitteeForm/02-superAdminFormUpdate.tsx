@@ -13,6 +13,7 @@ import axios from "axios";
 import useSWR from "swr";
 import qs from "query-string";
 import InputForm from "../../inputForm/inputForm";
+import { DatePicker } from "@/components/datePicker/datePicker";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
@@ -40,7 +41,9 @@ const formSchema = z.object({
   committeeName5: z.string().min(1, { message: "กรุณากรอก คำนำหน้า ชื่อ-นามสกุล กรรมการ / Please fill prefix & full name of committee" }),
   numberStudent: z.number().min(1, { message: "กรุณาระบุจำนวนนักศึกษา / Number of student requierd" }),
   times: z.number().min(1, { message: "กรุณาระบุครั้ง / Times requierd" }),
-  examDay: z.string().min(1, { message: "กรุณาเลือกวันที่สอบ / Exam date requierd" }),
+  examDay: z.date({
+    required_error: "กรุณาเลือกวันที่สอบ / Exam date requierd",
+  }),
   headSchoolID: z.number(),
   headSchoolSignUrl: z.string(),
 
@@ -71,7 +74,7 @@ export default function SuperAdminForm02Update({ formId }: { formId: number }) {
       committeeName5: "",
       numberStudent: 0,
       times: 0,
-      examDay: "",
+      examDay: new Date(),
       headSchoolID: 0,
       headSchoolSignUrl: "",
 
@@ -156,7 +159,7 @@ export default function SuperAdminForm02Update({ formId }: { formId: number }) {
         committeeName5: formData.committeeName5 || "",
         numberStudent: formData.numberStudent || 0,
         times: formData.times || 0,
-        examDay: formData.examDay || "",
+        examDay: new Date(formData.examDay) || new Date(),
         headSchoolID: formData.headSchoolID || 0,
         headSchoolSignUrl: formData.headSchoolSignUrl || "",
 
@@ -235,7 +238,21 @@ export default function SuperAdminForm02Update({ formId }: { formId: number }) {
                 </div>
               )}
             />
-            <InputForm value={`${formData?.examDay}`} label="วันที่สอบ / Date of the examination" />
+            <FormField
+              control={form.control}
+              name="examDay"
+              render={({ field }) => (
+                <div className="flex flex-row items-center mb-6 justify-center">
+                  <FormItem className="w-[300px] flex flex-col">
+                    <FormLabel>
+                      วันที่สอบ / Date of the examination <span className="text-red-500">*</span>
+                    </FormLabel>
+                    <DatePicker value={field.value} onDateChange={field.onChange} />
+                    <FormMessage />
+                  </FormItem>
+                </div>
+              )}
+            />
 
             <h1 className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</h1>
             <InputForm value={`${formData?.student.username}`} label="รหัสนักศึกษา / Student ID" />

@@ -16,11 +16,11 @@ export async function DELETE(req: NextApiRequest, context: { params: Params }) {
     return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
   }
 
-  const comprehensiveExamCommitteeForm = await db.comprehensiveExamCommitteeForm.delete({
+  const thesisOutlineCommitteeForm = await db.thesisOutlineCommitteeForm.delete({
     where: {
       id: Number(formId),
     },
   });
 
-  return NextResponse.json(comprehensiveExamCommitteeForm);
+  return NextResponse.json(thesisOutlineCommitteeForm);
 }

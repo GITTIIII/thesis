@@ -83,7 +83,7 @@ const ThesisExamAppointmentFormCreate = () => {
 			setTimeout(() => {
 				form.reset();
 				router.refresh();
-				router.push("/user/table?formType=thesisExamAppointmentForm");
+				router.back();
 			}, 1000);
 		} else {
 			toast({
@@ -268,7 +268,7 @@ const ThesisExamAppointmentFormCreate = () => {
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push(`/user/table?formType=thesisExamAppointmentForm`)}
+						onClick={() => router.back()}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436] md:ml-auto"
 					>
 						ยกเลิก

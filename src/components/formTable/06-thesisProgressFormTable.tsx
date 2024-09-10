@@ -6,6 +6,9 @@ import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
 import { IThesisProgressForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
+import { useSelectForm } from "@/hook/selectFormHook";
+import { FormPath } from "../formPath/formPath";
+
 
 async function getAll06FormByStdId(stdId: number | undefined) {
 	if (stdId) {
@@ -25,7 +28,7 @@ async function getAll06Form() {
 
 export default function ThesisProgressFormTable({ userData }: { userData: IUser | undefined }) {
 	const [formData, setFormData] = useState<IThesisProgressForm[]>();
-
+	const { selectedForm, setSelectedForm } = useSelectForm();
 	useEffect(() => {
 		async function fetchData() {
 			if (userData?.role.toString() === "STUDENT") {
@@ -76,8 +79,8 @@ export default function ThesisProgressFormTable({ userData }: { userData: IUser 
 									<Link
 										href={
 											(formData.dateAdvisor && formData.dateHeadSchool) || userData?.role.toString() == "STUDENT"
-												? `/user/form/thesisProgressForm/${formData.id}`
-												: `/user/form/thesisProgressForm/update/${formData.id}`
+												? `/user/form/${FormPath[selectedForm]}/${formData.id}`
+												: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
 										}
 									>
 										คลิกเพื่อดูเพิ่มเติม
