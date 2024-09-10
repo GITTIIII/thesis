@@ -74,7 +74,7 @@ const EditCertificate = ({ user, certificateType }: { user: IUser | undefined; c
 		formData.append("file", values.file);
 		formData.append("certificateType", values.certificateType);
 		formData.append("description", values.description);
-		formData.append("id", values.id.toString());
+		formData.append("id", values.id);
 		console.log(formData);
 
 		const url = qs.stringifyUrl({

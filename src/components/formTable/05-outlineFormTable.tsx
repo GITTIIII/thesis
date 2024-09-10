@@ -32,7 +32,7 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 
 	useEffect(() => {
 		async function fetchData() {
-			if (userData?.role.toString() === "STUDENT") {
+			if (userData?.role === "STUDENT") {
 				const formData = await getAll05FormByStdId(userData?.id);
 				setFormData(formData);
 			} else {
@@ -83,7 +83,7 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 										href={
 											formData.formStatus == "อนุมัติ"
 												? `/user/form/${FormPath[selectedForm]}/${formData.id}`
-												: userData?.role.toString() == "STUDENT" && formData.formStatus == "เเก้ไข"
+												: userData?.role == "STUDENT" && formData.formStatus == "เเก้ไข"
 												? `/user/form/${FormPath[selectedForm]}/updateStd/${formData.id}`
 												: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
 										}
@@ -92,11 +92,7 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 									</Link>
 								</TableCell>
 								<TableCell className="text-center">
-									<Button
-										disabled={formData.formStatus != "อนุมัติ"}
-										type="button"
-										variant="outline"
-									>
+									<Button disabled={formData.formStatus != "อนุมัติ"} type="button" variant="outline">
 										<Download className="mr-2" />
 										ดาวน์โหลด
 									</Button>

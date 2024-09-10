@@ -379,8 +379,19 @@ model ThesisExamAppointmentForm{
   studentID                   Int
   student                     User      @relation(fields: [studentID], references: [id], name: "thesisExamAppointmentFormOwner")
 
+  has01Certificate            Boolean?
+  has02Certificate            Boolean?
+  has03Certificate            Boolean?
+  hasOtherCertificate         Boolean?
+  
+  presentationFund            Boolean?
+  presentationFundSignUrl     String?   @db.LongText
+  researchProjectFund         Boolean?
+  researchProjectFundSignUrl  String?   @db.LongText 
+  turnitinVerified            Boolean?
+  turnitinVerifiedSignUrl     String?   @db.LongText 
+
   // อาจารย์ที่ปรึกษา
-  turnitinApproval            Boolean?
   advisorSignUrl              String?   @db.LongText
   dateAdvisor                 DateTime?
 

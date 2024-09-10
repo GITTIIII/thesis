@@ -125,7 +125,7 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 				</div>
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
-					<div className="w-full sm:2/4">
+					<div className="w-full">
 						<div className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</div>
 
 						<InputForm
@@ -147,13 +147,13 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 							</RadioGroup>
 						</div>
 
-						<InputForm value={`${formData?.student?.school.schoolNameTH}`} label="สาขาวิชา / School" />
-						<InputForm value={`${formData?.student?.program.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${formData?.student?.program.programYear}`} label="ปีหลักสูตร / Program Year" />
+						<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
+						<InputForm value={`${formData?.student?.program?.programYear}`} label="ปีหลักสูตร / Program Year" />
 					</div>
 
 					{/* ฝั่งขวา */}
-					<div className="w-full sm:2/4">
+					<div className="w-full">
 						<div className="text-center font-semibold mb-2">ชื่อโครงร่างวิทยานิพนธ์</div>
 						<FormField
 							control={form.control}

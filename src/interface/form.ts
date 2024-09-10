@@ -63,11 +63,11 @@ export type IOutlineCommitteeForm = {
 	headSchoolID: number;
 	headSchoolSignUrl: string;
 	headSchool: IUser;
-	chairOfAcademicSignUrl:string;
+	chairOfAcademicSignUrl: string;
 	studentID: number;
 	student: IUser;
-	advisorID:number;
-	advisor:IUser;
+	advisorID: number;
+	advisor: IUser;
 	advisorSignUrl: string;
 };
 
@@ -84,11 +84,11 @@ export type IExamCommitteeForm = {
 	headSchoolID: number;
 	headSchoolSignUrl: string;
 	headSchool: IUser;
-	chairOfAcademicSignUrl:string;
+	chairOfAcademicSignUrl: string;
 	studentID: number;
 	student: IUser;
-	advisorID:number;
-	advisor:IUser;
+	advisorID: number;
+	advisor: IUser;
 	advisorSignUrl: string;
 };
 
@@ -164,9 +164,9 @@ export type IThesisExamAppointmentForm = {
 	gpa: String;
 	credits: number;
 	date: Date;
-  dateExam: Date;
+	dateExam: Date;
 	studentID: number;
-  student: IUser;
+	student: IUser;
 
 	turnitinApproval: Boolean;
 	advisorSignUrl: string;

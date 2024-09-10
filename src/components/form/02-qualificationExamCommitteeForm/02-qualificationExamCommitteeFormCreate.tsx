@@ -111,7 +111,7 @@ const QualificationExamCommitteeFormCreate = () => {
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">
 				<div className="flex flex-col justify-center md:flex-row">
-					<div className="w-full sm:2/4">
+					<div className="w-full">
 						<h1 className="text-center font-semibold mb-2">รายละเอียดการสอบ</h1>
 						<FormField
 							control={form.control}
@@ -182,12 +182,12 @@ const QualificationExamCommitteeFormCreate = () => {
 						<h1 className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</h1>
 						<InputForm value={`${user?.username}`} label="รหัสนักศึกษา / Student ID" />
 						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Fullname" />
-						<InputForm value={`${user?.school.schoolNameTH}`} label="สาขาวิชา / School" />
-						<InputForm value={`${user?.program.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${user?.program.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+						<InputForm value={`${user?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${user?.program?.programNameTH}`} label="หลักสูตร / Program" />
+						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
 					</div>
 
-					<div className="w-full sm:2/4">
+					<div className="w-full">
 						<h1 className="text-center font-semibold mb-2">แบบคำขออนุมัติแต่งตั้งกรรมการสอบวัดคุณสมบัติ</h1>
 						<div className="flex items-center justify-center text-sm">
 							<CircleAlert className="mr-1" />

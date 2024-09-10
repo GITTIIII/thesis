@@ -44,7 +44,7 @@ export default function Profile() {
 							</div>
 							<div className="mt-4 md:flex ">
 								<section className="flex flex-col sm:w-max gap-4">
-									{user?.role.toString() === "STUDENT" && <p>{`รหัสนักศึกษา:  ${user?.username} `}</p>}
+									{user?.role == "STUDENT" && <p>{`รหัสนักศึกษา:  ${user?.username} `}</p>}
 									<p>{`ชื่อ - สกุล (ไทย):  ${user?.prefix.prefixTH ? user?.prefix.prefixTH : ""}${user?.firstNameTH} ${
 										user?.lastNameTH
 									} `}</p>
@@ -68,15 +68,15 @@ export default function Profile() {
 								<label className=" text-xl ">ข้อมูลด้านการศึกษา</label>
 							</div>
 							<section className="mt-4  gap-4 flex  flex-col self-center">
-								<p>{`สำนักวิชา: ${user?.institute.instituteNameTH} `}</p>
-								<p>{`สาขาวิชา: ${user?.school.schoolNameTH} `}</p>
-								{user?.role.toString() == "STUDENT" && (
+								<p>{`สำนักวิชา: ${user?.institute?.instituteNameTH} `}</p>
+								<p>{`สาขาวิชา: ${user?.school?.schoolNameTH} `}</p>
+								{user?.role == "STUDENT" && (
 									<>
-										<p>{`หลักสูตร: ${user?.program ? user?.program.programNameTH : ""} ${
-											user?.program ? user?.program.programYear : ""
+										<p>{`หลักสูตร: ${user?.program ? user?.program?.programNameTH : ""} ${
+											user?.program ? user?.program?.programYear : ""
 										} `}</p>
 										<p>{`ระดับการศึกษา: ${user?.degree.toLowerCase() === "master" ? "ปริญญาโท" : "ปริญญาเอก"} `}</p>
-										<p>{`อ.ที่ปรึกษา: ${user?.advisor.prefix.prefixTH} ${user?.advisor.firstNameTH} ${user?.advisor.lastNameTH}`}</p>
+										<p>{`อ.ที่ปรึกษา: ${user?.advisor?.prefix.prefixTH} ${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`}</p>
 									</>
 								)}
 							</section>
@@ -104,9 +104,9 @@ export default function Profile() {
 					</div>
 
 					{/* เเถว 3 */}
-					{user?.role.toString() === "STUDENT" && (
-						<div className="relative w-full h-auto bg-white p-4 rounded-xl shadow-[0px_0px_5px_1px_#e2e8f0]">
-							<label className=" text-xl ">ทุนการศึกษา</label>
+					{user?.role === "STUDENT" && (
+						<div className="relative w-full h-auto bg-white p-4 rounded-xl shadow-[0px_0px_5px_1px_#e2e8f0] mb-4">
+							<label className=" text-xl ">ทุนการศึกษา / Turnitin</label>
 							<div className="mt-4 flex flex-col gap-4">
 								<div>
 									<label>{`ทุน OROG ${
@@ -140,6 +140,12 @@ export default function Profile() {
 									<label>{`ทุนอื่นๆ`}</label>
 									<div className="">
 										<UserCertificate user={user} certificateType="4" />
+									</div>
+								</div>
+								<div>
+									<label>{`ผลการตรวจสอบการคัดลอกวิทยานิพนธ์จากระบบ Turnitin`}</label>
+									<div className="">
+										<UserCertificate user={user} certificateType="5" />
 									</div>
 								</div>
 							</div>

@@ -35,7 +35,7 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 				</div>
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
-					<div className="w-full sm:2/4">
+					<div className="w-full">
 						<InputForm value={`${formData?.times} `} label="ครั้งที่ / No." />
 
 						<InputForm value={`${formData?.trimester} `} label="ภาคเรียน / Trimester" />
@@ -46,9 +46,9 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 							value={`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 							label="ชื่อ-นามสกุล / Fullname"
 						/>
-						<InputForm value={`${formData?.student?.school.schoolNameTH}`} label="สาขาวิชา / School" />
-						<InputForm value={`${formData?.student?.program.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${formData?.student?.program.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+						<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
+						<InputForm value={`${formData?.student?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
 
 						<div className="flex flex-col items-center mb-6 justify-center">
 							<Label className="font-normal">ระดับการศึกษา / Education Level</Label>
@@ -72,7 +72,7 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 					</div>
 					<div className="border-l border-[#eeee]"></div>
 					{/* ฝั่งขวา */}
-					<div className="w-full sm:2/4">
+					<div className="w-full">
 						<InputForm
 							value={`${formData?.student.advisor?.firstNameTH} ${formData?.student.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษา / Advisor"
@@ -190,7 +190,7 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 
 					<Label className="mb-2">
 						{formData?.headSchool
-							? `${formData?.headSchool.prefix.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`
+							? `${formData?.headschool?.prefix.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`
 							: ""}
 					</Label>
 

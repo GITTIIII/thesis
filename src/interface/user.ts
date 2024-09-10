@@ -21,38 +21,25 @@ export type IUser = {
 	phone: string;
 	sex: string;
 	degree: string;
-	certificate: ICertificate[];
+	certificate: ICertificate[] | undefined;
 
 	instituteID: number;
-	institute: IInstitute;
+	institute: IInstitute | undefined;
 
 	schoolID: number;
-	school: ISchool;
+	school: ISchool | undefined;
 
 	programID: number;
-	program: IProgram;
+	program: IProgram | undefined;
 
-	position: Position;
-	role: Role;
+	position: string;
+	role: string;
 	formState: number;
 	signatureUrl: string;
 	profileUrl: string;
 
 	advisorID: number;
-	advisor: IUser;
+	advisor: IUser | undefined;
 
 	coAdvisedStudents: ICoAdvisorStudents[]
 };
-
-enum Position {
-	NONE,
-	ADVISOR,
-	HEAD_OF_SCHOOL,
-	HEAD_OF_INSTITUTE
-}
-
-enum Role {
-	STUDENT,
-	ADMIN,
-	SUPER_ADMIN,
-}

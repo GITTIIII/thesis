@@ -28,7 +28,7 @@ const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 				</Button>
 			</div>
 			<div className="flex flex-col justify-center md:flex-row">
-				<div className="w-full sm:2/4">
+				<div className="w-full ">
 					<h1 className="text-center font-semibold mb-2">รายละเอียดการสอบ</h1>
 					<InputForm value={`${formData?.times}`} label="สอบครั้งที่ / Exam. No." />
 					<InputForm value={`${formData?.trimester}`} label="ภาคเรียน / Trimester" />
@@ -41,12 +41,12 @@ const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 					<h1 className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</h1>
 					<InputForm value={`${formData?.student.username}`} label="รหัสนักศึกษา / Student ID" />
 					<InputForm value={`${formData?.student.firstNameTH} ${formData?.student.lastNameTH}`} label="ชื่อ-นามสกุล / Fullname" />
-					<InputForm value={`${formData?.student?.school.schoolNameTH}`} label="สาขาวิชา / School" />
-					<InputForm value={`${formData?.student?.program.programNameTH}`} label="หลักสูตร / Program" />
-					<InputForm value={`${formData?.student.program.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+					<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
+					<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
+					<InputForm value={`${formData?.student.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
 				</div>
 
-				<div className="w-full sm:2/4">
+				<div className="w-full ">
 					<h1 className="text-center font-semibold mb-2">แบบคำขออนุมัติแต่งตั้งกรรมการสอบวัดคุณสมบัติ</h1>
 					<div className="flex items-center justify-center text-sm">
 						<CircleAlert className="mr-1" />

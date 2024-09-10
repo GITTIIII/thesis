@@ -75,8 +75,8 @@ const ExameCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 	});
 
 	const clear = (type: "headSchool" | "advisor" | "ChairOfAcademic") => {
-		if (type === "headSchool" && sigCanvasHeadSchool.current) {
-			sigCanvasHeadSchool.current.clear();
+		if (type === "headSchool" && sigCanvasHeadschool?.current) {
+			sigCanvasHeadschool?.current.clear();
 		}
 		if (type === "advisor" && sigCanvasAdvisor.current) {
 			sigCanvasAdvisor.current.clear();
@@ -89,7 +89,7 @@ const ExameCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 	const handleDrawingSign = (type: "headSchool" | "advisor" | "ChairOfAcademic") => {
 		const canvas =
 			type === "headSchool"
-				? sigCanvasHeadSchool.current
+				? sigCanvasHeadschool?.current
 				: type === "advisor"
 				? sigCanvasAdvisor.current
 				: sigCanvasChairOfAcademic.current;
@@ -183,7 +183,7 @@ const ExameCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 				addNotes: formData.addNotes.length > 0 ? formData.addNotes : [{ committeeNumber: 0, meetingNumber: 0, date: null }],
 			});
 		}
-		if (user && user.position.toString() === "HEAD_OF_SCHOOL") {
+		if (user && user.position === "HEAD_OF_SCHOOL") {
 			form.setValue("headSchoolID", user.id);
 		}
 	}, [formId, formData, user]);
@@ -209,7 +209,7 @@ const ExameCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 				</div>
 				{/* ฝั่งซ้าย */}
 				<div className="flex flex-col justify-center md:flex-row ">
-					<div className="w-full sm:2/4">
+					<div className="w-full ">
 						<h1 className="text-center font-semibold mb-2">รายละเอียดการสอบ</h1>
 						<InputForm value={`${formData?.times}`} label="สอบครั้งที่ / Exam. No." />
 						<InputForm value={`${formData?.trimester}`} label="ภาคเรียน / Trimester" />
@@ -225,13 +225,13 @@ const ExameCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 							value={`${formData?.student.firstNameTH} ${formData?.student.lastNameTH}`}
 							label="ชื่อ-นามสกุล / Fullname"
 						/>
-						<InputForm value={`${formData?.student?.school.schoolNameTH}`} label="สาขาวิชา / School" />
-						<InputForm value={`${formData?.student?.program.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${formData?.student.program.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+						<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
+						<InputForm value={`${formData?.student.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
 					</div>
 
 					{/* ฝั่งขวา */}
-					<div className="w-full sm:2/4">
+					<div className="w-full ">
 						<h1 className="text-center font-semibold mb-2">ขอเสนอเเต่งตั้งคณะกรรมการสอบประมวลความรู้</h1>
 						<div className="flex items-center justify-center text-sm">
 							<CircleAlert className="mr-1" />

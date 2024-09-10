@@ -8,24 +8,24 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/components/ui/use-toast";
+import { IOutlineForm, IProcessPlan, IThesisProgressForm } from "@/interface/form";
+import { IUser } from "@/interface/user";
+import { Label } from "@/components/ui/label";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { DatePicker } from "@/components/datePicker/datePicker";
+import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
 import signature from "@/../../public/asset/signature.png";
 import ThesisProcessPlan from "../thesisProcessPlan";
 import Image from "next/image";
 import axios from "axios";
 import qs from "query-string";
-import { useToast } from "@/components/ui/use-toast";
-import InputForm from "@/components/inputForm/inputForm";
-import { IOutlineForm, IProcessPlan, IThesisProgressForm } from "@/interface/form";
-import { IUser } from "@/interface/user";
-import { Label } from "@/components/ui/label";
-import SignatureCanvas from "react-signature-canvas";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import useSWR, { mutate } from "swr";
-import { DatePicker } from "@/components/datePicker/datePicker";
+import InputForm from "@/components/inputForm/inputForm";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const formSchema = z.object({
 	id: z.number(),
@@ -49,42 +49,26 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 	const { data: formData } = useSWR<IThesisProgressForm>(formId ? `/api/get06FormById/${formId}` : "", fetcher);
 	const { data: approvedForm } = useSWR<IOutlineForm>(formData ? `/api/get05ApprovedFormByStdId/${formData?.student.id}` : "", fetcher);
 	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
-	const [openAdvisor, setOpenAdvisor] = useState(false);
-	const [openSchool, setOpenSchool] = useState(false);
 	const [loading, setLoading] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
+	const [openAdvisor, setOpenAdvisor] = useState(false);
+	const [openHeadSchool, setOpenHeadSchool] = useState(false);
 	const { toast } = useToast();
 
-	const sigCanvas = useRef<SignatureCanvas>(null);
-	const clear = () => {
-		if (sigCanvas.current) {
-			sigCanvas.current.clear();
-		}
+	const handleDrawingSignAdvisor = (signUrl: string) => {
+		reset({
+			...form.getValues(),
+			advisorSignUrl: signUrl,
+		});
+		setOpenAdvisor(false);
 	};
 
-	const handleDrawingSign = () => {
-		if (sigCanvas.current?.isEmpty()) {
-			toast({
-				title: "Error",
-				description: "กรุณาวาดลายเซ็น",
-				variant: "destructive",
-			});
-			return;
-		} else if (sigCanvas.current && !sigCanvas.current.isEmpty()) {
-			if (openAdvisor) {
-				reset({
-					...form.getValues(),
-					advisorSignUrl: sigCanvas.current.getTrimmedCanvas().toDataURL("image/png"),
-				});
-			}
-			if (openSchool) {
-				reset({
-					...form.getValues(),
-					headSchoolSignUrl: sigCanvas.current.getTrimmedCanvas().toDataURL("image/png"),
-				});
-			}
-			setOpenAdvisor(false);
-			setOpenSchool(false);
-		}
+	const handleDrawingSignHeadSchool = (signUrl: string) => {
+		reset({
+			...form.getValues(),
+			headSchoolSignUrl: signUrl,
+		});
+		setOpenHeadSchool(false);
 	};
 
 	const form = useForm({
@@ -152,19 +136,14 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 		reset({
 			...form.getValues(),
 			id: formId,
+			percentage: formData?.percentage ? formData?.percentage : 0,
 		});
-	}, [formId]);
+	}, [formId, formData]);
 
-	useEffect(() => {
-		reset({
-			...form.getValues(),
-			percentage: formData?.percentage,
-		});
-	}, [formData]);
-
-	useEffect(() => {
-		console.log(form.getValues());
-	}, [form.watch("dateAdvisor")]);
+	const handleCancel = () => {
+		setLoading(false);
+		setIsOpen(false);
+	};
 
 	return (
 		<Form {...form}>
@@ -181,7 +160,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 				</div>
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
-					<div className="w-full sm:2/4">
+					<div className="w-full">
 						<InputForm value={`${formData?.times} `} label="ครั้งที่ / No." />
 
 						<InputForm value={`${formData?.trimester} `} label="ภาคเรียน / Trimester" />
@@ -192,9 +171,9 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 							value={`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 							label="ชื่อ-นามสกุล / Fullname"
 						/>
-						<InputForm value={`${formData?.student?.school.schoolNameTH}`} label="สาขาวิชา / School" />
-						<InputForm value={`${formData?.student?.program.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${formData?.student?.program.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+						<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
+						<InputForm value={`${formData?.student?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
 
 						<div className="flex flex-col items-center mb-6 justify-center">
 							<FormLabel className="font-normal">ระดับการศึกษา / Education Level</FormLabel>
@@ -218,7 +197,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 					</div>
 					<div className="border-l border-[#eeee]"></div>
 					{/* ฝั่งขวา */}
-					<div className="w-full sm:2/4">
+					<div className="w-full">
 						<InputForm
 							value={`${formData?.student.advisor?.prefix.prefixTH}${formData?.student.advisor?.firstNameTH} ${formData?.student.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษา / Advisor"
@@ -232,11 +211,11 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 
 							<RadioGroup className="space-y-1 mt-2" disabled>
 								<div>
-									<RadioGroupItem value="AsPlaned" checked={formData?.status == "AsPlaned"} />
+									<RadioGroupItem value="AsPlaned" checked={formData?.status == "เป็นไปตามแผนที่วางไว้ทุกประการ"} />
 									<Label className="ml-2 font-normal">เป็นไปตามแผนที่วางไว้ทุกประการ</Label>
 								</div>
 								<div>
-									<RadioGroupItem value="Adjustments" checked={formData?.status == "Adjustments"} />
+									<RadioGroupItem value="Adjustments" checked={formData?.status == "มีการเปลี่ยนแผนที่วางไว้"} />
 									<Label className="ml-2 font-normal mb-6">มีการเปลี่ยนแผนที่วางไว้</Label>
 								</div>
 							</RadioGroup>
@@ -322,9 +301,9 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 											formData?.assessmentResult
 												? true
 												: false ||
-												  (user?.position.toString() != "ADVISOR" &&
-														user?.position.toString() != "HEAD_OF_SCHOOL" &&
-														user?.role.toString() != "SUPER_ADMIN")
+												  (user?.position != "ADVISOR" &&
+														user?.position != "HEAD_OF_SCHOOL" &&
+														user?.role != "SUPER_ADMIN")
 										}
 										placeholder="ความเห็น..."
 										className="resize-none h-full text-md mb-2"
@@ -336,71 +315,12 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 							</FormItem>
 						)}
 					/>
-					<Dialog open={openAdvisor} onOpenChange={setOpenAdvisor}>
-						<DialogTrigger
-							onClick={() => setOpenAdvisor(!openAdvisor)}
-							disabled={
-								formData?.advisorSignUrl
-									? true
-									: false ||
-									  (user?.position.toString() != "ADVISOR" &&
-											user?.position.toString() != "HEAD_OF_SCHOOL" &&
-											user?.role.toString() != "SUPER_ADMIN")
-							}
-						>
-							<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
-								<Image
-									src={
-										formData?.advisorSignUrl
-											? formData?.advisorSignUrl
-											: form.getValues().advisorSignUrl
-											? form.getValues().advisorSignUrl
-											: signature
-									}
-									width={200}
-									height={100}
-									style={{ width: "auto", height: "auto" }}
-									alt="signature"
-								/>
-							</div>
-						</DialogTrigger>
-						<DialogContent className="w-max">
-							<DialogHeader>
-								<DialogTitle>ลายเซ็น</DialogTitle>
-							</DialogHeader>
-							<div className="w-full h-max flex justify-center mb-6 border-2">
-								<SignatureCanvas
-									ref={sigCanvas}
-									backgroundColor="white"
-									throttle={8}
-									canvasProps={{
-										width: 400,
-										height: 150,
-										className: "sigCanvas",
-									}}
-								/>
-							</div>
-							<div className="w-full h-full flex justify-center">
-								<Button
-									variant="outline"
-									type="button"
-									onClick={() => clear()}
-									className="bg-[#F26522] w-auto px-6 text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-								>
-									ล้าง
-								</Button>
-								<Button
-									variant="outline"
-									type="button"
-									onClick={() => handleDrawingSign()}
-									className="bg-[#F26522] w-auto text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-								>
-									ยืนยัน
-								</Button>
-							</div>
-						</DialogContent>
-					</Dialog>
-
+					<SignatureDialog
+						signUrl={formData?.advisorSignUrl || form.getValues("advisorSignUrl")}
+						onConfirm={handleDrawingSignAdvisor}
+						isOpen={openAdvisor}
+						setIsOpen={setOpenAdvisor}
+					/>
 					<Label className="mb-2">{`${formData?.student?.advisor?.prefix.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
 
 					<div className="w-max h-max flex mt-2 items-center">
@@ -425,7 +345,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 				</div>
 
 				{/* หัวหน้าสาขา */}
-				{(user?.position.toString() === "HEAD_OF_SCHOOL" || user?.role.toString() === "SUPER_ADMIN") && (
+				{(user?.position === "HEAD_OF_SCHOOL" || user?.role === "SUPER_ADMIN") && (
 					<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
 						<h1 className="mb-2 font-bold text-center">ความเห็นของหัวหน้าสาขาวิชา</h1>
 						<FormField
@@ -438,9 +358,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 											disabled={
 												formData?.headSchoolComment
 													? true
-													: false ||
-													  (user?.position.toString() != "HEAD_OF_SCHOOL" &&
-															user?.role.toString() != "SUPER_ADMIN")
+													: false || (user?.position != "HEAD_OF_SCHOOL" && user?.role != "SUPER_ADMIN")
 											}
 											placeholder="ความเห็น..."
 											className="resize-none h-full text-md mb-2"
@@ -452,68 +370,12 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 								</FormItem>
 							)}
 						/>
-						<Dialog open={openSchool} onOpenChange={setOpenSchool}>
-							<DialogTrigger
-								onClick={() => setOpenSchool(!openSchool)}
-								disabled={
-									(formData?.headSchoolSignUrl || user?.position.toString() != "HEAD_OF_SCHOOL") &&
-									user?.role.toString() != "SUPER_ADMIN"
-										? true
-										: false
-								}
-							>
-								<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
-									<Image
-										src={
-											formData?.headSchoolSignUrl
-												? formData?.headSchoolSignUrl
-												: form.getValues().headSchoolSignUrl
-												? form.getValues().headSchoolSignUrl
-												: signature
-										}
-										width={200}
-										height={100}
-										style={{ width: "auto", height: "auto" }}
-										alt="signature"
-									/>
-								</div>
-							</DialogTrigger>
-							<DialogContent className="w-max">
-								<DialogHeader>
-									<DialogTitle>ลายเซ็น</DialogTitle>
-								</DialogHeader>
-								<div className="w-full h-max flex justify-center mb-6 border-2">
-									<SignatureCanvas
-										ref={sigCanvas}
-										backgroundColor="white"
-										throttle={8}
-										canvasProps={{
-											width: 400,
-											height: 150,
-											className: "sigCanvas",
-										}}
-									/>
-								</div>
-								<div className="w-full h-full flex justify-center">
-									<Button
-										variant="outline"
-										type="button"
-										onClick={() => clear()}
-										className="bg-[#F26522] w-auto px-6 text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-									>
-										ล้าง
-									</Button>
-									<Button
-										variant="outline"
-										type="button"
-										onClick={() => handleDrawingSign()}
-										className="bg-[#F26522] w-auto text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-									>
-										ยืนยัน
-									</Button>
-								</div>
-							</DialogContent>
-						</Dialog>
+						<SignatureDialog
+							signUrl={formData?.headSchoolSignUrl || form.getValues("headSchoolSignUrl")}
+							onConfirm={handleDrawingSignHeadSchool}
+							isOpen={openHeadSchool}
+							setIsOpen={setOpenHeadSchool}
+						/>
 						{formData?.headSchoolID ? (
 							<Label className="mb-2">{`${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`}</Label>
 						) : (
@@ -525,9 +387,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 										<Popover>
 											<PopoverTrigger
 												asChild
-												disabled={
-													user?.position.toString() != "HEAD_OF_SCHOOL" && user?.role.toString() != "SUPER_ADMIN"
-												}
+												disabled={user?.position != "HEAD_OF_SCHOOL" && user?.role != "SUPER_ADMIN"}
 											>
 												<FormControl>
 													<Button
@@ -615,16 +475,16 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 						{formData && (
 							<ThesisProcessPlan
 								degree={user!.degree}
-								canEdit={user?.position.toString() === "ADVISOR"}
+								canEdit={user?.position === "ADVISOR"}
 								processPlans={formData?.processPlan}
 								setProcessPlans={setProcessPlans}
 							/>
 						)}
 					</div>
 				</div>
-				{(formData?.student.advisorID == user?.id && user?.position.toString() === "ADVISOR") ||
-				(!formData?.headSchoolID && user?.position.toString() === "HEAD_OF_SCHOOL") ||
-				user?.role.toString() === "SUPER_ADMIN" ? (
+				{(formData?.student.advisorID == user?.id && user?.position === "ADVISOR") ||
+				(!formData?.headSchoolID && user?.position === "HEAD_OF_SCHOOL") ||
+				user?.role === "SUPER_ADMIN" ? (
 					<div className="w-full flex px-20 mt-4 lg:flex justify-center">
 						<Button
 							variant="outline"
@@ -634,14 +494,17 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 						>
 							ยกเลิก
 						</Button>
-						<Button
-							variant="outline"
-							disabled={loading}
-							type="submit"
-							className="bg-[#A67436] w-auto text-lg text-white rounded-xl ml-4 border-[#A67436] mr-4"
+						<ConfirmDialog
+							lebel="ยืนยัน"
+							title="ยืนยัน"
+							loading={loading}
+							onConfirm={form.handleSubmit(onSubmit)}
+							onCancel={handleCancel}
+							isOpen={isOpen}
+							setIsOpen={setIsOpen}
 						>
-							ยืนยัน
-						</Button>
+							ยืนยันเเล้วไม่สามารถเเก้ไขได้
+						</ConfirmDialog>
 					</div>
 				) : null}
 			</form>
