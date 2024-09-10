@@ -24,6 +24,7 @@ export function DatePicker({ onDateChange, value }: DatePickerProps) {
     if (value !== date) {
         setDate(value); 
     }
+    console.log("in datePicker:",value)
 }, [value]);
 
 

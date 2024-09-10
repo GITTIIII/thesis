@@ -242,7 +242,7 @@ const ExameCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 
 					{/* ฝั่งขวา */}
 					<div className="w-full sm:2/4">
-						<h1 className="text-center font-semibold mb-2">ขอเสนอเเต่งตั้งคณะกรรมการสอบประมวลความรู้</h1>
+						<h1 className="text-center font-semibold mb-2">ขอเสนอเเต่งตั้งคณะกรรมการวิทยานิพนธ์</h1>
 						<div className="flex items-center justify-center text-sm">
 							<CircleAlert className="mr-1" />
 							สามารถดูรายชื่อกรรมการที่ได้รับการรับรองเเล้ว

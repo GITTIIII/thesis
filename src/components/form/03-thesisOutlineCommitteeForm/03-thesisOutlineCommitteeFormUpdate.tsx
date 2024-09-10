@@ -45,7 +45,7 @@ const formSchema = z.object({
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
-	const { data: formData, isLoading } = useSWR<IOutlineCommitteeForm>(`/api/get03FormById/${formId}`, fetcher);
+	const { data: formData } = useSWR<IOutlineCommitteeForm>(`/api/get03FormById/${formId}`, fetcher);
 	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
@@ -54,12 +54,6 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 	const [openinstituteComDialog, setOpeninstituteComDialog] = useState(false);
 	const router = useRouter();
 	const { toast } = useToast();
-<<<<<<< HEAD
-	const sigCanvasHeadSchool = useRef<SignatureCanvas>(null);
-	const sigCanvasAdvisor = useRef<SignatureCanvas>(null);
-	const sigCanvasinstituteCom = useRef<SignatureCanvas>(null);
-=======
->>>>>>> ed296a459a6a43638bcf0ebe6cb6ecfba1d138da
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -68,93 +62,45 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 			headSchoolID: 0,
 			headSchoolSignUrl: formData?.headSchoolSignUrl || "",
 			advisorSignUrl: formData?.advisorSignUrl || "",
-<<<<<<< HEAD
-			headSchoolID: 0,
 			instituteComSignUrl: formData?.instituteComSignUrl || "",
-=======
-			chairOfAcademicSignUrl: formData?.chairOfAcademicSignUrl || "",
->>>>>>> ed296a459a6a43638bcf0ebe6cb6ecfba1d138da
 			addNotes:
 				formData?.addNotes && formData.addNotes.length > 0
 					? formData.addNotes
 					: [{ committeeNumber: 0, meetingNumber: 0, date: null }],
 		},
 	});
-	const { control, handleSubmit, reset } = form;
+	const { control, reset } = form;
 	const { fields, append, remove } = useFieldArray({
 		control,
 		name: "addNotes",
 	});
 
-<<<<<<< HEAD
-	const clear = (type: "headSchool" | "advisor" | "instituteCom") => {
-		if (type === "headSchool" && sigCanvasHeadSchool.current) {
-			sigCanvasHeadSchool.current.clear();
-		}
-		if (type === "advisor" && sigCanvasAdvisor.current) {
-			sigCanvasAdvisor.current.clear();
-		}
-		if (type === "instituteCom" && sigCanvasinstituteCom.current) {
-			sigCanvasinstituteCom.current.clear();
-		}
-	};
 
-	const handleDrawingSign = (type: "headSchool" | "advisor" | "instituteCom") => {
-		const canvas =
-			type === "headSchool"
-				? sigCanvasHeadSchool.current
-				: type === "advisor"
-				? sigCanvasAdvisor.current
-				: sigCanvasinstituteCom.current;
-
-		if (canvas?.isEmpty()) {
-			toast({
-				title: "Error",
-				description: "กรุณาวาดลายเซ็น",
-				variant: "destructive",
-			});
-			return;
-		}
-
-		if (canvas) {
-			const newSignUrl = canvas.getTrimmedCanvas().toDataURL("image/png");
-
-			if (type === "headSchool") {
-				form.setValue("headSchoolSignUrl", newSignUrl);
-				setOpenHeadSchoolDialog(false);
-			} else if (type === "advisor") {
-				form.setValue("advisorSignUrl", newSignUrl);
-				setOpenAdvisorDialog(false);
-			} else if (type === "instituteCom") {
-				form.setValue("instituteComSignUrl", newSignUrl);
-				setOpeninstituteComDialog(false);
-			}
-		}
-=======
-	const handleDrawingSignAdvisor = (signUrl: string) => {
+	const handleDrawingAdvisorSign = (signUrl: string) => {
 		reset({
 			...form.getValues(),
 			advisorSignUrl: signUrl,
 		});
 		setOpenAdvisorDialog(false);
+		console.log(signUrl);
 	};
-
-	const handleDrawingSignHeadSchool = (signUrl: string) => {
+	const handleDrawingInstituteComSign = (signUrl: string) => {
+		reset({
+			...form.getValues(),
+			instituteComSignUrl: signUrl,
+		});
+		setOpeninstituteComDialog(false);
+		console.log(signUrl);
+	};
+	const handleDrawingHeadSchoolSign = (signUrl: string) => {
 		reset({
 			...form.getValues(),
 			headSchoolSignUrl: signUrl,
 		});
 		setOpenHeadSchoolDialog(false);
+		console.log(signUrl);
 	};
 
-	const handleDrawingSignChairOfAcademic = (signUrl: string) => {
-		reset({
-			...form.getValues(),
-			chairOfAcademicSignUrl: signUrl,
-		});
-		setOpenChairOfAcademicDialog(false);
->>>>>>> ed296a459a6a43638bcf0ebe6cb6ecfba1d138da
-	};
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		console.log("Submitting form with values:", values);
@@ -233,7 +179,9 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 						? formData.addNotes
 						: [{ committeeNumber: 0, meetingNumber: 0, date: null }],
 			});
+			console.log("after form reset: ",formData.addNotes);
 		}
+		
 		if (user && user.position.toString() === "HEAD_OF_SCHOOL") {
 			form.setValue("headSchoolID", user.id);
 		}
@@ -311,7 +259,7 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 							</div>
 							<SignatureDialog
 								signUrl={form.getValues("advisorSignUrl")}
-								onConfirm={handleDrawingSignAdvisor}
+								onConfirm={handleDrawingAdvisorSign}
 								isOpen={openAdvisorDialog}
 								setIsOpen={setOpenAdvisorDialog}
 							/>
@@ -321,11 +269,11 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 						<div className="w-full sm:1/3 flex flex-col items-center mb-6 justify-center">
 							<div className="text-center mb-2">
 								หัวหน้าสาขาวิชา / <br />
-								Chair of the School
+								Head of the School
 							</div>
 							<SignatureDialog
 								signUrl={form.getValues("headSchoolSignUrl")}
-								onConfirm={handleDrawingSignHeadSchool}
+								onConfirm={handleDrawingHeadSchoolSign}
 								isOpen={openHeadSchoolDialog}
 								setIsOpen={setOpenHeadSchoolDialog}
 							/>
@@ -337,55 +285,12 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 								ประธานคณะทำงานวิชาการ / <br />
 								Associate Dean for Academic Affairs
 							</div>
-<<<<<<< HEAD
-							<Dialog open={openinstituteComDialog} onOpenChange={setOpeninstituteComDialog}>
-								<DialogTrigger onClick={() => setOpeninstituteComDialog(true)}>
-									<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
-										<Image
-											src={form.getValues().instituteComSignUrl || "/asset/signature.png"}
-											width={120}
-											height={120}
-											alt="Signature"
-										/>
-									</div>
-								</DialogTrigger>
-								<DialogContent>
-									<DialogHeader>
-										<DialogTitle>เซ็นลายเซ็นประธานคณะทำงานวิชาการ</DialogTitle>
-									</DialogHeader>
-									<div className="w-full h-max flex justify-center mb-6 border-2">
-										<SignatureCanvas
-											ref={sigCanvasinstituteCom}
-											penColor="black"
-											canvasProps={{ width: 300, height: 150, className: "signature-canvas" }}
-										/>
-									</div>
-									<div className="w-full h-full flex justify-center">
-										<Button
-											type="button"
-											onClick={() => clear("instituteCom")}
-											className="bg-[#F26522] w-auto px-6 text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-										>
-											ล้าง
-										</Button>
-										<Button
-											type="button"
-											onClick={() => handleDrawingSign("instituteCom")}
-											className="bg-[#F26522] w-auto text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-										>
-											บันทึก
-										</Button>
-									</div>
-								</DialogContent>
-							</Dialog>
-=======
 							<SignatureDialog
-								signUrl={form.getValues("chairOfAcademicSignUrl")}
-								onConfirm={handleDrawingSignChairOfAcademic}
-								isOpen={openChairOfAcademicDialog}
-								setIsOpen={setOpenChairOfAcademicDialog}
+								signUrl={form.getValues("instituteComSignUrl")}
+								onConfirm={handleDrawingInstituteComSign}
+								isOpen={openinstituteComDialog}
+								setIsOpen={setOpeninstituteComDialog}
 							/>
->>>>>>> ed296a459a6a43638bcf0ebe6cb6ecfba1d138da
 						</div>
 					</div>
 				</div>
@@ -464,14 +369,14 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 												name={`addNotes.${index}.date`}
 												render={({ field }) => (
 													<div className="flex items-center space-x-2 my-2">
-														<FormLabel>เมื่อวันที่</FormLabel>
-														<DatePicker
-															onDateChange={field.onChange}
-															value={field.value ? new Date(field.value) : undefined}
-														/>
+													<FormLabel>เมื่อวันที่</FormLabel>
+													<DatePicker
+														onDateChange={(date) => field.onChange(date)} 
+														value={field.value ? field.value : undefined}
+													/>
 													</div>
 												)}
-											/>
+												/>
 											<Button
 												type="button"
 												onClick={() => remove(index)}
