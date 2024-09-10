@@ -97,7 +97,7 @@ export async function PATCH(req: Request) {
             headSchoolSignUrl,
             advisorID,
             advisorSignUrl,
-            chairOfAcademicSignUrl,
+            instituteComSignUrl,
             addNotes
         } = body;
 
@@ -127,7 +127,7 @@ export async function PATCH(req: Request) {
                 headSchoolSignUrl: headSchoolSignUrl ?? existingOutlineCommitteeForm.headSchoolSignUrl,
                 advisorID: advisorID !== undefined ? advisorID : existingOutlineCommitteeForm.advisorID,
                 advisorSignUrl: advisorSignUrl ?? existingOutlineCommitteeForm.advisorSignUrl,
-                chairOfAcademicSignUrl: chairOfAcademicSignUrl ?? existingOutlineCommitteeForm.chairOfAcademicSignUrl,
+                instituteComSignUrl: instituteComSignUrl ?? existingOutlineCommitteeForm.instituteComSignUrl,
                 addNotes: addNotes ?? existingOutlineCommitteeForm.addNotes
             },
         });

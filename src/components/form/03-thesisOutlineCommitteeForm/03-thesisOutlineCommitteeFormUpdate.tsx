@@ -30,7 +30,7 @@ const formSchema = z.object({
 	headSchoolID: z.number().nullable(),
 	headSchoolSignUrl: z.string(),
 	advisorSignUrl: z.string(),
-	chairOfAcademicSignUrl: z.string(),
+	instituteComSignUrl: z.string(),
 	addNotes: z.array(
 		z.object({
 			committeeNumber: z.number().min(1, { message: "กรุณาระบุลำดับของกรรมการ / number of committee requierd" }),
@@ -47,12 +47,12 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 	const [loading, setLoading] = useState(false);
 	const [openHeadSchoolDialog, setOpenHeadSchoolDialog] = useState(false);
 	const [openAdvisorDialog, setOpenAdvisorDialog] = useState(false);
-	const [openChairOfAcademicDialog, setOpenChairOfAcademicDialog] = useState(false);
+	const [openinstituteComDialog, setOpeninstituteComDialog] = useState(false);
 	const router = useRouter();
 	const { toast } = useToast();
 	const sigCanvasHeadSchool = useRef<SignatureCanvas>(null);
 	const sigCanvasAdvisor = useRef<SignatureCanvas>(null);
-	const sigCanvasChairOfAcademic = useRef<SignatureCanvas>(null);
+	const sigCanvasinstituteCom = useRef<SignatureCanvas>(null);
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -61,7 +61,7 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 			headSchoolSignUrl: formData?.headSchoolSignUrl || "",
 			advisorSignUrl: formData?.advisorSignUrl || "",
 			headSchoolID: 0,
-			chairOfAcademicSignUrl: formData?.chairOfAcademicSignUrl || "",
+			instituteComSignUrl: formData?.instituteComSignUrl || "",
 			addNotes:
 				formData?.addNotes && formData.addNotes.length > 0
 					? formData.addNotes
@@ -74,25 +74,25 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 		name: "addNotes",
 	});
 
-	const clear = (type: "headSchool" | "advisor" | "ChairOfAcademic") => {
+	const clear = (type: "headSchool" | "advisor" | "instituteCom") => {
 		if (type === "headSchool" && sigCanvasHeadSchool.current) {
 			sigCanvasHeadSchool.current.clear();
 		}
 		if (type === "advisor" && sigCanvasAdvisor.current) {
 			sigCanvasAdvisor.current.clear();
 		}
-		if (type === "ChairOfAcademic" && sigCanvasChairOfAcademic.current) {
-			sigCanvasChairOfAcademic.current.clear();
+		if (type === "instituteCom" && sigCanvasinstituteCom.current) {
+			sigCanvasinstituteCom.current.clear();
 		}
 	};
 
-	const handleDrawingSign = (type: "headSchool" | "advisor" | "ChairOfAcademic") => {
+	const handleDrawingSign = (type: "headSchool" | "advisor" | "instituteCom") => {
 		const canvas =
 			type === "headSchool"
 				? sigCanvasHeadSchool.current
 				: type === "advisor"
 				? sigCanvasAdvisor.current
-				: sigCanvasChairOfAcademic.current;
+				: sigCanvasinstituteCom.current;
 
 		if (canvas?.isEmpty()) {
 			toast({
@@ -112,9 +112,9 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 			} else if (type === "advisor") {
 				form.setValue("advisorSignUrl", newSignUrl);
 				setOpenAdvisorDialog(false);
-			} else if (type === "ChairOfAcademic") {
-				form.setValue("chairOfAcademicSignUrl", newSignUrl);
-				setOpenChairOfAcademicDialog(false);
+			} else if (type === "instituteCom") {
+				form.setValue("instituteComSignUrl", newSignUrl);
+				setOpeninstituteComDialog(false);
 			}
 		}
 	};
@@ -133,7 +133,17 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 			return;
 		}
 
-		if (!values.advisorSignUrl) {
+		if (user && user.position.toString()==="advisor"&&!values.advisorSignUrl) {
+			toast({
+				title: "Error",
+				description: "ไม่พบลายเซ็นอาจารย์ที่ปรึกษา",
+				variant: "destructive",
+			});
+			setLoading(false);
+			return;
+		}
+		
+		if (user && user.position.toString()==="instituteCom" &&!values.instituteComSignUrl) {
 			toast({
 				title: "Error",
 				description: "ไม่พบลายเซ็นอาจารย์ที่ปรึกษา",
@@ -180,7 +190,7 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 				headSchoolSignUrl: formData.headSchoolSignUrl || "",
 				advisorSignUrl: formData.advisorSignUrl || "",
 				headSchoolID: user && user.position.toString() === "HEAD_OF_SCHOOL" ? formData.headSchoolID || 0 : null,
-				chairOfAcademicSignUrl: formData.chairOfAcademicSignUrl || "",
+				instituteComSignUrl: formData.instituteComSignUrl || "",
 				addNotes:
 					formData.addNotes && formData.addNotes.length > 0
 						? formData.addNotes
@@ -353,11 +363,11 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 								ประธานคณะทำงานวิชาการ / <br />
 								Associate Dean for Academic Affairs
 							</div>
-							<Dialog open={openChairOfAcademicDialog} onOpenChange={setOpenChairOfAcademicDialog}>
-								<DialogTrigger onClick={() => setOpenChairOfAcademicDialog(true)}>
+							<Dialog open={openinstituteComDialog} onOpenChange={setOpeninstituteComDialog}>
+								<DialogTrigger onClick={() => setOpeninstituteComDialog(true)}>
 									<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
 										<Image
-											src={form.getValues().chairOfAcademicSignUrl || "/asset/signature.png"}
+											src={form.getValues().instituteComSignUrl || "/asset/signature.png"}
 											width={120}
 											height={120}
 											alt="Signature"
@@ -370,7 +380,7 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 									</DialogHeader>
 									<div className="w-full h-max flex justify-center mb-6 border-2">
 										<SignatureCanvas
-											ref={sigCanvasChairOfAcademic}
+											ref={sigCanvasinstituteCom}
 											penColor="black"
 											canvasProps={{ width: 300, height: 150, className: "signature-canvas" }}
 										/>
@@ -378,14 +388,14 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 									<div className="w-full h-full flex justify-center">
 										<Button
 											type="button"
-											onClick={() => clear("ChairOfAcademic")}
+											onClick={() => clear("instituteCom")}
 											className="bg-[#F26522] w-auto px-6 text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
 										>
 											ล้าง
 										</Button>
 										<Button
 											type="button"
-											onClick={() => handleDrawingSign("ChairOfAcademic")}
+											onClick={() => handleDrawingSign("instituteCom")}
 											className="bg-[#F26522] w-auto text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
 										>
 											บันทึก

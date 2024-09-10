@@ -63,7 +63,7 @@ export type IOutlineCommitteeForm = {
 	headSchoolID: number;
 	headSchoolSignUrl: string;
 	headSchool: IUser;
-	chairOfAcademicSignUrl:string;
+	instituteComSignUrl:string;
 	studentID: number;
 	student: IUser;
 	advisorID:number;
@@ -84,7 +84,7 @@ export type IExamCommitteeForm = {
 	headSchoolID: number;
 	headSchoolSignUrl: string;
 	headSchool: IUser;
-	chairOfAcademicSignUrl:string;
+	instituteComSignUrl:string;
 	studentID: number;
 	student: IUser;
 	advisorID:number;

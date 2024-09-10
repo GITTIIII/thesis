@@ -268,7 +268,7 @@ model ThesisOutlineCommitteeForm {
   advisorID   Int
   advisor     User @relation(fields: [advisorID], references: [id], name: "advisor")
   advisorSignUrl       String?   @db.LongText
-  chairOfAcademicSignUrl String? @db.LongText
+  instituteComSignUrl String? @db.LongText
   addNotes  Json?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
@@ -291,7 +291,7 @@ model ThesisExamCommitteeForm {
   advisorID            Int
   advisor              User     @relation(fields: [advisorID], references: [id], name: "advisor")
   advisorSignUrl       String?   @db.LongText
-  chairOfAcademicSignUrl String? @db.LongText
+  instituteComSignUrl String? @db.LongText
   addNotes             Json?   
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
