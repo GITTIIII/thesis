@@ -74,8 +74,7 @@ const EditCertificate = ({ user, certificateType }: { user: IUser | undefined; c
 		formData.append("file", values.file);
 		formData.append("certificateType", values.certificateType);
 		formData.append("description", values.description);
-		formData.append("id", values.id);
-		console.log(formData);
+		formData.append("id", values.id.toString());
 
 		const url = qs.stringifyUrl({
 			url: `/api/certificate`,
@@ -107,7 +106,7 @@ const EditCertificate = ({ user, certificateType }: { user: IUser | undefined; c
 		<>
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogTrigger asChild>
-					<Button variant="outline" className="h-max w-full my-2">
+					<Button variant="outline" className="h-max w-full my-2 shadow">
 						<Image
 							src={uploadBlack}
 							width={24}

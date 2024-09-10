@@ -25,7 +25,7 @@ export default function SignatureDialog(props: DialogProps) {
 	const handleDrawingSign = () => {
 		if (sigCanvas.current?.isEmpty()) {
 			toast({
-				title: "Error",
+				title: "เกิดข้อผิดพลาด",
 				description: "กรุณาวาดลายเซ็น",
 				variant: "destructive",
 			});

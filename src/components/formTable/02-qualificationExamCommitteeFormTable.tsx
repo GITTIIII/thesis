@@ -78,7 +78,7 @@ export default function QualificationExamCommitteeFormTable({ userData }: { user
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{formData
+						{formData && formData
 							?.filter(
 								(formData) =>
 									(userData?.role === "STUDENT" && userData?.id === formData?.student?.id) || userData?.role != "STUDENT"

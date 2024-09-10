@@ -61,7 +61,7 @@ export default function ThesisProgressFormTable({ userData }: { userData: IUser 
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{formData?.map((formData, index) => (
+						{formData && formData?.map((formData, index) => (
 							<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d] h-[52px]` : "" + `h-[52px]`}>
 								<TableCell className="text-center">{index + 1}</TableCell>
 								<TableCell className="text-center">{formData.trimester}</TableCell>

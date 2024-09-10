@@ -16,7 +16,15 @@ import EditCertificate from "./editCertificate";
 import { ICertificate } from "@/interface/certificate";
 import { IUser } from "@/interface/user";
 
-const UserCertificate = ({ user, certificateType }: { user: IUser | undefined; certificateType: string }) => {
+const UserCertificate = ({
+	user,
+	certificateType,
+	canUpload,
+}: {
+	user: IUser | undefined;
+	certificateType: string;
+	canUpload: boolean;
+}) => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const { toast } = useToast();
 	const { mutate } = useSWRConfig();
@@ -51,20 +59,21 @@ const UserCertificate = ({ user, certificateType }: { user: IUser | undefined; c
 
 	return (
 		<>
-			<EditCertificate user={user} certificateType={certificateType} />
+			{canUpload && <EditCertificate user={user} certificateType={certificateType} />}
 			{user &&
+				user.certificate &&
 				user.certificate
 					.filter((certificate: ICertificate) => certificate.certificateType === certificateType)
 					.map((certificate: ICertificate) => (
-						<div key={certificate.id} className="flex">
+						<div key={certificate.id}>
 							{certificate.fileName ? (
 								<>
-									<div className="w-full h-max my-2 flex justify-start items-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
+									<div className="w-full h-max mb-2 flex justify-start items-center rounded-md p-4 border border-input bg-background shadow hover:bg-accent hover:text-accent-foreground">
 										{certificate.fileType === "image/jpeg" && (
 											<Image
 												src={jpgIcon}
-												width={32}
-												height={32}
+												width={28}
+												height={28}
 												style={{
 													width: "auto",
 													height: "auto",
@@ -75,8 +84,8 @@ const UserCertificate = ({ user, certificateType }: { user: IUser | undefined; c
 										{certificate.fileType === "application/pdf" && (
 											<Image
 												src={pdfIcon}
-												width={32}
-												height={32}
+												width={28}
+												height={28}
 												style={{
 													width: "auto",
 													height: "auto",
@@ -87,8 +96,8 @@ const UserCertificate = ({ user, certificateType }: { user: IUser | undefined; c
 										{certificate.fileType === "image/png" && (
 											<Image
 												src={pngIcon}
-												width={32}
-												height={32}
+												width={28}
+												height={28}
 												style={{
 													width: "auto",
 													height: "auto",
@@ -100,20 +109,20 @@ const UserCertificate = ({ user, certificateType }: { user: IUser | undefined; c
 											href={`/api/getFileUrl/${certificate.fileName}`}
 											target="_blank"
 											rel="noopener noreferrer"
-											className="text-sm hover:text-[#F26522] hover:cursor-pointer hover:underline ml-2"
+											className="text-sm overflow-hidden hover:text-[#F26522] hover:cursor-pointer hover:underline ml-2"
 										>
 											{certificate.fileName}
 										</Link>
-										<div className="ml-auto">
+										{canUpload && (<div className="ml-auto">
 											<Button
 												disabled={loading}
 												type="button"
 												variant="outline"
 												onClick={() => handleDeleteCertificate(certificate.id)}
 											>
-												<Trash2 width={18} height={18} />
+												<Trash2 width={20} height={20} />
 											</Button>
-										</div>
+										</div>)}
 									</div>
 								</>
 							) : null}

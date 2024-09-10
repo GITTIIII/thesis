@@ -95,7 +95,18 @@ export async function PATCH(req: Request) {
 			dateExam,
 			studentID,
 
-			turnitinApproval,
+			has01Certificate,
+			has02Certificate,
+			has03Certificate,
+			hasOtherCertificate,
+
+			presentationFund,
+			presentationFundSignUrl,
+			researchProjectFund,
+			researchProjectFundSignUrl,
+			turnitinVerified,
+			turnitinVerifiedSignUrl,
+
 			advisorSignUrl,
 			dateAdvisor,
 
@@ -128,7 +139,17 @@ export async function PATCH(req: Request) {
 				dateExam: dateExam || existingThesisExamAppointmentForm.dateExam,
 				studentID: studentID === 0 ? existingThesisExamAppointmentForm.studentID : studentID,
 
-				turnitinApproval: turnitinApproval || existingThesisExamAppointmentForm.turnitinApproval,
+				has01Certificate: has01Certificate || existingThesisExamAppointmentForm.has01Certificate,
+				has02Certificate: has02Certificate || existingThesisExamAppointmentForm.has02Certificate,
+				has03Certificate: has03Certificate || existingThesisExamAppointmentForm.has03Certificate,
+				hasOtherCertificate: hasOtherCertificate || existingThesisExamAppointmentForm.hasOtherCertificate,
+
+				presentationFund: presentationFund || existingThesisExamAppointmentForm.presentationFund,
+				presentationFundSignUrl: presentationFundSignUrl || existingThesisExamAppointmentForm.presentationFundSignUrl,
+				researchProjectFund: researchProjectFund || existingThesisExamAppointmentForm.researchProjectFund,
+				researchProjectFundSignUrl: researchProjectFundSignUrl || existingThesisExamAppointmentForm.researchProjectFundSignUrl,
+				turnitinVerified: turnitinVerified || existingThesisExamAppointmentForm.turnitinVerified,
+				turnitinVerifiedSignUrl: turnitinVerifiedSignUrl || existingThesisExamAppointmentForm.turnitinVerifiedSignUrl,
 				advisorSignUrl: advisorSignUrl || existingThesisExamAppointmentForm.advisorSignUrl,
 				dateAdvisor: dateAdvisor || existingThesisExamAppointmentForm.dateAdvisor,
 

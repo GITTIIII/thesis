@@ -115,7 +115,7 @@ export default function Profile() {
 											: `(ป.เอก วารสารระดับนานาชาติ)`
 									}`}</label>
 									<div className="">
-										<UserCertificate user={user} certificateType="1" />
+										<UserCertificate canUpload={true} user={user} certificateType="1" />
 									</div>
 								</div>
 								<div>
@@ -125,7 +125,7 @@ export default function Profile() {
 											: `(ป.เอก นำเสนอผลงานระดับชาติ / นานาชาติ เเละ วารสารระดับนานาชาติ)`
 									}`}</label>
 									<div className="">
-										<UserCertificate user={user} certificateType="2" />
+										<UserCertificate canUpload={true} user={user} certificateType="2" />
 									</div>
 								</div>
 								<div>
@@ -133,19 +133,19 @@ export default function Profile() {
 										user?.degree == "Master" ? `(ป.โท ประชุมวิชาการระดับชาติ)` : `(ป.เอก วารสารระดับชาติ)`
 									}`}</label>
 									<div className="">
-										<UserCertificate user={user} certificateType="3" />
+										<UserCertificate canUpload={true} user={user} certificateType="3" />
 									</div>
 								</div>
 								<div>
 									<label>{`ทุนอื่นๆ`}</label>
 									<div className="">
-										<UserCertificate user={user} certificateType="4" />
+										<UserCertificate canUpload={true} user={user} certificateType="4" />
 									</div>
 								</div>
 								<div>
 									<label>{`ผลการตรวจสอบการคัดลอกวิทยานิพนธ์จากระบบ Turnitin`}</label>
 									<div className="">
-										<UserCertificate user={user} certificateType="5" />
+										<UserCertificate canUpload={true} user={user} certificateType="5" />
 									</div>
 								</div>
 							</div>

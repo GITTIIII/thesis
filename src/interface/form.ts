@@ -63,11 +63,7 @@ export type IOutlineCommitteeForm = {
 	headSchoolID: number;
 	headSchoolSignUrl: string;
 	headSchool: IUser;
-<<<<<<< HEAD
-	instituteComSignUrl:string;
-=======
-	chairOfAcademicSignUrl: string;
->>>>>>> 1008fb27e56ed08c61c3c54d0de46369275af97c
+	instituteComSignUrl: string;
 	studentID: number;
 	student: IUser;
 	advisorID: number;
@@ -88,11 +84,7 @@ export type IExamCommitteeForm = {
 	headSchoolID: number;
 	headSchoolSignUrl: string;
 	headSchool: IUser;
-<<<<<<< HEAD
-	instituteComSignUrl:string;
-=======
-	chairOfAcademicSignUrl: string;
->>>>>>> 1008fb27e56ed08c61c3c54d0de46369275af97c
+	instituteComSignUrl: string;
 	studentID: number;
 	student: IUser;
 	advisorID: number;
@@ -168,15 +160,26 @@ export type IThesisProgressForm = {
 export type IThesisExamAppointmentForm = {
 	id: number;
 	trimester: number;
-	academicYear: String;
-	gpa: String;
+	academicYear: string;
+	gpa: string;
 	credits: number;
 	date: Date;
 	dateExam: Date;
 	studentID: number;
 	student: IUser;
 
-	turnitinApproval: Boolean;
+	has01Certificate: boolean;
+	has02Certificate: boolean;
+	has03Certificate: boolean;
+	hasOtherCertificate: boolean;
+
+	presentationFund: boolean;
+	presentationFundSignUrl: string;
+	researchProjectFund: boolean;
+	researchProjectFundSignUrl: string;
+	turnitinVerified: boolean;
+	turnitinVerifiedSignUrl: string;
+
 	advisorSignUrl: string;
 	dateAdvisor: Date;
 

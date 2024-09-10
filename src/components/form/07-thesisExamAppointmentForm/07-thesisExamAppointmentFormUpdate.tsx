@@ -27,14 +27,25 @@ import useSWR, { mutate } from "swr";
 import InputForm from "@/components/inputForm/inputForm";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 import { Checkbox } from "@/components/ui/checkbox";
+import UserCertificate from "@/components/profile/userCertificate";
 
 const formSchema = z.object({
 	id: z.number(),
-	percentage: z.number(),
-	processPlan: z.array(z.any()),
-	assessmentResult: z.string(),
+	has01Certificate: z.boolean().default(false).optional(),
+	has02Certificate: z.boolean().default(false).optional(),
+	has03Certificate: z.boolean().default(false).optional(),
+	hasOtherCertificate: z.boolean().default(false).optional(),
+
+	presentationFund: z.boolean().default(false).optional(),
+	presentationFundSignUrl: z.string(),
+	researchProjectFund: z.boolean().default(false).optional(),
+	researchProjectFundSignUrl: z.string(),
+	turnitinVerified: z.boolean().default(false).optional(),
+	turnitinVerifiedSignUrl: z.string(),
+
 	advisorSignUrl: z.string(),
 	dateAdvisor: z.date().optional(),
+
 	headSchoolComment: z.string(),
 	headSchoolSignUrl: z.string(),
 	dateHeadSchool: z.date().optional(),
@@ -49,12 +60,29 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 	const { data: headSchool } = useSWR<IUser[]>("/api/getHeadSchool", fetcher);
 	const { data: formData } = useSWR<IThesisExamAppointmentForm>(formId ? `/api/get07FormById/${formId}` : "", fetcher);
 	const { data: approvedForm } = useSWR<IOutlineForm>(formData ? `/api/get05ApprovedFormByStdId/${formData?.student.id}` : "", fetcher);
-	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
+	const [openSign1, setOpenSign1] = useState(false);
+	const [openSign2, setOpenSign2] = useState(false);
 	const [openAdvisor, setOpenAdvisor] = useState(false);
 	const [openHeadSchool, setOpenHeadSchool] = useState(false);
 	const { toast } = useToast();
+
+	const handleDrawingSign1 = (signUrl: string) => {
+		reset({
+			...form.getValues(),
+			presentationFundSignUrl: signUrl,
+		});
+		setOpenSign1(false);
+	};
+
+	const handleDrawingSign2 = (signUrl: string) => {
+		reset({
+			...form.getValues(),
+			researchProjectFundSignUrl: signUrl,
+		});
+		setOpenSign2(false);
+	};
 
 	const handleDrawingSignAdvisor = (signUrl: string) => {
 		reset({
@@ -76,11 +104,21 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			id: 0,
-			percentage: 0,
-			processPlan: [],
-			assessmentResult: "",
+			has01Certificate: false,
+			has02Certificate: false,
+			has03Certificate: false,
+			hasOtherCertificate: false,
+
+			presentationFund: false,
+			presentationFundSignUrl: "",
+			researchProjectFund: false,
+			researchProjectFundSignUrl: "",
+			turnitinVerified: false,
+			turnitinVerifiedSignUrl: "",
+
 			advisorSignUrl: "",
 			dateAdvisor: undefined as unknown as Date,
+
 			headSchoolComment: "",
 			headSchoolSignUrl: "",
 			dateHeadSchool: undefined as unknown as Date,
@@ -103,11 +141,9 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 			setLoading(false);
 			return;
 		}
-		if (processPlans) {
-			values.processPlan = processPlans;
-		}
+
 		const url = qs.stringifyUrl({
-			url: `/api/06ThesisProgressForm`,
+			url: `/api/07ThesisExamAppointmentForm`,
 		});
 		const res = await axios.patch(url, values);
 		if (res.status === 200) {
@@ -118,7 +154,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 			});
 			setTimeout(() => {
 				form.reset();
-				mutate(`/api/get06FormById/${formId}`);
+				mutate(`/api/get07FormById/${formId}`);
 				router.refresh();
 				router.back();
 			}, 1000);
@@ -158,7 +194,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 						ย้อนกลับ
 					</Button>
 				</div>
-				<div className="flex flex-col justify-center md:flex-row">
+				<div className="flex flex-col justify-center md:flex-row mb-4">
 					{/* ฝั่งซ้าย */}
 					<div className="w-full">
 						<InputForm value={`${formData?.trimester} `} label="ภาคเรียน / Trimester" />
@@ -244,12 +280,400 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 
 					<hr className="่่justify-center mx-auto w-full sm:w-max my-5 border-t-2 border-[#eeee]" />
 				</div>
-				<div>
-					<Checkbox />
-					<Checkbox />
-					<Checkbox />
-					<Checkbox />
+				<div className="w-full xl:w-1/2 h-full mx-auto bg-white p-4 flex flex-col gap-4">
+					<h1 className="text-center font-semibold">นักศึกษาได้รับทุนการศึกษา ดังนี้ (เกณฑ์ขั้นต่ำพร้อมแนบเอกสารประกอบ)</h1>
+					<div>
+						<FormField
+							control={form.control}
+							name="has01Certificate"
+							render={({ field }) => (
+								<FormItem className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
+									<FormControl>
+										<Checkbox
+											disabled={formData?.has01Certificate}
+											checked={formData?.has01Certificate || field.value}
+											onCheckedChange={field.onChange}
+										/>
+									</FormControl>
+									<FormLabel>{`ทุน OROG ${
+										user?.degree == "Master"
+											? `(ป.โท วารสารระดับชาติ หรือ ประชุมวิชาการระดับนานาชาติ)`
+											: `(ป.เอก วารสารระดับนานาชาติ)`
+									}`}</FormLabel>
+								</FormItem>
+							)}
+						/>
+						<UserCertificate canUpload={false} user={formData?.student} certificateType="1" />
+					</div>
+					<div>
+						<FormField
+							control={form.control}
+							name="has02Certificate"
+							render={({ field }) => (
+								<FormItem className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
+									<FormControl>
+										<Checkbox
+											disabled={formData?.has02Certificate}
+											checked={formData?.has02Certificate || field.value}
+											onCheckedChange={field.onChange}
+										/>
+									</FormControl>
+									<FormLabel>{`ทุนกิตติบัณฑิต / ทุนวิเทศบัณฑิต ${
+										user?.degree == "Master"
+											? `(ป.โท ประชุมวิชาการระดับชาติ / นานาชาติ เเละ วารสารระดับชาติ / นานาชาติ)`
+											: `(ป.เอก นำเสนอผลงานระดับชาติ / นานาชาติ เเละ วารสารระดับนานาชาติ)`
+									}`}</FormLabel>
+								</FormItem>
+							)}
+						/>
+						<UserCertificate canUpload={false} user={formData?.student} certificateType="2" />
+					</div>
+					<div>
+						<FormField
+							control={form.control}
+							name="has03Certificate"
+							render={({ field }) => (
+								<FormItem className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
+									<FormControl>
+										<Checkbox
+											disabled={formData?.has03Certificate}
+											checked={formData?.has03Certificate || field.value}
+											onCheckedChange={field.onChange}
+										/>
+									</FormControl>
+									<FormLabel>{`ทุนศักยภาพ / ทุนเรียนดี / ทุนส่วนตัว ${
+										user?.degree == "Master" ? `(ป.โท ประชุมวิชาการระดับชาติ)` : `(ป.เอก วารสารระดับชาติ)`
+									}`}</FormLabel>
+								</FormItem>
+							)}
+						/>
+						<UserCertificate canUpload={false} user={formData?.student} certificateType="3" />
+					</div>
+					<div>
+						<FormField
+							control={form.control}
+							name="hasOtherCertificate"
+							render={({ field }) => (
+								<FormItem className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
+									<FormControl>
+										<Checkbox
+											disabled={formData?.hasOtherCertificate}
+											checked={formData?.hasOtherCertificate || field.value}
+											onCheckedChange={field.onChange}
+										/>
+									</FormControl>
+									<FormLabel>{`ทุนอื่นๆ`}</FormLabel>
+								</FormItem>
+							)}
+						/>
+						<UserCertificate canUpload={false} user={formData?.student} certificateType="4" />
+					</div>
+					<div className="flex flex-col justify-center items-center">
+						<FormField
+							control={form.control}
+							name="presentationFund"
+							render={({ field }) => (
+								<FormItem className="w-full flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow">
+									<FormControl>
+										<Checkbox
+											disabled={formData?.presentationFund}
+											checked={formData?.presentationFund || field.value}
+											onCheckedChange={field.onChange}
+										/>
+									</FormControl>
+									<FormLabel>ไม่ติดค้างการรายงานทุนนำเสนอผลงาน</FormLabel>
+								</FormItem>
+							)}
+						/>
+						<SignatureDialog
+							signUrl={formData?.presentationFundSignUrl || form.getValues("presentationFundSignUrl")}
+							onConfirm={handleDrawingSign1}
+							isOpen={openSign1}
+							setIsOpen={setOpenSign1}
+						/>
+						<Label>{`${formData?.student?.advisor?.prefix.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
+						<div className="w-max h-max flex mt-2 mb-4 items-center">
+							<Label className="mr-2">วันที่</Label>
+							{formData?.dateAdvisor ? (
+								<Label>
+									{formData?.dateAdvisor ? new Date(formData?.dateAdvisor).toLocaleDateString("th") : "__________"}
+								</Label>
+							) : (
+								<FormField
+									control={form.control}
+									name="dateAdvisor"
+									render={({ field }) => (
+										<div className="flex flex-row items-center justify-center">
+											<FormItem>
+												<DatePicker value={field.value} onDateChange={field.onChange} />
+												<FormMessage />
+											</FormItem>
+										</div>
+									)}
+								/>
+							)}
+						</div>
+						<FormField
+							control={form.control}
+							name="researchProjectFund"
+							render={({ field }) => (
+								<FormItem className="w-full flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 shadow">
+									<FormControl>
+										<Checkbox
+											disabled={formData?.researchProjectFund}
+											checked={formData?.researchProjectFund || field.value}
+											onCheckedChange={field.onChange}
+										/>
+									</FormControl>
+									<FormLabel>ไม่ติดค้างการรายงานทุนอุดหนุนโครงการวิจัยเพื่อทำวิทยานิพนธ์ระดับบัณฑิตศึกษา</FormLabel>
+								</FormItem>
+							)}
+						/>
+						<SignatureDialog
+							signUrl={formData?.researchProjectFundSignUrl || form.getValues("researchProjectFundSignUrl")}
+							onConfirm={handleDrawingSign2}
+							isOpen={openSign2}
+							setIsOpen={setOpenSign2}
+						/>
+						<Label>{`${formData?.student?.advisor?.prefix.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
+						<div className="w-max h-max flex mt-2 items-center">
+							<Label className="mr-2">วันที่</Label>
+							{formData?.dateAdvisor ? (
+								<Label>
+									{formData?.dateAdvisor ? new Date(formData?.dateAdvisor).toLocaleDateString("th") : "__________"}
+								</Label>
+							) : (
+								<FormField
+									control={form.control}
+									name="dateAdvisor"
+									render={({ field }) => (
+										<div className="flex flex-row items-center justify-center">
+											<FormItem>
+												<DatePicker value={field.value} onDateChange={field.onChange} />
+												<FormMessage />
+											</FormItem>
+										</div>
+									)}
+								/>
+							)}
+						</div>
+					</div>
+					<div>
+						<FormField
+							control={form.control}
+							name="turnitinVerified"
+							render={({ field }) => (
+								<FormItem className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
+									<FormControl>
+										<Checkbox
+											disabled={formData?.turnitinVerified}
+											checked={formData?.turnitinVerified || field.value}
+											onCheckedChange={field.onChange}
+										/>
+									</FormControl>
+									<FormLabel>
+										ผ่านการตรวจสอบการคัดลอกวิทยานิพนธ์จากระบบ Turnitin <span className="underline">พร้อมแนบเอกสาร</span>
+									</FormLabel>
+								</FormItem>
+							)}
+						/>
+						<UserCertificate canUpload={false} user={formData?.student} certificateType="5" />
+					</div>
+					<div className="w-full flex flex-col md:flex-row justify-center mt-4">
+						{/* อาจารย์ที่ปรึกษา */}
+						<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
+							<h1 className="mb-2 font-bold text-center">ความเห็นของอาจารย์ที่ปรึกษา</h1>
+							<FormField
+								control={form.control}
+								name="turnitinVerified"
+								render={({ field }) => (
+									<FormItem className="w-max flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
+										<FormControl>
+											<Checkbox
+												disabled={formData?.turnitinVerified}
+												checked={formData?.turnitinVerified || field.value}
+												onCheckedChange={field.onChange}
+											/>
+										</FormControl>
+										<FormLabel>ผ่านการตรวจสอบจากระบบ Turnitin</FormLabel>
+									</FormItem>
+								)}
+							/>
+							<SignatureDialog
+								signUrl={formData?.advisorSignUrl || form.getValues("advisorSignUrl")}
+								onConfirm={handleDrawingSignAdvisor}
+								isOpen={openAdvisor}
+								setIsOpen={setOpenAdvisor}
+							/>
+							<Label>{`${formData?.student?.advisor?.prefix.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
+
+							<div className="w-max h-max flex mt-2 items-center">
+								<Label className="mr-2">วันที่</Label>
+								{formData?.dateAdvisor ? (
+									<Label>
+										{formData?.dateAdvisor ? new Date(formData?.dateAdvisor).toLocaleDateString("th") : "__________"}
+									</Label>
+								) : (
+									<FormField
+										control={form.control}
+										name="dateAdvisor"
+										render={({ field }) => (
+											<div className="flex flex-row items-center justify-center">
+												<FormItem>
+													<DatePicker value={field.value} onDateChange={field.onChange} />
+													<FormMessage />
+												</FormItem>
+											</div>
+										)}
+									/>
+								)}
+							</div>
+						</div>
+
+						{/* หัวหน้าสาขา */}
+						{(user?.position === "HEAD_OF_SCHOOL" || user?.role === "SUPER_ADMIN") && (
+							<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
+								<h1 className="mb-2 font-bold text-center">ความเห็นของหัวหน้าสาขาวิชา</h1>
+								<FormField
+									control={form.control}
+									name="headSchoolComment"
+									render={({ field }) => (
+										<FormItem className="w-full h-max">
+											<FormControl>
+												<Input
+													className="text-sm p-4 w-full h-[50px] m-auto shadow rounded-lg mb-2"
+													placeholder="ความเห็น..."
+													{...field}
+												/>
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									)}
+								/>
+								<SignatureDialog
+									signUrl={formData?.headSchoolSignUrl || form.getValues("headSchoolSignUrl")}
+									onConfirm={handleDrawingSignHeadSchool}
+									isOpen={openHeadSchool}
+									setIsOpen={setOpenHeadSchool}
+								/>
+								{formData?.headSchoolID ? (
+									<Label>{`${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`}</Label>
+								) : (
+									<FormField
+										control={form.control}
+										name="headSchoolID"
+										render={({ field }) => (
+											<>
+												<Popover>
+													<PopoverTrigger
+														asChild
+														disabled={user?.position != "HEAD_OF_SCHOOL" && user?.role != "SUPER_ADMIN"}
+													>
+														<FormControl>
+															<Button
+																variant="outline"
+																role="combobox"
+																className={cn(
+																	"w-[180px] justify-between",
+																	!field.value && "text-muted-foreground"
+																)}
+															>
+																{field.value
+																	? `${
+																			headSchool?.find((headSchool) => headSchool.id === field.value)
+																				?.firstNameTH
+																	  } ${
+																			headSchool?.find((headSchool) => headSchool.id === field.value)
+																				?.lastNameTH
+																	  } `
+																	: "ค้นหาหัวหน้าสาขา"}
+																<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+															</Button>
+														</FormControl>
+													</PopoverTrigger>
+													<PopoverContent className="w-full p-0">
+														<Command>
+															<CommandInput placeholder="ค้นหาหัวหน้าสาขา" />
+															<CommandList>
+																<CommandEmpty>ไม่พบหัวหน้าสาขา</CommandEmpty>
+																{headSchool?.map((headSchool) => (
+																	<CommandItem
+																		value={`${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
+																		key={headSchool.id}
+																		onSelect={() => {
+																			form.setValue("headSchoolID", headSchool.id);
+																		}}
+																	>
+																		<Check
+																			className={cn(
+																				"mr-2 h-4 w-4",
+																				field.value === headSchool.id ? "opacity-100" : "opacity-0"
+																			)}
+																		/>
+																		{`${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
+																	</CommandItem>
+																))}
+															</CommandList>
+														</Command>
+													</PopoverContent>
+												</Popover>
+												<FormMessage />
+											</>
+										)}
+									/>
+								)}
+								<div className="w-max h-max flex mt-2 items-center">
+									<Label className="mr-2">วันที่</Label>
+									{formData?.dateHeadSchool ? (
+										<Label>
+											{formData?.dateHeadSchool
+												? new Date(formData?.dateHeadSchool).toLocaleDateString("th")
+												: "__________"}
+										</Label>
+									) : (
+										<FormField
+											control={form.control}
+											name="dateHeadSchool"
+											render={({ field }) => (
+												<div className="flex flex-row items-center justify-center">
+													<FormItem>
+														<DatePicker onDateChange={field.onChange} />
+														<FormMessage />
+													</FormItem>
+												</div>
+											)}
+										/>
+									)}
+								</div>
+							</div>
+						)}
+					</div>
 				</div>
+				{(formData?.student.advisorID == user?.id && user?.position === "ADVISOR") ||
+				(!formData?.headSchoolID && user?.position === "HEAD_OF_SCHOOL") ||
+				user?.role === "SUPER_ADMIN" ? (
+					<div className="w-full flex px-20 mt-4 lg:flex justify-center">
+						<Button
+							variant="outline"
+							type="reset"
+							onClick={() => router.back()}
+							className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436] md:ml-auto"
+						>
+							ยกเลิก
+						</Button>
+						<ConfirmDialog
+							lebel="ยืนยัน"
+							title="ยืนยัน"
+							loading={loading}
+							onConfirm={form.handleSubmit(onSubmit)}
+							onCancel={handleCancel}
+							isOpen={isOpen}
+							setIsOpen={setIsOpen}
+						>
+							ยืนยันเเล้วไม่สามารถเเก้ไขได้
+						</ConfirmDialog>
+					</div>
+				) : null}
 			</form>
 		</Form>
 	);

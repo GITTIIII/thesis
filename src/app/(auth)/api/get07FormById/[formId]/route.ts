@@ -41,6 +41,7 @@ export async function GET(req: NextApiRequest, context: { params: Params }) {
 							},
 						},
 					},
+					certificate: true,
 				},
 			},
 			headSchool: {

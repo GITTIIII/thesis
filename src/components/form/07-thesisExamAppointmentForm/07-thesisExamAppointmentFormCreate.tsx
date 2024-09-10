@@ -20,6 +20,10 @@ import InputForm from "@/components/inputForm/inputForm";
 import useSWR from "swr";
 import { Label } from "@/components/ui/label";
 import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
+import UserCertificate from "@/components/profile/userCertificate";
+import { Checkbox } from "@/components/ui/checkbox";
+import { CircleAlert } from "lucide-react";
+import Link from "next/link";
 
 const formSchema = z.object({
 	trimester: z
@@ -291,6 +295,79 @@ const ThesisExamAppointmentFormCreate = () => {
 					>
 						ยืนยันเเล้วไม่สามารถเเก้ไขได้
 					</ConfirmDialog>
+				</div>
+				<div className="w-1/2 h-full mx-auto bg-white p-4 flex flex-col gap-4">
+					<div>
+						<h1 className="text-center font-semibold">นักศึกษาได้รับทุนการศึกษา ดังนี้ (เกณฑ์ขั้นต่ำพร้อมแนบเอกสารประกอบ)</h1>
+						{user?.role == "STUDENT" && (
+							<div className="flex items-center justify-center text-sm">
+								<CircleAlert className="mr-1" />
+								สามารถอัพโหลดไฟล์เอกสารได้ที่หน้า
+								<Button variant="link" className="p-1 text-[#A67436]">
+									<Link href="/user/profile">โปรไฟล์</Link>
+								</Button>
+							</div>
+						)}
+					</div>
+					<div>
+						<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
+							<Checkbox disabled />
+							<FormLabel>{`ทุน OROG ${
+								user?.degree == "Master"
+									? `(ป.โท วารสารระดับชาติ หรือ ประชุมวิชาการระดับนานาชาติ)`
+									: `(ป.เอก วารสารระดับนานาชาติ)`
+							}`}</FormLabel>
+						</div>
+						<UserCertificate canUpload={false} user={user} certificateType="1" />
+					</div>
+					<div>
+						<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
+							<Checkbox disabled />
+							<FormLabel>{`ทุนกิตติบัณฑิต / ทุนวิเทศบัณฑิต ${
+								user?.degree == "Master"
+									? `(ป.โท ประชุมวิชาการระดับชาติ / นานาชาติ เเละ วารสารระดับชาติ / นานาชาติ)`
+									: `(ป.เอก นำเสนอผลงานระดับชาติ / นานาชาติ เเละ วารสารระดับนานาชาติ)`
+							}`}</FormLabel>
+						</div>
+						<UserCertificate canUpload={false} user={user} certificateType="2" />
+					</div>
+					<div>
+						<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
+							<Checkbox disabled />
+							<FormLabel>{`ทุนศักยภาพ / ทุนเรียนดี / ทุนส่วนตัว ${
+								user?.degree == "Master" ? `(ป.โท ประชุมวิชาการระดับชาติ)` : `(ป.เอก วารสารระดับชาติ)`
+							}`}</FormLabel>
+						</div>
+						<UserCertificate canUpload={false} user={user} certificateType="3" />
+					</div>
+					<div>
+						<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
+							<Checkbox disabled />
+
+							<FormLabel>{`ทุนอื่นๆ`}</FormLabel>
+						</div>
+						<UserCertificate canUpload={false} user={user} certificateType="4" />
+					</div>
+					<div>
+						<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
+							<Checkbox disabled />
+							<FormLabel>ไม่ติดค้างการรายงานทุนนำเสนอผลงาน</FormLabel>
+						</div>
+
+						<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
+							<Checkbox disabled />
+							<FormLabel>ไม่ติดค้างการรายงานทุนอุดหนุนโครงการวิจัยเพื่อทำวิทยานิพนธ์ระดับบัณฑิตศึกษา</FormLabel>
+						</div>
+					</div>
+					<div>
+						<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
+							<Checkbox disabled />
+							<FormLabel>
+								ผ่านการตรวจสอบการคัดลอกวิทยานิพนธ์จากระบบ Turnitin <span className="underline">พร้อมแนบเอกสาร</span>
+							</FormLabel>
+						</div>
+						<UserCertificate canUpload={false} user={user} certificateType="5" />
+					</div>
 				</div>
 			</form>
 		</Form>

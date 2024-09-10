@@ -61,7 +61,7 @@ export default function OutlineCommitteeFormTable({ userData }: { userData: IUse
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{formData
+						{formData && formData
 							?.filter(
 								(formData) =>
 									(userData?.role === "STUDENT" && userData?.id === formData?.student?.id) || userData?.role != "STUDENT"
