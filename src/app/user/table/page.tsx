@@ -1,12 +1,12 @@
 "use client";
 import Image from "next/image";
 import Stepper from "@/components/stepper/stepper";
-import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { IUser } from "@/interface/user";
+import { useSelectForm } from "@/hook/selectFormHook";
 import ComprehensiveExamCommitteeFormTable from "@/components/formTable/01-comprehensiveExamCommitteeFormTable";
 import QualificationExamCommitteeFormTable from "@/components/formTable/02-qualificationExamCommitteeFormTable";
 import OutlineExamCommitteeFormTable from "@/components/formTable/03-outlineExamCommitteeFormTable";
@@ -17,7 +17,7 @@ import ExamAppointmentFormTable from "@/components/formTable/07-thesisExamAppoin
 import studentFormPage from "@/../../public/asset/studentFormPage.png";
 import createForm from "@/../../public/asset/createForm.png";
 import useSWR from "swr";
-import { useSelectForm } from "@/hook/selectFormHook";
+import { FormPath } from "@/components/formPath/formPath";
 
 const labels: { [key: string]: string } = {
 	form01: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบประมวลความรู้",
@@ -27,16 +27,6 @@ const labels: { [key: string]: string } = {
 	form05: "แบบคำขออนุมัติโครงร่างวิทยานิพนธ์",
 	form06: "เเบบรายงานความคืบหน้าของการทำวิทยานิพนธ์",
 	form07: "คำขอนัดสอบวิทยานิพนธ์",
-};
-
-const formPath: { [key: string]: string } = {
-	form01: "comprehensiveExamCommitteeForm",
-	form02: "qualificationExamCommitteeForm",
-	form03: "thesisOutlineCommitteeForm",
-	form04: "thesisExamCommitteeForm",
-	form05: "outlineForm",
-	form06: "thesisProgressForm",
-	form07: "thesisExamAppointmentForm",
 };
 
 async function get05ApprovedForm() {
@@ -141,7 +131,7 @@ export default function StudentTablePage() {
 							type="button"
 							variant="default"
 							className="bg-[#F26522] w-auto text-md text-white rounded-md ml-auto sm:ml-4 border-[#F26522] mt-2 sm:mt-0"
-							onClick={() => router.push(`/user/form/${formPath[selectedForm]}/create`)}
+							onClick={() => router.push(`/user/form/${FormPath[selectedForm]}/create`)}
 							disabled={isDisabled}
 						>
 							<Image src={createForm} width={24} height={24} alt={"createForm"} className="mr-2" />

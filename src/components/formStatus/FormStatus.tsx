@@ -1,7 +1,4 @@
 const FormStatus = ({ formStatus }: { formStatus: string }) => {
-
-
-  
 	return (
 		<>
 			{formStatus != "" && formStatus === "อนุมัติ" ? (

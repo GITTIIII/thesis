@@ -55,7 +55,7 @@ const SignInForm = () => {
 				if (session?.user.role === "STUDENT") {
 					router.push("/user/student");
 				} else if (session?.user.role === "ADMIN") {
-					router.back();
+					router.push("/user/table");
 				} else if (session?.user.role === "SUPER_ADMIN") {
 					router.push("/user/superAdmin");
 				}

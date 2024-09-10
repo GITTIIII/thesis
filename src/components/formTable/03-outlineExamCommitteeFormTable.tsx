@@ -6,6 +6,9 @@ import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
 import { IOutlineCommitteeForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
+import { useSelectForm } from "@/hook/selectFormHook";
+import { FormPath } from "../formPath/formPath";
+
 
 async function get03FormByStdId(stdId: number | undefined) {
 	if (stdId) {
@@ -25,6 +28,7 @@ async function get03FormData() {
 
 export default function OutlineCommitteeFormTable({ userData }: { userData: IUser | undefined }) {
 	const [formData, setFormData] = useState<IOutlineCommitteeForm[]>();
+	const { selectedForm, setSelectedForm } = useSelectForm();
 
 	useEffect(() => {
 		async function fetchData() {
@@ -79,8 +83,8 @@ export default function OutlineCommitteeFormTable({ userData }: { userData: IUse
 									<TableCell className="text-[#F26522] text-center">
 										<Link href={
 												formData.headSchoolID || userData?.role.toString() == "STUDENT"
-													? `/user/form/thesisOutlineCommitteeForm/${formData.id}`
-													: `/user/form/thesisOutlineCommitteeForm/update/${formData.id}`
+													? `/user/form/${FormPath[selectedForm]}/${formData.id}`
+													: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
 											}>คลิกเพื่อดูเพิ่มเติม</Link>
 									</TableCell>
 									<TableCell className="text-center">

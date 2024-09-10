@@ -21,7 +21,7 @@ const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 				<Button
 					variant="outline"
 					type="reset"
-					onClick={() => router.push("/user/table")}
+					onClick={() => router.back()}
 					className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436]"
 				>
 					ย้อนกลับ
@@ -52,7 +52,9 @@ const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 						<CircleAlert className="mr-1" />
 						สามารถดูรายชื่อกรรมการที่ได้รับการรับรองเเล้ว
 						<Button variant="link" className="p-1 text-[#A67436]">
-							<Link href="/user/expertTable">คลิกที่นี่</Link>
+							<Link href="/user/expertTable" target="_blank">
+								คลิกที่นี่
+							</Link>
 						</Button>
 					</div>
 					<InputForm value={`${formData?.committeeName1}`} label="ประธานกรรมการ / Head of the Committee" />
@@ -77,7 +79,7 @@ const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 						<Label className="mb-2">
 							{formData?.headSchool
 								? `${formData?.headSchool?.prefix.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`
-								: "ไม่พบข้อมูล"}
+								: ""}
 						</Label>
 						<Label className="my-2">{`หัวหน้าสาขาวิชา ${
 							formData?.headSchool ? formData?.headSchool?.school?.schoolNameTH : ""
