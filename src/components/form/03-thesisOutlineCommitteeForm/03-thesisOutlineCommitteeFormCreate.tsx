@@ -134,7 +134,7 @@ const ThesisOutlineCommitteeFormCreate = () => {
 			setIsOpen(false);
 			const firstErrorField = errorKeys[0] as keyof typeof errors;
 			const firstErrorMessage = errors[firstErrorField]?.message;
-			console.log(errors)
+			console.log(errors);
 			toast({
 				title: "เกิดข้อผิดพลาด",
 				description: firstErrorMessage,
@@ -147,7 +147,7 @@ const ThesisOutlineCommitteeFormCreate = () => {
 		<Form {...form}>
 			<form onSubmit={handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">
 				<div className="flex flex-col justify-center md:flex-row">
-					<div className="w-full sm:2/4">
+					<div className="w-full ">
 						<h1 className="text-center font-semibold mb-2">รายละเอียดการสอบ</h1>
 						<FormField
 							control={form.control}
@@ -221,9 +221,9 @@ const ThesisOutlineCommitteeFormCreate = () => {
 						<h1 className="text-center font-semibold mb-2">รายละเอียดนักศึกษา</h1>
 						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Full Name" />
 						<InputForm value={`${user?.username}`} label="รหัสนักศึกษา / Student ID" />
-						<InputForm value={`${user?.school.schoolNameTH}`} label="สาขาวิชา / School" />
-						<InputForm value={`${user?.program.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${user?.program.programYear}`} label="ปีหลักสูตร / Program Year" />
+						<InputForm value={`${user?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${user?.program?.programNameTH}`} label="หลักสูตร / Program" />
+						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร / Program Year" />
 						<InputForm
 							value={`${user?.advisor.firstNameTH} ${user?.advisor.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษา / The Advisor"
@@ -239,7 +239,7 @@ const ThesisOutlineCommitteeFormCreate = () => {
 							))}
 					</div>
 
-					<div className="w-full sm:2/4">
+					<div className="w-full ">
 						<div className="w-full flex justify-center item-center flex-col h-auto border-2 rounded-lg py-5 border-[#eeee]">
 							<h1 className="text-center font-semibold mb-2">แบบคำขออนุมัติแต่งตั้งกรรมการสอบโครงร่างวิทบยานิพนธ์</h1>
 							<div className="flex items-center justify-center text-sm">

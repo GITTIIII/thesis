@@ -18,6 +18,7 @@ import studentFormPage from "@/../../public/asset/studentFormPage.png";
 import createForm from "@/../../public/asset/createForm.png";
 import useSWR from "swr";
 import { FormPath } from "@/components/formPath/formPath";
+import { IOutlineForm } from "@/interface/form";
 
 const labels: { [key: string]: string } = {
 	form01: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบประมวลความรู้",
@@ -29,15 +30,11 @@ const labels: { [key: string]: string } = {
 	form07: "คำขอนัดสอบวิทยานิพนธ์",
 };
 
-async function get05ApprovedForm() {
-	const res = await fetch("/api/get05ApprovedForm");
-	return res.json();
-}
-
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function StudentTablePage() {
-	const { data: userData } = useSWR<IUser>("/api/getCurrentUser", fetcher);
+	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
+	const { data: approvedForm } = useSWR<IOutlineForm>(`/api/get05ApprovedFormByStdId/${user?.id}`, fetcher);
 	const { selectedForm, setSelectedForm } = useSelectForm();
 	const [isDisabled, setIsDisabled] = useState(false);
 	const router = useRouter();
@@ -47,24 +44,19 @@ export default function StudentTablePage() {
 	};
 
 	useEffect(() => {
-		async function fetchData() {
-			const data = await get05ApprovedForm();
-			if (data && data.length != 0) {
-				setIsDisabled(true);
-			}
+		if (approvedForm && selectedForm === "form05" && user?.role === "STUDENT") {
+			setIsDisabled(true);
+		} else {
+			setIsDisabled(false);
 		}
-		if (selectedForm === "outlineForm" && userData?.role.toString() === "STUDENT") {
-			fetchData();
-		}
-		setIsDisabled(false);
-	}, [selectedForm, userData]);
+	}, [selectedForm, user, approvedForm]);
 
 	return (
 		<>
 			<div className="w-full h-full bg-transparent py-12 px-2 lg:px-28">
-				{userData?.role.toString() == "STUDENT" && (
+				{user?.role == "STUDENT" && (
 					<div className="w-full h-max p-4 flex justify-center items-center">
-						<Stepper step={userData?.formState ?? 0} />
+						<Stepper step={user?.formState ?? 0} />
 					</div>
 				)}
 				<div className="h-max w-full flex items-center text-2xl p-2">
@@ -80,53 +72,53 @@ export default function StudentTablePage() {
 						</SelectTrigger>
 						<SelectContent>
 							<SelectItem
-								// disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 1}
+								// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 1}
 								value="form01"
 							>
 								แบบคำขออนุมัติแต่งตั้งกรรมการสอบประมวลความรู้
 							</SelectItem>
 							<SelectItem
-								// disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 2}
+								// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 2}
 								value="form02"
 							>
 								แบบคำขออนุมัติแต่งตั้งกรรมการสอบวัดคุณสมบัติ
 							</SelectItem>
 							<SelectItem
-								// disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 3}
+								// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 3}
 								value="form03"
 							>
 								แบบคำขออนุมัติแต่งตั้งกรรมการสอบโครงร่างวิทยานิพนธ์
 							</SelectItem>
 
 							<SelectItem
-								// disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 4}
+								// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 4}
 								value="form04"
 							>
 								แบบคำขออนุมัติแต่งตั้งกรรมการสอบวิทยานิพนธ์
 							</SelectItem>
 
 							<SelectItem
-								// disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 5}
+								// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 5}
 								value="form05"
 							>
 								แบบคำขออนุมัติโครงร่างวิทยานิพนธ์
 							</SelectItem>
 
 							<SelectItem
-								// disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 6}
+								// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 6}
 								value="form06"
 							>
 								เเบบรายงานความคืบหน้าของการทำวิทยานิพนธ์
 							</SelectItem>
 							<SelectItem
-								// disabled={userData?.role.toString() == "STUDENT" && (userData?.formState ?? 0) < 7}
+								// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 7}
 								value="form07"
 							>
 								คำขอนัดสอบวิทยานิพนธ์
 							</SelectItem>
 						</SelectContent>
 					</Select>
-					{userData?.role.toString() === "STUDENT" && (
+					{user?.role === "STUDENT" && (
 						<Button
 							type="button"
 							variant="default"
@@ -140,13 +132,13 @@ export default function StudentTablePage() {
 					)}
 				</div>
 				<div className="h-full w-full flex items-center py-4">
-					{selectedForm == "form01" && <ComprehensiveExamCommitteeFormTable userData={userData} />}
-					{selectedForm == "form02" && <QualificationExamCommitteeFormTable userData={userData} />}
-					{selectedForm == "form03" && <OutlineExamCommitteeFormTable userData={userData} />}
-					{selectedForm == "form04" && <ThesisExamCommitteeFormTable userData={userData} />}
-					{selectedForm == "form05" && <OutlineFormTable userData={userData} />}
-					{selectedForm == "form06" && <ThesisProgressFormTable userData={userData} />}
-					{selectedForm == "form07" && <ExamAppointmentFormTable userData={userData} />}
+					{selectedForm == "form01" && <ComprehensiveExamCommitteeFormTable userData={user} />}
+					{selectedForm == "form02" && <QualificationExamCommitteeFormTable userData={user} />}
+					{selectedForm == "form03" && <OutlineExamCommitteeFormTable userData={user} />}
+					{selectedForm == "form04" && <ThesisExamCommitteeFormTable userData={user} />}
+					{selectedForm == "form05" && <OutlineFormTable userData={user} />}
+					{selectedForm == "form06" && <ThesisProgressFormTable userData={user} />}
+					{selectedForm == "form07" && <ExamAppointmentFormTable userData={user} />}
 				</div>
 			</div>
 		</>

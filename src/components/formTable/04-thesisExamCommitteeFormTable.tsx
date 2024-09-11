@@ -9,7 +9,6 @@ import { IUser } from "@/interface/user";
 import { useSelectForm } from "@/hook/selectFormHook";
 import { FormPath } from "../formPath/formPath";
 
-
 async function get04FormByStdId(stdId: number | undefined) {
 	if (stdId) {
 		const res = await fetch(`/api/get04FormByStdId/${stdId}`, {
@@ -32,7 +31,7 @@ export default function OutlineCommitteeFormTable({ userData }: { userData: IUse
 
 	useEffect(() => {
 		async function fetchData() {
-			if (userData?.role.toString() === "STUDENT") {
+			if (userData?.role === "STUDENT") {
 				const formData = await get04FormByStdId(userData?.id);
 				setFormData(formData);
 			} else {
@@ -62,11 +61,10 @@ export default function OutlineCommitteeFormTable({ userData }: { userData: IUse
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{formData
+						{formData && formData
 							?.filter(
 								(formData) =>
-									(userData?.role.toString() === "STUDENT" && userData?.id === formData?.student?.id) ||
-									userData?.role.toString() != "STUDENT"
+									(userData?.role === "STUDENT" && userData?.id === formData?.student?.id) || userData?.role != "STUDENT"
 							)
 							.map((formData, index) => (
 								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
@@ -81,11 +79,15 @@ export default function OutlineCommitteeFormTable({ userData }: { userData: IUse
 									<TableCell className="text-center">{formData.times}</TableCell>
 									<TableCell className="text-center">{new Date(formData.examDate).toLocaleDateString("th")}</TableCell>
 									<TableCell className="text-[#F26522] text-center">
-										<Link href={
-												userData?.role.toString() == "STUDENT"
+										<Link
+											href={
+												userData?.role == "STUDENT"
 													? `/user/form/${FormPath[selectedForm]}/${formData.id}`
 													: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
-											}>คลิกเพื่อดูเพิ่มเติม</Link>
+											}
+										>
+											คลิกเพื่อดูเพิ่มเติม
+										</Link>
 									</TableCell>
 									<TableCell className="text-center">
 										<Button disabled={!formData.headSchoolID} type="button" variant="outline">
@@ -101,4 +103,3 @@ export default function OutlineCommitteeFormTable({ userData }: { userData: IUse
 		</>
 	);
 }
- 

@@ -1,26 +1,29 @@
 "use client";
-import { unknown, z } from "zod";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useForm } from "react-hook-form";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
+import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useToast } from "@/components/ui/use-toast";
+import { IOutlineForm } from "@/interface/form";
+import { IUser } from "@/interface/user";
+import { DatePicker } from "@/components/datePicker/datePicker";
 import signature from "@/../../public/asset/signature.png";
-import ThesisProcessPlan from "../thesisProcessPlan";
 import Image from "next/image";
 import axios from "axios";
 import qs from "query-string";
-import { useToast } from "@/components/ui/use-toast";
 import InputForm from "@/components/inputForm/inputForm";
-import { IOutlineForm, IProcessPlan, IThesisProgressForm } from "@/interface/form";
-import { IUser } from "@/interface/user";
-import { Label } from "@/components/ui/label";
 import useSWR from "swr";
-import { DatePicker } from "@/components/datePicker/datePicker";
+import { Label } from "@/components/ui/label";
+import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
+import UserCertificate from "@/components/profile/userCertificate";
+import { Checkbox } from "@/components/ui/checkbox";
+import { CircleAlert } from "lucide-react";
+import Link from "next/link";
 
 const formSchema = z.object({
 	trimester: z
@@ -42,7 +45,7 @@ const ThesisExamAppointmentFormCreate = () => {
 	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const { data: approvedForm } = useSWR<IOutlineForm>(`/api/get05ApprovedFormByStdId/${user?.id}`, fetcher);
 	const [loading, setLoading] = useState(false);
-	const [isDisabled, setIsDisabled] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
 	const { toast } = useToast();
 
 	const form = useForm({
@@ -107,13 +110,18 @@ const ThesisExamAppointmentFormCreate = () => {
 		}
 	}, [user, reset]);
 
+	const handleCancel = () => {
+		setLoading(false);
+		setIsOpen(false);
+	};
+
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
 
-					<div className="w-full sm:2/4 ">
+					<div className="w-full">
 						<FormField
 							control={form.control}
 							name="trimester"
@@ -199,9 +207,9 @@ const ThesisExamAppointmentFormCreate = () => {
 						<h1 className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</h1>
 						<InputForm value={`${user?.username}`} label="รหัสนักศึกษา / Student ID" />
 						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Fullname" />
-						<InputForm value={`${user?.school.schoolNameTH}`} label="สาขาวิชา / School" />
-						<InputForm value={`${user?.program.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${user?.program.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+						<InputForm value={`${user?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${user?.program?.programNameTH}`} label="หลักสูตร / Program" />
+						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
 
 						<div className="flex flex-col items-center mb-6 justify-center">
 							<FormLabel className="font-normal">ระดับการศึกษา / Education Level</FormLabel>
@@ -220,7 +228,7 @@ const ThesisExamAppointmentFormCreate = () => {
 					<div className="border-l border-[#eeee]"></div>
 
 					{/* ฝั่งขวา */}
-					<div className="w-full sm:2/4">
+					<div className="w-full">
 						<div className="w-full sm:w-3/4 mx-auto flex flex-col item-center justify-center rounded-lg mb-2">
 							<InputForm
 								value={`${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`}
@@ -245,8 +253,8 @@ const ThesisExamAppointmentFormCreate = () => {
 								</FormItem>
 							</div>
 
-							<InputForm value={`${approvedForm?.thesisNameTH}`} label="ชื่อภาษาไทย / ThesisName(TH)" />
-							<InputForm value={`${approvedForm?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / ThesisName(EN)" />
+							<InputForm value={`${approvedForm?.thesisNameTH}`} label="ชื่อภาษาไทย / Thesis Topic (TH)" />
+							<InputForm value={`${approvedForm?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / Thesis Topic (EN)" />
 						</div>
 
 						<div className="flex flex-col items-center justify-center">
@@ -260,6 +268,9 @@ const ThesisExamAppointmentFormCreate = () => {
 									alt="signature"
 								/>
 							</Button>
+							<Label className="mt-2">{`วันที่ ${
+								form.getValues().date ? new Date(form.getValues().date).toLocaleDateString("th") : "__________"
+							}`}</Label>
 						</div>
 					</div>
 				</div>
@@ -273,14 +284,90 @@ const ThesisExamAppointmentFormCreate = () => {
 					>
 						ยกเลิก
 					</Button>
-					<Button
-						disabled={loading}
-						variant="outline"
-						type="submit"
-						className="bg-[#A67436] w-auto text-lg text-white rounded-xl ml-4 border-[#A67436] mr-4"
+					<ConfirmDialog
+						lebel="ยืนยัน"
+						title="ยืนยัน"
+						loading={loading}
+						onConfirm={form.handleSubmit(onSubmit)}
+						onCancel={handleCancel}
+						isOpen={isOpen}
+						setIsOpen={setIsOpen}
 					>
-						ยืนยัน
-					</Button>
+						ยืนยันเเล้วไม่สามารถเเก้ไขได้
+					</ConfirmDialog>
+				</div>
+				<div className="w-1/2 h-full mx-auto bg-white p-4 flex flex-col gap-4">
+					<div>
+						<h1 className="text-center font-semibold">นักศึกษาได้รับทุนการศึกษา ดังนี้ (เกณฑ์ขั้นต่ำพร้อมแนบเอกสารประกอบ)</h1>
+						{user?.role == "STUDENT" && (
+							<div className="flex items-center justify-center text-sm">
+								<CircleAlert className="mr-1" />
+								สามารถอัพโหลดไฟล์เอกสารได้ที่หน้า
+								<Button variant="link" className="p-1 text-[#A67436]">
+									<Link href="/user/profile">โปรไฟล์</Link>
+								</Button>
+							</div>
+						)}
+					</div>
+					<div>
+						<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
+							<Checkbox disabled />
+							<FormLabel>{`ทุน OROG ${
+								user?.degree == "Master"
+									? `(ป.โท วารสารระดับชาติ หรือ ประชุมวิชาการระดับนานาชาติ)`
+									: `(ป.เอก วารสารระดับนานาชาติ)`
+							}`}</FormLabel>
+						</div>
+						<UserCertificate canUpload={false} user={user} certificateType="1" />
+					</div>
+					<div>
+						<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
+							<Checkbox disabled />
+							<FormLabel>{`ทุนกิตติบัณฑิต / ทุนวิเทศบัณฑิต ${
+								user?.degree == "Master"
+									? `(ป.โท ประชุมวิชาการระดับชาติ / นานาชาติ เเละ วารสารระดับชาติ / นานาชาติ)`
+									: `(ป.เอก นำเสนอผลงานระดับชาติ / นานาชาติ เเละ วารสารระดับนานาชาติ)`
+							}`}</FormLabel>
+						</div>
+						<UserCertificate canUpload={false} user={user} certificateType="2" />
+					</div>
+					<div>
+						<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
+							<Checkbox disabled />
+							<FormLabel>{`ทุนศักยภาพ / ทุนเรียนดี / ทุนส่วนตัว ${
+								user?.degree == "Master" ? `(ป.โท ประชุมวิชาการระดับชาติ)` : `(ป.เอก วารสารระดับชาติ)`
+							}`}</FormLabel>
+						</div>
+						<UserCertificate canUpload={false} user={user} certificateType="3" />
+					</div>
+					<div>
+						<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
+							<Checkbox disabled />
+
+							<FormLabel>{`ทุนอื่นๆ`}</FormLabel>
+						</div>
+						<UserCertificate canUpload={false} user={user} certificateType="4" />
+					</div>
+					<div>
+						<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
+							<Checkbox disabled />
+							<FormLabel>ไม่ติดค้างการรายงานทุนนำเสนอผลงาน</FormLabel>
+						</div>
+
+						<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
+							<Checkbox disabled />
+							<FormLabel>ไม่ติดค้างการรายงานทุนอุดหนุนโครงการวิจัยเพื่อทำวิทยานิพนธ์ระดับบัณฑิตศึกษา</FormLabel>
+						</div>
+					</div>
+					<div>
+						<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
+							<Checkbox disabled />
+							<FormLabel>
+								ผ่านการตรวจสอบการคัดลอกวิทยานิพนธ์จากระบบ Turnitin <span className="underline">พร้อมแนบเอกสาร</span>
+							</FormLabel>
+						</div>
+						<UserCertificate canUpload={false} user={user} certificateType="5" />
+					</div>
 				</div>
 			</form>
 		</Form>

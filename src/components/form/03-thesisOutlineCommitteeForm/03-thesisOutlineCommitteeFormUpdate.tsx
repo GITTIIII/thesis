@@ -32,7 +32,7 @@ const formSchema = z.object({
 	headSchoolID: z.number().nullable(),
 	headSchoolSignUrl: z.string(),
 	advisorSignUrl: z.string(),
-	chairOfAcademicSignUrl: z.string(),
+	instituteComSignUrl: z.string(),
 	addNotes: z.array(
 		z.object({
 			committeeNumber: z.number().min(1, { message: "กรุณาระบุลำดับของกรรมการ / number of committee requierd" }),
@@ -45,13 +45,13 @@ const formSchema = z.object({
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
-	const { data: formData, isLoading } = useSWR<IOutlineCommitteeForm>(`/api/get03FormById/${formId}`, fetcher);
+	const { data: formData } = useSWR<IOutlineCommitteeForm>(`/api/get03FormById/${formId}`, fetcher);
 	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
 	const [openHeadSchoolDialog, setOpenHeadSchoolDialog] = useState(false);
 	const [openAdvisorDialog, setOpenAdvisorDialog] = useState(false);
-	const [openChairOfAcademicDialog, setOpenChairOfAcademicDialog] = useState(false);
+	const [openinstituteComDialog, setOpeninstituteComDialog] = useState(false);
 	const router = useRouter();
 	const { toast } = useToast();
 
@@ -62,42 +62,45 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 			headSchoolID: 0,
 			headSchoolSignUrl: formData?.headSchoolSignUrl || "",
 			advisorSignUrl: formData?.advisorSignUrl || "",
-			chairOfAcademicSignUrl: formData?.chairOfAcademicSignUrl || "",
+			instituteComSignUrl: formData?.instituteComSignUrl || "",
 			addNotes:
 				formData?.addNotes && formData.addNotes.length > 0
 					? formData.addNotes
 					: [{ committeeNumber: 0, meetingNumber: 0, date: null }],
 		},
 	});
-	const { control, handleSubmit, reset } = form;
+	const { control, reset } = form;
 	const { fields, append, remove } = useFieldArray({
 		control,
 		name: "addNotes",
 	});
 
-	const handleDrawingSignAdvisor = (signUrl: string) => {
+
+	const handleDrawingAdvisorSign = (signUrl: string) => {
 		reset({
 			...form.getValues(),
 			advisorSignUrl: signUrl,
 		});
 		setOpenAdvisorDialog(false);
+		console.log(signUrl);
 	};
-
-	const handleDrawingSignHeadSchool = (signUrl: string) => {
+	const handleDrawingInstituteComSign = (signUrl: string) => {
+		reset({
+			...form.getValues(),
+			instituteComSignUrl: signUrl,
+		});
+		setOpeninstituteComDialog(false);
+		console.log(signUrl);
+	};
+	const handleDrawingHeadSchoolSign = (signUrl: string) => {
 		reset({
 			...form.getValues(),
 			headSchoolSignUrl: signUrl,
 		});
 		setOpenHeadSchoolDialog(false);
+		console.log(signUrl);
 	};
 
-	const handleDrawingSignChairOfAcademic = (signUrl: string) => {
-		reset({
-			...form.getValues(),
-			chairOfAcademicSignUrl: signUrl,
-		});
-		setOpenChairOfAcademicDialog(false);
-	};
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		console.log("Submitting form with values:", values);
@@ -109,17 +112,27 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 				description: "ไม่พบลายเซ็นหัวหน้าสาขาวิชา",
 				variant: "destructive",
 			});
-			handleCancel()
+			handleCancel();
 			return;
 		}
 
-		if (!values.advisorSignUrl) {
+		if (user && user.position.toString()==="advisor"&&!values.advisorSignUrl) {
 			toast({
 				title: "Error",
 				description: "ไม่พบลายเซ็นอาจารย์ที่ปรึกษา",
 				variant: "destructive",
 			});
-			handleCancel()
+			setLoading(false);
+			return;
+		}
+		
+		if (user && user.position.toString()==="instituteCom" &&!values.instituteComSignUrl) {
+			toast({
+				title: "Error",
+				description: "ไม่พบลายเซ็นอาจารย์ที่ปรึกษา",
+				variant: "destructive",
+			});
+			handleCancel();
 			return;
 		}
 
@@ -160,13 +173,15 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 				headSchoolSignUrl: formData.headSchoolSignUrl || "",
 				advisorSignUrl: formData.advisorSignUrl || "",
 				headSchoolID: user && user.position.toString() === "HEAD_OF_SCHOOL" ? formData.headSchoolID || 0 : null,
-				chairOfAcademicSignUrl: formData.chairOfAcademicSignUrl || "",
+				instituteComSignUrl: formData.instituteComSignUrl || "",
 				addNotes:
 					formData.addNotes && formData.addNotes.length > 0
 						? formData.addNotes
 						: [{ committeeNumber: 0, meetingNumber: 0, date: null }],
 			});
+			console.log("after form reset: ",formData.addNotes);
 		}
+		
 		if (user && user.position.toString() === "HEAD_OF_SCHOOL") {
 			form.setValue("headSchoolID", user.id);
 		}
@@ -198,7 +213,7 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 				</div>
 				{/* ฝั่งซ้าย */}
 				<div className="flex flex-col justify-center md:flex-row ">
-					<div className="w-full sm:2/4">
+					<div className="w-full ">
 						<h1 className="text-center font-semibold mb-2">รายละเอียดการสอบ</h1>
 						<InputForm value={`${formData?.times}`} label="สอบครั้งที่ / Exam. No." />
 						<InputForm value={`${formData?.trimester}`} label="ภาคเรียน / Trimester" />
@@ -214,13 +229,13 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 							value={`${formData?.student.firstNameTH} ${formData?.student.lastNameTH}`}
 							label="ชื่อ-นามสกุล / Fullname"
 						/>
-						<InputForm value={`${formData?.student?.school.schoolNameTH}`} label="สาขาวิชา / School" />
-						<InputForm value={`${formData?.student?.program.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${formData?.student.program.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+						<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
+						<InputForm value={`${formData?.student.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
 					</div>
 
 					{/* ฝั่งขวา */}
-					<div className="w-full sm:2/4">
+					<div className="w-full ">
 						<h1 className="text-center font-semibold mb-2">ขอเสนอเเต่งตั้งคณะกรรมการสอบประมวลความรู้</h1>
 						<div className="flex items-center justify-center text-sm">
 							<CircleAlert className="mr-1" />
@@ -244,7 +259,7 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 							</div>
 							<SignatureDialog
 								signUrl={form.getValues("advisorSignUrl")}
-								onConfirm={handleDrawingSignAdvisor}
+								onConfirm={handleDrawingAdvisorSign}
 								isOpen={openAdvisorDialog}
 								setIsOpen={setOpenAdvisorDialog}
 							/>
@@ -254,11 +269,11 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 						<div className="w-full sm:1/3 flex flex-col items-center mb-6 justify-center">
 							<div className="text-center mb-2">
 								หัวหน้าสาขาวิชา / <br />
-								Chair of the School
+								Head of the School
 							</div>
 							<SignatureDialog
 								signUrl={form.getValues("headSchoolSignUrl")}
-								onConfirm={handleDrawingSignHeadSchool}
+								onConfirm={handleDrawingHeadSchoolSign}
 								isOpen={openHeadSchoolDialog}
 								setIsOpen={setOpenHeadSchoolDialog}
 							/>
@@ -271,10 +286,10 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 								Associate Dean for Academic Affairs
 							</div>
 							<SignatureDialog
-								signUrl={form.getValues("chairOfAcademicSignUrl")}
-								onConfirm={handleDrawingSignChairOfAcademic}
-								isOpen={openChairOfAcademicDialog}
-								setIsOpen={setOpenChairOfAcademicDialog}
+								signUrl={form.getValues("instituteComSignUrl")}
+								onConfirm={handleDrawingInstituteComSign}
+								isOpen={openinstituteComDialog}
+								setIsOpen={setOpeninstituteComDialog}
 							/>
 						</div>
 					</div>
@@ -354,14 +369,14 @@ const OutlineCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 												name={`addNotes.${index}.date`}
 												render={({ field }) => (
 													<div className="flex items-center space-x-2 my-2">
-														<FormLabel>เมื่อวันที่</FormLabel>
-														<DatePicker
-															onDateChange={field.onChange}
-															value={field.value ? new Date(field.value) : undefined}
-														/>
+													<FormLabel>เมื่อวันที่</FormLabel>
+													<DatePicker
+														onDateChange={(date) => field.onChange(date)} 
+														value={field.value ? field.value : undefined}
+													/>
 													</div>
 												)}
-											/>
+												/>
 											<Button
 												type="button"
 												onClick={() => remove(index)}

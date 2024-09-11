@@ -48,7 +48,7 @@ export default function ComprehensiveExamCommitteeFormTable({ userData }: { user
 
 	useEffect(() => {
 		async function fetchData() {
-			if (userData?.role.toString() === "STUDENT") {
+			if (userData?.role === "STUDENT") {
 				const formData = await get01FormByStdId(userData?.id);
 				setFormData(formData);
 			} else {
@@ -78,50 +78,51 @@ export default function ComprehensiveExamCommitteeFormTable({ userData }: { user
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{formData
-							?.filter(
-								(formData) =>
-									(userData?.role.toString() === "STUDENT" && userData?.id === formData?.student?.id) ||
-									userData?.role.toString() != "STUDENT"
-							)
-							.map((formData, index) => (
-								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
-									<TableCell className="text-center">{index + 1}</TableCell>
-									<TableCell className="text-center">{new Date(formData.date).toLocaleDateString("th")}</TableCell>
-									<TableCell className="text-center">{formData.trimester}</TableCell>
-									<TableCell className="text-center">{formData.academicYear}</TableCell>
-									<TableCell className="text-center">{formData?.student.username}</TableCell>
-									<TableCell className="text-center">
-										{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
-									</TableCell>
-									<TableCell className="text-center">{formData.times}</TableCell>
-									<TableCell className="text-center">{new Date(formData.examDay).toLocaleDateString("th")}</TableCell>
-									<TableCell className="text-[#F26522] text-center">
-										<Link
-											href={
-												formData.headSchoolID || userData?.role.toString() == "STUDENT"
-													? `/user/form/${FormPath[selectedForm]}/${formData.id}`
-													: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
-											}
-										>
-											คลิกเพื่อดูเพิ่มเติม
-										</Link>
-									</TableCell>
-									<TableCell className="text-center">
-										{formData && (
-											<Button
-												onClick={() => handleDownload(formData)}
-												disabled={!formData.headSchoolID}
-												type="button"
-												variant="outline"
+						{formData &&
+							formData
+								?.filter(
+									(formData) =>
+										(userData?.role === "STUDENT" && userData?.id === formData?.student?.id) ||
+										userData?.role != "STUDENT"
+								)
+								.map((formData, index) => (
+									<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
+										<TableCell className="text-center">{index + 1}</TableCell>
+										<TableCell className="text-center">{new Date(formData.date).toLocaleDateString("th")}</TableCell>
+										<TableCell className="text-center">{formData.trimester}</TableCell>
+										<TableCell className="text-center">{formData.academicYear}</TableCell>
+										<TableCell className="text-center">{formData?.student.username}</TableCell>
+										<TableCell className="text-center">
+											{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
+										</TableCell>
+										<TableCell className="text-center">{formData.times}</TableCell>
+										<TableCell className="text-center">{new Date(formData.examDay).toLocaleDateString("th")}</TableCell>
+										<TableCell className="text-[#F26522] text-center">
+											<Link
+												href={
+													formData.headSchoolID || userData?.role == "STUDENT"
+														? `/user/form/${FormPath[selectedForm]}/${formData.id}`
+														: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
+												}
 											>
-												<DownloadIcon className="mr-2" />
-												ดาวน์โหลด
-											</Button>
-										)}
-									</TableCell>
-								</TableRow>
-							))}
+												คลิกเพื่อดูเพิ่มเติม
+											</Link>
+										</TableCell>
+										<TableCell className="text-center">
+											{formData && (
+												<Button
+													onClick={() => handleDownload(formData)}
+													disabled={!formData.headSchoolID}
+													type="button"
+													variant="outline"
+												>
+													<DownloadIcon className="mr-2" />
+													ดาวน์โหลด
+												</Button>
+											)}
+										</TableCell>
+									</TableRow>
+								))}
 					</TableBody>
 				</Table>
 			</div>
