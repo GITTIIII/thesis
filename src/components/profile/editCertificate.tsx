@@ -106,7 +106,7 @@ const EditCertificate = ({ user, certificateType }: { user: IUser | undefined; c
 		<>
 			<Dialog open={open} onOpenChange={setOpen}>
 				<DialogTrigger asChild>
-					<Button variant="outline" className="h-max w-full my-2 shadow">
+					<Button variant="outline" className="h-max w-full my-2">
 						<Image
 							src={uploadBlack}
 							width={24}

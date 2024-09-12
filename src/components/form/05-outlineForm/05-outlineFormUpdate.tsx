@@ -281,18 +281,10 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 						/>
 						<div className="flex flex-col items-center mb-6 justify-center">
 							<FormLabel>ลายเซ็น / Signature</FormLabel>
-							<Button variant="outline" type="button" className="w-60 my-4 h-max">
-								<Image
-									src={formData?.student.signatureUrl ? formData?.student.signatureUrl : signature}
-									width={200}
-									height={100}
-									style={{
-										width: "auto",
-										height: "auto",
-									}}
-									alt="signature"
-								/>
-							</Button>
+							<SignatureDialog
+								disable={false}
+								signUrl={formData?.student.signatureUrl ? formData?.student.signatureUrl : ""}
+							/>
 							<Label>{`วันที่ ${formData?.date ? new Date(formData?.date).toLocaleDateString("th") : "__________"}`}</Label>
 						</div>
 					</div>
@@ -408,6 +400,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 							)}
 						/>
 						<SignatureDialog
+							disable={formData?.outlineCommitteeSignUrl ? true : false}
 							signUrl={formData?.outlineCommitteeSignUrl || form.getValues("outlineCommitteeSignUrl")}
 							onConfirm={handleDrawingSignOutline}
 							isOpen={openOutline}
@@ -598,6 +591,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 								)}
 							/>
 							<SignatureDialog
+								disable={false}
 								signUrl={formData?.instituteCommitteeSignUrl || form.getValues("instituteCommitteeSignUrl")}
 								onConfirm={handleDrawingSignInstitute}
 								isOpen={openInstitute}

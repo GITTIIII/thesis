@@ -10,6 +10,7 @@ import { IOutlineForm } from "@/interface/form";
 import ThesisProcessPlan from "../thesisProcessPlan";
 import { Input } from "@/components/ui/input";
 import useSWR from "swr";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -75,18 +76,10 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 						/>
 						<div className="flex flex-col items-center mt-6 justify-center">
 							<Label>ลายเซ็น / Signature</Label>
-							<Button variant="outline" type="button" className="w-60 my-4 h-max">
-								<Image
-									src={formData?.student.signatureUrl ? formData?.student.signatureUrl : signature}
-									width={200}
-									height={100}
-									style={{
-										width: "auto",
-										height: "auto",
-									}}
-									alt="signature"
-								/>
-							</Button>
+							<SignatureDialog
+								disable={false}
+								signUrl={formData?.student.signatureUrl ? formData?.student.signatureUrl : ""}
+							/>
 							<Label className="mt-2">{`วันที่ ${
 								formData?.date ? new Date(formData?.date).toLocaleDateString("th") : "__________"
 							}`}</Label>
@@ -123,18 +116,7 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 								defaultValue={formData?.outlineCommitteeComment}
 							/>
 						</div>
-						<Button variant="outline" type="button" className="w-60 my-4 h-max">
-							<Image
-								src={formData?.outlineCommitteeSignUrl ? formData?.outlineCommitteeSignUrl : signature}
-								width={100}
-								height={100}
-								style={{
-									width: "auto",
-									height: "auto",
-								}}
-								alt="signature"
-							/>
-						</Button>
+						<SignatureDialog signUrl={formData?.outlineCommitteeSignUrl ? formData?.outlineCommitteeSignUrl : ""} disable={true} />
 						<Label className="mb-2">
 							{formData?.outlineCommittee
 								? `${formData?.outlineCommittee.prefix}${formData?.outlineCommittee.firstName} ${formData?.outlineCommittee.lastName}`
@@ -172,18 +154,7 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 								defaultValue={formData?.instituteCommitteeComment}
 							/>
 						</div>
-						<Button variant="outline" type="button" className="w-60 my-4 h-max">
-							<Image
-								src={formData?.instituteCommitteeSignUrl ? formData?.instituteCommitteeSignUrl : signature}
-								width={100}
-								height={100}
-								style={{
-									width: "auto",
-									height: "auto",
-								}}
-								alt="signature"
-							/>
-						</Button>
+						<SignatureDialog signUrl={formData?.instituteCommitteeSignUrl ? formData?.instituteCommitteeSignUrl : ""} disable={true} />
 						<Label className="mb-2">
 							{formData?.instituteCommittee
 								? `${formData?.instituteCommittee.prefix.prefixTH}${formData?.instituteCommittee.firstNameTH} ${formData?.instituteCommittee.lastNameTH}`

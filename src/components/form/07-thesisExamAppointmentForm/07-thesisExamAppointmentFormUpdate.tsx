@@ -25,9 +25,9 @@ import axios from "axios";
 import qs from "query-string";
 import useSWR, { mutate } from "swr";
 import InputForm from "@/components/inputForm/inputForm";
-import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 import { Checkbox } from "@/components/ui/checkbox";
 import UserCertificate from "@/components/profile/userCertificate";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const formSchema = z.object({
 	id: z.number(),
@@ -59,7 +59,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const { data: headSchool } = useSWR<IUser[]>("/api/getHeadSchool", fetcher);
 	const { data: formData } = useSWR<IThesisExamAppointmentForm>(formId ? `/api/get07FormById/${formId}` : "", fetcher);
-	const { data: approvedForm } = useSWR<IOutlineForm>(formData ? `/api/get05ApprovedFormByStdId/${formData?.student.id}` : "", fetcher);
+	const { data: approvedForm } = useSWR<IOutlineForm>(formData ? `/api/get05ApprovedFormByStdId/${formData?.studentID}` : "", fetcher);
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
 	const [openSign1, setOpenSign1] = useState(false);
@@ -386,6 +386,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 							)}
 						/>
 						<SignatureDialog
+							disable={false}
 							signUrl={formData?.presentationFundSignUrl || form.getValues("presentationFundSignUrl")}
 							onConfirm={handleDrawingSign1}
 							isOpen={openSign1}
@@ -430,6 +431,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 							)}
 						/>
 						<SignatureDialog
+							disable={false}
 							signUrl={formData?.researchProjectFundSignUrl || form.getValues("researchProjectFundSignUrl")}
 							onConfirm={handleDrawingSign2}
 							isOpen={openSign2}
@@ -500,6 +502,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 								)}
 							/>
 							<SignatureDialog
+								disable={formData?.advisorSignUrl ? true : false}
 								signUrl={formData?.advisorSignUrl || form.getValues("advisorSignUrl")}
 								onConfirm={handleDrawingSignAdvisor}
 								isOpen={openAdvisor}
@@ -551,6 +554,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 									)}
 								/>
 								<SignatureDialog
+									disable={formData?.headSchoolSignUrl ? true : false}
 									signUrl={formData?.headSchoolSignUrl || form.getValues("headSchoolSignUrl")}
 									onConfirm={handleDrawingSignHeadSchool}
 									isOpen={openHeadSchool}

@@ -21,6 +21,7 @@ import axios from "axios";
 import qs from "query-string";
 import InputForm from "@/components/inputForm/inputForm";
 import useSWR from "swr";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const formSchema = z.object({
 	times: z.number().min(1, { message: "กรุณาระบุครั้ง / Times requierd" }),
@@ -330,15 +331,10 @@ const ThesisProgressFormCreate = () => {
 						</div>
 						<div className="flex flex-col items-center mt-6 mb-6 justify-center">
 							<FormLabel>ลายเซ็น / Signature</FormLabel>
-							<Button variant="outline" type="button" className="w-60 mt-4 h-max">
-								<Image
-									src={user?.signatureUrl ? user?.signatureUrl : signature}
-									width={100}
-									height={100}
-									style={{ width: "auto", height: "auto" }}
-									alt="signature"
-								/>
-							</Button>
+							<SignatureDialog
+								signUrl={user?.signatureUrl && user.role === "STUDENT" ? user?.signatureUrl : ""}
+								disable={true}
+							/>
 							<Label className="mt-2">{`วันที่ ${
 								form.getValues().date ? new Date(form.getValues().date).toLocaleDateString("th") : "__________"
 							}`}</Label>
