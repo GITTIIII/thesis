@@ -551,10 +551,10 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 												>
 													{field.value
 														? `${
-																headSchool?.find((headSchool) => headschool?.id === field.value)
+																headSchool?.find((headSchool) => headSchool?.id === field.value)
 																	?.firstNameTH
 														  } ${
-																headSchool?.find((headSchool) => headschool?.id === field.value)?.lastNameTH
+																headSchool?.find((headSchool) => headSchool?.id === field.value)?.lastNameTH
 														  } `
 														: "ค้นหาหัวหน้าสาขา"}
 													<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -568,19 +568,19 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 													<CommandEmpty>ไม่พบหัวหน้าสาขา</CommandEmpty>
 													{headSchool?.map((headSchool) => (
 														<CommandItem
-															value={`${headschool?.firstNameTH} ${headschool?.lastNameTH}`}
-															key={headschool?.id}
+															value={`${headSchool?.firstNameTH} ${headSchool?.lastNameTH}`}
+															key={headSchool?.id}
 															onSelect={() => {
-																form.setValue("headSchoolID", headschool?.id);
+																form.setValue("headSchoolID", headSchool?.id);
 															}}
 														>
 															<Check
 																className={cn(
 																	"mr-2 h-4 w-4",
-																	field.value === headschool?.id ? "opacity-100" : "opacity-0"
+																	field.value === headSchool?.id ? "opacity-100" : "opacity-0"
 																)}
 															/>
-															{`${headschool?.firstNameTH} ${headschool?.lastNameTH}`}
+															{`${headSchool?.firstNameTH} ${headSchool?.lastNameTH}`}
 														</CommandItem>
 													))}
 												</CommandList>

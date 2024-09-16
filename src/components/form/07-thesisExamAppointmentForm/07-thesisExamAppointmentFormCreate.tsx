@@ -24,6 +24,7 @@ import UserCertificate from "@/components/profile/userCertificate";
 import { Checkbox } from "@/components/ui/checkbox";
 import { CircleAlert } from "lucide-react";
 import Link from "next/link";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const formSchema = z.object({
 	trimester: z
@@ -63,14 +64,23 @@ const ThesisExamAppointmentFormCreate = () => {
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
-		console.log(values);
+
 		if (!user?.signatureUrl) {
 			toast({
-				title: "Error",
+				title: "เกิดข้อผิดพลาด",
 				description: "ไม่พบลายเซ็น",
 				variant: "destructive",
 			});
-			setLoading(false);
+			handleCancel();
+			return;
+		}
+		if (user?.certificate?.length == 0) {
+			toast({
+				title: "เกิดข้อผิดพลาด",
+				description: "นักศึกษายังไม่ได้อัพโหลดไฟล์",
+				variant: "destructive",
+			});
+			handleCancel();
 			return;
 		}
 		const url = qs.stringifyUrl({
@@ -259,15 +269,10 @@ const ThesisExamAppointmentFormCreate = () => {
 
 						<div className="flex flex-col items-center justify-center">
 							<FormLabel>ลายเซ็น / Signature</FormLabel>
-							<Button variant="outline" type="button" className="w-60 mt-4 h-max">
-								<Image
-									src={user?.signatureUrl ? user?.signatureUrl : signature}
-									width={100}
-									height={100}
-									style={{ width: "auto", height: "auto" }}
-									alt="signature"
-								/>
-							</Button>
+							<SignatureDialog
+								signUrl={user?.signatureUrl && user.role === "STUDENT" ? user?.signatureUrl : ""}
+								disable={true}
+							/>
 							<Label className="mt-2">{`วันที่ ${
 								form.getValues().date ? new Date(form.getValues().date).toLocaleDateString("th") : "__________"
 							}`}</Label>
@@ -304,68 +309,56 @@ const ThesisExamAppointmentFormCreate = () => {
 								<CircleAlert className="mr-1" />
 								สามารถอัพโหลดไฟล์เอกสารได้ที่หน้า
 								<Button variant="link" className="p-1 text-[#A67436]">
-									<Link href="/user/profile">โปรไฟล์</Link>
+									<Link href="/user/profile" target="_blank">
+										โปรไฟล์
+									</Link>
 								</Button>
 							</div>
 						)}
 					</div>
 					<div>
-						<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
-							<Checkbox disabled />
-							<FormLabel>{`ทุน OROG ${
-								user?.degree == "Master"
-									? `(ป.โท วารสารระดับชาติ หรือ ประชุมวิชาการระดับนานาชาติ)`
-									: `(ป.เอก วารสารระดับนานาชาติ)`
-							}`}</FormLabel>
-						</div>
+						<FormLabel className="font-bold">{`ทุน OROG ${
+							user?.degree == "Master"
+								? `(ป.โท วารสารระดับชาติ หรือ ประชุมวิชาการระดับนานาชาติ)`
+								: `(ป.เอก วารสารระดับนานาชาติ)`
+						}`}</FormLabel>
+
 						<UserCertificate canUpload={false} user={user} certificateType="1" />
 					</div>
 					<div>
-						<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
-							<Checkbox disabled />
-							<FormLabel>{`ทุนกิตติบัณฑิต / ทุนวิเทศบัณฑิต ${
-								user?.degree == "Master"
-									? `(ป.โท ประชุมวิชาการระดับชาติ / นานาชาติ เเละ วารสารระดับชาติ / นานาชาติ)`
-									: `(ป.เอก นำเสนอผลงานระดับชาติ / นานาชาติ เเละ วารสารระดับนานาชาติ)`
-							}`}</FormLabel>
-						</div>
+						<FormLabel className="font-bold">{`ทุนกิตติบัณฑิต / ทุนวิเทศบัณฑิต ${
+							user?.degree == "Master"
+								? `(ป.โท ประชุมวิชาการระดับชาติ / นานาชาติ เเละ วารสารระดับชาติ / นานาชาติ)`
+								: `(ป.เอก นำเสนอผลงานระดับชาติ / นานาชาติ เเละ วารสารระดับนานาชาติ)`
+						}`}</FormLabel>
+
 						<UserCertificate canUpload={false} user={user} certificateType="2" />
 					</div>
 					<div>
-						<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
-							<Checkbox disabled />
-							<FormLabel>{`ทุนศักยภาพ / ทุนเรียนดี / ทุนส่วนตัว ${
-								user?.degree == "Master" ? `(ป.โท ประชุมวิชาการระดับชาติ)` : `(ป.เอก วารสารระดับชาติ)`
-							}`}</FormLabel>
-						</div>
+						<FormLabel className="font-bold">{`ทุนศักยภาพ / ทุนเรียนดี / ทุนส่วนตัว ${
+							user?.degree == "Master" ? `(ป.โท ประชุมวิชาการระดับชาติ)` : `(ป.เอก วารสารระดับชาติ)`
+						}`}</FormLabel>
+
 						<UserCertificate canUpload={false} user={user} certificateType="3" />
 					</div>
 					<div>
-						<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
-							<Checkbox disabled />
+						<FormLabel className="font-bold">{`ทุนอื่นๆ`}</FormLabel>
 
-							<FormLabel>{`ทุนอื่นๆ`}</FormLabel>
-						</div>
 						<UserCertificate canUpload={false} user={user} certificateType="4" />
 					</div>
 					<div>
-						<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
-							<Checkbox disabled />
-							<FormLabel>ไม่ติดค้างการรายงานทุนนำเสนอผลงาน</FormLabel>
-						</div>
-
-						<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
-							<Checkbox disabled />
-							<FormLabel>ไม่ติดค้างการรายงานทุนอุดหนุนโครงการวิจัยเพื่อทำวิทยานิพนธ์ระดับบัณฑิตศึกษา</FormLabel>
-						</div>
+						<FormLabel className="font-bold">ไม่ติดค้างการรายงานทุนนำเสนอผลงาน</FormLabel>
 					</div>
 					<div>
-						<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
-							<Checkbox disabled />
-							<FormLabel>
-								ผ่านการตรวจสอบการคัดลอกวิทยานิพนธ์จากระบบ Turnitin <span className="underline">พร้อมแนบเอกสาร</span>
-							</FormLabel>
-						</div>
+						<FormLabel className="font-bold">
+							ไม่ติดค้างการรายงานทุนอุดหนุนโครงการวิจัยเพื่อทำวิทยานิพนธ์ระดับบัณฑิตศึกษา
+						</FormLabel>
+					</div>
+					<div>
+						<FormLabel className="font-bold">
+							ผ่านการตรวจสอบการคัดลอกวิทยานิพนธ์จากระบบ Turnitin <span className="underline">พร้อมแนบเอกสาร</span>
+						</FormLabel>
+
 						<UserCertificate canUpload={false} user={user} certificateType="5" />
 					</div>
 				</div>

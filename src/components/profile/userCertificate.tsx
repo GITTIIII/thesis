@@ -57,18 +57,18 @@ const UserCertificate = ({
 		}
 	};
 
+	const filteredCertificates =
+		user?.certificate?.filter((certificate: ICertificate) => certificate.certificateType === certificateType) || [];
+
 	return (
 		<>
 			{canUpload && <EditCertificate user={user} certificateType={certificateType} />}
-			{user &&
-				user.certificate &&
-				user.certificate
-					.filter((certificate: ICertificate) => certificate.certificateType === certificateType)
-					.map((certificate: ICertificate) => (
+			{user && user.certificate && filteredCertificates.length > 0
+				? filteredCertificates.map((certificate: ICertificate) => (
 						<div key={certificate.id}>
 							{certificate.fileName ? (
 								<>
-									<div className="w-full h-max mb-2 flex justify-start items-center rounded-md p-4 border border-input bg-background shadow hover:bg-accent hover:text-accent-foreground">
+									<div className="w-full h-max mb-2 flex justify-start items-center rounded-md p-4 border border-input shadow bg-background hover:bg-accent hover:text-accent-foreground">
 										{certificate.fileType === "image/jpeg" && (
 											<Image
 												src={jpgIcon}
@@ -113,21 +113,24 @@ const UserCertificate = ({
 										>
 											{certificate.fileName}
 										</Link>
-										{canUpload && (<div className="ml-auto">
-											<Button
-												disabled={loading}
-												type="button"
-												variant="outline"
-												onClick={() => handleDeleteCertificate(certificate.id)}
-											>
-												<Trash2 width={20} height={20} />
-											</Button>
-										</div>)}
+										{canUpload && (
+											<div className="ml-auto">
+												<Button
+													disabled={loading}
+													type="button"
+													variant="outline"
+													onClick={() => handleDeleteCertificate(certificate.id)}
+												>
+													<Trash2 width={20} height={20} />
+												</Button>
+											</div>
+										)}
 									</div>
 								</>
 							) : null}
 						</div>
-					))}
+				  ))
+				: null}
 		</>
 	);
 };

@@ -23,6 +23,7 @@ import { SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } fr
 import { Label } from "@/components/ui/label";
 import useSWR from "swr";
 import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const defaultProcessPlans: IProcessPlan[] = [
 	{
@@ -284,18 +285,10 @@ const OutlineFormCreate = () => {
 						/>
 						<div className="flex flex-col items-center mb-6 justify-center">
 							<FormLabel>ลายเซ็น / Signature</FormLabel>
-							<Button variant="outline" type="button" className="w-60 mt-4 h-max">
-								<Image
-									src={user?.signatureUrl ? user?.signatureUrl : signature}
-									width={200}
-									height={100}
-									style={{
-										width: "auto",
-										height: "auto",
-									}}
-									alt="signature"
-								/>
-							</Button>
+							<SignatureDialog
+								signUrl={user?.signatureUrl && user.role === "STUDENT" ? user?.signatureUrl : ""}
+								disable={true}
+							/>
 							<Label className="mt-2">{`วันที่ ${
 								form.getValues().date ? form.getValues().date.toLocaleDateString("th") : "__________"
 							}`}</Label>

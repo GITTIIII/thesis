@@ -170,14 +170,15 @@ const QualificationExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 						<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
 							<h1 className="font-bold">ลายเซ็นหัวหน้าสาขาวิชา</h1>
 							<SignatureDialog
-								signUrl={form.getValues("headSchoolSignUrl")}
+								disable={formData?.headSchoolSignUrl ? true : false}
+								signUrl={formData?.headSchoolSignUrl || form.getValues("headSchoolSignUrl")}
 								onConfirm={handleDrawingSign}
 								isOpen={openSign}
 								setIsOpen={setOpenSign}
 							/>
 							{formData?.headSchoolID ? (
 								<Label className="mb-2">
-									{`${formData?.headschool?.prefix.prefixTH}${formData?.headschool?.firstNameTH} ${formData?.headschool?.lastNameTH}`}
+									{`${formData?.headSchool?.prefix.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`}
 								</Label>
 							) : (
 								<FormField
@@ -198,13 +199,13 @@ const QualificationExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 														>
 															{field.value
 																? `${
-																		headSchool?.find((headSchool) => headschool?.id === field.value)
+																		headSchool?.find((headSchool) => headSchool?.id === field.value)
 																			?.prefix.prefixTH
 																  } ${
-																		headSchool?.find((headSchool) => headschool?.id === field.value)
+																		headSchool?.find((headSchool) => headSchool?.id === field.value)
 																			?.firstNameTH
 																  } ${
-																		headSchool?.find((headSchool) => headschool?.id === field.value)
+																		headSchool?.find((headSchool) => headSchool?.id === field.value)
 																			?.lastNameTH
 																  } `
 																: "เลือกหัวหน้าสาขา"}
@@ -219,20 +220,24 @@ const QualificationExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 															<CommandEmpty>ไม่พบหัวหน้าสาขา</CommandEmpty>
 															{headSchool?.map((headSchool) => (
 																<CommandItem
-																	value={`${headschool?.prefix.prefixTH}${headschool?.firstNameTH} ${headschool?.lastNameTH}`}
-																	key={headschool?.id}
+																	value={`${headSchool?.prefix.prefixTH}${headSchool?.firstNameTH} ${headSchool?.lastNameTH}`}
+																	key={headSchool?.id}
 																	onSelect={() => {
-																		form.setValue("headSchoolID", headschool?.id);
-																		setSchoolName(headschool?.school?.schoolNameTH);
+																		form.setValue("headSchoolID", headSchool?.id);
+																		setSchoolName(
+																			headSchool?.school?.schoolNameTH
+																				? headSchool?.school?.schoolNameTH
+																				: ""
+																		);
 																	}}
 																>
 																	<Check
 																		className={cn(
 																			"mr-2 h-4 w-4",
-																			field.value === headschool?.id ? "opacity-100" : "opacity-0"
+																			field.value === headSchool?.id ? "opacity-100" : "opacity-0"
 																		)}
 																	/>
-																	{`${headschool?.prefix.prefixTH}${headschool?.firstNameTH} ${headschool?.lastNameTH}`}
+																	{`${headSchool?.prefix.prefixTH}${headSchool?.firstNameTH} ${headSchool?.lastNameTH}`}
 																</CommandItem>
 															))}
 														</CommandList>

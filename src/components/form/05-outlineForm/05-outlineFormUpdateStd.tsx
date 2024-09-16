@@ -22,6 +22,7 @@ import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
 import { IUser } from "@/interface/user";
 import { CircleAlert } from "lucide-react";
 import FormStatus from "@/components/formStatus/formStatus";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const formSchema = z.object({
 	id: z.number(),
@@ -207,18 +208,10 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 						/>
 						<div className="flex flex-col items-center mt-6 justify-center">
 							<Label>ลายเซ็น / Signature</Label>
-							<Button variant="outline" type="button" className="w-60 my-4 h-max">
-								<Image
-									src={formData?.student.signatureUrl ? formData?.student.signatureUrl : signature}
-									width={200}
-									height={100}
-									style={{
-										width: "auto",
-										height: "auto",
-									}}
-									alt="signature"
-								/>
-							</Button>
+							<SignatureDialog
+								signUrl={formData?.student.signatureUrl ? formData?.student.signatureUrl : ""}
+								disable={true}
+							/>
 							<Label className="mt-2">{`วันที่ ${
 								formData?.date ? new Date(formData?.date).toLocaleDateString("th") : "__________"
 							}`}</Label>
@@ -255,18 +248,10 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 								defaultValue={formData?.outlineCommitteeComment}
 							/>
 						</div>
-						<Button variant="outline" type="button" className="w-60 my-4 h-max">
-							<Image
-								src={formData?.outlineCommitteeSignUrl ? formData?.outlineCommitteeSignUrl : signature}
-								width={100}
-								height={100}
-								style={{
-									width: "auto",
-									height: "auto",
-								}}
-								alt="signature"
-							/>
-						</Button>
+						<SignatureDialog
+							disable={true}
+							signUrl={formData?.outlineCommitteeSignUrl ? formData?.outlineCommitteeSignUrl : ""}
+						/>
 						<Label className="mb-2">
 							{formData?.outlineCommittee
 								? `${formData?.outlineCommittee.prefix}${formData?.outlineCommittee.firstName} ${formData?.outlineCommittee.lastName}`
@@ -304,18 +289,10 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 								defaultValue={formData?.instituteCommitteeComment}
 							/>
 						</div>
-						<Button variant="outline" type="button" className="w-60 my-4 h-max">
-							<Image
-								src={formData?.instituteCommitteeSignUrl ? formData?.instituteCommitteeSignUrl : signature}
-								width={100}
-								height={100}
-								style={{
-									width: "auto",
-									height: "auto",
-								}}
-								alt="signature"
-							/>
-						</Button>
+						<SignatureDialog
+							disable={true}
+							signUrl={formData?.instituteCommitteeSignUrl ? formData?.instituteCommitteeSignUrl : ""}
+						/>
 						<Label className="mb-2">
 							{formData?.instituteCommittee
 								? `${formData?.instituteCommittee.prefix.prefixTH}${formData?.instituteCommittee.firstNameTH} ${formData?.instituteCommittee.lastNameTH}`

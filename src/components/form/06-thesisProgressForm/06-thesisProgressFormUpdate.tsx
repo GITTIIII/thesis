@@ -270,15 +270,10 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 						</div>
 						<div className="flex flex-col items-center mt-6 mb-6 justify-center">
 							<FormLabel>ลายเซ็น / Signature</FormLabel>
-							<Button variant="outline" type="button" className="w-60 mt-4 h-max">
-								<Image
-									src={formData?.student.signatureUrl ? formData?.student.signatureUrl : signature}
-									width={200}
-									height={100}
-									style={{ width: "auto", height: "auto" }}
-									alt="signature"
-								/>
-							</Button>
+							<SignatureDialog
+								disable={false}
+								signUrl={formData?.student.signatureUrl ? formData?.student.signatureUrl : ""}
+							/>
 							<Label className="mt-4">{`วันที่ ${
 								formData?.date ? new Date(formData?.date).toLocaleDateString("th") : "__________"
 							}`}</Label>
@@ -316,6 +311,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 						)}
 					/>
 					<SignatureDialog
+						disable={formData?.advisorSignUrl ? true : false}
 						signUrl={formData?.advisorSignUrl || form.getValues("advisorSignUrl")}
 						onConfirm={handleDrawingSignAdvisor}
 						isOpen={openAdvisor}
@@ -371,6 +367,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 							)}
 						/>
 						<SignatureDialog
+							disable={formData?.headSchoolSignUrl ? true : false}
 							signUrl={formData?.headSchoolSignUrl || form.getValues("headSchoolSignUrl")}
 							onConfirm={handleDrawingSignHeadSchool}
 							isOpen={openHeadSchool}

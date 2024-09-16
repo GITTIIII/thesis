@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { CircleAlert } from "lucide-react";
 import signature from "@/../../public/asset/signature.png";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -64,18 +65,7 @@ const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 					<InputForm value={`${formData?.committeeName5}`} label="กรรมการ / Member of the Committee" />
 					<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
 						<h1 className="font-bold">ลายเซ็นหัวหน้าสาขาวิชา</h1>
-						<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
-							<Image
-								src={formData?.headSchoolSignUrl ? formData?.headSchoolSignUrl : signature}
-								width={100}
-								height={100}
-								style={{
-									width: "auto",
-									height: "auto",
-								}}
-								alt="signature"
-							/>
-						</div>
+						<SignatureDialog signUrl={formData?.headSchoolSignUrl ? formData?.headSchoolSignUrl : ""} disable={true} />
 						<Label className="mb-2">
 							{formData?.headSchool
 								? `${formData?.headSchool?.prefix.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`

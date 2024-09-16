@@ -11,6 +11,7 @@ import { IOutlineForm, IThesisProgressForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 import { Label } from "@/components/ui/label";
 import useSWR from "swr";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -129,15 +130,10 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 						</div>
 						<div className="flex flex-col items-center mt-6 mb-6 justify-center">
 							<Label>ลายเซ็น / Signature</Label>
-							<Button variant="outline" type="button" className="w-60 mt-4 h-max">
-								<Image
-									src={formData?.student.signatureUrl ? formData?.student.signatureUrl : signature}
-									width={200}
-									height={100}
-									style={{ width: "auto", height: "auto" }}
-									alt="signature"
-								/>
-							</Button>
+							<SignatureDialog
+								signUrl={formData?.student.signatureUrl ? formData?.student.signatureUrl : ""}
+								disable={true}
+							/>
 							<Label className="mt-4">{`วันที่ ${
 								formData?.date ? new Date(formData?.date).toLocaleDateString("th") : "__________"
 							}`}</Label>
@@ -154,15 +150,7 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 						<Textarea className="resize-none" disabled defaultValue={formData?.assessmentResult} />
 					</div>
 
-					<Button variant="outline" type="button" className="w-60 my-4 h-max">
-						<Image
-							src={formData?.advisorSignUrl ? formData?.advisorSignUrl : signature}
-							width={200}
-							height={100}
-							style={{ width: "auto", height: "auto" }}
-							alt="signature"
-						/>
-					</Button>
+					<SignatureDialog signUrl={formData?.advisorSignUrl ? formData?.advisorSignUrl : ""} disable={true} />
 
 					<Label className="mb-2">{`${formData?.student?.advisor?.prefix.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
 
@@ -179,18 +167,11 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 						<Textarea className="resize-none" disabled defaultValue={formData?.headSchoolComment} />
 					</div>
 
-					<Button variant="outline" type="button" className="w-60 my-4 h-max">
-						<Image
-							src={formData?.headSchoolSignUrl ? formData?.headSchoolSignUrl : signature}
-							width={200}
-							height={100}
-							alt="signature"
-						/>
-					</Button>
+					<SignatureDialog signUrl={formData?.headSchoolSignUrl ? formData?.headSchoolSignUrl : ""} disable={true} />
 
 					<Label className="mb-2">
 						{formData?.headSchool
-							? `${formData?.headschool?.prefix.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`
+							? `${formData?.headSchool?.prefix.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`
 							: ""}
 					</Label>
 
