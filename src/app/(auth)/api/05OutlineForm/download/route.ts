@@ -11,8 +11,6 @@ import test from "node:test";
 export async function GET(request: NextRequest) {
   const outlineFormId = request.nextUrl.searchParams.get("id");
   const session = await getServerSession(authOptions);
-  console.log("---------------------");
-  console.log("jszip path:", require.resolve("jszip"));
 
   if (!session) {
     return NextResponse.json(
@@ -114,18 +112,21 @@ export async function GET(request: NextRequest) {
       Array.isArray(outlineForm.processPlan)
     ) {
       const processPlanObject = outlineForm.processPlan as Prisma.JsonArray;
-      doc2 = await genDocProcessPlan({
-        date: {
-          month: outlineForm.thesisStartMonth,
-          year: outlineForm.thesisStartYear,
+      doc2 = await genDocProcessPlan(
+        {
+          date: {
+            month: outlineForm.thesisStartMonth,
+            year: outlineForm.thesisStartYear,
+          },
+          signature: {
+            img: outlineForm.student.signatureUrl,
+            name: `${data.stdPrefix}${data.stdFirstName} ${data.stdLastName}`,
+            date: dateShortTH(outlineForm.date),
+          },
+          processPlan: processPlanObject,
         },
-        signature: {
-          img: outlineForm.student.signatureUrl,
-          name: `${data.stdPrefix}${data.stdFirstName} ${data.stdLastName}`,
-          date: dateShortTH(outlineForm.date),
-        },
-        processPlan: processPlanObject,
-      });
+        "FM-ENG-GRD-05-00"
+      );
     }
     const zip = new JSZip();
     zip.file(`${"FM-ENG-GRD-05_1"}.docx`, doc1);

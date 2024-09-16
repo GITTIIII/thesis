@@ -20,7 +20,7 @@ import {
   Footer,
 } from "docx";
 
-export const genDocProcessPlan = async (processPlans) => {
+export const genDocProcessPlan = async (processPlans, keyDoc) => {
   const months = processPlans.processPlan[0].months.length;
   const processPlanNumber = processPlans.processPlan.length;
   const name = processPlans.signature.name;
@@ -306,7 +306,7 @@ export const genDocProcessPlan = async (processPlans) => {
         children: [
           new Paragraph({
             alignment: AlignmentType.RIGHT,
-            children: [new TextRun({ text: "FM-ENG-GRD-05-00", font: font, size: 24 })],
+            children: [new TextRun({ text: keyDoc, font: font, size: 24 })],
           }),
         ],
       }),
