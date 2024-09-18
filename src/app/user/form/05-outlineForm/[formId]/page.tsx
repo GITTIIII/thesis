@@ -1,10 +1,14 @@
-"use client";
 import Image from "next/image";
 import learning1 from "@/../../public/asset/learning1.png";
 import OutlineFormRead from "@/components/form/05-outlineForm/05-outlineFormRead";
+import { get05FormById } from "@/app/action/getFormById";
 
-export default function OutlineFormReadPage({ params }: { params: { formId: number } }) {
-	const outlineFormId = params.formId;
+export default async function OutlineFormReadPage({ params }: { params: { formId: number } }) {
+	const formId = params.formId;
+	const formData = await get05FormById(formId);
+	if (!formData) {
+		return <div>ไม่พบข้อมูล</div>;
+	}
 	return (
 		<>
 			<div className="w-full h-max bg-transparent py-12 px-2 lg:px-28">
@@ -16,7 +20,7 @@ export default function OutlineFormReadPage({ params }: { params: { formId: numb
 				</div>
 				<div className="h-full w-full flex items-center bg-[#EEEEEE] p-2 md:p-8 rounded-md">
 					<div className="w-full h-full">
-						<OutlineFormRead formId={Number(outlineFormId)} />
+						<OutlineFormRead formData={formData} />
 					</div>
 				</div>
 			</div>

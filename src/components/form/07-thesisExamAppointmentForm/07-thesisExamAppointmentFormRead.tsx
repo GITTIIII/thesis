@@ -1,3 +1,4 @@
+"use client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -8,18 +9,20 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import signature from "@/../../public/asset/signature.png";
 import Image from "next/image";
-import useSWR from "swr";
 import InputForm from "@/components/inputForm/inputForm";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 import UserCertificate from "@/components/profile/userCertificate";
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
+const ThesisProgressFormRead = ({
+	user,
+	formData,
+	approvedForm,
+}: {
+	user: IUser;
+	formData: IThesisExamAppointmentForm;
+	approvedForm: IOutlineForm;
+}) => {
 	const router = useRouter();
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
-	const { data: formData } = useSWR<IThesisExamAppointmentForm>(formId ? `/api/get07FormById/${formId}` : "", fetcher);
-	const { data: approvedForm } = useSWR<IOutlineForm>(formData ? `/api/get05ApprovedFormByStdId/${formData?.studentID}` : "", fetcher);
 
 	return (
 		<div className="w-full h-full bg-white p-4">
@@ -102,15 +105,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 
 					<div className="flex flex-col items-center mt-6 mb-6 justify-center">
 						<Label>ลายเซ็น / Signature</Label>
-						<Button variant="outline" type="button" className="w-60 mt-4 h-max">
-							<Image
-								src={formData?.student.signatureUrl ? formData?.student.signatureUrl : signature}
-								width={200}
-								height={100}
-								style={{ width: "auto", height: "auto" }}
-								alt="signature"
-							/>
-						</Button>
+						<SignatureDialog disable={true} signUrl={formData?.student.signatureUrl ? formData?.student.signatureUrl : ""} />
 						<Label className="mt-4">{`วันที่ ${
 							formData?.date ? new Date(formData?.date).toLocaleDateString("th") : "__________"
 						}`}</Label>
@@ -175,7 +170,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 					</div>
 
 					<SignatureDialog signUrl={formData?.presentationFundSignUrl ? formData?.presentationFundSignUrl : ""} disable={true} />
-					<Label>{`${formData?.student?.advisor?.prefix.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
+					<Label>{`${formData?.student?.advisor?.prefix?.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
 					<div className="w-max h-max flex mt-2 mb-4 items-center">
 						<Label className="mr-2">วันที่</Label>
 						{formData?.dateAdvisor ? (
@@ -193,7 +188,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 						signUrl={formData?.researchProjectFundSignUrl ? formData?.researchProjectFundSignUrl : ""}
 						disable={true}
 					/>
-					<Label>{`${formData?.student?.advisor?.prefix.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
+					<Label>{`${formData?.student?.advisor?.prefix?.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
 					<div className="w-max h-max flex mt-2 items-center">
 						<Label className="mr-2">วันที่</Label>
 						{formData?.dateAdvisor ? (
@@ -224,7 +219,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 						</div>
 
 						<SignatureDialog signUrl={formData?.advisorSignUrl ? formData?.advisorSignUrl : ""} disable={true} />
-						<Label>{`${formData?.student?.advisor?.prefix.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
+						<Label>{`${formData?.student?.advisor?.prefix?.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
 
 						<div className="w-max h-max flex mt-2 items-center">
 							<Label className="mr-2">วันที่</Label>
@@ -268,4 +263,4 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 	);
 };
 
-export default ThesisProgressFormUpdate;
+export default ThesisProgressFormRead;

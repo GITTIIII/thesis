@@ -50,10 +50,15 @@ const formSchema = z.object({
 	studentID: z.number(),
 });
 
-export default function SuperAdminForm02Update({ formId }: { formId: number }) {
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
-	const { data: headSchool } = useSWR<IUser[]>("/api/getHeadSchool", fetcher);
-	const { data: formData } = useSWR<IQualificationExamCommitteeForm>(`/api/get02FormById/${formId}`, fetcher);
+export default function SuperAdminForm02Update({
+	formData,
+	user,
+	headSchool,
+}: {
+	formData: IQualificationExamCommitteeForm;
+	user: IUser;
+	headSchool: IUser[];
+}) {
 	const [open, setOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [schoolName, setSchoolName] = useState("");
@@ -169,13 +174,13 @@ export default function SuperAdminForm02Update({ formId }: { formId: number }) {
 		if (user && user.role === "SUPER_ADMIN") {
 			reset({
 				...form.getValues(),
-				id: formId,
+				id: formData.id,
 				numberStudent: 1,
 				headSchoolID: formData?.headSchoolID,
 				studentID: formData?.studentID,
 			});
 		}
-	}, [form, formData, formId, reset, user]);
+	}, [form, formData, reset, user]);
 
 	return (
 		<Form {...form}>
@@ -432,13 +437,13 @@ export default function SuperAdminForm02Update({ formId }: { formId: number }) {
 														>
 															{field.value
 																? `${
-																		headSchool?.find((headSchool) => headschool?.id === field.value)
-																			?.prefix.prefixTH
+																		headSchool?.find((headSchool) => headSchool?.id === field.value)
+																			?.prefix?.prefixTH
 																  } ${
-																		headSchool?.find((headSchool) => headschool?.id === field.value)
+																		headSchool?.find((headSchool) => headSchool?.id === field.value)
 																			?.firstNameTH
 																  } ${
-																		headSchool?.find((headSchool) => headschool?.id === field.value)
+																		headSchool?.find((headSchool) => headSchool?.id === field.value)
 																			?.lastNameTH
 																  } `
 																: "เลือกหัวหน้าสาขา"}
@@ -453,20 +458,20 @@ export default function SuperAdminForm02Update({ formId }: { formId: number }) {
 															<CommandEmpty>ไม่พบหัวหน้าสาขา</CommandEmpty>
 															{headSchool?.map((headSchool) => (
 																<CommandItem
-																	value={`${headschool?.prefix.prefixTH}${headschool?.firstNameTH} ${headschool?.lastNameTH}`}
-																	key={headschool?.id}
+																	value={`${headSchool?.prefix?.prefixTH}${headSchool?.firstNameTH} ${headSchool?.lastNameTH}`}
+																	key={headSchool?.id}
 																	onSelect={() => {
-																		form.setValue("headSchoolID", headschool?.id);
-																		setSchoolName(headschool?.school?.schoolNameTH);
+																		form.setValue("headSchoolID", headSchool?.id);
+																		setSchoolName(headSchool?.school?.schoolNameTH || "");
 																	}}
 																>
 																	<Check
 																		className={cn(
 																			"mr-2 h-4 w-4",
-																			field.value === headschool?.id ? "opacity-100" : "opacity-0"
+																			field.value === headSchool?.id ? "opacity-100" : "opacity-0"
 																		)}
 																	/>
-																	{`${headschool?.prefix.prefixTH}${headschool?.firstNameTH} ${headschool?.lastNameTH}`}
+																	{`${headSchool?.prefix?.prefixTH}${headSchool?.firstNameTH} ${headSchool?.lastNameTH}`}
 																</CommandItem>
 															))}
 														</CommandList>

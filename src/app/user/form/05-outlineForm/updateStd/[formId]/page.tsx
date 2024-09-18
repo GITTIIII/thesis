@@ -1,10 +1,17 @@
-"use client";
 import Image from "next/image";
 import learning1 from "@/../../public/asset/learning1.png";
 import OutlineFormUpdateStd from "@/components/form/05-outlineForm/05-outlineFormUpdateStd";
+import { currentUser } from "@/app/action/current-user";
+import { get05FormById } from "@/app/action/getFormById";
 
-export default function OutlineFormUpdatePage({ params }: { params: { formId: number } }) {
+export default async function OutlineFormUpdatePage({ params }: { params: { formId: number } }) {
 	const formId = params.formId;
+	const formData = await get05FormById(formId);
+	const user = await currentUser();
+
+	if (!formData || !user) {
+		return <div>ไม่พบข้อมูล</div>;
+	}
 	return (
 		<>
 			<div className="w-full h-max bg-transparent py-12 px-2 lg:px-28">
@@ -16,7 +23,7 @@ export default function OutlineFormUpdatePage({ params }: { params: { formId: nu
 				</div>
 				<div className="h-full w-full flex items-center bg-[#EEEEEE] p-2 md:p-8 rounded-md">
 					<div className="w-full h-full">
-						<OutlineFormUpdateStd formId={Number(formId)} />
+						<OutlineFormUpdateStd formData={formData} user={user} />
 					</div>
 				</div>
 			</div>

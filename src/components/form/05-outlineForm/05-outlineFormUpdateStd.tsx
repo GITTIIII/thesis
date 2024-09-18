@@ -1,3 +1,4 @@
+"use client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -11,17 +12,13 @@ import { useToast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import signature from "@/../../public/asset/signature.png";
-import InputForm from "@/components/inputForm/inputForm";
-import Image from "next/image";
-import ThesisProcessPlan from "../thesisProcessPlan";
-import useSWR, { mutate } from "swr";
-import axios from "axios";
-import qs from "query-string";
 import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
 import { IUser } from "@/interface/user";
 import { CircleAlert } from "lucide-react";
-import FormStatus from "@/components/formStatus/formStatus";
+import InputForm from "@/components/inputForm/inputForm";
+import ThesisProcessPlan from "../thesisProcessPlan";
+import axios from "axios";
+import qs from "query-string";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const formSchema = z.object({
@@ -32,12 +29,8 @@ const formSchema = z.object({
 	formStatus: z.string(),
 });
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
+const OutlineFormUpdateStd = ({ formData, user }: { formData: IOutlineForm; user: IUser }) => {
 	const router = useRouter();
-	const { data: formData } = useSWR<IOutlineForm>(`/api/get05FormById/${formId}`, fetcher);
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -69,7 +62,6 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 			setTimeout(() => {
 				setIsOpen(false);
 				form.reset();
-				mutate(`/api/get05FormById/${formId}`);
 				router.refresh();
 				router.back();
 			}, 1000);
@@ -87,12 +79,12 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 	useEffect(() => {
 		reset({
 			...form.getValues(),
-			id: formId,
+			id: formData.id,
 			thesisNameTH: formData?.thesisNameTH,
 			thesisNameEN: formData?.thesisNameEN,
 			abstract: formData?.abstract,
 		});
-	}, [formId, formData]);
+	}, [formData]);
 
 	const handleCancel = () => {
 		setLoading(false);
@@ -295,7 +287,7 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 						/>
 						<Label className="mb-2">
 							{formData?.instituteCommittee
-								? `${formData?.instituteCommittee.prefix.prefixTH}${formData?.instituteCommittee.firstNameTH} ${formData?.instituteCommittee.lastNameTH}`
+								? `${formData?.instituteCommittee?.prefix?.prefixTH}${formData?.instituteCommittee.firstNameTH} ${formData?.instituteCommittee.lastNameTH}`
 								: ""}
 						</Label>
 						<Label className="mb-2">{`(ประธานคณะกรรมการ)`}</Label>

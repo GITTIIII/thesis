@@ -1,3 +1,4 @@
+"use client";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
@@ -9,20 +10,17 @@ import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { IUser } from "@/interface/user";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import signature from "@/../../public/asset/signature.png";
-import Image from "next/image";
-import axios from "axios";
-import qs from "query-string";
-import InputForm from "../../inputForm/inputForm";
 import { Textarea } from "../../ui/textarea";
 import { CircleAlert } from "lucide-react";
-import ThesisProcessPlan from "../thesisProcessPlan";
 import { IProcessPlan } from "@/interface/form";
 import { Select } from "@radix-ui/react-select";
 import { SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import useSWR from "swr";
 import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
+import ThesisProcessPlan from "../thesisProcessPlan";
+import axios from "axios";
+import qs from "query-string";
+import InputForm from "../../inputForm/inputForm";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const defaultProcessPlans: IProcessPlan[] = [
@@ -108,11 +106,8 @@ const formSchema = z.object({
 	studentID: z.number(),
 });
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-const OutlineFormCreate = () => {
+const OutlineFormCreate = ({user}:{user:IUser}) => {
 	const router = useRouter();
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);

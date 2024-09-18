@@ -1,24 +1,18 @@
+"use client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import signature from "@/../../public/asset/signature.png";
-import InputForm from "@/components/inputForm/inputForm";
-import Image from "next/image";
 import { Textarea } from "../../ui/textarea";
 import { IOutlineForm } from "@/interface/form";
-import ThesisProcessPlan from "../thesisProcessPlan";
 import { Input } from "@/components/ui/input";
-import useSWR from "swr";
+import InputForm from "@/components/inputForm/inputForm";
+import ThesisProcessPlan from "../thesisProcessPlan";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-const OutlineFormRead = ({ formId }: { formId: number }) => {
+const OutlineFormRead = ({ formData }: { formData: IOutlineForm }) => {
 	const router = useRouter();
-	const { data: formData } = useSWR<IOutlineForm>(`/api/get05FormById/${formId}`, fetcher);
-
-	console.log(formData);
+	
 	return (
 		<>
 			<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg">
@@ -77,7 +71,7 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 						<div className="flex flex-col items-center mt-6 justify-center">
 							<Label>ลายเซ็น / Signature</Label>
 							<SignatureDialog
-								disable={false}
+								disable={true}
 								signUrl={formData?.student.signatureUrl ? formData?.student.signatureUrl : ""}
 							/>
 							<Label className="mt-2">{`วันที่ ${
@@ -157,7 +151,7 @@ const OutlineFormRead = ({ formId }: { formId: number }) => {
 						<SignatureDialog signUrl={formData?.instituteCommitteeSignUrl ? formData?.instituteCommitteeSignUrl : ""} disable={true} />
 						<Label className="mb-2">
 							{formData?.instituteCommittee
-								? `${formData?.instituteCommittee.prefix.prefixTH}${formData?.instituteCommittee.firstNameTH} ${formData?.instituteCommittee.lastNameTH}`
+								? `${formData?.instituteCommittee.prefix?.prefixTH}${formData?.instituteCommittee.firstNameTH} ${formData?.instituteCommittee.lastNameTH}`
 								: ""}
 						</Label>
 						<Label className="mb-2">{`(ประธานคณะกรรมการ)`}</Label>

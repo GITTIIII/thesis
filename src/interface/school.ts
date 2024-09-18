@@ -5,6 +5,6 @@ export type ISchool = {
 	schoolNameTH: string;
 	schoolNameEN: string;
 
-	instituteID: number;
-	institute: IInstitute;
+	instituteID?: number;
+	institute?: IInstitute;
 };

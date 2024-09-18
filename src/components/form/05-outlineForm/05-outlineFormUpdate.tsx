@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -18,12 +19,9 @@ import { DatePicker } from "@/components/datePicker/datePicker";
 import { IOutlineForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 import { IExpert } from "@/interface/expert";
-import useSWR, { mutate } from "swr";
 import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
 import InputForm from "@/components/inputForm/inputForm";
-import signature from "../../../../public/asset/signature.png";
 import ThesisProcessPlan from "../thesisProcessPlan";
-import Image from "next/image";
 import axios from "axios";
 import qs from "query-string";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
@@ -45,13 +43,17 @@ const formSchema = z.object({
 	dateInstituteCommitteeSign: z.date().optional(),
 });
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-const OutlineFormUpdate = ({ formId }: { formId: number }) => {
-	const { data: formData } = useSWR<IOutlineForm>(`/api/get05FormById/${formId}`, fetcher);
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
-	const { data: expert } = useSWR<IExpert[]>("/api/expert", fetcher);
-	const { data: instituteCommittee } = useSWR<IUser[]>("/api/getInstituteCommittee", fetcher);
+const OutlineFormUpdate = ({
+	formData,
+	user,
+	expert,
+	instituteCommittee,
+}: {
+	formData: IOutlineForm;
+	user: IUser;
+	expert: IExpert[];
+	instituteCommittee: IUser[];
+}) => {
 	const router = useRouter();
 	const { toast } = useToast();
 	const [openOutline, setOpenOutline] = useState(false);
@@ -127,7 +129,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 		if (values.outlineCommitteeStatus == "ไม่อนุมัติ" || values.instituteCommitteeStatus == "ไม่อนุมัติ") {
 			values.formStatus = "ไม่อนุมัติ";
 		} else if (
-			formData?.outlineCommitteeStatus == "อนุมัติ" &&
+			(formData?.outlineCommitteeStatus == "อนุมัติ" || values?.outlineCommitteeStatus == "อนุมัติ") &&
 			values.instituteCommitteeStatus == "อนุมัติ" &&
 			user?.role == "SUPER_ADMIN"
 		) {
@@ -155,7 +157,6 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 			setTimeout(() => {
 				handleCancel();
 				form.reset();
-				mutate(`/api/get05FormById/${formId}`);
 				router.refresh();
 				router.back();
 			}, 1000);
@@ -176,10 +177,10 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 	useEffect(() => {
 		reset({
 			...form.getValues(),
-			id: formId,
+			id: formData.id,
 			editComment: formData?.editComment ? formData?.editComment : "",
 		});
-	}, [formId, formData]);
+	}, [formData]);
 
 	const handleCancel = () => {
 		setLoading(false);
@@ -408,7 +409,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 						/>
 						{formData?.outlineCommitteeID ? (
 							<Label className="mb-2">
-								{`${formData?.outlineCommittee.prefix}${formData?.outlineCommittee.firstName} ${formData?.outlineCommittee.lastName}`}
+								{`${formData?.outlineCommittee?.prefix}${formData?.outlineCommittee?.firstName} ${formData?.outlineCommittee?.lastName}`}
 							</Label>
 						) : (
 							<FormField
@@ -599,7 +600,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 							/>
 							{formData?.instituteCommitteeID ? (
 								<Label className="mb-2">
-									{`${formData?.instituteCommittee.prefix.prefixTH}${formData?.instituteCommittee.firstNameTH} ${formData?.instituteCommittee.lastNameTH}`}
+									{`${formData?.instituteCommittee?.prefix?.prefixTH}${formData?.instituteCommittee?.firstNameTH} ${formData?.instituteCommittee?.lastNameTH}`}
 								</Label>
 							) : (
 								<FormField
@@ -622,7 +623,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 																? `${
 																		instituteCommittee?.find(
 																			(instituteCommittee) => instituteCommittee.id === field.value
-																		)?.prefix.prefixTH
+																		)?.prefix?.prefixTH
 																  } ${
 																		instituteCommittee?.find(
 																			(instituteCommittee) => instituteCommittee.id === field.value
@@ -644,7 +645,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 															<CommandEmpty>ไม่พบกรรมการ</CommandEmpty>
 															{instituteCommittee?.map((instituteCommittee) => (
 																<CommandItem
-																	value={`${instituteCommittee.prefix.prefixTH}${instituteCommittee.firstNameTH} ${instituteCommittee.lastNameTH}`}
+																	value={`${instituteCommittee?.prefix?.prefixTH}${instituteCommittee.firstNameTH} ${instituteCommittee.lastNameTH}`}
 																	key={instituteCommittee.id}
 																	onSelect={() => {
 																		form.setValue("instituteCommitteeID", instituteCommittee.id);
@@ -658,7 +659,7 @@ const OutlineFormUpdate = ({ formId }: { formId: number }) => {
 																				: "opacity-0"
 																		)}
 																	/>
-																	{`${instituteCommittee.prefix.prefixTH}${instituteCommittee.firstNameTH} ${instituteCommittee.lastNameTH}`}
+																	{`${instituteCommittee?.prefix?.prefixTH}${instituteCommittee?.firstNameTH} ${instituteCommittee.lastNameTH}`}
 																</CommandItem>
 															))}
 														</CommandList>

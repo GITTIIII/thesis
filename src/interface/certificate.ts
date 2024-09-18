@@ -5,8 +5,8 @@ export type ICertificate = {
 	certificateType: string;
 	fileName: string;
 	fileType: string;
-    description: string;
+	description: string;
 
-	userID: number;
-	user: IUser;
+	userID?: number;
+	user?: IUser;
 };

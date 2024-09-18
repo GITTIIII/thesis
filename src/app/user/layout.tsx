@@ -1,6 +1,7 @@
 // components/Layout.tsx
 import Navbar from "@/components/navbar/navbar";
 import { authOptions } from "@/lib/auth";
+import { currentUser } from "@/app/action/current-user";
 import { getServerSession } from "next-auth";
 import React from "react";
 
@@ -11,7 +12,10 @@ type MenuItem = {
 
 const Layout = async ({ children }: { children: React.ReactNode }) => {
 	const session = await getServerSession(authOptions);
-
+	const user = await currentUser();
+	if (!user) {
+		return <div>Please sign in to view the content.</div>;
+	}
 	// Generate menu based on user role
 	const menu: MenuItem[] = (() => {
 		if (session?.user.role === "STUDENT") {
@@ -38,7 +42,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
 
 	return (
 		<>
-			<Navbar menu={menu} />
+			<Navbar menu={menu} user={user} />
 			{children}
 		</>
 	);

@@ -1,20 +1,19 @@
 "use client";
-import axios from "axios";
-import Image from "next/image";
-import qs from "query-string";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2 } from "lucide-react";
-import { useSWRConfig } from "swr";
+import { ICertificate } from "@/interface/certificate";
+import { IUser } from "@/interface/user";
 import Link from "next/link";
+import axios from "axios";
+import Image from "next/image";
+import qs from "query-string";
 import pdfIcon from "@/../../public/asset/pdf.png";
 import pngIcon from "@/../../public/asset/png.png";
 import jpgIcon from "@/../../public/asset/jpg.png";
 import EditCertificate from "./editCertificate";
-import { ICertificate } from "@/interface/certificate";
-import { IUser } from "@/interface/user";
 
 const UserCertificate = ({
 	user,
@@ -27,7 +26,6 @@ const UserCertificate = ({
 }) => {
 	const [loading, setLoading] = useState<boolean>(false);
 	const { toast } = useToast();
-	const { mutate } = useSWRConfig();
 	const router = useRouter();
 
 	const handleDeleteCertificate = async (certificateID: Number) => {
@@ -45,7 +43,6 @@ const UserCertificate = ({
 				variant: "default",
 			});
 			router.refresh();
-			mutate("/api/getCurrentUser");
 			setLoading(false);
 		} else {
 			toast({

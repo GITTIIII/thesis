@@ -30,12 +30,13 @@ type Props = {
 		path: string;
 	}[];
 	notification?: boolean;
+	user: IUser
 };
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-export default function Navbar({ menu, notification = false }: Props) {
-	const { data: user, isLoading } = useSWR<IUser>("/api/getCurrentUser", fetcher);
+export default function Navbar({ menu, notification = false, user }: Props) {
+	// const { data: user, isLoading } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const router = useRouter();
 	const { ref, isComponentVisible, setIsComponentVisible } = useComponentVisible();
 	const message = [

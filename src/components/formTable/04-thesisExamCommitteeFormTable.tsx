@@ -81,7 +81,7 @@ export default function OutlineCommitteeFormTable({ userData }: { userData: IUse
 									<TableCell className="text-[#F26522] text-center">
 										<Link
 											href={
-												userData?.role == "STUDENT"
+												formData.headSchoolID ||userData?.role == "STUDENT"
 													? `/user/form/${FormPath[selectedForm]}/${formData.id}`
 													: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
 											}

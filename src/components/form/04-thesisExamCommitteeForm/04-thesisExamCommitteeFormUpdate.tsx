@@ -1,161 +1,113 @@
-import { number, z } from "zod";
+"use client";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useFieldArray, useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { IUser } from "@/interface/user";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import SignatureCanvas from "react-signature-canvas";
-import signature from "@/../../public/asset/signature.png";
-import Image from "next/image";
-import axios from "axios";
-import qs from "query-string";
-import InputForm from "../../inputForm/inputForm";
 import { Label } from "../../ui/label";
 import { cn } from "@/lib/utils";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import { Check, ChevronsUpDown, CircleAlert } from "lucide-react";
 import { IExamCommitteeForm } from "@/interface/form";
-import useSWR from "swr";
-import Link from "next/link";
 import { DatePicker } from "@/components/datePicker/datePicker";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
+import axios from "axios";
+import qs from "query-string";
+import InputForm from "../../inputForm/inputForm";
+import Link from "next/link";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const formSchema = z.object({
 	id: z.number(),
-	headSchoolID: z.number().nullable(),
-	headSchoolSignUrl: z.string(),
-	advisorSignUrl: z.string(),
-	instituteComSignUrl: z.string(),
+	headSchoolID: z.number(),
+	headSchoolSignUrl: z.string().default(""),
+	advisorSignUrl: z.string().default(""),
+	instituteComSignUrl: z.string().default(""),
 	addNotes: z.array(
 		z.object({
-			committeeNumber: z.number().min(1, { message: "กรุณาระบุลำดับของกรรมการ / number of committee requierd" }),
-			meetingNumber: z.number().min(1, { message: "กรุณาระบุครั้งของการประชุม / number of meeting requierd" }),
-			date: z.date().nullable(),
+			committeeNumber: z.number(),
+			meetingNumber: z.number(),
+			date: z.date().optional(),
 		})
 	),
 });
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-const ExameCommitteeFormUpdate = ({ formId }: { formId: number }) => {
-	const { data: formData, isLoading } = useSWR<IExamCommitteeForm>(`/api/get04FormById/${formId}`, fetcher);
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
+const ExameCommitteeFormUpdate = ({ formData, user, headSchool }: { formData: IExamCommitteeForm; user: IUser; headSchool: IUser[] }) => {
 	const [loading, setLoading] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
 	const [openHeadSchoolDialog, setOpenHeadSchoolDialog] = useState(false);
 	const [openAdvisorDialog, setOpenAdvisorDialog] = useState(false);
 	const [openinstituteComDialog, setOpeninstituteComDialog] = useState(false);
+	const [showFields, setShowFields] = useState(true);
 	const router = useRouter();
 	const { toast } = useToast();
-	const sigCanvasHeadSchool = useRef<SignatureCanvas>(null);
-	const sigCanvasAdvisor = useRef<SignatureCanvas>(null);
-	const sigCanvasinstituteCom = useRef<SignatureCanvas>(null);
 
-	const form = useForm<z.infer<typeof formSchema>>({
+	const handleDrawingAdvisorSign = (signUrl: string) => {
+		reset({
+			...form.getValues(),
+			advisorSignUrl: signUrl,
+		});
+		setOpenAdvisorDialog(false);
+	};
+	const handleDrawingInstituteComSign = (signUrl: string) => {
+		reset({
+			...form.getValues(),
+			instituteComSignUrl: signUrl,
+		});
+		setOpeninstituteComDialog(false);
+	};
+	const handleDrawingHeadSchoolSign = (signUrl: string) => {
+		reset({
+			...form.getValues(),
+			headSchoolSignUrl: signUrl,
+		});
+		setOpenHeadSchoolDialog(false);
+	};
+
+	const form = useForm({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			id: formId,
-			headSchoolSignUrl: formData?.headSchoolSignUrl || "",
-			advisorSignUrl: formData?.advisorSignUrl || "",
+			id: 0,
 			headSchoolID: 0,
-			instituteComSignUrl: formData?.instituteComSignUrl || "",
-			addNotes:
-				formData?.addNotes && formData.addNotes.length > 0
-					? formData.addNotes
-					: [{ committeeNumber: 0, meetingNumber: 0, date: null }],
+			headSchoolSignUrl: "",
+			advisorSignUrl: "",
+			instituteComSignUrl: "",
+			addNotes: formData.addNotes || [{ committeeNumber: 0, meetingNumber: 0, date: undefined as unknown as Date }],
 		},
 	});
-	const { control, handleSubmit, reset } = form;
+
+	const {
+		reset,
+		control,
+		formState: { errors },
+	} = form;
+
 	const { fields, append, remove } = useFieldArray({
 		control,
 		name: "addNotes",
 	});
 
-<<<<<<< HEAD
-	const clear = (type: "headSchool" | "advisor" | "instituteCom") => {
-		if (type === "headSchool" && sigCanvasHeadSchool.current) {
-			sigCanvasHeadSchool.current.clear();
-=======
-	const clear = (type: "headSchool" | "advisor" | "ChairOfAcademic") => {
-		if (type === "headSchool" && sigCanvasHeadschool?.current) {
-			sigCanvasHeadschool?.current.clear();
->>>>>>> 1008fb27e56ed08c61c3c54d0de46369275af97c
-		}
-		if (type === "advisor" && sigCanvasAdvisor.current) {
-			sigCanvasAdvisor.current.clear();
-		}
-		if (type === "instituteCom" && sigCanvasinstituteCom.current) {
-			sigCanvasinstituteCom.current.clear();
-		}
-	};
-
-	const handleDrawingSign = (type: "headSchool" | "advisor" | "instituteCom") => {
-		const canvas =
-			type === "headSchool"
-				? sigCanvasHeadschool?.current
-				: type === "advisor"
-				? sigCanvasAdvisor.current
-				: sigCanvasinstituteCom.current;
-
-		if (canvas?.isEmpty()) {
-			toast({
-				title: "Error",
-				description: "กรุณาวาดลายเซ็น",
-				variant: "destructive",
-			});
-			return;
-		}
-
-		if (canvas) {
-			const newSignUrl = canvas.getTrimmedCanvas().toDataURL("image/png");
-
-			if (type === "headSchool") {
-				form.setValue("headSchoolSignUrl", newSignUrl);
-				setOpenHeadSchoolDialog(false);
-			} else if (type === "advisor") {
-				form.setValue("advisorSignUrl", newSignUrl);
-				setOpenAdvisorDialog(false);
-			} else if (type === "instituteCom") {
-				form.setValue("instituteComSignUrl", newSignUrl);
-				setOpeninstituteComDialog(false);
-			}
-		}
-	};
-
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		console.log("Submitting form with values:", values);
 		setLoading(true);
 
-		if (user && user.position.toString()==="headSchool" && !values.headSchoolSignUrl && values.headSchoolID !== 0) {
+		if (
+			(values.advisorSignUrl == "" && user.role == "ADVISOR") ||
+			(values.headSchoolSignUrl == "" && values.headSchoolID != 0) ||
+			(values.instituteComSignUrl == "" && user.role == "SUPER_ADMIN")
+		) {
 			toast({
-				title: "Error",
-				description: "ไม่พบลายเซ็นหัวหน้าสาขาวิชา",
+				title: "เกิดข้อผิดพลาด",
+				description: "ไม่พบลายเซ็น",
 				variant: "destructive",
 			});
-			setLoading(false);
-			return;
-		}
-
-		if (user && user.position.toString()==="advisor"&&!values.advisorSignUrl) {
-			toast({
-				title: "Error",
-				description: "ไม่พบลายเซ็นอาจารย์ที่ปรึกษา",
-				variant: "destructive",
-			});
-			setLoading(false);
-			return;
-		}
-		
-		if (user && user.position.toString()==="instituteCom" &&!values.instituteComSignUrl) {
-			toast({
-				title: "Error",
-				description: "ไม่พบลายเซ็นอาจารย์ที่ปรึกษา",
-				variant: "destructive",
-			});
-			setLoading(false);
+			handleCancel();
 			return;
 		}
 
@@ -163,52 +115,58 @@ const ExameCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 			url: `/api/04ThesisExamCommitteeForm`,
 		});
 
-		try {
-			const res = await axios.patch(url, values);
-			if (res.status === 200) {
-				toast({
-					title: "Success",
-					description: "บันทึกสำเร็จแล้ว",
-					variant: "default",
-				});
-				setTimeout(() => {
-					form.reset();
-					router.refresh();
-					router.back();
-				}, 1000);
-			}
-		} catch (error) {
+		const res = await axios.patch(url, values);
+		if (res.status === 200) {
+			toast({
+				title: "Success",
+				description: "บันทึกสำเร็จแล้ว",
+				variant: "default",
+			});
+			setTimeout(() => {
+				form.reset();
+				router.refresh();
+				router.back();
+			}, 1000);
+		} else {
 			toast({
 				title: "Error",
-				description: "An error occurred",
+				description: res.statusText,
 				variant: "destructive",
 			});
-		} finally {
-			setLoading(false);
 		}
 	};
 
 	useEffect(() => {
-		if (formData) {
-			form.reset({
-				id: formId,
-				headSchoolSignUrl: formData.headSchoolSignUrl || "",
-				advisorSignUrl: formData.advisorSignUrl || "",
-				headSchoolID: formData.headSchoolID || null,
-				instituteComSignUrl: formData.instituteComSignUrl || "",
-				addNotes: formData.addNotes.length > 0 ? formData.addNotes : [{ committeeNumber: 0, meetingNumber: 0, date: null }],
-			});
-		}
-		if (user && user.position === "HEAD_OF_SCHOOL") {
-			form.setValue("headSchoolID", user.id);
-		}
-	}, [formId, formData, user]);
+		reset({
+			id: formData.id,
+			headSchoolID: user.position === "HEAD_OF_SCHOOL" ? user.id : 0,
+		});
+	}, [formData, user]);
 
-	const [showFields, setShowFields] = useState(false);
 	const handleAddNote = () => {
 		setShowFields(true);
-		append({ committeeNumber: 0, meetingNumber: 0, date: null });
+		append({ committeeNumber: 0, meetingNumber: 0, date: undefined as unknown as Date });
 	};
+
+	const handleCancel = () => {
+		setLoading(false);
+		setIsOpen(false);
+	};
+
+	useEffect(() => {
+		const errorKeys = Object.keys(errors);
+		if (errorKeys.length > 0) {
+			setIsOpen(false);
+			const firstErrorField = errorKeys[0] as keyof typeof errors;
+			const firstErrorMessage = errors[firstErrorField]?.message;
+			toast({
+				title: "เกิดข้อผิดพลาด",
+				description: firstErrorMessage,
+				variant: "destructive",
+			});
+			console.log(errors);
+		}
+	}, [errors]);
 
 	return (
 		<Form {...form}>
@@ -247,13 +205,8 @@ const ExameCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 					</div>
 
 					{/* ฝั่งขวา */}
-<<<<<<< HEAD
-					<div className="w-full sm:2/4">
-						<h1 className="text-center font-semibold mb-2">ขอเสนอเเต่งตั้งคณะกรรมการวิทยานิพนธ์</h1>
-=======
 					<div className="w-full ">
 						<h1 className="text-center font-semibold mb-2">ขอเสนอเเต่งตั้งคณะกรรมการสอบประมวลความรู้</h1>
->>>>>>> 1008fb27e56ed08c61c3c54d0de46369275af97c
 						<div className="flex items-center justify-center text-sm">
 							<CircleAlert className="mr-1" />
 							สามารถดูรายชื่อกรรมการที่ได้รับการรับรองเเล้ว
@@ -267,150 +220,124 @@ const ExameCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 					</div>
 				</div>
 				<div className="flex item-center justify-center ">
-					<div className="w-3/4 flex flex-col item-center justify-center md:flex-row border-2 rounded-lg py-5 my-5 border-[#eeee] ">
-						<div className="w-full sm:1/3 flex flex-col items-center mb-6 justify-center">
-							{/* อาจารย์ที่ปรึกษา */}
-							<div className="text-center mb-2">
-								อาจารย์ที่ปรึกษา / <br />
-								Thesis advisor
+					<div className="w-full flex flex-col item-center justify-center md:flex-row border-2 rounded-lg py-5 my-5 border-[#eeee] ">
+						{(user.role == "SUPER_ADMIN" || user.position == "ADVISOR") && (
+							<div className="w-full sm:1/3 flex flex-col items-center mb-6 justify-center">
+								{/* อาจารย์ที่ปรึกษา */}
+								<div className="text-center mb-2">
+									อาจารย์ที่ปรึกษา / <br />
+									Thesis advisor
+								</div>
+								<SignatureDialog
+									signUrl={formData?.advisorSignUrl || form.getValues("advisorSignUrl")}
+									disable={formData?.advisorSignUrl ? true : false}
+									onConfirm={handleDrawingAdvisorSign}
+									isOpen={openAdvisorDialog}
+									setIsOpen={setOpenAdvisorDialog}
+								/>
+								<Label className="mb-2">{`${formData?.student?.advisor?.prefix?.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
 							</div>
-							<Dialog open={openAdvisorDialog} onOpenChange={setOpenAdvisorDialog}>
-								<DialogTrigger onClick={() => setOpenAdvisorDialog(true)}>
-									<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
-										<Image
-											src={form.getValues().advisorSignUrl || "/asset/signature.png"}
-											width={120}
-											height={120}
-											alt="Signature"
-										/>
-									</div>
-								</DialogTrigger>
-								<DialogContent>
-									<DialogHeader>
-										<DialogTitle>เซ็นลายเซ็นอาจารย์ที่ปรึกษา</DialogTitle>
-									</DialogHeader>
-									<div className="w-full h-max flex justify-center mb-6 border-2">
-										<SignatureCanvas
-											ref={sigCanvasAdvisor}
-											penColor="black"
-											canvasProps={{ width: 300, height: 150, className: "signature-canvas" }}
-										/>
-									</div>
-									<div className="w-full h-full flex justify-center">
-										<Button
-											type="button"
-											onClick={() => clear("advisor")}
-											className="bg-[#F26522] w-auto px-6 text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-										>
-											ล้าง
-										</Button>
-										<Button
-											type="button"
-											onClick={() => handleDrawingSign("advisor")}
-											className="bg-[#F26522] w-auto text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-										>
-											บันทึก
-										</Button>
-									</div>
-								</DialogContent>
-							</Dialog>
-						</div>
+						)}
 
 						{/* หัวหน้าสาขาวิชา */}
-						<div className="w-full sm:1/3 flex flex-col items-center mb-6 justify-center">
-							<div className="text-center mb-2">
-								หัวหน้าสาขาวิชา / <br />
-								Chair of the School
+						{(user.role == "SUPER_ADMIN" || user.position == "HEAD_OF_SCHOOL") && (
+							<div className="w-full sm:1/3 flex flex-col items-center mb-6 justify-center">
+								<div className="text-center mb-2">
+									หัวหน้าสาขาวิชา / <br />
+									Head of the School
+								</div>
+								<SignatureDialog
+									disable={formData?.headSchoolSignUrl ? true : false}
+									signUrl={formData?.headSchoolSignUrl || form.getValues("headSchoolSignUrl")}
+									onConfirm={handleDrawingHeadSchoolSign}
+									isOpen={openHeadSchoolDialog}
+									setIsOpen={setOpenHeadSchoolDialog}
+								/>
+								{formData?.headSchoolID ? (
+									<Label className="mb-2">{`${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`}</Label>
+								) : (
+									<FormField
+										control={form.control}
+										name="headSchoolID"
+										render={({ field }) => (
+											<>
+												<Popover>
+													<PopoverTrigger
+														asChild
+														disabled={user?.position != "HEAD_OF_SCHOOL" && user?.role != "SUPER_ADMIN"}
+													>
+														<FormControl>
+															<Button
+																variant="outline"
+																role="combobox"
+																className={cn(
+																	"w-[180px] justify-between",
+																	!field.value && "text-muted-foreground"
+																)}
+															>
+																{field.value
+																	? `${
+																			headSchool?.find((headSchool) => headSchool.id === field.value)
+																				?.firstNameTH
+																	  } ${
+																			headSchool?.find((headSchool) => headSchool.id === field.value)
+																				?.lastNameTH
+																	  } `
+																	: "ค้นหาหัวหน้าสาขา"}
+																<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+															</Button>
+														</FormControl>
+													</PopoverTrigger>
+													<PopoverContent className="w-full p-0">
+														<Command>
+															<CommandInput placeholder="ค้นหาหัวหน้าสาขา" />
+															<CommandList>
+																<CommandEmpty>ไม่พบหัวหน้าสาขา</CommandEmpty>
+																{headSchool?.map((headSchool) => (
+																	<CommandItem
+																		value={`${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
+																		key={headSchool.id}
+																		onSelect={() => {
+																			form.setValue("headSchoolID", headSchool.id);
+																		}}
+																	>
+																		<Check
+																			className={cn(
+																				"mr-2 h-4 w-4",
+																				field.value === headSchool.id ? "opacity-100" : "opacity-0"
+																			)}
+																		/>
+																		{`${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
+																	</CommandItem>
+																))}
+															</CommandList>
+														</Command>
+													</PopoverContent>
+												</Popover>
+												<FormMessage />
+											</>
+										)}
+									/>
+								)}
 							</div>
-							<Dialog open={openHeadSchoolDialog} onOpenChange={setOpenHeadSchoolDialog}>
-								<DialogTrigger onClick={() => setOpenHeadSchoolDialog(true)}>
-									<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
-										<Image
-											src={form.getValues().headSchoolSignUrl || "/asset/signature.png"}
-											width={120}
-											height={120}
-											alt="Signature"
-										/>
-									</div>
-								</DialogTrigger>
-								<DialogContent>
-									<DialogHeader>
-										<DialogTitle>เซ็นลายเซ็นหัวหน้าสาขาวิชา</DialogTitle>
-									</DialogHeader>
-									<div className="w-full h-max flex justify-center mb-6 border-2">
-										<SignatureCanvas
-											ref={sigCanvasHeadSchool}
-											penColor="black"
-											canvasProps={{ width: 300, height: 150, className: "signature-canvas" }}
-										/>
-									</div>
-									<div className="w-full h-full flex justify-center">
-										<Button
-											type="button"
-											onClick={() => clear("headSchool")}
-											className="bg-[#F26522] w-auto px-6 text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-										>
-											ล้าง
-										</Button>
-										<Button
-											type="button"
-											onClick={() => handleDrawingSign("headSchool")}
-											className="bg-[#F26522] w-auto text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-										>
-											บันทึก
-										</Button>
-									</div>
-								</DialogContent>
-							</Dialog>
-						</div>
+						)}
 
 						{/* ประธานคณะทำงานวิชาการ */}
-						<div className="w-full sm:1/3 flex flex-col items-center mb-6 justify-center">
-							<div className="text-center mb-2">
-								ประธานคณะทำงานวิชาการ / <br />
-								Associate Dean for Academic Affairs
+						{(user.role == "SUPER_ADMIN" || user.position == "HEAD_OF_INSTITUTE") && (
+							<div className="w-full sm:1/3 flex flex-col items-center mb-6 justify-center">
+								<div className="text-center mb-2">
+									ประธานคณะทำงานวิชาการ / <br />
+									Associate Dean for Academic Affairs
+								</div>
+								<SignatureDialog
+									disable={formData?.instituteComSignUrl ? true : false}
+									signUrl={formData?.instituteComSignUrl || form.getValues("instituteComSignUrl")}
+									onConfirm={handleDrawingInstituteComSign}
+									isOpen={openinstituteComDialog}
+									setIsOpen={setOpeninstituteComDialog}
+								/>
 							</div>
-							<Dialog open={openinstituteComDialog} onOpenChange={setOpeninstituteComDialog}>
-								<DialogTrigger onClick={() => setOpeninstituteComDialog(true)}>
-									<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
-										<Image
-											src={form.getValues().instituteComSignUrl || "/asset/signature.png"}
-											width={120}
-											height={120}
-											alt="Signature"
-										/>
-									</div>
-								</DialogTrigger>
-								<DialogContent>
-									<DialogHeader>
-										<DialogTitle>เซ็นลายเซ็นประธานคณะทำงานวิชาการ</DialogTitle>
-									</DialogHeader>
-									<div className="w-full h-max flex justify-center mb-6 border-2">
-										<SignatureCanvas
-											ref={sigCanvasinstituteCom}
-											penColor="black"
-											canvasProps={{ width: 300, height: 150, className: "signature-canvas" }}
-										/>
-									</div>
-									<div className="w-full h-full flex justify-center">
-										<Button
-											type="button"
-											onClick={() => clear("instituteCom")}
-											className="bg-[#F26522] w-auto px-6 text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-										>
-											ล้าง
-										</Button>
-										<Button
-											type="button"
-											onClick={() => handleDrawingSign("instituteCom")}
-											className="bg-[#F26522] w-auto text-lg text-white rounded-xl ml-4 border-[#F26522] mr-4"
-										>
-											บันทึก
-										</Button>
-									</div>
-								</DialogContent>
-							</Dialog>
-						</div>
+						)}
 					</div>
 				</div>
 				<div className="w-3/4 text-sm mx-auto p-5 border-2 rounded-lg my-5 border-[#eeee]">
@@ -528,14 +455,17 @@ const ExameCommitteeFormUpdate = ({ formId }: { formId: number }) => {
 					>
 						ยกเลิก
 					</Button>
-					<Button
-						disabled={loading}
-						variant="outline"
-						type="submit"
-						className="bg-[#A67436] w-auto text-lg text-white rounded-xl ml-4 border-[#A67436] mr-4"
+					<ConfirmDialog
+						lebel="ยืนยัน"
+						title="ยืนยัน"
+						loading={loading}
+						onConfirm={form.handleSubmit(onSubmit)}
+						onCancel={handleCancel}
+						isOpen={isOpen}
+						setIsOpen={setIsOpen}
 					>
-						ยืนยัน
-					</Button>
+						ยืนยันเเล้วไม่สามารถเเก้ไขได้
+					</ConfirmDialog>
 				</div>
 			</form>
 		</Form>

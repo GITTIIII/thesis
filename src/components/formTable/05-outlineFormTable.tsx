@@ -81,7 +81,7 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 								<TableCell className="text-[#F26522] text-center">
 									<Link
 										href={
-											formData.formStatus == "อนุมัติ"
+											formData.formStatus == "อนุมัติ" || userData?.role == "STUDENT"
 												? `/user/form/${FormPath[selectedForm]}/${formData.id}`
 												: userData?.role == "STUDENT" && formData.formStatus == "เเก้ไข"
 												? `/user/form/${FormPath[selectedForm]}/updateStd/${formData.id}`

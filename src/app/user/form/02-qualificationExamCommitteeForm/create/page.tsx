@@ -1,9 +1,13 @@
-"use client";
 import learning1 from "@/../../public/asset/learning1.png";
+import { currentUser } from "@/app/action/current-user";
 import QualificationExamCommitteeFormCreate from "@/components/form/02-qualificationExamCommitteeForm/02-qualificationExamCommitteeFormCreate";
 import Image from "next/image";
 
-const QualificationExamCommitteeFormCreatePage = () => {
+export default async function QualificationExamCommitteeFormCreatePage() {
+	const user = await currentUser();
+	if (!user) {
+		return <div>ไม่พบข้อมูล</div>;
+	}
 	return (
 		<>
 			<div className="w-full h-max bg-transparent py-12 px-2 lg:px-28">
@@ -18,12 +22,10 @@ const QualificationExamCommitteeFormCreatePage = () => {
 						<div className="p-2 flex justify-center bg-[#A67436] text-white text-lg">
 							กรุณากรอกข้อมูลให้ครบถ้วน และตรวจสอบความถูกต้อง
 						</div>
-						<QualificationExamCommitteeFormCreate />
+						<QualificationExamCommitteeFormCreate user={user} />
 					</div>
 				</div>
 			</div>
 		</>
 	);
-};
-
-export default QualificationExamCommitteeFormCreatePage;
+}

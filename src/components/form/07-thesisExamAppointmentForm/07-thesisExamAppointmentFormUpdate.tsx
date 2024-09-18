@@ -1,15 +1,15 @@
+"use client";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
-import { IOutlineForm, IProcessPlan, IThesisExamAppointmentForm, IThesisProgressForm } from "@/interface/form";
+import { IOutlineForm, IThesisExamAppointmentForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -18,14 +18,12 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { DatePicker } from "@/components/datePicker/datePicker";
 import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import signature from "@/../../public/asset/signature.png";
-import ThesisProcessPlan from "../thesisProcessPlan";
 import Image from "next/image";
 import axios from "axios";
 import qs from "query-string";
-import useSWR, { mutate } from "swr";
 import InputForm from "@/components/inputForm/inputForm";
-import { Checkbox } from "@/components/ui/checkbox";
 import UserCertificate from "@/components/profile/userCertificate";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
@@ -52,14 +50,18 @@ const formSchema = z.object({
 	headSchoolID: z.number(),
 });
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
+const ThesisProgressFormUpdate = ({
+	formData,
+	user,
+	approvedForm,
+	headSchool,
+}: {
+	formData: IThesisExamAppointmentForm;
+	user: IUser;
+	approvedForm: IOutlineForm;
+	headSchool: IUser[];
+}) => {
 	const router = useRouter();
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
-	const { data: headSchool } = useSWR<IUser[]>("/api/getHeadSchool", fetcher);
-	const { data: formData } = useSWR<IThesisExamAppointmentForm>(formId ? `/api/get07FormById/${formId}` : "", fetcher);
-	const { data: approvedForm } = useSWR<IOutlineForm>(formData ? `/api/get05ApprovedFormByStdId/${formData?.studentID}` : "", fetcher);
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
 	const [openSign1, setOpenSign1] = useState(false);
@@ -154,7 +156,6 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 			});
 			setTimeout(() => {
 				form.reset();
-				mutate(`/api/get07FormById/${formId}`);
 				router.refresh();
 				router.back();
 			}, 1000);
@@ -172,9 +173,9 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 	useEffect(() => {
 		reset({
 			...form.getValues(),
-			id: formId,
+			id: formData.id,
 		});
-	}, [formId]);
+	}, [formData]);
 
 	const handleCancel = () => {
 		setLoading(false);
@@ -392,7 +393,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 							isOpen={openSign1}
 							setIsOpen={setOpenSign1}
 						/>
-						<Label>{`${formData?.student?.advisor?.prefix.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
+						<Label>{`${formData?.student?.advisor?.prefix?.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
 						<div className="w-max h-max flex mt-2 mb-4 items-center">
 							<Label className="mr-2">วันที่</Label>
 							{formData?.dateAdvisor ? (
@@ -437,7 +438,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 							isOpen={openSign2}
 							setIsOpen={setOpenSign2}
 						/>
-						<Label>{`${formData?.student?.advisor?.prefix.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
+						<Label>{`${formData?.student?.advisor?.prefix?.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
 						<div className="w-max h-max flex mt-2 items-center">
 							<Label className="mr-2">วันที่</Label>
 							{formData?.dateAdvisor ? (
@@ -508,7 +509,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 								isOpen={openAdvisor}
 								setIsOpen={setOpenAdvisor}
 							/>
-							<Label>{`${formData?.student?.advisor?.prefix.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
+							<Label>{`${formData?.student?.advisor?.prefix?.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
 
 							<div className="w-max h-max flex mt-2 items-center">
 								<Label className="mr-2">วันที่</Label>

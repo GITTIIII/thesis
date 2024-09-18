@@ -1,10 +1,14 @@
-"use client";
 import Image from "next/image";
 import learning1 from "@/../../public/asset/learning1.png";
 import QualificationExamCommitteeFormRead from "@/components/form/02-qualificationExamCommitteeForm/02-qualificationExamCommitteeFormRead";
+import { get02FormById } from "@/app/action/getFormById";
 
-export default function QualificationExamCommitteeFormReadPage({ params }: { params: { formId: number } }) {
+export default async function QualificationExamCommitteeFormReadPage({ params }: { params: { formId: number } }) {
 	const formId = params.formId;
+	const formData = await get02FormById(formId);
+	if (!formData) {
+		return <div>ไม่พบข้อมูล</div>;
+	}
 	return (
 		<>
 			<div className="w-full h-max bg-transparent py-12 px-2 lg:px-28">
@@ -16,7 +20,7 @@ export default function QualificationExamCommitteeFormReadPage({ params }: { par
 				</div>
 				<div className="h-full w-full flex items-center bg-[#EEEEEE] p-2 md:p-8 rounded-md">
 					<div className="w-full h-full">
-						<QualificationExamCommitteeFormRead formId={Number(formId)} />
+						<QualificationExamCommitteeFormRead formData={formData} />
 					</div>
 				</div>
 			</div>
