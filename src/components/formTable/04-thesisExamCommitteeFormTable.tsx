@@ -1,47 +1,15 @@
-"use Client";
+"use client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
 import { IOutlineCommitteeForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 import { useSelectForm } from "@/hook/selectFormHook";
 import { FormPath } from "../formPath/formPath";
+import Link from "next/link";
 
-
-async function get04FormByStdId(stdId: number | undefined) {
-	if (stdId) {
-		const res = await fetch(`/api/get04FormByStdId/${stdId}`, {
-			next: { revalidate: 10 },
-		});
-		return res.json();
-	}
-}
-
-async function get04FormData() {
-	const res = await fetch(`/api/04ThesisExamCommitteeForm`, {
-		next: { revalidate: 10 },
-	});
-	return res.json();
-}
-
-export default function OutlineCommitteeFormTable({ userData }: { userData: IUser | undefined }) {
-	const [formData, setFormData] = useState<IOutlineCommitteeForm[]>();
-	const { selectedForm, setSelectedForm } = useSelectForm();
-
-	useEffect(() => {
-		async function fetchData() {
-			if (userData?.role.toString() === "STUDENT") {
-				const formData = await get04FormByStdId(userData?.id);
-				setFormData(formData);
-			} else {
-				const formData = await get04FormData();
-				setFormData(formData);
-			}
-		}
-		fetchData();
-	}, [userData]);
+export default function OutlineCommitteeFormTable({ formData, user }: { user: IUser; formData?: IOutlineCommitteeForm[] }) {
+	const { selectedForm } = useSelectForm();
 
 	return (
 		<>
@@ -62,13 +30,8 @@ export default function OutlineCommitteeFormTable({ userData }: { userData: IUse
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{formData
-							?.filter(
-								(formData) =>
-									(userData?.role.toString() === "STUDENT" && userData?.id === formData?.student?.id) ||
-									userData?.role.toString() != "STUDENT"
-							)
-							.map((formData, index) => (
+						{formData &&
+							formData.map((formData, index) => (
 								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
 									<TableCell className="text-center">{index + 1}</TableCell>
 									<TableCell className="text-center">{new Date(formData.date).toLocaleDateString("th")}</TableCell>
@@ -81,11 +44,15 @@ export default function OutlineCommitteeFormTable({ userData }: { userData: IUse
 									<TableCell className="text-center">{formData.times}</TableCell>
 									<TableCell className="text-center">{new Date(formData.examDate).toLocaleDateString("th")}</TableCell>
 									<TableCell className="text-[#F26522] text-center">
-										<Link href={
-												userData?.role.toString() == "STUDENT"
+										<Link
+											href={
+												formData.headSchoolID || user?.role == "STUDENT"
 													? `/user/form/${FormPath[selectedForm]}/${formData.id}`
 													: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
-											}>คลิกเพื่อดูเพิ่มเติม</Link>
+											}
+										>
+											คลิกเพื่อดูเพิ่มเติม
+										</Link>
 									</TableCell>
 									<TableCell className="text-center">
 										<Button disabled={!formData.headSchoolID} type="button" variant="outline">
@@ -101,4 +68,3 @@ export default function OutlineCommitteeFormTable({ userData }: { userData: IUse
 		</>
 	);
 }
- 

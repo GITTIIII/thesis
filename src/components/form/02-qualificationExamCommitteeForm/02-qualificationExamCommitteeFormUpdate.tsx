@@ -1,31 +1,25 @@
-import { useEffect, useState, useRef } from "react";
+"use client";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import InputForm from "../../inputForm/inputForm";
 import { Check, ChevronsUpDown, CircleAlert } from "lucide-react";
-import Link from "next/link";
-import { IComprehensiveExamCommitteeForm } from "@/interface/form";
-import useSWR from "swr";
+import { IQualificationExamCommitteeForm } from "@/interface/form";
 import { useToast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import SignatureCanvas from "react-signature-canvas";
-import axios from "axios";
-import qs from "query-string";
 import { Form, FormControl, FormField, FormMessage } from "@/components/ui/form";
-import signature from "../../../../public/asset/signature.png";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import Image from "next/image";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { IUser } from "@/interface/user";
 import { cn } from "@/lib/utils";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+import axios from "axios";
+import qs from "query-string";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
+import Link from "next/link";
 
 const formSchema = z.object({
 	id: z.number(),
@@ -33,10 +27,15 @@ const formSchema = z.object({
 	headSchoolSignUrl: z.string(),
 });
 
-const QualificationExamCommitteeFormUpdate = ({ formId }: { formId: number }) => {
-	const { data: formData } = useSWR<IComprehensiveExamCommitteeForm>(`/api/get02FormById/${formId}`, fetcher);
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
-	const { data: headSchool } = useSWR<IUser[]>("/api/getHeadSchool", fetcher);
+const QualificationExamCommitteeFormUpdate = ({
+	formData,
+	user,
+	headSchool,
+}: {
+	formData: IQualificationExamCommitteeForm;
+	user: IUser;
+	headSchool: IUser[];
+}) => {
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
 	const [openSign, setOpenSign] = useState(false);
@@ -102,15 +101,15 @@ const QualificationExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 	useEffect(() => {
 		reset({
 			...form.getValues(),
-			id: formId,
+			id: formData.id,
 		});
-		if (user && user.position.toString() === "HEAD_OF_SCHOOL") {
+		if (user && user.position === "HEAD_OF_SCHOOL") {
 			reset({
 				...form.getValues(),
 				headSchoolID: user.id,
 			});
 		}
-	}, [formId]);
+	}, [formData, user]);
 
 	const handleCancel = () => {
 		setLoading(false);
@@ -131,7 +130,7 @@ const QualificationExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 					</Button>
 				</div>
 				<div className="flex flex-col justify-center md:flex-row">
-					<div className="w-full sm:2/4">
+					<div className="w-full ">
 						<h1 className="text-center font-semibold mb-2">รายละเอียดการสอบ</h1>
 						<InputForm value={`${formData?.times}`} label="สอบครั้งที่ / Exam. No." />
 						<InputForm value={`${formData?.trimester}`} label="ภาคเรียน / Trimester" />
@@ -147,12 +146,12 @@ const QualificationExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 							value={`${formData?.student.firstNameTH} ${formData?.student.lastNameTH}`}
 							label="ชื่อ-นามสกุล / Fullname"
 						/>
-						<InputForm value={`${formData?.student?.school.schoolNameTH}`} label="สาขาวิชา / School" />
-						<InputForm value={`${formData?.student?.program.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${formData?.student.program.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+						<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
+						<InputForm value={`${formData?.student.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
 					</div>
 
-					<div className="w-full sm:2/4">
+					<div className="w-full ">
 						<h1 className="text-center font-semibold mb-2">แบบคำขออนุมัติแต่งตั้งกรรมการสอบวัดคุณสมบัติ</h1>
 						<div className="flex items-center justify-center text-sm">
 							<CircleAlert className="mr-1" />
@@ -170,14 +169,15 @@ const QualificationExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 						<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
 							<h1 className="font-bold">ลายเซ็นหัวหน้าสาขาวิชา</h1>
 							<SignatureDialog
-								signUrl={form.getValues("headSchoolSignUrl")}
+								disable={formData?.headSchoolSignUrl ? true : false}
+								signUrl={formData?.headSchoolSignUrl || form.getValues("headSchoolSignUrl")}
 								onConfirm={handleDrawingSign}
 								isOpen={openSign}
 								setIsOpen={setOpenSign}
 							/>
 							{formData?.headSchoolID ? (
 								<Label className="mb-2">
-									{`${formData?.headSchool.prefix.prefixTH}${formData?.headSchool.firstNameTH} ${formData?.headSchool.lastNameTH}`}
+									{`${formData?.headSchool?.prefix?.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`}
 								</Label>
 							) : (
 								<FormField
@@ -186,7 +186,7 @@ const QualificationExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 									render={({ field }) => (
 										<>
 											<Popover>
-												<PopoverTrigger asChild disabled={user?.role.toString() != "SUPER_ADMIN"}>
+												<PopoverTrigger asChild disabled={user?.role != "SUPER_ADMIN"}>
 													<FormControl>
 														<Button
 															variant="outline"
@@ -198,13 +198,13 @@ const QualificationExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 														>
 															{field.value
 																? `${
-																		headSchool?.find((headSchool) => headSchool.id === field.value)
-																			?.prefix.prefixTH
+																		headSchool?.find((headSchool) => headSchool?.id === field.value)
+																			?.prefix?.prefixTH
 																  } ${
-																		headSchool?.find((headSchool) => headSchool.id === field.value)
+																		headSchool?.find((headSchool) => headSchool?.id === field.value)
 																			?.firstNameTH
 																  } ${
-																		headSchool?.find((headSchool) => headSchool.id === field.value)
+																		headSchool?.find((headSchool) => headSchool?.id === field.value)
 																			?.lastNameTH
 																  } `
 																: "เลือกหัวหน้าสาขา"}
@@ -219,20 +219,24 @@ const QualificationExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 															<CommandEmpty>ไม่พบหัวหน้าสาขา</CommandEmpty>
 															{headSchool?.map((headSchool) => (
 																<CommandItem
-																	value={`${headSchool.prefix.prefixTH}${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
-																	key={headSchool.id}
+																	value={`${headSchool?.prefix?.prefixTH}${headSchool?.firstNameTH} ${headSchool?.lastNameTH}`}
+																	key={headSchool?.id}
 																	onSelect={() => {
-																		form.setValue("headSchoolID", headSchool.id);
-																		setSchoolName(headSchool.school.schoolNameTH);
+																		form.setValue("headSchoolID", headSchool?.id);
+																		setSchoolName(
+																			headSchool?.school?.schoolNameTH
+																				? headSchool?.school?.schoolNameTH
+																				: ""
+																		);
 																	}}
 																>
 																	<Check
 																		className={cn(
 																			"mr-2 h-4 w-4",
-																			field.value === headSchool.id ? "opacity-100" : "opacity-0"
+																			field.value === headSchool?.id ? "opacity-100" : "opacity-0"
 																		)}
 																	/>
-																	{`${headSchool.prefix.prefixTH}${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
+																	{`${headSchool?.prefix?.prefixTH}${headSchool?.firstNameTH} ${headSchool?.lastNameTH}`}
 																</CommandItem>
 															))}
 														</CommandList>
@@ -245,7 +249,7 @@ const QualificationExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 								/>
 							)}
 							<Label className="my-2">{`หัวหน้าสาขาวิชา ${
-								form.getValues().headSchoolID === user?.id ? user.school.schoolNameTH : schoolName
+								form.getValues().headSchoolID === user?.id ? user.school?.schoolNameTH : schoolName
 							}`}</Label>
 						</div>
 					</div>

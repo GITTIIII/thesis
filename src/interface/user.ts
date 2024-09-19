@@ -6,53 +6,38 @@ import { ICoAdvisorStudents } from "./coAdvisorStudents";
 import { ICertificate } from "./certificate";
 
 export type IUser = {
-	name: string;
-	map(arg0: (data: IUser) => import("react").JSX.Element): import("react").ReactNode;
 	id: number;
 	prefixID: number;
-	prefix :IPrefix
+	prefix?: IPrefix ;
 	firstNameTH: string;
 	lastNameTH: string;
 	firstNameEN: string;
 	lastNameEN: string;
 	username: string;
-	password: string;
+	password?: string;
 	email: string;
 	phone: string;
 	sex: string;
 	degree: string;
-	certificate: ICertificate[];
+	certificate?: ICertificate[]; 
 
 	instituteID: number;
-	institute: IInstitute;
+	institute?: IInstitute;
 
 	schoolID: number;
-	school: ISchool;
+	school?: ISchool;
 
 	programID: number;
-	program: IProgram;
+	program?: IProgram | null ;
 
-	position: Position;
-	role: Role;
+	position: string;
+	role: string;
 	formState: number;
 	signatureUrl: string;
 	profileUrl: string;
 
 	advisorID: number;
-	advisor: IUser;
+	advisor?: IUser | null ;
 
-	coAdvisedStudents: ICoAdvisorStudents[]
+	coAdvisedStudents?: ICoAdvisorStudents[] | null ;
 };
-
-enum Position {
-	NONE,
-	ADVISOR,
-	HEAD_OF_SCHOOL,
-	HEAD_OF_INSTITUTE
-}
-
-enum Role {
-	STUDENT,
-	ADMIN,
-	SUPER_ADMIN,
-}

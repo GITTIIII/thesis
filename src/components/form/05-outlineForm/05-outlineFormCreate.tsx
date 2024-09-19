@@ -1,3 +1,4 @@
+"use client";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
@@ -9,20 +10,18 @@ import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { IUser } from "@/interface/user";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import signature from "@/../../public/asset/signature.png";
-import Image from "next/image";
-import axios from "axios";
-import qs from "query-string";
-import InputForm from "../../inputForm/inputForm";
 import { Textarea } from "../../ui/textarea";
 import { CircleAlert } from "lucide-react";
-import ThesisProcessPlan from "../thesisProcessPlan";
 import { IProcessPlan } from "@/interface/form";
 import { Select } from "@radix-ui/react-select";
 import { SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import useSWR from "swr";
 import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
+import ThesisProcessPlan from "../thesisProcessPlan";
+import axios from "axios";
+import qs from "query-string";
+import InputForm from "../../inputForm/inputForm";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const defaultProcessPlans: IProcessPlan[] = [
 	{
@@ -107,11 +106,8 @@ const formSchema = z.object({
 	studentID: z.number(),
 });
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-const OutlineFormCreate = () => {
+const OutlineFormCreate = ({user}:{user:IUser}) => {
 	const router = useRouter();
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
@@ -213,7 +209,7 @@ const OutlineFormCreate = () => {
 			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
-					<div className="w-full sm:2/4">
+					<div className="w-full">
 						<h1 className="mb-2 font-bold text-center">ข้อมูลนักศึกษา</h1>
 						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Full Name" />
 						<InputForm value={`${user?.username} `} label="รหัสนักศึกษา / Student ID" />
@@ -232,13 +228,13 @@ const OutlineFormCreate = () => {
 							</RadioGroup>
 						</div>
 
-						<InputForm value={`${user?.school.schoolNameTH}`} label="สาขาวิชา / School" />
-						<InputForm value={`${user?.program.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${user?.program.programYear}`} label="ปีหลักสูตร / Program Year" />
+						<InputForm value={`${user?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${user?.program?.programNameTH}`} label="หลักสูตร / Program" />
+						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร / Program Year" />
 					</div>
 
 					{/* ฝั่งขวา */}
-					<div className="w-full sm:2/4">
+					<div className="w-full">
 						<h1 className="text-center font-semibold mb-2">ชื่อโครงร่างวิทยานิพนธ์</h1>
 						<FormField
 							control={form.control}
@@ -284,18 +280,10 @@ const OutlineFormCreate = () => {
 						/>
 						<div className="flex flex-col items-center mb-6 justify-center">
 							<FormLabel>ลายเซ็น / Signature</FormLabel>
-							<Button variant="outline" type="button" className="w-60 mt-4 h-max">
-								<Image
-									src={user?.signatureUrl ? user?.signatureUrl : signature}
-									width={200}
-									height={100}
-									style={{
-										width: "auto",
-										height: "auto",
-									}}
-									alt="signature"
-								/>
-							</Button>
+							<SignatureDialog
+								signUrl={user?.signatureUrl && user.role === "STUDENT" ? user?.signatureUrl : ""}
+								disable={true}
+							/>
 							<Label className="mt-2">{`วันที่ ${
 								form.getValues().date ? form.getValues().date.toLocaleDateString("th") : "__________"
 							}`}</Label>

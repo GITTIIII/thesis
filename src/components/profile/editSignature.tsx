@@ -1,6 +1,4 @@
 "use client";
-import axios from "axios";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { GoFileDirectory, GoPencil, GoUpload } from "react-icons/go";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -11,19 +9,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { Form } from "@/components/ui/form";
 import Cropper, { Area, Point } from "react-easy-crop";
-import getCroppedImg from "@/lib/cropImage";
 import { Slider } from "@/components/ui/slider";
-import qs from "query-string";
 import { useToast } from "@/components/ui/use-toast";
 import { IUser } from "@/interface/user";
 import React, { useState, useEffect, useRef } from "react";
-import signature from "@/../../public/asset/signature.png";
 import { useRouter } from "next/navigation";
-
-import { useSWRConfig } from "swr";
+import axios from "axios";
+import Image from "next/image";
+import getCroppedImg from "@/lib/cropImage";
+import qs from "query-string";
+import signature from "@/../../public/asset/signature.png";
 import SignatureCanvas from "react-signature-canvas";
 
-const EditSignature = ({ user }: { user: IUser | undefined }) => {
+const EditSignature = ({ user }: { user: IUser }) => {
 	const [open, setOpen] = useState(false);
 	const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
 	const [zoom, setZoom] = useState<number>(1);
@@ -32,13 +30,14 @@ const EditSignature = ({ user }: { user: IUser | undefined }) => {
 	const [active, setActive] = useState(1);
 	const { toast } = useToast();
 	const router = useRouter();
-	const { mutate } = useSWRConfig();
 	const sigCanvas = useRef<SignatureCanvas>(null);
+
 	const clear = () => {
 		if (sigCanvas.current) {
 			sigCanvas.current.clear();
 		}
 	};
+
 	const formSchema = z.object({
 		id: z.number(),
 		signatureUrl: z.string(),
@@ -70,10 +69,6 @@ const EditSignature = ({ user }: { user: IUser | undefined }) => {
 		const url = qs.stringifyUrl({
 			url: `/api/user`,
 		});
-		// const aTag = document.createElement("a");
-		// aTag.href = values.signatureUrl;
-		// aTag.download = "test";
-		// aTag.click();
 		const res = await axios.patch(url, values);
 		if (res.status === 200) {
 			toast({
@@ -83,7 +78,6 @@ const EditSignature = ({ user }: { user: IUser | undefined }) => {
 			});
 			form.reset();
 			router.refresh();
-			mutate("/api/getCurrentUser");
 			setOpen(false);
 		} else {
 			toast({
@@ -303,4 +297,4 @@ const EditSignature = ({ user }: { user: IUser | undefined }) => {
 	);
 };
 
-export default EditSignature
+export default EditSignature;

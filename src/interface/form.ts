@@ -20,9 +20,9 @@ export type IComprehensiveExamCommitteeForm = {
 	numberStudent: number;
 	times: number;
 	examDay: Date;
-	headSchoolID: number;
-	headSchoolSignUrl: string;
-	headSchool: IUser;
+	headSchoolID?: number;
+	headSchoolSignUrl?: string;
+	headSchool?: IUser;
 
 	studentID: number;
 	student: IUser;
@@ -42,9 +42,9 @@ export type IQualificationExamCommitteeForm = {
 	numberStudent: number;
 	times: number;
 	examDay: Date;
-	headSchoolID: number;
-	headSchoolSignUrl: string;
-	headSchool: IUser;
+	headSchoolID?: number;
+	headSchoolSignUrl?: string;
+	headSchool?: IUser;
 
 	studentID: number;
 	student: IUser;
@@ -56,19 +56,22 @@ export type IOutlineCommitteeForm = {
 	date: Date;
 	trimester: number;
 	academicYear: string;
-	addNotes: AddNote[];
-	committeeMembers: { name: string }[];
+	committeeMembers: Array<any>;
 	times: number;
 	examDate: Date;
-	headSchoolID: number;
-	headSchoolSignUrl: string;
-	headSchool: IUser;
-	chairOfAcademicSignUrl:string;
+	
 	studentID: number;
 	student: IUser;
-	advisorID:number;
-	advisor:IUser;
-	advisorSignUrl: string;
+	
+	advisorSignUrl?: string;
+
+	headSchoolID?: number;
+	headSchoolSignUrl?: string;
+	headSchool?: IUser;
+
+	instituteComSignUrl?: string;
+
+	addNotes?: Array<any>;
 };
 
 //04
@@ -77,19 +80,24 @@ export type IExamCommitteeForm = {
 	date: Date;
 	trimester: number;
 	academicYear: string;
-	addNotes: AddNote[];
-	committeeMembers: { name: string }[];
+	committeeMembers: Array<any>;
 	times: number;
 	examDate: Date;
-	headSchoolID: number;
-	headSchoolSignUrl: string;
-	headSchool: IUser;
-	chairOfAcademicSignUrl:string;
+	
 	studentID: number;
 	student: IUser;
-	advisorID:number;
-	advisor:IUser;
-	advisorSignUrl: string;
+	
+	advisorID?: number;
+	advisor?: IUser;
+	advisorSignUrl?: string;
+	
+	headSchoolID?: number;
+	headSchoolSignUrl?: string;
+	headSchool?: IUser;
+	
+	instituteComSignUrl?: string;
+	
+	addNotes?: Array<any>;
 };
 
 interface AddNote {
@@ -110,24 +118,24 @@ export type IOutlineForm = {
 	thesisStartMonth: string;
 	thesisStartYear: string;
 	formStatus: string;
-	editComment: string;
+	editComment?: string;
 
 	studentID: number;
 	student: IUser;
 
-	outlineCommitteeID: number;
-	outlineCommittee: IExpert;
-	outlineCommitteeStatus: string;
-	outlineCommitteeComment: string;
-	outlineCommitteeSignUrl: string;
-	dateOutlineCommitteeSign: Date;
+	outlineCommitteeID?: number;
+	outlineCommittee?: IExpert;
+	outlineCommitteeStatus?: string;
+	outlineCommitteeComment?: string;
+	outlineCommitteeSignUrl?: string;
+	dateOutlineCommitteeSign?: Date;
 
-	instituteCommitteeID: number;
-	instituteCommittee: IUser;
-	instituteCommitteeStatus: string;
-	instituteCommitteeComment: string;
-	instituteCommitteeSignUrl: string;
-	dateInstituteCommitteeSign: Date;
+	instituteCommitteeID?: number;
+	instituteCommittee?: IUser;
+	instituteCommitteeStatus?: string;
+	instituteCommitteeComment?: string;
+	instituteCommitteeSignUrl?: string;
+	dateInstituteCommitteeSign?: Date;
 };
 
 // 06
@@ -136,45 +144,56 @@ export type IThesisProgressForm = {
 	times: number;
 	trimester: number;
 	status: string;
-	statusComment: string;
+	statusComment?: string;
 	percentage: number;
-	percentageComment: string;
-	issues: string;
+	percentageComment?: string;
+	issues?: string;
 	date: Date;
 	processPlan: Array<any>;
 	studentID: number;
 	student: IUser;
 
-	assessmentResult: string;
-	advisorSignUrl: string;
-	dateAdvisor: Date;
+	assessmentResult?: string;
+	advisorSignUrl?: string;
+	dateAdvisor?: Date;
 
-	headSchoolComment: string;
-	headSchoolSignUrl: string;
-	dateHeadSchool: Date;
-	headSchoolID: number;
-	headSchool: IUser;
+	headSchoolComment?: string;
+	headSchoolSignUrl?: string;
+	dateHeadSchool?: Date;
+	headSchoolID?: number;
+	headSchool?: IUser;
 };
 
 // 07
 export type IThesisExamAppointmentForm = {
 	id: number;
 	trimester: number;
-	academicYear: String;
-	gpa: String;
+	academicYear: string;
+	gpa: string;
 	credits: number;
 	date: Date;
-  dateExam: Date;
+	dateExam: Date;
 	studentID: number;
-  student: IUser;
+	student: IUser;
 
-	turnitinApproval: Boolean;
-	advisorSignUrl: string;
-	dateAdvisor: Date;
+	has01Certificate?: boolean;
+	has02Certificate?: boolean;
+	has03Certificate?: boolean;
+	hasOtherCertificate?: boolean;
 
-	headSchoolComment: string;
-	headSchoolSignUrl: string;
-	dateHeadSchool: Date;
-	headSchoolID: number;
-	headSchool: IUser;
+	presentationFund?: boolean;
+	presentationFundSignUrl?: string;
+	researchProjectFund?: boolean;
+	researchProjectFundSignUrl?: string;
+	turnitinVerified?: boolean;
+	turnitinVerifiedSignUrl?: string;
+
+	advisorSignUrl?: string;
+	dateAdvisor?: Date;
+
+	headSchoolComment?: string;
+	headSchoolSignUrl?: string;
+	dateHeadSchool?: Date;
+	headSchoolID?: number;
+	headSchool?: IUser;
 };

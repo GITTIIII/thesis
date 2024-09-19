@@ -1,20 +1,20 @@
-"use client";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { User } from "lucide-react";
+import { currentUser } from "@/app/action/current-user";
 import Image from "next/image";
 import React from "react";
 import signature from "@/../../public/asset/signature.png";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User } from "lucide-react";
-import useSWR from "swr";
 import EditSignature from "@/components/profile/editSignature";
 import EditPersonalInformation from "@/components/profile/editPersonalInfomation";
 import EditProfilePic from "@/components/profile/editProfilePic";
 import UserCertificate from "@/components/profile/userCertificate";
-import { IUser } from "@/interface/user";
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+export default async function Profile() {
+	const user = await currentUser();
 
-export default function Profile() {
-	const { data: user, isLoading } = useSWR<IUser>("/api/getCurrentUser", fetcher);
+	if (!user) {
+		return <div>Loading</div>;
+	}
 
 	return (
 		<>
@@ -28,7 +28,7 @@ export default function Profile() {
 							</div>
 							<div className="w-full h-full flex items-center justify-center">
 								<Avatar className="w-[128px] h-auto">
-									<AvatarImage src={user?.profileUrl} alt="Profile" />
+									<AvatarImage src={user?.profileUrl || "defaultProfileUrl"} alt="Profile" />
 									<AvatarFallback>
 										<User className="w-[128px] h-auto" />
 									</AvatarFallback>
@@ -44,11 +44,11 @@ export default function Profile() {
 							</div>
 							<div className="mt-4 md:flex ">
 								<section className="flex flex-col sm:w-max gap-4">
-									{user?.role.toString() === "STUDENT" && <p>{`รหัสนักศึกษา:  ${user?.username} `}</p>}
-									<p>{`ชื่อ - สกุล (ไทย):  ${user?.prefix.prefixTH ? user?.prefix.prefixTH : ""}${user?.firstNameTH} ${
+									{user?.role == "STUDENT" && <p>{`รหัสนักศึกษา:  ${user?.username} `}</p>}
+									<p>{`ชื่อ - สกุล (ไทย):  ${user?.prefix?.prefixTH ? user?.prefix?.prefixTH : ""}${user?.firstNameTH} ${
 										user?.lastNameTH
 									} `}</p>
-									<p>{`ชื่อ - สกุล (อังกฤษ):  ${user?.prefix.prefixEN ? user?.prefix.prefixEN : ""}${
+									<p>{`ชื่อ - สกุล (อังกฤษ):  ${user?.prefix?.prefixEN ? user?.prefix?.prefixEN : ""}${
 										user?.firstNameEN ? user?.firstNameEN : ""
 									} ${user?.lastNameEN ? user?.lastNameEN : ""} `}</p>
 									<p>{`เพศ:  ${user?.sex == "Male" ? "ชาย" : "หญิง"} `}</p>
@@ -68,15 +68,15 @@ export default function Profile() {
 								<label className=" text-xl ">ข้อมูลด้านการศึกษา</label>
 							</div>
 							<section className="mt-4  gap-4 flex  flex-col self-center">
-								<p>{`สำนักวิชา: ${user?.institute.instituteNameTH} `}</p>
-								<p>{`สาขาวิชา: ${user?.school.schoolNameTH} `}</p>
-								{user?.role.toString() == "STUDENT" && (
+								<p>{`สำนักวิชา: ${user?.institute?.instituteNameTH} `}</p>
+								<p>{`สาขาวิชา: ${user?.school?.schoolNameTH} `}</p>
+								{user?.role == "STUDENT" && (
 									<>
-										<p>{`หลักสูตร: ${user?.program ? user?.program.programNameTH : ""} ${
-											user?.program ? user?.program.programYear : ""
+										<p>{`หลักสูตร: ${user?.program ? user?.program?.programNameTH : ""} ${
+											user?.program ? user?.program?.programYear : ""
 										} `}</p>
 										<p>{`ระดับการศึกษา: ${user?.degree.toLowerCase() === "master" ? "ปริญญาโท" : "ปริญญาเอก"} `}</p>
-										<p>{`อ.ที่ปรึกษา: ${user?.advisor.prefix.prefixTH} ${user?.advisor.firstNameTH} ${user?.advisor.lastNameTH}`}</p>
+										<p>{`อ.ที่ปรึกษา: ${user?.advisor?.prefix?.prefixTH} ${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`}</p>
 									</>
 								)}
 							</section>
@@ -104,9 +104,9 @@ export default function Profile() {
 					</div>
 
 					{/* เเถว 3 */}
-					{user?.role.toString() === "STUDENT" && (
-						<div className="relative w-full h-auto bg-white p-4 rounded-xl shadow-[0px_0px_5px_1px_#e2e8f0]">
-							<label className=" text-xl ">ทุนการศึกษา</label>
+					{user?.role === "STUDENT" && (
+						<div className="relative w-full h-auto bg-white p-4 rounded-xl shadow-[0px_0px_5px_1px_#e2e8f0] mb-4">
+							<label className=" text-xl ">ทุนการศึกษา / Turnitin</label>
 							<div className="mt-4 flex flex-col gap-4">
 								<div>
 									<label>{`ทุน OROG ${
@@ -115,7 +115,7 @@ export default function Profile() {
 											: `(ป.เอก วารสารระดับนานาชาติ)`
 									}`}</label>
 									<div className="">
-										<UserCertificate user={user} certificateType="1" />
+										<UserCertificate canUpload={true} user={user} certificateType="1" />
 									</div>
 								</div>
 								<div>
@@ -125,7 +125,7 @@ export default function Profile() {
 											: `(ป.เอก นำเสนอผลงานระดับชาติ / นานาชาติ เเละ วารสารระดับนานาชาติ)`
 									}`}</label>
 									<div className="">
-										<UserCertificate user={user} certificateType="2" />
+										<UserCertificate canUpload={true} user={user} certificateType="2" />
 									</div>
 								</div>
 								<div>
@@ -133,13 +133,19 @@ export default function Profile() {
 										user?.degree == "Master" ? `(ป.โท ประชุมวิชาการระดับชาติ)` : `(ป.เอก วารสารระดับชาติ)`
 									}`}</label>
 									<div className="">
-										<UserCertificate user={user} certificateType="3" />
+										<UserCertificate canUpload={true} user={user} certificateType="3" />
 									</div>
 								</div>
 								<div>
 									<label>{`ทุนอื่นๆ`}</label>
 									<div className="">
-										<UserCertificate user={user} certificateType="4" />
+										<UserCertificate canUpload={true} user={user} certificateType="4" />
+									</div>
+								</div>
+								<div>
+									<label>{`ผลการตรวจสอบการคัดลอกวิทยานิพนธ์จากระบบ Turnitin`}</label>
+									<div className="">
+										<UserCertificate canUpload={true} user={user} certificateType="5" />
 									</div>
 								</div>
 							</div>

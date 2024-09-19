@@ -1,3 +1,4 @@
+"use client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "../ui/button";
 import { useToast } from "../ui/use-toast";
@@ -6,14 +7,15 @@ import signature from "@../../../public/asset/signature.png";
 import SignatureCanvas from "react-signature-canvas";
 import Image from "next/image";
 interface DialogProps {
-	signUrl: string | undefined;
-	onConfirm: Function;
-	isOpen: boolean;
-	setIsOpen: (open: boolean) => void;
+	signUrl?: string;
+	onConfirm?: Function;
+	isOpen?: boolean;
+	setIsOpen?: (open: boolean) => void;
+	disable: boolean;
 }
 
 export default function SignatureDialog(props: DialogProps) {
-	const { signUrl, onConfirm, isOpen, setIsOpen } = props;
+	const { signUrl, onConfirm, isOpen, setIsOpen, disable } = props;
 	const { toast } = useToast();
 	const sigCanvas = useRef<SignatureCanvas>(null);
 	const clear = () => {
@@ -25,20 +27,20 @@ export default function SignatureDialog(props: DialogProps) {
 	const handleDrawingSign = () => {
 		if (sigCanvas.current?.isEmpty()) {
 			toast({
-				title: "Error",
+				title: "เกิดข้อผิดพลาด",
 				description: "กรุณาวาดลายเซ็น",
 				variant: "destructive",
 			});
 			return;
 		} else if (sigCanvas.current && !sigCanvas.current.isEmpty()) {
-			if (isOpen) {
+			if (isOpen && onConfirm) {
 				onConfirm(sigCanvas.current.getTrimmedCanvas().toDataURL("image/png"));
 			}
 		}
 	};
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
-			<DialogTrigger onClick={() => setIsOpen(!isOpen)}>
+			<DialogTrigger onClick={() => setIsOpen?.(!isOpen)} disabled={disable}>
 				<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
 					<Image
 						src={signUrl ? signUrl : signature}

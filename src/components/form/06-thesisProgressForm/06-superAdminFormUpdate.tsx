@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -50,11 +51,17 @@ const formSchema = z.object({
 	headSchoolID: z.number(),
 });
 
-export default function SuperAdminForm06Update({ formId }: { formId: number }) {
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
-	const { data: headSchool } = useSWR<IUser[]>("/api/getHeadSchool", fetcher);
-	const { data: formData } = useSWR<IThesisProgressForm>(formId ? `/api/get06FormById/${formId}` : "", fetcher);
-	const { data: approvedForm } = useSWR<IOutlineForm>(formData ? `/api/get05ApprovedFormByStdId/${formData?.student.id}` : "", fetcher);
+export default function SuperAdminForm06Update({
+	formData,
+	user,
+	approvedForm,
+	headSchool,
+}: {
+	formData: IThesisProgressForm;
+	user: IUser;
+	approvedForm: IOutlineForm;
+	headSchool: IUser[];
+}) {
 	const { toast } = useToast();
 	const [openAdvisor, setOpenAdvisor] = useState(false);
 	const [openSchool, setOpenSchool] = useState(false);
@@ -78,11 +85,11 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 
 			assessmentResult: "",
 			advisorSignUrl: "",
-			dateAdvisor: new Date(),
+			dateAdvisor: undefined as unknown as Date,
 
 			headSchoolComment: "",
 			headSchoolSignUrl: "",
-			dateHeadSchool: new Date(),
+			dateHeadSchool: undefined as unknown as Date,
 			headSchoolID: 0,
 		},
 	});
@@ -177,22 +184,22 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 
 				assessmentResult: formData?.assessmentResult || "",
 				advisorSignUrl: formData?.advisorSignUrl || "",
-				dateAdvisor: new Date(formData?.dateAdvisor) || new Date(),
+				dateAdvisor: formData?.dateAdvisor || new Date(),
 
 				headSchoolComment: formData?.headSchoolComment || "",
 				headSchoolSignUrl: formData?.headSchoolSignUrl || "",
-				dateHeadSchool: new Date(formData?.dateHeadSchool) || new Date(),
+				dateHeadSchool: formData?.dateHeadSchool || new Date(),
 				headSchoolID: formData?.headSchoolID || 0,
 			}
 		);
 
-		if (user && user.role.toString() === "SUPER_ADMIN") {
+		if (user && user.role === "SUPER_ADMIN") {
 			reset({
 				...form.getValues(),
-				id: formId,
+				id: formData?.id,
 			});
 		}
-	}, [form, formData, formId, reset, user]);
+	}, [form, formData, reset, user]);
 
 	return (
 		<Form {...form}>
@@ -209,7 +216,7 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 				</div>
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
-					<div className="w-full sm:2/4">
+					<div className="w-full ">
 						<InputForm value={`${formData?.times} `} label="ครั้งที่ / No." />
 
 						<InputForm value={`${formData?.trimester} `} label="ภาคเรียน / Trimester" />
@@ -220,9 +227,9 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 							value={`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 							label="ชื่อ-นามสกุล / Fullname"
 						/>
-						<InputForm value={`${formData?.student?.school.schoolNameTH}`} label="สาขาวิชา / School" />
-						<InputForm value={`${formData?.student?.program.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${formData?.student?.program.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+						<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
+						<InputForm value={`${formData?.student?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
 
 						<div className="flex flex-col items-center mb-6 justify-center">
 							<FormLabel className="font-normal">ระดับการศึกษา / Education Level</FormLabel>
@@ -246,9 +253,9 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 					</div>
 					<div className="border-l border-[#eeee]"></div>
 					{/* ฝั่งขวา */}
-					<div className="w-full sm:2/4">
+					<div className="w-full ">
 						<InputForm
-							value={`${formData?.student.advisor?.prefix.prefixTH}${formData?.student.advisor?.firstNameTH} ${formData?.student.advisor?.lastNameTH}`}
+							value={`${formData?.student.advisor?.prefix?.prefixTH}${formData?.student.advisor?.firstNameTH} ${formData?.student.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษา / Advisor"
 						/>
 
@@ -348,9 +355,9 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 											formData?.assessmentResult
 												? true
 												: false ||
-												  (user?.position.toString() != "ADVISOR" &&
-														user?.position.toString() != "HEAD_OF_SCHOOL" &&
-														user?.role.toString() != "SUPER_ADMIN")
+												  (user?.position != "ADVISOR" &&
+														user?.position != "HEAD_OF_SCHOOL" &&
+														user?.role != "SUPER_ADMIN")
 										}
 										placeholder="ความเห็น..."
 										className="resize-none h-full text-md mb-2"
@@ -369,9 +376,7 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 								formData?.advisorSignUrl
 									? true
 									: false ||
-									  (user?.position.toString() != "ADVISOR" &&
-											user?.position.toString() != "HEAD_OF_SCHOOL" &&
-											user?.role.toString() != "SUPER_ADMIN")
+									  (user?.position != "ADVISOR" && user?.position != "HEAD_OF_SCHOOL" && user?.role != "SUPER_ADMIN")
 							}
 						>
 							<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
@@ -427,7 +432,7 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 						</DialogContent>
 					</Dialog>
 
-					<Label className="mb-2">{`${formData?.student?.advisor?.prefix.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
+					<Label className="mb-2">{`${formData?.student?.advisor?.prefix?.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
 
 					<div className="w-max h-max flex mt-2 items-center">
 						<Label className="mr-2">วันที่</Label>
@@ -459,8 +464,7 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 										disabled={
 											formData?.headSchoolComment
 												? true
-												: false ||
-												  (user?.position.toString() != "HEAD_OF_SCHOOL" && user?.role.toString() != "SUPER_ADMIN")
+												: false || (user?.position != "HEAD_OF_SCHOOL" && user?.role != "SUPER_ADMIN")
 										}
 										placeholder="ความเห็น..."
 										className="resize-none h-full text-md mb-2"
@@ -476,8 +480,7 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 						<DialogTrigger
 							onClick={() => setOpenSchool(!openSchool)}
 							disabled={
-								(formData?.headSchoolSignUrl || user?.position.toString() != "HEAD_OF_SCHOOL") &&
-								user?.role.toString() != "SUPER_ADMIN"
+								(formData?.headSchoolSignUrl || user?.position != "HEAD_OF_SCHOOL") && user?.role != "SUPER_ADMIN"
 									? true
 									: false
 							}
@@ -545,9 +548,7 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 									<Popover>
 										<PopoverTrigger
 											asChild
-											disabled={
-												user?.position.toString() != "HEAD_OF_SCHOOL" && user?.role.toString() != "SUPER_ADMIN"
-											}
+											disabled={user?.position != "HEAD_OF_SCHOOL" && user?.role != "SUPER_ADMIN"}
 										>
 											<FormControl>
 												<Button
@@ -557,8 +558,11 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 												>
 													{field.value
 														? `${
-																headSchool?.find((headSchool) => headSchool.id === field.value)?.firstNameTH
-														  } ${headSchool?.find((headSchool) => headSchool.id === field.value)?.lastNameTH} `
+																headSchool?.find((headSchool) => headSchool?.id === field.value)
+																	?.firstNameTH
+														  } ${
+																headSchool?.find((headSchool) => headSchool?.id === field.value)?.lastNameTH
+														  } `
 														: "ค้นหาหัวหน้าสาขา"}
 													<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 												</Button>
@@ -571,19 +575,19 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 													<CommandEmpty>ไม่พบหัวหน้าสาขา</CommandEmpty>
 													{headSchool?.map((headSchool) => (
 														<CommandItem
-															value={`${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
-															key={headSchool.id}
+															value={`${headSchool?.firstNameTH} ${headSchool?.lastNameTH}`}
+															key={headSchool?.id}
 															onSelect={() => {
-																form.setValue("headSchoolID", headSchool.id);
+																form.setValue("headSchoolID", headSchool?.id);
 															}}
 														>
 															<Check
 																className={cn(
 																	"mr-2 h-4 w-4",
-																	field.value === headSchool.id ? "opacity-100" : "opacity-0"
+																	field.value === headSchool?.id ? "opacity-100" : "opacity-0"
 																)}
 															/>
-															{`${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
+															{`${headSchool?.firstNameTH} ${headSchool?.lastNameTH}`}
 														</CommandItem>
 													))}
 												</CommandList>
@@ -616,16 +620,16 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 						{formData && (
 							<ThesisProcessPlan
 								degree={user!.degree}
-								canEdit={user?.position.toString() === "ADVISOR"}
+								canEdit={user?.position === "ADVISOR"}
 								processPlans={formData?.processPlan}
 								setProcessPlans={setProcessPlans}
 							/>
 						)}
 					</div>
 				</div>
-				{(formData?.student.advisorID == user?.id && user?.position.toString() === "ADVISOR") ||
-				(!formData?.headSchoolID && user?.position.toString() === "HEAD_OF_SCHOOL") ||
-				user?.role.toString() === "SUPER_ADMIN" ? (
+				{(formData?.student.advisorID == user?.id && user?.position === "ADVISOR") ||
+				(!formData?.headSchoolID && user?.position === "HEAD_OF_SCHOOL") ||
+				user?.role === "SUPER_ADMIN" ? (
 					<div className="w-full flex px-20 mt-4 lg:flex justify-center">
 						<Button
 							variant="outline"

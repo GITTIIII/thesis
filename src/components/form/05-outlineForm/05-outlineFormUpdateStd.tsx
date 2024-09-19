@@ -1,3 +1,4 @@
+"use client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -11,17 +12,14 @@ import { useToast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import signature from "@/../../public/asset/signature.png";
-import InputForm from "@/components/inputForm/inputForm";
-import Image from "next/image";
-import ThesisProcessPlan from "../thesisProcessPlan";
-import useSWR, { mutate } from "swr";
-import axios from "axios";
-import qs from "query-string";
 import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
 import { IUser } from "@/interface/user";
 import { CircleAlert } from "lucide-react";
-import FormStatus from "@/components/formStatus/formStatus";
+import InputForm from "@/components/inputForm/inputForm";
+import ThesisProcessPlan from "../thesisProcessPlan";
+import axios from "axios";
+import qs from "query-string";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const formSchema = z.object({
 	id: z.number(),
@@ -31,12 +29,8 @@ const formSchema = z.object({
 	formStatus: z.string(),
 });
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
+const OutlineFormUpdateStd = ({ formData, user }: { formData: IOutlineForm; user: IUser }) => {
 	const router = useRouter();
-	const { data: formData } = useSWR<IOutlineForm>(`/api/get05FormById/${formId}`, fetcher);
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -68,7 +62,6 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 			setTimeout(() => {
 				setIsOpen(false);
 				form.reset();
-				mutate(`/api/get05FormById/${formId}`);
 				router.refresh();
 				router.back();
 			}, 1000);
@@ -86,12 +79,12 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 	useEffect(() => {
 		reset({
 			...form.getValues(),
-			id: formId,
+			id: formData.id,
 			thesisNameTH: formData?.thesisNameTH,
 			thesisNameEN: formData?.thesisNameEN,
 			abstract: formData?.abstract,
 		});
-	}, [formId, formData]);
+	}, [formData]);
 
 	const handleCancel = () => {
 		setLoading(false);
@@ -125,7 +118,7 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 				</div>
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
-					<div className="w-full sm:2/4">
+					<div className="w-full">
 						<div className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</div>
 
 						<InputForm
@@ -147,13 +140,13 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 							</RadioGroup>
 						</div>
 
-						<InputForm value={`${formData?.student?.school.schoolNameTH}`} label="สาขาวิชา / School" />
-						<InputForm value={`${formData?.student?.program.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${formData?.student?.program.programYear}`} label="ปีหลักสูตร / Program Year" />
+						<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
+						<InputForm value={`${formData?.student?.program?.programYear}`} label="ปีหลักสูตร / Program Year" />
 					</div>
 
 					{/* ฝั่งขวา */}
-					<div className="w-full sm:2/4">
+					<div className="w-full">
 						<div className="text-center font-semibold mb-2">ชื่อโครงร่างวิทยานิพนธ์</div>
 						<FormField
 							control={form.control}
@@ -207,18 +200,10 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 						/>
 						<div className="flex flex-col items-center mt-6 justify-center">
 							<Label>ลายเซ็น / Signature</Label>
-							<Button variant="outline" type="button" className="w-60 my-4 h-max">
-								<Image
-									src={formData?.student.signatureUrl ? formData?.student.signatureUrl : signature}
-									width={200}
-									height={100}
-									style={{
-										width: "auto",
-										height: "auto",
-									}}
-									alt="signature"
-								/>
-							</Button>
+							<SignatureDialog
+								signUrl={formData?.student.signatureUrl ? formData?.student.signatureUrl : ""}
+								disable={true}
+							/>
 							<Label className="mt-2">{`วันที่ ${
 								formData?.date ? new Date(formData?.date).toLocaleDateString("th") : "__________"
 							}`}</Label>
@@ -255,18 +240,10 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 								defaultValue={formData?.outlineCommitteeComment}
 							/>
 						</div>
-						<Button variant="outline" type="button" className="w-60 my-4 h-max">
-							<Image
-								src={formData?.outlineCommitteeSignUrl ? formData?.outlineCommitteeSignUrl : signature}
-								width={100}
-								height={100}
-								style={{
-									width: "auto",
-									height: "auto",
-								}}
-								alt="signature"
-							/>
-						</Button>
+						<SignatureDialog
+							disable={true}
+							signUrl={formData?.outlineCommitteeSignUrl ? formData?.outlineCommitteeSignUrl : ""}
+						/>
 						<Label className="mb-2">
 							{formData?.outlineCommittee
 								? `${formData?.outlineCommittee.prefix}${formData?.outlineCommittee.firstName} ${formData?.outlineCommittee.lastName}`
@@ -304,21 +281,13 @@ const OutlineFormUpdateStd = ({ formId }: { formId: number }) => {
 								defaultValue={formData?.instituteCommitteeComment}
 							/>
 						</div>
-						<Button variant="outline" type="button" className="w-60 my-4 h-max">
-							<Image
-								src={formData?.instituteCommitteeSignUrl ? formData?.instituteCommitteeSignUrl : signature}
-								width={100}
-								height={100}
-								style={{
-									width: "auto",
-									height: "auto",
-								}}
-								alt="signature"
-							/>
-						</Button>
+						<SignatureDialog
+							disable={true}
+							signUrl={formData?.instituteCommitteeSignUrl ? formData?.instituteCommitteeSignUrl : ""}
+						/>
 						<Label className="mb-2">
 							{formData?.instituteCommittee
-								? `${formData?.instituteCommittee.prefix.prefixTH}${formData?.instituteCommittee.firstNameTH} ${formData?.instituteCommittee.lastNameTH}`
+								? `${formData?.instituteCommittee?.prefix?.prefixTH}${formData?.instituteCommittee.firstNameTH} ${formData?.instituteCommittee.lastNameTH}`
 								: ""}
 						</Label>
 						<Label className="mb-2">{`(ประธานคณะกรรมการ)`}</Label>

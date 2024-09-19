@@ -75,7 +75,6 @@ const EditCertificate = ({ user, certificateType }: { user: IUser | undefined; c
 		formData.append("certificateType", values.certificateType);
 		formData.append("description", values.description);
 		formData.append("id", values.id.toString());
-		console.log(formData);
 
 		const url = qs.stringifyUrl({
 			url: `/api/certificate`,

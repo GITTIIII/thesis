@@ -15,7 +15,7 @@ import { IUser } from "@/interface/user";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Check, ChevronsUpDown } from "lucide-react";
-import useSWR, { useSWRConfig } from "swr";
+import useSWR from "swr";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
@@ -23,12 +23,12 @@ import { IPrefix } from "@/interface/prefix";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
+const EditPersonalInformation = ({ user }: { user: IUser }) => {
 	const { toast } = useToast();
 	const router = useRouter();
 	const [open, setOpen] = useState(false);
-	const { mutate } = useSWRConfig();
 	const { data: prefix, isLoading } = useSWR("/api/prefix", fetcher);
+
 	const formSchema = z.object({
 		id: z.number(),
 		prefixID: z.number(),
@@ -75,7 +75,6 @@ const EditPersonalInformation = ({ user }: { user: IUser | undefined }) => {
 			});
 			form.reset();
 			router.refresh();
-			mutate("/api/getCurrentUser");
 			setOpen(false);
 		} else {
 			toast({

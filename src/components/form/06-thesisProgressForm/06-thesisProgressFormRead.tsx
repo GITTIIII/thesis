@@ -1,24 +1,26 @@
+"use client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Textarea } from "@/components/ui/textarea";
-import signature from "@/../../public/asset/signature.png";
-import ThesisProcessPlan from "../thesisProcessPlan";
-import Image from "next/image";
-import InputForm from "@/components/inputForm/inputForm";
 import { IOutlineForm, IThesisProgressForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 import { Label } from "@/components/ui/label";
-import useSWR from "swr";
+import ThesisProcessPlan from "../thesisProcessPlan";
+import InputForm from "@/components/inputForm/inputForm";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
+const ThesisProgressFormRead = ({
+	formData,
+	user,
+	approvedForm,
+}: {
+	formData: IThesisProgressForm;
+	user: IUser;
+	approvedForm: IOutlineForm;
+}) => {
 	const router = useRouter();
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
-	const { data: formData } = useSWR<IThesisProgressForm>(`/api/get06FormById/${formId}`, fetcher);
-	const { data: approvedForm } = useSWR<IOutlineForm>(`/api/get05ApprovedFormByStdId/${formData?.studentID}`, fetcher);
 
 	return (
 		<>
@@ -35,7 +37,7 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 				</div>
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
-					<div className="w-full sm:2/4">
+					<div className="w-full">
 						<InputForm value={`${formData?.times} `} label="ครั้งที่ / No." />
 
 						<InputForm value={`${formData?.trimester} `} label="ภาคเรียน / Trimester" />
@@ -46,9 +48,9 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 							value={`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 							label="ชื่อ-นามสกุล / Fullname"
 						/>
-						<InputForm value={`${formData?.student?.school.schoolNameTH}`} label="สาขาวิชา / School" />
-						<InputForm value={`${formData?.student?.program.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${formData?.student?.program.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+						<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
+						<InputForm value={`${formData?.student?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
 
 						<div className="flex flex-col items-center mb-6 justify-center">
 							<Label className="font-normal">ระดับการศึกษา / Education Level</Label>
@@ -72,7 +74,7 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 					</div>
 					<div className="border-l border-[#eeee]"></div>
 					{/* ฝั่งขวา */}
-					<div className="w-full sm:2/4">
+					<div className="w-full">
 						<InputForm
 							value={`${formData?.student.advisor?.firstNameTH} ${formData?.student.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษา / Advisor"
@@ -86,11 +88,11 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 
 							<RadioGroup className="space-y-1 mt-2" disabled>
 								<div>
-									<RadioGroupItem value="AsPlaned" checked={formData?.status == "AsPlaned"} />
+									<RadioGroupItem value="AsPlaned" checked={formData?.status == "เป็นไปตามแผนที่วางไว้ทุกประการ"} />
 									<Label className="ml-2 font-normal">เป็นไปตามแผนที่วางไว้ทุกประการ</Label>
 								</div>
 								<div>
-									<RadioGroupItem value="Adjustments" checked={formData?.status == "Adjustments"} />
+									<RadioGroupItem value="Adjustments" checked={formData?.status == "มีการเปลี่ยนแผนที่วางไว้"} />
 									<Label className="ml-2 font-normal mb-6">มีการเปลี่ยนแผนที่วางไว้</Label>
 								</div>
 							</RadioGroup>
@@ -129,15 +131,10 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 						</div>
 						<div className="flex flex-col items-center mt-6 mb-6 justify-center">
 							<Label>ลายเซ็น / Signature</Label>
-							<Button variant="outline" type="button" className="w-60 mt-4 h-max">
-								<Image
-									src={formData?.student.signatureUrl ? formData?.student.signatureUrl : signature}
-									width={200}
-									height={100}
-									style={{ width: "auto", height: "auto" }}
-									alt="signature"
-								/>
-							</Button>
+							<SignatureDialog
+								signUrl={formData?.student.signatureUrl ? formData?.student.signatureUrl : ""}
+								disable={true}
+							/>
 							<Label className="mt-4">{`วันที่ ${
 								formData?.date ? new Date(formData?.date).toLocaleDateString("th") : "__________"
 							}`}</Label>
@@ -146,58 +143,45 @@ const ThesisProgressFormRead = ({ formId }: { formId: number }) => {
 				</div>
 				<hr className="่่justify-center mx-auto w-full sm:w-max my-5 border-t-2 border-[#eeee]" />
 
-				{/* อาจารย์ที่ปรึกษา */}
-				<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
-					<h1 className="mb-2 font-bold text-center">ผลการประเมินความคืบหน้าของการทำวิทยานิพนธ์โดยอาจารย์ที่ปรึกษา</h1>
+				<div className="w-full flex flex-col sm:flex-row justify-center">
+					{/* อาจารย์ที่ปรึกษา */}
+					<div className="w-full h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
+						<h1 className="mb-2 font-bold text-center">ผลการประเมินความคืบหน้าของการทำวิทยานิพนธ์โดยอาจารย์ที่ปรึกษา</h1>
 
-					<div className="w-full sm:w-2/4 h-max">
-						<Textarea className="resize-none" disabled defaultValue={formData?.assessmentResult} />
+						<div className="w-3/4 h-max">
+							<Textarea className="resize-none" disabled defaultValue={formData?.assessmentResult} />
+						</div>
+
+						<SignatureDialog signUrl={formData?.advisorSignUrl ? formData?.advisorSignUrl : ""} disable={true} />
+
+						<Label className="mb-2">{`${formData?.student?.advisor?.prefix?.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
+
+						<Label className="mt-2">{`วันที่ ${
+							formData?.dateAdvisor ? new Date(formData?.dateAdvisor).toLocaleDateString("th") : "__________"
+						}`}</Label>
 					</div>
 
-					<Button variant="outline" type="button" className="w-60 my-4 h-max">
-						<Image
-							src={formData?.advisorSignUrl ? formData?.advisorSignUrl : signature}
-							width={200}
-							height={100}
-							style={{ width: "auto", height: "auto" }}
-							alt="signature"
-						/>
-					</Button>
+					{/* หัวหน้าสาขา */}
+					<div className="w-full h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
+						<h1 className="mb-2 font-bold text-center">ความเห็นของหัวหน้าสาขาวิชา</h1>
+						<div className="w-3/4 h-max">
+							<Textarea className="resize-none" disabled defaultValue={formData?.headSchoolComment} />
+						</div>
 
-					<Label className="mb-2">{`${formData?.student?.advisor?.prefix.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
+						<SignatureDialog signUrl={formData?.headSchoolSignUrl ? formData?.headSchoolSignUrl : ""} disable={true} />
 
-					<Label className="mt-2">{`วันที่ ${
-						formData?.dateAdvisor ? new Date(formData?.dateAdvisor).toLocaleDateString("th") : "__________"
-					}`}</Label>
-				</div>
+						<Label className="mb-2">
+							{formData?.headSchool
+								? `${formData?.headSchool?.prefix?.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`
+								: "หัวหน้าสาขาวิชา"}
+						</Label>
 
-				{/* หัวหน้าสาขา */}
-				<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
-					<h1 className="mb-2 font-bold text-center">ความเห็นของหัวหน้าสาขาวิชา</h1>
-
-					<div className="w-full sm:w-2/4 h-max">
-						<Textarea className="resize-none" disabled defaultValue={formData?.headSchoolComment} />
+						<Label className="mt-2">{`วันที่ ${
+							formData?.dateHeadSchool ? new Date(formData?.dateHeadSchool).toLocaleDateString("th") : "__________"
+						}`}</Label>
 					</div>
-
-					<Button variant="outline" type="button" className="w-60 my-4 h-max">
-						<Image
-							src={formData?.headSchoolSignUrl ? formData?.headSchoolSignUrl : signature}
-							width={200}
-							height={100}
-							alt="signature"
-						/>
-					</Button>
-
-					<Label className="mb-2">
-						{formData?.headSchool
-							? `${formData?.headSchool.prefix.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`
-							: ""}
-					</Label>
-
-					<Label className="mt-2">{`วันที่ ${
-						formData?.dateHeadSchool ? new Date(formData?.dateHeadSchool).toLocaleDateString("th") : "__________"
-					}`}</Label>
 				</div>
+
 				<hr className="่่justify-center mx-auto w-full sm:w-max my-5 border-t-2 border-[#eeee]" />
 				<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg">
 					<h1 className="mb-2 font-bold text-center">เเผนการดำเนินการจัดทำวิทยานิพนธ์</h1>

@@ -17,6 +17,7 @@ import { Menu, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import useSWR from "swr";
 import { useRouter } from "next/navigation";
+import { IUser } from "@/interface/user";
 
 interface Message {
 	topic: string;
@@ -29,14 +30,14 @@ type Props = {
 		path: string;
 	}[];
 	notification?: boolean;
+	user: IUser
 };
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-export default function Navbar({ menu, notification = false }: Props) {
-	const { data: user, isLoading } = useSWR("/api/getCurrentUser", fetcher);
+export default function Navbar({ menu, notification = false, user }: Props) {
+	// const { data: user, isLoading } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const router = useRouter();
-
 	const { ref, isComponentVisible, setIsComponentVisible } = useComponentVisible();
 	const message = [
 		{
@@ -83,7 +84,7 @@ export default function Navbar({ menu, notification = false }: Props) {
 					<li className="hidden xl:flex">{notification && <Notification messages={message} />}</li>
 					<li className="hidden md:flex text-gray-700">
 						<div>
-							{user?.role.toString() === "STUDENT"
+							{user?.role === "STUDENT"
 								? `${user?.username} ${user?.firstNameTH} ${user?.lastNameTH}`
 								: `${user?.prefix ? user?.prefix.prefixTH : ""}${user?.firstNameTH} ${user?.lastNameTH}`}
 						</div>
@@ -141,7 +142,7 @@ export default function Navbar({ menu, notification = false }: Props) {
 						href=""
 						className="block px-4 py-2  hover:bg-gray-100 border-b-2 text-center md:hidden transition-colors duration-200"
 					>
-						{user?.role.toString() === "STUDENT"
+						{user?.role === "STUDENT"
 							? `${user?.username} ${user?.firstNameTH} ${user?.lastNameTH}`
 							: `${user?.prefix ? user?.prefix.prefixTH : ""}${user?.firstNameTH} ${user?.lastNameTH}`}
 					</Link>

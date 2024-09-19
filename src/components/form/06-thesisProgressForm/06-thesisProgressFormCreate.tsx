@@ -1,7 +1,7 @@
 "use client";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,17 +9,16 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
-import signature from "@/../../public/asset/signature.png";
-import ThesisProcessPlan from "../thesisProcessPlan";
-import Image from "next/image";
-import axios from "axios";
-import qs from "query-string";
 import { useToast } from "@/components/ui/use-toast";
-import InputForm from "@/components/inputForm/inputForm";
 import { IOutlineForm, IProcessPlan, IThesisProgressForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 import { Label } from "@/components/ui/label";
-import useSWR from "swr";
+import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
+import ThesisProcessPlan from "../thesisProcessPlan";
+import axios from "axios";
+import qs from "query-string";
+import InputForm from "@/components/inputForm/inputForm";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const formSchema = z.object({
 	times: z.number().min(1, { message: "กรุณาระบุครั้ง / Times requierd" }),
@@ -37,15 +36,19 @@ const formSchema = z.object({
 	studentID: z.number(),
 });
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-const ThesisProgressFormCreate = () => {
+const ThesisProgressFormCreate = ({
+	user,
+	approvedForm,
+	last06Form,
+}: {
+	user: IUser;
+	approvedForm: IOutlineForm;
+	last06Form: IThesisProgressForm;
+}) => {
 	const router = useRouter();
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
-	const { data: approvedForm } = useSWR<IOutlineForm>(`/api/get05ApprovedFormByStdId/${user?.id}`, fetcher);
-	const { data: last06Form } = useSWR<IThesisProgressForm>(`/api/getLast06FormByStdId/${user?.id}`, fetcher);
 	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
 	const [loading, setLoading] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
 	const [isDisabled, setIsDisabled] = useState(false);
 	const { toast } = useToast();
 
@@ -117,20 +120,25 @@ const ThesisProgressFormCreate = () => {
 	}, [user, reset]);
 
 	const handleRadioChange = (value: string) => {
-		if (value === "Adjustments") {
+		if (value === "มีการเปลี่ยนแผนที่วางไว้") {
 			setIsDisabled(false);
 			reset({
 				...form.getValues(),
-				status: "Adjustments",
+				status: "มีการเปลี่ยนแผนที่วางไว้",
 			});
-		} else if (value === "AsPlaned") {
+		} else if (value === "เป็นไปตามแผนที่วางไว้ทุกประการ") {
 			setIsDisabled(true);
 			reset({
 				...form.getValues(),
-				status: "AsPlaned",
+				status: "เป็นไปตามแผนที่วางไว้ทุกประการ",
 				statusComment: "",
 			});
 		}
+	};
+
+	const handleCancel = () => {
+		setLoading(false);
+		setIsOpen(false);
 	};
 
 	return (
@@ -139,7 +147,7 @@ const ThesisProgressFormCreate = () => {
 				<div className="flex flex-col justify-center md:flex-row">
 					{/* ฝั่งซ้าย */}
 
-					<div className="w-full sm:2/4 ">
+					<div className="w-full">
 						<FormField
 							control={form.control}
 							name="times"
@@ -182,9 +190,9 @@ const ThesisProgressFormCreate = () => {
 						<h1 className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</h1>
 						<InputForm value={`${user?.username}`} label="รหัสนักศึกษา / Student ID" />
 						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Fullname" />
-						<InputForm value={`${user?.school.schoolNameTH}`} label="สาขาวิชา / School" />
-						<InputForm value={`${user?.program.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${user?.program.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+						<InputForm value={`${user?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${user?.program?.programNameTH}`} label="หลักสูตร / Program" />
+						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
 
 						<div className="flex flex-col items-center mb-6 justify-center">
 							<FormLabel className="font-normal">ระดับการศึกษา / Education Level</FormLabel>
@@ -209,7 +217,7 @@ const ThesisProgressFormCreate = () => {
 					<div className="border-l border-[#eeee]"></div>
 
 					{/* ฝั่งขวา */}
-					<div className="w-full sm:2/4">
+					<div className="w-full">
 						<InputForm
 							value={`${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษา / Advisor"
@@ -227,11 +235,11 @@ const ThesisProgressFormCreate = () => {
 									<FormItem>
 										<RadioGroup className="space-y-1 mt-2" onValueChange={handleRadioChange}>
 											<div>
-												<RadioGroupItem value="AsPlaned" />
+												<RadioGroupItem value="เป็นไปตามแผนที่วางไว้ทุกประการ" />
 												<FormLabel className="ml-2 font-normal">เป็นไปตามแผนที่วางไว้ทุกประการ</FormLabel>
 											</div>
 											<div>
-												<RadioGroupItem value="Adjustments" />
+												<RadioGroupItem value="มีการเปลี่ยนแผนที่วางไว้" />
 												<FormLabel className="ml-2 font-normal mb-6">มีการเปลี่ยนแผนที่วางไว้</FormLabel>
 											</div>
 										</RadioGroup>
@@ -323,15 +331,10 @@ const ThesisProgressFormCreate = () => {
 						</div>
 						<div className="flex flex-col items-center mt-6 mb-6 justify-center">
 							<FormLabel>ลายเซ็น / Signature</FormLabel>
-							<Button variant="outline" type="button" className="w-60 mt-4 h-max">
-								<Image
-									src={user?.signatureUrl ? user?.signatureUrl : signature}
-									width={100}
-									height={100}
-									style={{ width: "auto", height: "auto" }}
-									alt="signature"
-								/>
-							</Button>
+							<SignatureDialog
+								signUrl={user?.signatureUrl && user.role === "STUDENT" ? user?.signatureUrl : ""}
+								disable={true}
+							/>
 							<Label className="mt-2">{`วันที่ ${
 								form.getValues().date ? new Date(form.getValues().date).toLocaleDateString("th") : "__________"
 							}`}</Label>
@@ -369,14 +372,17 @@ const ThesisProgressFormCreate = () => {
 					>
 						ยกเลิก
 					</Button>
-					<Button
-						disabled={loading}
-						variant="outline"
-						type="submit"
-						className="bg-[#A67436] w-auto text-lg text-white rounded-xl ml-4 border-[#A67436] mr-4"
+					<ConfirmDialog
+						lebel="ยืนยัน"
+						title="ยืนยัน"
+						loading={loading}
+						onConfirm={form.handleSubmit(onSubmit)}
+						onCancel={handleCancel}
+						isOpen={isOpen}
+						setIsOpen={setIsOpen}
 					>
-						ยืนยัน
-					</Button>
+						ยืนยันเเล้วไม่สามารถเเก้ไขได้
+					</ConfirmDialog>
 				</div>
 			</form>
 		</Form>

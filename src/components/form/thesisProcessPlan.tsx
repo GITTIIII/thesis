@@ -37,7 +37,7 @@ export default function ThesisProcessPlan({
     setMonths(() => {
       return Math.max(...processPlans.map((plan) => plan.months.length));
     });
-  }, []);
+  }, [processPlans]);
   useEffect(() => {
     if (setProcessPlans !== undefined) {
       setProcessPlans(data);
@@ -45,7 +45,7 @@ export default function ThesisProcessPlan({
   }, [data]);
   // อัพเดท index สำหรับ อันแรก และ 4 อันสุดท้าย เอาไว้ไม่ให้สามารถ drag and drop
   const updateFixedindex = (processPlan: IProcessPlan[]) => {
-    const length = processPlan.length;
+    const length = processPlan?.length;
     if (length != 5) setFixedindexs([0, length - 4, length - 3, length - 2, length - 1]);
   };
   // หลัง dran and drop เสร็จให้เปลี่ยน index
@@ -162,7 +162,7 @@ export default function ThesisProcessPlan({
               <Droppable droppableId="operationSteps" type="group">
                 {(provided) => (
                   <ul {...provided.droppableProps} ref={provided.innerRef}>
-                    {data.map((ProcessPlan, index) => (
+                    {data && data.map((ProcessPlan, index) => (
                       <Draggable
                         key={index}
                         draggableId={`${index}`}

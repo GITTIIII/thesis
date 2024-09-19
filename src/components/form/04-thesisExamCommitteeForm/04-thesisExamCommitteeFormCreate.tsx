@@ -1,21 +1,22 @@
+"use client";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useForm, useFieldArray } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
+import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { IUser } from "@/interface/user";
+import { ICoAdvisorStudents } from "@/interface/coAdvisorStudents";
+import { DatePicker } from "@/components/datePicker/datePicker";
+import { CircleAlert } from "lucide-react";
 import axios from "axios";
 import qs from "query-string";
 import InputForm from "../../inputForm/inputForm";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { IUser } from "@/interface/user";
-import { ICoAdvisorStudents } from "@/interface/coAdvisorStudents";
-import { Textarea } from "@/components/ui/textarea";
-import { DatePicker } from "@/components/datePicker/datePicker";
-import { CircleAlert } from "lucide-react";
 import Link from "next/link";
+import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
 
 const formSchema = z.object({
 	date: z.date(),
@@ -25,32 +26,17 @@ const formSchema = z.object({
 		.number()
 		.min(1, { message: "กรุณาระบุภาคเรียน / Trimester required" })
 		.max(3, { message: "กรุณาระบุเลขเทอมระหว่าง 1-3 / Trimester must be between 1-3" }),
-	academicYear: z.number().min(1, { message: "กรุณากรอกปีการศึกษา / Academic year required" }),
+	academicYear: z.string().min(1, { message: "กรุณากรอกปีการศึกษา / Academic year required" }),
 	committeeMembers: z
 		.array(z.object({ name: z.string().min(1, { message: "กรุณากรอกชื่อกรรมการ / Committee member required" }) }))
 		.min(5, { message: "กรุณาเพิ่มกรรมการอย่างน้อย 5 คน / At least 5 committee members required" }),
 	examDate: z.date({ message: "กรุณาเลือกวันที่สอบ / Exam's date is required." }),
-	advisorID: z.number(),
 });
 
-async function getUser() {
-	const res = await fetch("/api/getCurrentUser");
-	return res.json();
-}
-
-async function getAllAdvisor() {
-	const res = await fetch("/api/getAdvisor");
-	return res.json();
-}
-
-const userPromise = getUser();
-const allAdvisorPromise = getAllAdvisor();
-
-const ThesisOutlineCommitteeFormCreate = () => {
+const ThesisOutlineCommitteeFormCreate = ({ user }: { user: IUser }) => {
 	const router = useRouter();
-	const user: IUser = use(userPromise);
-	const allAdvisor: IUser[] = use(allAdvisorPromise);
 	const [loading, setLoading] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
 	const { toast } = useToast();
 
 	const form = useForm({
@@ -60,10 +46,9 @@ const ThesisOutlineCommitteeFormCreate = () => {
 			studentID: 0,
 			times: 0,
 			trimester: 0,
-			academicYear: 0,
-			committeeMembers: [{ name: "" }],
+			academicYear: "",
+			committeeMembers: [{ name: "" }, { name: "" }, { name: "" }, { name: "" }, { name: "" }],
 			examDate: undefined as unknown as Date,
-			advisorID: user.advisorID,
 		},
 		mode: "onSubmit",
 	});
@@ -75,69 +60,52 @@ const ThesisOutlineCommitteeFormCreate = () => {
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		// Log form values for testing
-		console.log("Form values: ", values);
-
-		try {
-			const url = qs.stringifyUrl({ url: `/api/04ThesisExamCommitteeForm` });
-			const res = await axios.post(url, values);
-			if (res.status === 200) {
-				toast({
-					title: "Success",
-					description: "บันทึกสำเร็จแล้ว",
-					variant: "default",
-				});
-				setTimeout(() => {
-					form.reset();
-					router.refresh();
-					router.back();
-				}, 1000);
-			} else {
-				toast({
-					title: "Error",
-					description: res.statusText,
-					variant: "destructive",
-				});
-			}
-		} catch (error) {
+		setLoading(true);
+		const url = qs.stringifyUrl({ url: `/api/04ThesisExamCommitteeForm` });
+		const res = await axios.post(url, values);
+		if (res.status === 200) {
 			toast({
-				title: "Error",
-				description: "An error occurred.",
+				title: "Success",
+				description: "บันทึกสำเร็จแล้ว",
+				variant: "default",
+			});
+			setTimeout(() => {
+				form.reset();
+				router.refresh();
+				router.back();
+			}, 1000);
+		} else {
+			toast({
+				title: "เกิดข้อผิดพลาด",
+				description: res.statusText,
 				variant: "destructive",
 			});
-		} finally {
 			setLoading(false);
+			return;
 		}
 	};
 
 	useEffect(() => {
 		const today = new Date();
-		const month = today.getMonth() + 1; // เดือนเริ่มต้นจาก 0
-		const year = today.getFullYear();
-		const date = today.getDate();
-		const hours = today.getHours();
-		const minutes = today.getMinutes();
-		// const seconds = today.getSeconds();
-
-		// รูปแบบวันที่และเวลา
-		const currentDate = `${date}/${month}/${year}`;
-		const currentTime = `${hours}:${minutes}`;
-		const currentDateTime = `${currentDate} ${currentTime}`;
-
 		if (user) {
 			reset({
 				...form.getValues(),
 				studentID: user.id,
-				date: today, // รวมวันที่และเวลา
+				date: today,
 			});
 		}
 	}, [user, reset]);
+
+	const handleCancel = () => {
+		setLoading(false);
+		setIsOpen(false);
+	};
 
 	return (
 		<Form {...form}>
 			<form onSubmit={handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">
 				<div className="flex flex-col justify-center md:flex-row">
-					<div className="w-full sm:2/4">
+					<div className="w-full ">
 						<h1 className="text-center font-semibold mb-2">รายละเอียดการสอบ</h1>
 						<FormField
 							control={form.control}
@@ -184,10 +152,7 @@ const ThesisOutlineCommitteeFormCreate = () => {
 										<FormLabel>
 											ปีการศึกษา / Academic year <span className="text-red-500">*</span>
 										</FormLabel>
-										<Input
-											value={field.value ? field.value : ""}
-											onChange={(e) => field.onChange(Number(e.target.value))}
-										/>
+										<Input value={field.value ? field.value : ""} onChange={(e) => field.onChange(e.target.value)} />
 										<FormMessage />
 									</FormItem>
 								</div>
@@ -200,7 +165,7 @@ const ThesisOutlineCommitteeFormCreate = () => {
 								<div className="flex flex-row items-center mb-6 justify-center">
 									<FormItem className="w-[300px]">
 										<FormLabel>
-											วันที่สอบ / Exam's date <span className="text-red-500">*</span>
+											วันที่สอบ / Exams date <span className="text-red-500">*</span>
 										</FormLabel>
 										<div>
 											<DatePicker onDateChange={field.onChange} />
@@ -213,11 +178,11 @@ const ThesisOutlineCommitteeFormCreate = () => {
 						<h1 className="text-center font-semibold mb-2">รายละเอียดนักศึกษา</h1>
 						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Full Name" />
 						<InputForm value={`${user?.username}`} label="รหัสนักศึกษา / Student ID" />
-						<InputForm value={`${user?.school.schoolNameTH}`} label="สาขาวิชา / School" />
-						<InputForm value={`${user?.program.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${user?.program.programYear}`} label="ปีหลักสูตร / Program Year" />
+						<InputForm value={`${user?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
+						<InputForm value={`${user?.program?.programNameTH}`} label="หลักสูตร / Program" />
+						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร / Program Year" />
 						<InputForm
-							value={`${user?.advisor.firstNameTH} ${user?.advisor.lastNameTH}`}
+							value={`${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษา / The Advisor"
 						/>
 						{user?.coAdvisedStudents &&
@@ -225,13 +190,13 @@ const ThesisOutlineCommitteeFormCreate = () => {
 							user.coAdvisedStudents.map((member: ICoAdvisorStudents, index: number) => (
 								<InputForm
 									key={index}
-									value={`${member.coAdvisor.firstNameTH} ${member.coAdvisor.lastNameTH}`}
+									value={`${member.coAdvisor?.firstNameTH} ${member.coAdvisor?.lastNameTH}`}
 									label="อาจารย์ที่ปรึกษาร่วม / CoAdvisor"
 								/>
 							))}
 					</div>
 
-					<div className="w-full sm:2/4">
+					<div className="w-full ">
 						<div className="w-full flex justify-center item-center flex-col h-auto border-2 rounded-lg py-5 border-[#eeee]">
 							<h1 className="text-center font-semibold mb-2">แบบคำขออนุมัติแต่งตั้งกรรมการสอบโครงร่างวิทบยานิพนธ์</h1>
 							<div className="flex items-center justify-center text-sm">
@@ -257,13 +222,15 @@ const ThesisOutlineCommitteeFormCreate = () => {
 														onChange={field.onChange}
 														className="w-[300px]"
 													/>
-													<Button
-														type="button"
-														onClick={() => remove(index)}
-														className="bg-[#fff] hover:text-black hover:bg-white text-[#A67436] border-2 border-[#A67436] rounded-lg"
-													>
-														ลบ
-													</Button>
+													{index > 4 && (
+														<Button
+															type="button"
+															onClick={() => remove(index)}
+															className="bg-[#fff] hover:text-black hover:bg-white text-[#A67436] border-2 border-[#A67436] rounded-lg"
+														>
+															ลบ
+														</Button>
+													)}
 												</div>
 												<FormMessage className="flex item-center justify-center" />
 											</FormItem>
@@ -293,14 +260,17 @@ const ThesisOutlineCommitteeFormCreate = () => {
 					>
 						ยกเลิก
 					</Button>
-					<Button
-						disabled={loading}
-						variant="outline"
-						type="submit"
-						className="bg-[#A67436] w-auto text-lg text-white rounded-xl ml-4 border-[#A67436] mr-4"
+					<ConfirmDialog
+						lebel="ยืนยัน"
+						title="ยืนยัน"
+						loading={loading}
+						onConfirm={form.handleSubmit(onSubmit)}
+						onCancel={handleCancel}
+						isOpen={isOpen}
+						setIsOpen={setIsOpen}
 					>
-						ยืนยัน
-					</Button>
+						ยืนยันเเล้วไม่สามารถเเก้ไขได้
+					</ConfirmDialog>
 				</div>
 			</form>
 		</Form>

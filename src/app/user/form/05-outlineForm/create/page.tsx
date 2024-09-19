@@ -1,10 +1,13 @@
-"use client";
 import learning1 from "@/../../public/asset/learning1.png";
+import { currentUser } from "@/app/action/current-user";
 import OutlineFormCreate from "@/components/form/05-outlineForm/05-outlineFormCreate";
-import Stepper from "@/components/stepper/stepper";
 import Image from "next/image";
 
-const OutlineFormCreatePage = () => {
+export default async function OutlineFormCreatePage() {
+	const user = await currentUser();
+	if (!user) {
+		return <div>ไม่พบข้อมูล</div>;
+	}
 	return (
 		<>
 			<div className="w-full h-max bg-transparent py-12 px-2 lg:px-28">
@@ -19,12 +22,10 @@ const OutlineFormCreatePage = () => {
 						<div className="p-2 flex justify-center bg-[#A67436] text-white text-lg">
 							กรุณากรอกข้อมูลให้ครบถ้วน และตรวจสอบความถูกต้อง
 						</div>
-						<OutlineFormCreate />
+						<OutlineFormCreate user={user} />
 					</div>
 				</div>
 			</div>
 		</>
 	);
-};
-
-export default OutlineFormCreatePage;
+}
