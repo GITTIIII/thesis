@@ -32,9 +32,9 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
       ];
     } else if (session?.user.role === "SUPER_ADMIN") {
       return [
-        { menuItem: "แดชบอร์ด", path: "/user/superAdmin" },
         { menuItem: "แบบฟอร์ม", path: "/user/superAdmin/form" },
         { menuItem: "รายชื่อ", path: "/user/superAdmin/user" },
+        { menuItem: "หลักสูตร", path: "/user/superAdmin/program" },
       ];
     }
     return [];
