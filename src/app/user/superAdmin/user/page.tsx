@@ -1,16 +1,24 @@
-import Link from "next/link";
-import { File, PlusCircle } from "lucide-react";
+"use client";
 
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { File, PlusCircle } from "lucide-react";
+import { DataTable } from "@/components/tanStackTable/dataTable";
+import { userColumns } from "./user-columns";
+import { IUser } from "@/interface/user";
+import { IExpert } from "@/interface/expert";
+import useSWR from "swr";
 
-import SuperAdminNavigate from "@/components/superAdminNavigate/superAdminNavigate";
-import SuperAdminStudentTable from "@/components/superAdminTable/superAdminStudentTable";
-import SuperAdminAdvisorTable from "@/components/superAdminTable/superAdminAdvisorTable";
-import SuperAdminCommitteeTable from "@/components/superAdminTable/superAdminCommitteeTable";
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function UserDashboard() {
+  const { data: studentData = [] } = useSWR<IUser[]>("/api/getStudent", fetcher);
+  const { data: advisorData = [] } = useSWR<IUser[]>("/api/getAdvisor", fetcher);
+  const { data: headInstituteData = [] } = useSWR<IUser[]>("/api/getHeadInstitute", fetcher);
+  const { data: expertData = [] } = useSWR<IExpert[]>("/api/expert", fetcher);
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-muted/40">
       <div className="flex flex-col sm:gap-4 sm:py-4">
@@ -21,7 +29,8 @@ export default function UserDashboard() {
               <TabsList>
                 <TabsTrigger value="student">บัณฑิตศึกษา</TabsTrigger>
                 <TabsTrigger value="advisor">อาจารย์ที่ปรึกษา</TabsTrigger>
-                <TabsTrigger value="committee">กรรมการ</TabsTrigger>
+                <TabsTrigger value="committee">หัวหน้าสำนักวิชา</TabsTrigger>
+                <TabsTrigger value="expert">ผู้เชี่ยวชาญ</TabsTrigger>
               </TabsList>
               <div className="ml-auto flex items-center gap-2">
                 <Link href="/user/superAdmin/createUser">
@@ -45,7 +54,7 @@ export default function UserDashboard() {
                   <CardDescription>สามารถคลิกที่เมนูด้านขวาเพื่อดูข้อมูลเพิ่มเติมได้</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <SuperAdminStudentTable filterRole="STUDENT" />
+                  <DataTable columns={userColumns.studentColumns} data={studentData} />
                 </CardContent>
               </Card>
             </TabsContent>
@@ -53,21 +62,32 @@ export default function UserDashboard() {
               <Card>
                 <CardHeader>
                   <CardTitle>รายชื่ออาจารย์ที่ปรึกษา</CardTitle>
-                  <CardDescription>สามารถคลิกที่รายชื่ออาจารย์ที่ปรึกษาเพื่อดูข้อมูลเพิ่มเติมได้</CardDescription>
+                  <CardDescription>สามารถคลิกที่เมนูด้านขวาเพื่อดูข้อมูลเพิ่มเติมได้</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <SuperAdminAdvisorTable filterRole="ADMIN" />
+                  <DataTable columns={userColumns.advisorColumns} data={advisorData} />
                 </CardContent>
               </Card>
             </TabsContent>
             <TabsContent value="committee">
               <Card>
                 <CardHeader>
-                  <CardTitle>รายชื่อกรรมการ</CardTitle>
-                  <CardDescription>สามารถคลิกที่รายชื่ออกรรมการเพื่อดูข้อมูลเพิ่มเติมได้</CardDescription>
+                  <CardTitle>รายชื่อหัวหน้าสำนักวิชา</CardTitle>
+                  <CardDescription>สามารถคลิกที่เมนูด้านขวาเพื่อดูข้อมูลเพิ่มเติมได้</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <SuperAdminCommitteeTable filterRole="COMMITTEE" />
+                  <DataTable columns={userColumns.headInstituteColumns} data={headInstituteData} />
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="expert">
+              <Card>
+                <CardHeader>
+                  <CardTitle>รายชื่อผู้เชี่ยวชาญ</CardTitle>
+                  <CardDescription>สามารถคลิกที่เมนูด้านขวาเพื่อดูข้อมูลเพิ่มเติมได้</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <DataTable columns={userColumns.expertColumns} data={expertData} />
                 </CardContent>
               </Card>
             </TabsContent>

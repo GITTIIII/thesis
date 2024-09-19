@@ -2,8 +2,8 @@
 
 import useSWR from "swr";
 import { useSelectForm } from "@/hook/selectFormHook";
-import { formColumns } from "./columns";
-import { DataTable } from "./dataTable";
+import { formColumns } from "./form-columns";
+import { DataTable } from "../../../../components/tanStackTable/dataTable";
 import {
   IComprehensiveExamCommitteeForm,
   IQualificationExamCommitteeForm,
