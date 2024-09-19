@@ -14,6 +14,7 @@ import ThesisExamCommitteeFormTable from "@/components/formTable/04-thesisExamCo
 import OutlineFormTable from "@/components/formTable/05-outlineFormTable";
 import ThesisProgressFormTable from "@/components/formTable/06-thesisProgressFormTable";
 import ExamAppointmentFormTable from "@/components/formTable/07-thesisExamAppointmentFormTable";
+import ThesisExamFormTable from "@/components/formTable/08-thesisExamAssessmentFormTable"
 import studentFormPage from "@/../../public/asset/studentFormPage.png";
 import createForm from "@/../../public/asset/createForm.png";
 import useSWR from "swr";
@@ -28,6 +29,7 @@ const labels: { [key: string]: string } = {
 	form05: "แบบคำขออนุมัติโครงร่างวิทยานิพนธ์",
 	form06: "เเบบรายงานความคืบหน้าของการทำวิทยานิพนธ์",
 	form07: "คำขอนัดสอบวิทยานิพนธ์",
+	form08: "แบบประเมินการสอบวิทยานิพนธ์"
 };
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
@@ -116,6 +118,12 @@ export default function StudentTablePage() {
 							>
 								คำขอนัดสอบวิทยานิพนธ์
 							</SelectItem>
+							<SelectItem
+								// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 7}
+								value="form08"
+							>
+								แบบประเมินการสอบวิทยานิพนธ์
+							</SelectItem>
 						</SelectContent>
 					</Select>
 					{user?.role === "STUDENT" && (
@@ -139,6 +147,7 @@ export default function StudentTablePage() {
 					{selectedForm == "form05" && <OutlineFormTable userData={user} />}
 					{selectedForm == "form06" && <ThesisProgressFormTable userData={user} />}
 					{selectedForm == "form07" && <ExamAppointmentFormTable userData={user} />}
+					{selectedForm == "form08" && <ThesisExamFormTable userData={user} />}
 				</div>
 			</div>
 		</>

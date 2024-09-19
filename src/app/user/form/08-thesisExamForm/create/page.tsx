@@ -3,7 +3,7 @@ import learning1 from "@/../../public/asset/learning1.png";
 import ThesisExamCreate from "@/components/form/08-thesisExamAssessmentForm/08-thesisExamAssessmentFormCreate";
 import Image from "next/image";
 
-const ThesisProgressFormCreatePage = () => {
+const ThesisExamFormCreatePage = () => {
 	return (
 		<>
 			<div className="w-full h-max bg-transparent py-12 px-2 lg:px-28">
@@ -26,4 +26,4 @@ const ThesisProgressFormCreatePage = () => {
 	);
 };
 
-export default ThesisProgressFormCreatePage;
+export default ThesisExamFormCreatePage;

@@ -162,10 +162,11 @@ model User {
   comprehensiveExamCommitteeForm             ComprehensiveExamCommitteeForm[]     @relation("comprehensiveExamCommitteeFormOwner")
   qualificationExamCommitteeForm             QualificationExamCommitteeForm[]     @relation("qualificationExamCommitteeFormOwner")
   thesisOutlineCommittee                     ThesisOutlineCommitteeForm[]         @relation("thesisOutlineCommitteeFormOwner") 
-  thesisExamCommitteeForm                    ThesisExamCommitteeForm[]            @relation(name: "thesisExamCommitteeFormOwner")
+  thesisExamCommitteeForm                    ThesisExamCommitteeForm[]            @relation("thesisExamCommitteeFormOwner")
   outlineForm                                OutlineForm[]                        @relation("outlineFormOwner")
   thesisProgressForm                         ThesisProgressForm[]                 @relation("thesisProgressFormOwner")
   thesisExamAppointmentForm                  ThesisExamAppointmentForm[]          @relation("thesisExamAppointmentFormOwner")
+  ThesisExamForm                             ThesisExamForm[]                     @relation("thesisExamCommitteeFormOwner")
   
 
  //เป็นกรรมการสำนักในฟอมโครงร่าง
@@ -184,8 +185,6 @@ model User {
 
   advisor03 ThesisOutlineCommitteeForm[] @relation(name: "advisor")
   advisor04 ThesisExamCommitteeForm[] @relation(name: "advisor")
-
-  
 }
 
 model CoAdvisorStudent{
@@ -289,9 +288,7 @@ model ThesisExamCommitteeForm {
   instituteComSignUrl String? @db.LongText
   addNotes             Json?   
   createdAt            DateTime @default(now())
-  updatedAt            DateTime @updatedAt
-
-  
+  updatedAt            DateTime @updatedAt 
 }
 
 // 05
@@ -398,5 +395,20 @@ model ThesisExamAppointmentForm{
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
+model ThesisExamForm {
+  id                   Int      @id @default(autoincrement())
+  date                 DateTime
+  examinationDate      DateTime
+  thesisNameTH         String
+  thesisNameEN         String
+  disClosed            Boolean
+  reviseTitle          Boolean
+  newNameTH            String?
+  newNameEN            String?
+  committeeSignUrl     Json?
+  studentID            Int
+  student              User     @relation(fields: [studentID], references: [id], name: "thesisExamCommitteeFormOwner") 
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt 
+}
 

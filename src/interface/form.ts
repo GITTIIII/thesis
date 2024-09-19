@@ -189,3 +189,18 @@ export type IThesisExamAppointmentForm = {
 	headSchoolID: number;
 	headSchool: IUser;
 };
+
+export type IExamForm = {
+	id: number;
+	date: Date;
+	studentID: number;
+	student: IUser;
+	thesisNameTH: string;
+	thesisNameEN: string;
+	examinationDate: Date;
+	disClosed: boolean;
+	newNameTH: string;
+	newNameEN: string;
+	reviseTitle: string;
+
+};

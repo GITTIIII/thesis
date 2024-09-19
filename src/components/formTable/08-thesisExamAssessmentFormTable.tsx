@@ -1,153 +1,96 @@
 "use Client";
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { use, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
-import { IOutlineForm } from "@/interface/form";
+import { IExamForm} from "@/interface/form";
 import { IUser } from "@/interface/user";
+import { useSelectForm } from "@/hook/selectFormHook";
+import { FormPath } from "../formPath/formPath";
 
-const FindStatus = ({ formData }: { formData: IOutlineForm }) => {
-	let status = "";
-
-	if (
-		formData?.outlineCommitteeStatus === "APPROVED" &&
-		formData?.instituteCommitteeStatus === "APPROVED"
-	) {
-		status = "approve";
-	} else if (
-		formData?.outlineCommitteeStatus === "NOT_APPROVED" ||
-		formData?.instituteCommitteeStatus === "NOT_APPROVED"
-	) {
-		status = "notApprove";
-	} else if (
-		formData?.outlineCommitteeStatus === null ||
-		formData?.instituteCommitteeStatus === null
-	) {
-		status = "waiting";
+async function get08FormByStdId(stdId: number | undefined) {
+	if (stdId) {
+		const res = await fetch(`/api/get08FormByStdId/${stdId}`, {
+			next: { revalidate: 10 },
+		});
+		return res.json();
 	}
+}
 
-	return (
-		<>
-			{status != "" && status === "approve" ? (
-				<div className="w-24 text-center text-green-500  rounded-xl border-2 border-green-400 py-1">
-					อนุมัติ
-				</div>
-			) : status === "waiting" ? (
-				<div className="w-24 text-center text-yellow-500  rounded-xl border-2 border-yellow-400 py-1">
-					รอดำเนินการ
-				</div>
-			) : status == "notApprove" ? (
-				<div className="w-24 text-center text-red-500  rounded-xl border-2 border-red-400 py-1">
-					ไม่อนุมัติ
-				</div>
-			) : null}
-		</>
-	);
-};
+async function get08FormData() {
+	const res = await fetch(`/api/08ThesisExamForm`, {
+		next: { revalidate: 10 },
+	});
+	return res.json();
+}
 
-// async function getFormData() {
-// 	const res = await fetch(`/api/outlineForm`);
-// 	return res.json();
-// }
+export default function ThesisExamFormTable({ userData }: { userData: IUser | undefined }) {
+	const [formData, setFormData] = useState<IExamForm[]>();
+	const { selectedForm, setSelectedForm } = useSelectForm();
 
-// async function getCurrentUser() {
-// 	const res = await fetch("/api/getCurrentUser");
-// 	return res.json();
-// }
+	useEffect(() => {
+		async function fetchData() {
+			if (userData?.role === "STUDENT") {
+				const formData = await get08FormByStdId(userData?.id);
+				setFormData(formData);
+			} else {
+				const formData = await get08FormData();
+				setFormData(formData);
+			}
+		}
+		fetchData();
+	}, [userData]);
 
-// const userPromise = getCurrentUser();
-// const formDataPromise = getFormData();
-
-export default function ThesisExamAssessmentFormTable() {
-	// const formData: IOutlineForm[] = use(formDataPromise);
-	// const user: IUser = use(userPromise);
 	return (
 		<>
 			<div className="w-full h-full bg-white shadow-2xl rounded-md p-2 ">
-		<div className="w-full h-full flex justify-center items-center">เเบบประเมินการสอบวิทยานิพนธ์</div>
-				{/* <Table>
+				<Table>
 					<TableHeader>
 						<TableRow>
 							<TableHead className="text-center">ลำดับ</TableHead>
-							<TableHead className="text-center">วันที่สอบ</TableHead>
+							<TableHead className="text-center">วันที่สร้าง</TableHead>
+							<TableHead className="text-center">ภาคการศึกษา</TableHead>
+							<TableHead className="text-center">ปีการศึกษา</TableHead>
 							<TableHead className="text-center">รหัสนักศึกษา</TableHead>
 							<TableHead className="text-center">ชื่อ นศ.</TableHead>
-							<TableHead className="text-center">ประเภทฟอร์ม</TableHead>
-							<TableHead className="text-center">สถานะ</TableHead>
+							<TableHead className="text-center">สอบครั้งที่</TableHead>
+							<TableHead className="text-center">วันที่สอบ</TableHead>
 							<TableHead className="text-center">รายละเอียด</TableHead>
-							<TableHead
-								hidden={user?.role != "STUDENT"}
-								className="text-center"
-							>
-								ดาวน์โหลดฟอร์ม
-							</TableHead>
+							<TableHead className="text-center">ดาวน์โหลดฟอร์ม</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{formData
+						{formData && formData
 							?.filter(
 								(formData) =>
-									(user?.role === "STUDENT" &&
-										user?.id === formData?.student?.id) ||
-									user?.role != "STUDENT"
+									(userData?.role === "STUDENT" && userData?.id === formData?.student?.id) || userData?.role != "STUDENT"
 							)
 							.map((formData, index) => (
-								<TableRow
-									key={formData.id}
-									className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}
-								>
+								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
 									<TableCell className="text-center">{index + 1}</TableCell>
+									<TableCell className="text-center">{new Date(formData.date).toLocaleDateString("th")}</TableCell>
+									<TableCell className="text-center">-</TableCell>
+									<TableCell className="text-center">-</TableCell>
+									<TableCell className="text-center">{formData?.student.username}</TableCell>
 									<TableCell className="text-center">
-										{formData.dateOutlineCommitteeSign
-											? formData.dateOutlineCommitteeSign
-											: "ยังไม่ทำการสอบ"}
+										{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 									</TableCell>
-									<TableCell className="text-center">
-										{formData?.student.username}
-									</TableCell>
-									<TableCell className="text-center">{`${formData?.student?.firstName} ${formData?.student?.lastName}`}</TableCell>
-									<TableCell className="text-center">
-										เเบบคำขออนุมัติโครงร่างวิทยานิพนธ์
-									</TableCell>
-									<TableCell className="flex justify-center">
-										<FindStatus formData={formData} />
-									</TableCell>
+									<TableCell className="text-center">-</TableCell>
+									<TableCell className="text-center">{new Date(formData.examinationDate).toLocaleDateString("th")}</TableCell>
 									<TableCell className="text-[#F26522] text-center">
 										<Link
 											href={
-												(formData.outlineCommitteeID &&
-													formData.instituteCommitteeID) ||
-												user?.role == "STUDENT"
-													? `/user/form/outlineForm/${formData.id}`
-													: `/user/form/outlineForm/update/${formData.id}`
+												userData?.role == "SUPER_ADMIN" || userData?.role == "STUDENT"
+													? `/user/form/${FormPath[selectedForm]}/${formData.id}`
+													: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
 											}
 										>
 											คลิกเพื่อดูเพิ่มเติม
 										</Link>
 									</TableCell>
-									<TableCell
-										hidden={user?.role != "STUDENT"}
-										className="text-center"
-									>
-										<Button
-											disabled={
-												formData?.outlineCommitteeStatus === "APPROVED" &&
-												formData?.instituteCommitteeStatus === "APPROVED"
-													? false
-													: true
-											}
-											type="button"
-											variant="outline"
-										>
+									<TableCell className="text-center">
+										<Button disabled={userData?.role !== "SUPER_ADMIN"} type="button" variant="outline">
 											<Download className="mr-2" />
 											ดาวน์โหลด
 										</Button>
@@ -155,7 +98,7 @@ export default function ThesisExamAssessmentFormTable() {
 								</TableRow>
 							))}
 					</TableBody>
-				</Table> */}
+				</Table>
 			</div>
 		</>
 	);

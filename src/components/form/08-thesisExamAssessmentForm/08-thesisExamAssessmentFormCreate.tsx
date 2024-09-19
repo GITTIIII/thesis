@@ -16,15 +16,19 @@ import qs from "query-string";
 import { useToast } from "@/components/ui/use-toast";
 import InputForm from "../../inputForm/inputForm";
 import { IUser } from "@/interface/user";
+import { Checkbox } from "@/components/ui/checkbox";
+import { DatePicker } from "@/components/datePicker/datePicker";
 
 const formSchema = z.object({
-	number: z.number(),
-	trimester: z.number(),
 	thesisNameTH: z.string(),
 	thesisNameEN: z.string(),
 	studentID: z.number(),
-	advisorID: z.number(),
-	coAdvisorID: z.number(),
+	examinationDate:z.date(),
+	disClosed:z.boolean(),
+	date:z.date(),
+	newNameTH: z.string().optional(), 
+  	newNameEN: z.string().optional(), 
+	reviseTitle: z.boolean(),
 });
 
 async function getUser() {
@@ -48,29 +52,31 @@ const ThesisExamFormCreate = () => {
 	const form = useForm({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
-			date: "",
-			number: 0,
-			trimester: 0,
+			date: new Date(),
 			thesisNameTH: "",
 			thesisNameEN: "",
 			studentID: 0,
-			advisorID: 0,
-			coAdvisorID: 0,
-			examinationDate: "",
+			examinationDate: new Date(),
+			disClosed:true,
+			newNameTH:"",
+			newNameEN:"",
+			reviseTitle: false,
 		},
 	});
+	const disclosed = form.watch('disClosed');
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		if (!user?.signatureUrl) {
+		console.log("values:", values)
+		if (values.disClosed===true && (values.newNameEN === undefined || values.newNameTH === undefined)) {
 			toast({
 				title: "Error",
-				description: "ไม่พบลายเซ็น",
+				description: "กรุณากรอกชื่อวิท",
 				variant: "destructive",
 			});
 			return;
 		}
 		const url = qs.stringifyUrl({
-			url: `/api/outlineForm`,
+			url: `/api/08ThesisExamForm`,
 		});
 		const res = await axios.post(url, values);
 		if (res.status === 200) {
@@ -82,7 +88,7 @@ const ThesisExamFormCreate = () => {
 			setTimeout(() => {
 				form.reset();
 				router.refresh();
-				router.push("/user/student/table");
+				router.push("/user/table");
 			}, 1000);
 		} else {
 			toast({
@@ -105,29 +111,23 @@ const ThesisExamFormCreate = () => {
 	}, [user, reset]);
 	useEffect(() => {
 		const today = new Date();
-		const month = today.getMonth() + 1;
-		const year = today.getFullYear();
-		const date = today.getDate();
-		const currentDate = date + "/" + month + "/" + year;
-		if (user) {
+		if (user && user.role === "STUDENT") {
 			reset({
 				...form.getValues(),
 				studentID: user.id,
-				date: currentDate,
+				date: today,
 			});
 		}
 	}, [user, reset]);
 
-	const [isDisabled, setIsDisabled] = useState(false);
+	
+	const [isChecked, setIsChecked] = useState(false)
 
-	const handleRadioChange = (value: string) => {
-		if (value === "ReviseTile") {
-			setIsDisabled(true);
-		} else {
-			setIsDisabled(false);
-		}
-	};
-
+  	const checkHandler = (checked: boolean) => {
+    	setIsChecked(!isChecked)
+		form.setValue('reviseTitle', checked)
+		console.log("check:",isChecked)
+  	}
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">
@@ -164,7 +164,7 @@ const ThesisExamFormCreate = () => {
 					{/* ฝั่งขวา */}
 					<div className="w-full ">
 						<div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
-							<div className="text-center mb-5">ชื่อโครงร่างวิทยานิพนธ์</div>
+							<div className="text-center mb-5">ชื่อวิทยานิพนธ์</div>
 							<FormField
 								control={form.control}
 								name="thesisNameTH"
@@ -195,21 +195,26 @@ const ThesisExamFormCreate = () => {
 									</div>
 								)}
 							/>
-							<RadioGroup className="space-y-1 mt-2 justify-center">
+							<RadioGroup
+								className="space-y-1 mt-2 justify-center"
+								value={disclosed ? 'disclosed' : 'nondisclosure'}
+								onValueChange={(value) => form.setValue('disClosed', value === 'disclosed')}
+								>
 								<div className="w-[300px]">
-									<RadioGroupItem value="disclosed" />
-									<FormLabel className="ml-2 text-sm ">
-										วิทยานิพนธ์เผยแพร่ได้ / <br /> This Thesis can be disclosed.
+									<RadioGroupItem value="disclosed" {...form.register('disClosed')} />
+									<FormLabel className="ml-2 text-sm">
+									วิทยานิพนธ์เผยแพร่ได้ / <br /> This Thesis can be disclosed.
 									</FormLabel>
 								</div>
 								<div>
-									<RadioGroupItem value="nondisclosure" />
+									<RadioGroupItem value="nondisclosure" {...form.register('disClosed')} />
 									<FormLabel className="ml-2 text-sm mb-6">
-										วิทยานิพนธ์ปกปิด (โปรดกรอก ทบ.24) / <br /> This Thesis is subject to nondisclosure <br />
-										(Please attach form No.24).
+									วิทยานิพนธ์ปกปิด (โปรดกรอก ทบ.24) / <br /> This Thesis is subject to nondisclosure <br />
+									(Please attach form No.24).
 									</FormLabel>
 								</div>
 							</RadioGroup>
+
 							<FormField
 								control={form.control}
 								name="examinationDate"
@@ -218,7 +223,12 @@ const ThesisExamFormCreate = () => {
 										<FormItem className="w-auto">
 											<FormLabel>วันที่สอบ / This Examination Date</FormLabel>
 											<FormControl>
-												<Input type="date" className="text-sm p-2 w-[300px] rounded-lg" {...field} />
+												<div className="w-[300px]">
+													<DatePicker
+														onDateChange={field.onChange}
+														value={field.value ? new Date(field.value) : undefined}
+													/>
+												</div>
 											</FormControl>
 											<FormMessage />
 										</FormItem>
@@ -242,11 +252,11 @@ const ThesisExamFormCreate = () => {
 								shall be deemed the students graduation date.
 							</div>
 						</div>
-						<div className="flex justify-center my-8 bg-[#ffff]  text-[#000] underline rounded-lg">
+						{/* <div className="flex justify-center my-8 bg-[#ffff]  text-[#000] underline rounded-lg">
 							ผลการพิจารณาการสอบวิทยานพนธ์ / Results of Examination
-						</div>
+						</div> */}
 						<div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg my-5 border-[#eeee]">
-							<RadioGroup className="space-y-1 mt-2 justify-center" onValueChange={handleRadioChange}>
+							{/* <RadioGroup className="space-y-1 mt-2 justify-center">
 								<div className="w-[300px]">
 									<RadioGroupItem value="Excellent" />
 									<FormLabel className="ml-2 font-normal">ดีมาก / Excellent</FormLabel>
@@ -259,18 +269,27 @@ const ThesisExamFormCreate = () => {
 									<RadioGroupItem value="Fail" />
 									<FormLabel className="ml-2 font-normal">ไม่ผ่าน / Fail</FormLabel>
 								</div>
-								<div>
-									<RadioGroupItem value="ReviseTile" />
-									<FormLabel className="ml-2 font-normal mb-6">
-										ปรับเปลี่ยนชื่อวิทยานิพนธ์ / <br />
-										if the thesis title requires revision, <br />
-										provide both revised Thai and English titles.
-									</FormLabel>
-								</div>
-							</RadioGroup>
+								</RadioGroup> */}
+								<div className="w-[300px]">
+									
+									<div className="items-top flex space-x-2 mt-2">
+									<Checkbox 
+										value="ReviseTile" 
+										checked={form.watch('reviseTitle')} 
+										onCheckedChange={checkHandler} 
+										/>
+										<div className="grid gap-1.5 leading-none">
+											<FormLabel className="ml-2 font-normal mb-6">
+												ปรับเปลี่ยนชื่อวิทยานิพนธ์ / <br />
+												if the thesis title requires revision, <br />
+												provide both revised Thai and English titles.
+											</FormLabel>
+										</div>
+										</div>
+									</div>
 							<FormField
 								control={form.control}
-								name="thesisNameTH"
+								name="newNameTH"
 								render={({ field }) => (
 									<div className="flex flex-row items-center mt-5 justify-center">
 										<FormItem className="w-auto">
@@ -279,7 +298,7 @@ const ThesisExamFormCreate = () => {
 												<Input
 													type="int"
 													className="text-sm p-2 w-[300px] rounded-lg"
-													disabled={!isDisabled}
+													disabled={!isChecked}
 													{...field}
 												/>
 											</FormControl>
@@ -291,7 +310,7 @@ const ThesisExamFormCreate = () => {
 
 							<FormField
 								control={form.control}
-								name="thesisNameEN"
+								name="newNameEN"
 								render={({ field }) => (
 									<div className="flex flex-row items-center my-5 justify-center">
 										<FormItem className="w-auto">
@@ -300,7 +319,7 @@ const ThesisExamFormCreate = () => {
 												<Input
 													type="text"
 													className="text-sm p-2 w-[300px] rounded-lg"
-													disabled={!isDisabled}
+													disabled={!isChecked}
 													{...field}
 												/>
 											</FormControl>
