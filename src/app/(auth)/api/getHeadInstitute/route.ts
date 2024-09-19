@@ -13,10 +13,11 @@ export async function GET() {
   const user = await db.user.findMany({
     where: {
       role: "ADMIN",
-      position: "ADVISOR",
+      position: "HEAD_OF_INSTITUTE",
     },
     include: {
       prefix: true,
+      institute: true,
       school: true,
     },
   });

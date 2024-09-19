@@ -18,7 +18,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
       { menuItem: "คำขออนุมัติฟอร์ม", path: "/user/table" },
       { menuItem: "โปรไฟล์", path: "/user/profile" },
     ];
-  } else if (session?.user.role == "ADMIN" || session?.user.role == "COMMITTEE") {
+  } else if (session?.user.role == "ADMIN") {
     menu = [
       { menuItem: "หน้าหลัก", path: "/user/admin" },
       { menuItem: "คำขออนุมัติฟอร์ม", path: "/user/table" },
@@ -26,9 +26,10 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
     ];
   } else if (session?.user.role == "SUPER_ADMIN") {
     menu = [
-      { menuItem: "แดชบอร์ด", path: "/user/superAdmin" },
+      // { menuItem: "แดชบอร์ด", path: "/user/superAdmin" },
       { menuItem: "แบบฟอร์ม", path: "/user/superAdmin/form" },
       { menuItem: "รายชื่อ", path: "/user/superAdmin/user" },
+      { menuItem: "หลักสูตร", path: "/user/superAdmin/program" },
     ];
   }
 
