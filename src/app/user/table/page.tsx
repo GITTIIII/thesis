@@ -1,12 +1,5 @@
-"use client";
 import Image from "next/image";
 import Stepper from "@/components/stepper/stepper";
-import { useEffect, useState } from "react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import { IUser } from "@/interface/user";
-import { useSelectForm } from "@/hook/selectFormHook";
 import ComprehensiveExamCommitteeFormTable from "@/components/formTable/01-comprehensiveExamCommitteeFormTable";
 import QualificationExamCommitteeFormTable from "@/components/formTable/02-qualificationExamCommitteeFormTable";
 import OutlineExamCommitteeFormTable from "@/components/formTable/03-outlineExamCommitteeFormTable";
@@ -16,10 +9,19 @@ import ThesisProgressFormTable from "@/components/formTable/06-thesisProgressFor
 import ExamAppointmentFormTable from "@/components/formTable/07-thesisExamAppointmentFormTable";
 import ThesisExamFormTable from "@/components/formTable/08-thesisExamAssessmentFormTable"
 import studentFormPage from "@/../../public/asset/studentFormPage.png";
-import createForm from "@/../../public/asset/createForm.png";
-import useSWR from "swr";
-import { FormPath } from "@/components/formPath/formPath";
-import { IOutlineForm } from "@/interface/form";
+import SelectAndCreate from "@/components/formTable/selectAndCreate";
+import { currentUser } from "@/app/action/current-user";
+import { get05ApprovedFormByStdId } from "@/app/action/get05ApprovedFormByStdId";
+import {
+	get01FormByStdId,
+	get02FormByStdId,
+	get03FormByStdId,
+	get04FormByStdId,
+	get05FormByStdId,
+	get06FormByStdId,
+	get07FormByStdId,
+} from "@/app/action/getFormByStdId";
+import { IUser } from "@/interface/user";
 
 const labels: { [key: string]: string } = {
 	form01: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบประมวลความรู้",
@@ -32,26 +34,57 @@ const labels: { [key: string]: string } = {
 	form08: "แบบประเมินการสอบวิทยานิพนธ์"
 };
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const fetchFormData = async (formSelect: string, user: IUser) => {
+	switch (formSelect) {
+		case "form01":
+			return await get01FormByStdId(user.id);
+		case "form02":
+			return await get02FormByStdId(user.id);
+		case "form03":
+			return await get03FormByStdId(user.id);
+		case "form04":
+			return await get04FormByStdId(user.id);
+		case "form05":
+			return await get05FormByStdId(user.id);
+		case "form06":
+			return await get06FormByStdId(user.id);
+		case "form07":
+			return await get07FormByStdId(user.id);
+		default:
+			return;
+	}
+};
 
-export default function StudentTablePage() {
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
-	const { data: approvedForm } = useSWR<IOutlineForm>(`/api/get05ApprovedFormByStdId/${user?.id}`, fetcher);
-	const { selectedForm, setSelectedForm } = useSelectForm();
-	const [isDisabled, setIsDisabled] = useState(false);
-	const router = useRouter();
+export default async function StudentTablePage({ searchParams }: { searchParams: { [key: string]: string } }) {
+	const user = await currentUser();
+	if (!user) {
+		return <div>ไม่พบข้อมูล</div>;
+	}
 
-	const handleSelectChange = (value: string) => {
-		setSelectedForm(value);
-	};
+	const selectedForm = searchParams.form || "form01";
 
-	useEffect(() => {
-		if (approvedForm && selectedForm === "form05" && user?.role === "STUDENT") {
-			setIsDisabled(true);
-		} else {
-			setIsDisabled(false);
+	const formData: any = await fetchFormData(selectedForm, user);
+
+	const renderFormTable = () => {
+		switch (selectedForm) {
+			case "form01":
+				return <ComprehensiveExamCommitteeFormTable user={user} formData={formData} />;
+			case "form02":
+				return <QualificationExamCommitteeFormTable user={user} formData={formData} />;
+			case "form03":
+				return <OutlineExamCommitteeFormTable user={user} formData={formData} />;
+			case "form04":
+				return <ThesisExamCommitteeFormTable user={user} formData={formData} />;
+			case "form05":
+				return <OutlineFormTable user={user} formData={formData} />;
+			case "form06":
+				return <ThesisProgressFormTable user={user} formData={formData} />;
+			case "form07":
+				return <ExamAppointmentFormTable user={user} formData={formData} />;
+			default:
+				return <div>ไม่มีตาราง</div>;
 		}
-	}, [selectedForm, user, approvedForm]);
+	};
 
 	return (
 		<>
@@ -67,6 +100,7 @@ export default function StudentTablePage() {
 						{labels[selectedForm]}
 					</label>
 				</div>
+<<<<<<< HEAD
 				<div className="w-max ml-auto flex flex-col sm:flex-row items-center justify-center">
 					<Select onValueChange={handleSelectChange} defaultValue={selectedForm}>
 						<SelectTrigger className="w-max">
@@ -149,6 +183,10 @@ export default function StudentTablePage() {
 					{selectedForm == "form07" && <ExamAppointmentFormTable userData={user} />}
 					{selectedForm == "form08" && <ThesisExamFormTable userData={user} />}
 				</div>
+=======
+				<SelectAndCreate user={user} />
+				<div className="h-full w-full flex items-center py-4">{renderFormTable()}</div>
+>>>>>>> 51eb9f2f3733acb13a9bdf0a9648c865fe05c77c
 			</div>
 		</>
 	);

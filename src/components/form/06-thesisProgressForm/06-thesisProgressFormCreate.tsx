@@ -14,13 +14,10 @@ import { IOutlineForm, IProcessPlan, IThesisProgressForm } from "@/interface/for
 import { IUser } from "@/interface/user";
 import { Label } from "@/components/ui/label";
 import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
-import signature from "@/../../public/asset/signature.png";
 import ThesisProcessPlan from "../thesisProcessPlan";
-import Image from "next/image";
 import axios from "axios";
 import qs from "query-string";
 import InputForm from "@/components/inputForm/inputForm";
-import useSWR from "swr";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const formSchema = z.object({
@@ -39,13 +36,16 @@ const formSchema = z.object({
 	studentID: z.number(),
 });
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-const ThesisProgressFormCreate = () => {
+const ThesisProgressFormCreate = ({
+	user,
+	approvedForm,
+	last06Form,
+}: {
+	user: IUser;
+	approvedForm: IOutlineForm;
+	last06Form: IThesisProgressForm;
+}) => {
 	const router = useRouter();
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
-	const { data: approvedForm } = useSWR<IOutlineForm>(`/api/get05ApprovedFormByStdId/${user?.id}`, fetcher);
-	const { data: last06Form } = useSWR<IThesisProgressForm>(`/api/getLast06FormByStdId/${user?.id}`, fetcher);
 	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);

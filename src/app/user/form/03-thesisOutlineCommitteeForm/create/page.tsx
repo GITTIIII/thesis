@@ -1,9 +1,13 @@
-"use client";
 import learning1 from "@/../../public/asset/learning1.png";
+import { currentUser } from "@/app/action/current-user";
 import ThesisOutlineCommiteeFormCreate from "@/components/form/03-thesisOutlineCommitteeForm/03-thesisOutlineCommitteeFormCreate";
 import Image from "next/image";
 
-const QualificationExamCommitteeFormCreatePage = () => {
+export default async function QualificationExamCommitteeFormCreatePage(){
+	const user = await currentUser();
+	if (!user) {
+		return <div>ไม่พบข้อมูล</div>;
+	}
 	return (
 		<>
 			<div className="w-full h-max bg-transparent py-12 px-2 lg:px-28">
@@ -28,12 +32,10 @@ const QualificationExamCommitteeFormCreatePage = () => {
 								<span className="text-red-500">*</span>ระดับปริญญาเอก คณะกรรมการสอบ ไม่น้อยกว่า 5 ท่าน หากมีที่ปรึกษาวิทยานิพนธ์ร่วมต้องมีกรรมการสอบไม่น้อยกว่า 6 ท่าน
 							</div>
 						</div>
-						<ThesisOutlineCommiteeFormCreate />
+						<ThesisOutlineCommiteeFormCreate user={user}/>
 					</div>
 				</div>
 			</div>
 		</>
 	);
 };
-
-export default QualificationExamCommitteeFormCreatePage;

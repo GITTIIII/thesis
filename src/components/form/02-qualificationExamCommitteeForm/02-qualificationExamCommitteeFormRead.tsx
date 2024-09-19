@@ -1,20 +1,15 @@
+"use client"
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { IQualificationExamCommitteeForm } from "@/interface/form";
-import useSWR from "swr";
 import InputForm from "../../inputForm/inputForm";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { CircleAlert } from "lucide-react";
-import signature from "@/../../public/asset/signature.png";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
+const QualificationExamCommitteeFormRead = ({ formData }: { formData: IQualificationExamCommitteeForm }) => {
 	const router = useRouter();
-	const { data: formData } = useSWR<IQualificationExamCommitteeForm>(`/api/get02FormById/${formId}`, fetcher);
 
 	return (
 		<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg">
@@ -68,7 +63,7 @@ const QualificationExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 						<SignatureDialog signUrl={formData?.headSchoolSignUrl ? formData?.headSchoolSignUrl : ""} disable={true} />
 						<Label className="mb-2">
 							{formData?.headSchool
-								? `${formData?.headSchool?.prefix.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`
+								? `${formData?.headSchool?.prefix?.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`
 								: ""}
 						</Label>
 						<Label className="my-2">{`หัวหน้าสาขาวิชา ${

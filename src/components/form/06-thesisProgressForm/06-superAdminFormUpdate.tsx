@@ -1,3 +1,4 @@
+"use client";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
@@ -50,11 +51,17 @@ const formSchema = z.object({
 	headSchoolID: z.number(),
 });
 
-export default function SuperAdminForm06Update({ formId }: { formId: number }) {
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
-	const { data: headSchool } = useSWR<IUser[]>("/api/getHeadSchool", fetcher);
-	const { data: formData } = useSWR<IThesisProgressForm>(formId ? `/api/get06FormById/${formId}` : "", fetcher);
-	const { data: approvedForm } = useSWR<IOutlineForm>(formData ? `/api/get05ApprovedFormByStdId/${formData?.student.id}` : "", fetcher);
+export default function SuperAdminForm06Update({
+	formData,
+	user,
+	approvedForm,
+	headSchool,
+}: {
+	formData: IThesisProgressForm;
+	user: IUser;
+	approvedForm: IOutlineForm;
+	headSchool: IUser[];
+}) {
 	const { toast } = useToast();
 	const [openAdvisor, setOpenAdvisor] = useState(false);
 	const [openSchool, setOpenSchool] = useState(false);
@@ -78,11 +85,11 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 
 			assessmentResult: "",
 			advisorSignUrl: "",
-			dateAdvisor: new Date(),
+			dateAdvisor: undefined as unknown as Date,
 
 			headSchoolComment: "",
 			headSchoolSignUrl: "",
-			dateHeadSchool: new Date(),
+			dateHeadSchool: undefined as unknown as Date,
 			headSchoolID: 0,
 		},
 	});
@@ -177,11 +184,11 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 
 				assessmentResult: formData?.assessmentResult || "",
 				advisorSignUrl: formData?.advisorSignUrl || "",
-				dateAdvisor: new Date(formData?.dateAdvisor) || new Date(),
+				dateAdvisor: formData?.dateAdvisor || new Date(),
 
 				headSchoolComment: formData?.headSchoolComment || "",
 				headSchoolSignUrl: formData?.headSchoolSignUrl || "",
-				dateHeadSchool: new Date(formData?.dateHeadSchool) || new Date(),
+				dateHeadSchool: formData?.dateHeadSchool || new Date(),
 				headSchoolID: formData?.headSchoolID || 0,
 			}
 		);
@@ -189,10 +196,10 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 		if (user && user.role === "SUPER_ADMIN") {
 			reset({
 				...form.getValues(),
-				id: formId,
+				id: formData?.id,
 			});
 		}
-	}, [form, formData, formId, reset, user]);
+	}, [form, formData, reset, user]);
 
 	return (
 		<Form {...form}>
@@ -248,7 +255,7 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 					{/* ฝั่งขวา */}
 					<div className="w-full ">
 						<InputForm
-							value={`${formData?.student.advisor?.prefix.prefixTH}${formData?.student.advisor?.firstNameTH} ${formData?.student.advisor?.lastNameTH}`}
+							value={`${formData?.student.advisor?.prefix?.prefixTH}${formData?.student.advisor?.firstNameTH} ${formData?.student.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษา / Advisor"
 						/>
 
@@ -425,7 +432,7 @@ export default function SuperAdminForm06Update({ formId }: { formId: number }) {
 						</DialogContent>
 					</Dialog>
 
-					<Label className="mb-2">{`${formData?.student?.advisor?.prefix.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
+					<Label className="mb-2">{`${formData?.student?.advisor?.prefix?.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
 
 					<div className="w-max h-max flex mt-2 items-center">
 						<Label className="mr-2">วันที่</Label>

@@ -1,30 +1,13 @@
-"use Client";
+"use client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { Download, DownloadIcon } from "lucide-react";
+import { DownloadIcon } from "lucide-react";
 import { IQualificationExamCommitteeForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
-import saveAs from "file-saver";
 import { useSelectForm } from "@/hook/selectFormHook";
 import { FormPath } from "../formPath/formPath";
-
-async function get02FormByStdId(stdId: number | undefined) {
-	if (stdId) {
-		const res = await fetch(`/api/get02FormByStdId/${stdId}`, {
-			next: { revalidate: 10 },
-		});
-		return res.json();
-	}
-}
-
-async function get02FormData() {
-	const res = await fetch(`/api/02QualificationExamCommitteeForm`, {
-		next: { revalidate: 10 },
-	});
-	return res.json();
-}
+import saveAs from "file-saver";
 
 const handleDownload = async (formData: IQualificationExamCommitteeForm) => {
 	if (formData.headSchoolID) {
@@ -42,22 +25,14 @@ const handleDownload = async (formData: IQualificationExamCommitteeForm) => {
 	}
 };
 
-export default function QualificationExamCommitteeFormTable({ userData }: { userData: IUser | undefined }) {
-	const [formData, setFormData] = useState<IQualificationExamCommitteeForm[]>();
-	const { selectedForm, setSelectedForm } = useSelectForm();
-
-	useEffect(() => {
-		async function fetchData() {
-			if (userData?.role === "STUDENT") {
-				const formData = await get02FormByStdId(userData?.id);
-				setFormData(formData);
-			} else {
-				const formData = await get02FormData();
-				setFormData(formData);
-			}
-		}
-		fetchData();
-	}, [userData]);
+export default function QualificationExamCommitteeFormTable({
+	formData,
+	user,
+}: {
+	user: IUser;
+	formData?: IQualificationExamCommitteeForm[];
+}) {
+	const { selectedForm } = useSelectForm();
 
 	return (
 		<>
@@ -78,12 +53,8 @@ export default function QualificationExamCommitteeFormTable({ userData }: { user
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{formData && formData
-							?.filter(
-								(formData) =>
-									(userData?.role === "STUDENT" && userData?.id === formData?.student?.id) || userData?.role != "STUDENT"
-							)
-							.map((formData, index) => (
+						{formData &&
+							formData.map((formData, index) => (
 								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
 									<TableCell className="text-center">{index + 1}</TableCell>
 									<TableCell className="text-center">{new Date(formData.date).toLocaleDateString("th")}</TableCell>
@@ -98,7 +69,7 @@ export default function QualificationExamCommitteeFormTable({ userData }: { user
 									<TableCell className="text-[#F26522] text-center">
 										<Link
 											href={
-												formData.headSchoolID || userData?.role == "STUDENT"
+												formData.headSchoolID || user?.role == "STUDENT"
 													? `/user/form/${FormPath[selectedForm]}/${formData.id}`
 													: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
 											}

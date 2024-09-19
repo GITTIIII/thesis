@@ -12,17 +12,13 @@ import { useToast } from "@/components/ui/use-toast";
 import { IOutlineForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 import { DatePicker } from "@/components/datePicker/datePicker";
-import signature from "@/../../public/asset/signature.png";
-import Image from "next/image";
+import { Label } from "@/components/ui/label";
+import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
+import { CircleAlert } from "lucide-react";
+import UserCertificate from "@/components/profile/userCertificate";
 import axios from "axios";
 import qs from "query-string";
 import InputForm from "@/components/inputForm/inputForm";
-import useSWR from "swr";
-import { Label } from "@/components/ui/label";
-import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
-import UserCertificate from "@/components/profile/userCertificate";
-import { Checkbox } from "@/components/ui/checkbox";
-import { CircleAlert } from "lucide-react";
 import Link from "next/link";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
@@ -39,12 +35,8 @@ const formSchema = z.object({
 	studentID: z.number(),
 });
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-const ThesisExamAppointmentFormCreate = () => {
+const ThesisExamAppointmentFormCreate = ({ user, approvedForm }: { user: IUser; approvedForm: IOutlineForm }) => {
 	const router = useRouter();
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
-	const { data: approvedForm } = useSWR<IOutlineForm>(`/api/get05ApprovedFormByStdId/${user?.id}`, fetcher);
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
 	const { toast } = useToast();

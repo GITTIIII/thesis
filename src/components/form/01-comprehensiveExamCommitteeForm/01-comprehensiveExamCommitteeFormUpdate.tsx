@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
@@ -17,11 +18,8 @@ import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
 import axios from "axios";
 import InputForm from "../../inputForm/inputForm";
 import Link from "next/link";
-import useSWR from "swr";
 import qs from "query-string";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const formSchema = z.object({
 	id: z.number(),
@@ -29,10 +27,15 @@ const formSchema = z.object({
 	headSchoolSignUrl: z.string(),
 });
 
-const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) => {
-	const { data: formData, isLoading } = useSWR<IComprehensiveExamCommitteeForm>(`/api/get01FormById/${formId}`, fetcher);
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
-	const { data: headSchool } = useSWR<IUser[]>("/api/getHeadSchool", fetcher);
+const ComprehensiveExamCommitteeFormUpdate = ({
+	formData,
+	user,
+	headSchool,
+}: {
+	formData: IComprehensiveExamCommitteeForm;
+	user: IUser;
+	headSchool: IUser[];
+}) => {
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
 	const [openSign, setOpenSign] = useState(false);
@@ -98,7 +101,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 	useEffect(() => {
 		reset({
 			...form.getValues(),
-			id: formId,
+			id: formData.id,
 		});
 		if (user && user.position === "HEAD_OF_SCHOOL") {
 			reset({
@@ -106,7 +109,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 				headSchoolID: user.id,
 			});
 		}
-	}, [formId]);
+	}, [formData]);
 
 	const handleCancel = () => {
 		setLoading(false);
@@ -116,7 +119,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4 lg:p-12 rounded-lg">
-				<div className="w-full flex px-0 lg:px-20 mb-2">
+				<div className="w-full flex justify-start">
 					<Button
 						variant="outline"
 						type="reset"
@@ -174,7 +177,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 							/>
 							{formData?.headSchoolID ? (
 								<Label className="mb-2">
-									{`${formData?.headSchool?.prefix.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`}
+									{`${formData?.headSchool?.prefix?.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`}
 								</Label>
 							) : (
 								<FormField
@@ -196,7 +199,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 															{field.value
 																? `${
 																		headSchool?.find((headSchool) => headSchool?.id === field.value)
-																			?.prefix.prefixTH
+																			?.prefix?.prefixTH
 																  } ${
 																		headSchool?.find((headSchool) => headSchool?.id === field.value)
 																			?.firstNameTH
@@ -216,7 +219,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 															<CommandEmpty>ไม่พบหัวหน้าสาขา</CommandEmpty>
 															{headSchool?.map((headSchool) => (
 																<CommandItem
-																	value={`${headSchool?.prefix.prefixTH}${headSchool?.firstNameTH} ${headSchool?.lastNameTH}`}
+																	value={`${headSchool?.prefix?.prefixTH}${headSchool?.firstNameTH} ${headSchool?.lastNameTH}`}
 																	key={headSchool?.id}
 																	onSelect={() => {
 																		form.setValue("headSchoolID", headSchool?.id);
@@ -233,7 +236,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 																			field.value === headSchool?.id ? "opacity-100" : "opacity-0"
 																		)}
 																	/>
-																	{`${headSchool?.prefix.prefixTH}${headSchool?.firstNameTH} ${headSchool?.lastNameTH}`}
+																	{`${headSchool?.prefix?.prefixTH}${headSchool?.firstNameTH} ${headSchool?.lastNameTH}`}
 																</CommandItem>
 															))}
 														</CommandList>

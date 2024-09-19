@@ -1,10 +1,24 @@
-"use client";
 import Image from "next/image";
 import learning1 from "@/../../public/asset/learning1.png";
 import ThesisProgressFormUpdate from "@/components/form/06-thesisProgressForm/06-thesisProgressFormUpdate";
+import { get06FormById } from "@/app/action/getFormById";
+import { getHeadSchool } from "@/app/action/headSchool";
+import { currentUser } from "@/app/action/current-user";
+import { get05ApprovedFormByStdId } from "@/app/action/get05ApprovedFormByStdId";
 
-export default function ThesisProgressFormUpdatePage({ params }: { params: { formId: number } }) {
+export default async function ThesisProgressFormUpdatePage({ params }: { params: { formId: number } }) {
 	const formId = params.formId;
+	const formData = await get06FormById(formId);
+	const headSchool = await getHeadSchool();
+	const user = await currentUser();
+	if (!formData) {
+		return <div>ไม่พบข้อมูล</div>;
+	}
+	const approvedForm = await get05ApprovedFormByStdId(formData?.studentID);
+
+	if (!approvedForm || !headSchool || !user) {
+		return <div>ไม่พบข้อมูล</div>;
+	}
 	return (
 		<>
 			<div className="w-full h-max bg-transparent py-12 px-2 lg:px-28">
@@ -16,7 +30,7 @@ export default function ThesisProgressFormUpdatePage({ params }: { params: { for
 				</div>
 				<div className="h-full w-full flex items-center bg-[#EEEEEE] p-2 md:p-8 rounded-md">
 					<div className="w-full h-full">
-						<ThesisProgressFormUpdate formId={Number(formId)} />
+						<ThesisProgressFormUpdate formData={formData} user={user} approvedForm={approvedForm} headSchool={headSchool} />
 					</div>
 				</div>
 			</div>

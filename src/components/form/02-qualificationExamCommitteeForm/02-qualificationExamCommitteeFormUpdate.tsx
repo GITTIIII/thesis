@@ -1,31 +1,25 @@
-import { useEffect, useState, useRef } from "react";
+"use client";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import InputForm from "../../inputForm/inputForm";
 import { Check, ChevronsUpDown, CircleAlert } from "lucide-react";
-import Link from "next/link";
-import { IComprehensiveExamCommitteeForm } from "@/interface/form";
-import useSWR from "swr";
+import { IQualificationExamCommitteeForm } from "@/interface/form";
 import { useToast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import SignatureCanvas from "react-signature-canvas";
-import axios from "axios";
-import qs from "query-string";
 import { Form, FormControl, FormField, FormMessage } from "@/components/ui/form";
-import signature from "../../../../public/asset/signature.png";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import Image from "next/image";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { IUser } from "@/interface/user";
 import { cn } from "@/lib/utils";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+import axios from "axios";
+import qs from "query-string";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
+import Link from "next/link";
 
 const formSchema = z.object({
 	id: z.number(),
@@ -33,10 +27,15 @@ const formSchema = z.object({
 	headSchoolSignUrl: z.string(),
 });
 
-const QualificationExamCommitteeFormUpdate = ({ formId }: { formId: number }) => {
-	const { data: formData } = useSWR<IComprehensiveExamCommitteeForm>(`/api/get02FormById/${formId}`, fetcher);
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
-	const { data: headSchool } = useSWR<IUser[]>("/api/getHeadSchool", fetcher);
+const QualificationExamCommitteeFormUpdate = ({
+	formData,
+	user,
+	headSchool,
+}: {
+	formData: IQualificationExamCommitteeForm;
+	user: IUser;
+	headSchool: IUser[];
+}) => {
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
 	const [openSign, setOpenSign] = useState(false);
@@ -102,7 +101,7 @@ const QualificationExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 	useEffect(() => {
 		reset({
 			...form.getValues(),
-			id: formId,
+			id: formData.id,
 		});
 		if (user && user.position === "HEAD_OF_SCHOOL") {
 			reset({
@@ -110,7 +109,7 @@ const QualificationExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 				headSchoolID: user.id,
 			});
 		}
-	}, [formId]);
+	}, [formData, user]);
 
 	const handleCancel = () => {
 		setLoading(false);
@@ -178,7 +177,7 @@ const QualificationExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 							/>
 							{formData?.headSchoolID ? (
 								<Label className="mb-2">
-									{`${formData?.headSchool?.prefix.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`}
+									{`${formData?.headSchool?.prefix?.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`}
 								</Label>
 							) : (
 								<FormField
@@ -200,7 +199,7 @@ const QualificationExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 															{field.value
 																? `${
 																		headSchool?.find((headSchool) => headSchool?.id === field.value)
-																			?.prefix.prefixTH
+																			?.prefix?.prefixTH
 																  } ${
 																		headSchool?.find((headSchool) => headSchool?.id === field.value)
 																			?.firstNameTH
@@ -220,7 +219,7 @@ const QualificationExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 															<CommandEmpty>ไม่พบหัวหน้าสาขา</CommandEmpty>
 															{headSchool?.map((headSchool) => (
 																<CommandItem
-																	value={`${headSchool?.prefix.prefixTH}${headSchool?.firstNameTH} ${headSchool?.lastNameTH}`}
+																	value={`${headSchool?.prefix?.prefixTH}${headSchool?.firstNameTH} ${headSchool?.lastNameTH}`}
 																	key={headSchool?.id}
 																	onSelect={() => {
 																		form.setValue("headSchoolID", headSchool?.id);
@@ -237,7 +236,7 @@ const QualificationExamCommitteeFormUpdate = ({ formId }: { formId: number }) =>
 																			field.value === headSchool?.id ? "opacity-100" : "opacity-0"
 																		)}
 																	/>
-																	{`${headSchool?.prefix.prefixTH}${headSchool?.firstNameTH} ${headSchool?.lastNameTH}`}
+																	{`${headSchool?.prefix?.prefixTH}${headSchool?.firstNameTH} ${headSchool?.lastNameTH}`}
 																</CommandItem>
 															))}
 														</CommandList>

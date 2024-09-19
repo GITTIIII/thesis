@@ -1,27 +1,15 @@
+"use client";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import InputForm from "../../inputForm/inputForm";
 import { CircleAlert } from "lucide-react";
-import Link from "next/link";
-import { IExamCommitteeForm } from "@/interface/form";
-import useSWR from "swr";
-import Image from "next/image";
-import signature from "../../../../public/asset/signature.png";
 import { Label } from "@/components/ui/label";
+import { IExamCommitteeForm } from "@/interface/form";
+import InputForm from "../../inputForm/inputForm";
+import Link from "next/link";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-const ThesisOutlineCommitteeFormRead = ({ formId }: { formId: number }) => {
+const ThesisExamCommitteeFormRead = ({ formData }: { formData: IExamCommitteeForm }) => {
 	const router = useRouter();
-	const { data: formData, error } = useSWR<IExamCommitteeForm>(`/api/get04FormById/${formId}`, fetcher);
-
-	if (error) {
-		return <div>Error loading data</div>;
-	}
-
-	if (!formData) {
-		return <div>Loading...</div>;
-	}
 
 	return (
 		<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg">
@@ -29,7 +17,7 @@ const ThesisOutlineCommitteeFormRead = ({ formId }: { formId: number }) => {
 				<Button
 					variant="outline"
 					type="reset"
-					onClick={() => router.push("/user/table?formType=thesisOutlineCommitteeForm")}
+					onClick={() => router.back()}
 					className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436]"
 				>
 					ย้อนกลับ
@@ -66,55 +54,47 @@ const ThesisOutlineCommitteeFormRead = ({ formId }: { formId: number }) => {
 					{formData?.committeeMembers.map((member, index: number) => (
 						<InputForm key={index} value={`${member.name}`} label="กรรมการ / Committee" />
 					))}
-					<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
-						<h1 className="font-bold">ลายเซ็นหัวหน้าสาขาวิชา</h1>
-						<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
-							<Image
-								src={formData?.headSchoolSignUrl ? formData?.headSchoolSignUrl : signature}
-								width={100}
-								height={100}
-								style={{
-									width: "auto",
-									height: "auto",
-								}}
-								alt="signature"
-							/>
-						</div>
-						<Label className="mb-2">
-							{formData?.headSchool
-								? `${formData?.headschool?.prefix?.prefixTH}${formData?.headschool?.firstNameTH} ${formData?.headschool?.lastNameTH}`
-								: ""}
-						</Label>
-						<Label className="mb-5">{`หัวหน้าสาขาวิชา ${
-							formData?.headSchool ? formData?.headSchool?.school?.schoolNameTH : ""
-						}`}</Label>
+				</div>
+			</div>
+			<div className="w-full h-max flex justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
+				<div className="w-full h-full flex flex-col justify-center items-center">
+					<h1 className="font-bold">ลายเซ็นอาจารย์ที่ปรึกษา</h1>
+					<SignatureDialog signUrl={formData?.advisorSignUrl ? formData?.advisorSignUrl : ""} disable={true} />
+					<Label className="mb-2">
+						{formData?.student.advisor
+							? `${formData?.student.advisor.prefix?.prefixTH}${formData?.student.advisor.firstNameTH} ${formData?.student.advisor.lastNameTH}`
+							: ""}
+					</Label>
+				</div>
 
-						<h1 className="font-bold">ลายเซ็นอาจารย์ที่ปรึกษา</h1>
-						<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
-							<Image
-								src={formData?.advisorSignUrl ? formData?.advisorSignUrl : signature}
-								width={100}
-								height={100}
-								style={{
-									width: "auto",
-									height: "auto",
-								}}
-								alt="signature"
-							/>
-						</div>
-						<Label className="mb-2">
-							{formData?.advisor
-								? `${formData?.advisor.prefix?.prefixTH}${formData?.advisor.firstNameTH} ${formData?.advisor.lastNameTH}`
-								: ""}
-						</Label>
-						<Label className="mb-5">{`อาจารย์ที่ปรึกษา ${
-							formData?.advisor ? formData?.advisor?.school?.schoolNameTH : ""
-						}`}</Label>
-					</div>
+				<div className="w-full h-full flex flex-col justify-center items-center">
+					<h1 className="font-bold">ลายเซ็นหัวหน้าสาขาวิชา</h1>
+					<SignatureDialog signUrl={formData?.headSchoolSignUrl ? formData?.headSchoolSignUrl : ""} disable={true} />
+					<Label className="">
+						{formData?.headSchool
+							? `${formData?.headSchool?.prefix?.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`
+							: ""}
+					</Label>
+					<Label className="">{`หัวหน้าสาขาวิชา ${
+						formData?.headSchool ? formData?.headSchool?.school?.schoolNameTH : ""
+					}`}</Label>
+				</div>
+
+				<div className="w-full h-full flex flex-col justify-center items-center">
+					<h1 className="font-bold">ลายเซ็นหัวหน้าสำนักวิชา</h1>
+					<SignatureDialog signUrl={formData?.instituteComSignUrl ? formData?.instituteComSignUrl : ""} disable={true} />
+					{/* <Label className="">
+						{formData?.headSchool
+							? `${formData?.headSchool?.prefix?.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`
+							: ""}
+					</Label> */}
+					{/* <Label className="">{`หัวหน้าสำนักวิชา ${
+						formData?.headSchool ? formData?.headSchool?.school?.schoolNameTH : ""
+					}`}</Label> */}
 				</div>
 			</div>
 		</div>
 	);
 };
 
-export default ThesisOutlineCommitteeFormRead;
+export default ThesisExamCommitteeFormRead;

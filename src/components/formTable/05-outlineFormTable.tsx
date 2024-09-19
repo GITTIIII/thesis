@@ -1,4 +1,4 @@
-"use Client";
+"use client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -26,22 +26,8 @@ async function getAll05Form() {
 	return res.json();
 }
 
-export default function OutlineFormTable({ userData }: { userData: IUser | undefined }) {
-	const [formData, setFormData] = useState<IOutlineForm[]>();
-	const { selectedForm, setSelectedForm } = useSelectForm();
-
-	useEffect(() => {
-		async function fetchData() {
-			if (userData?.role === "STUDENT") {
-				const formData = await getAll05FormByStdId(userData?.id);
-				setFormData(formData);
-			} else {
-				const formData = await getAll05Form();
-				setFormData(formData);
-			}
-		}
-		fetchData();
-	}, [userData]);
+export default function OutlineFormTable({ formData, user }: { user: IUser; formData?: IOutlineForm[] }) {
+	const { selectedForm } = useSelectForm();
 
 	return (
 		<>
@@ -61,44 +47,45 @@ export default function OutlineFormTable({ userData }: { userData: IUser | undef
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{formData && formData?.map((formData, index) => (
-							<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
-								<TableCell className="text-center">{index + 1}</TableCell>
-								<TableCell className="text-center">
-									{formData.dateOutlineCommitteeSign
-										? new Date(formData.dateOutlineCommitteeSign).toLocaleDateString("th")
-										: "ยังไม่ทำการสอบ"}
-								</TableCell>
-								<TableCell className="text-center">{formData?.thesisNameTH}</TableCell>
-								<TableCell className="text-center">{formData?.thesisNameEN}</TableCell>
-								<TableCell className="text-center">{formData?.student.username}</TableCell>
-								<TableCell className="text-center">
-									{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
-								</TableCell>
-								<TableCell className="flex justify-center">
-									<FormStatus formStatus={formData.formStatus} />
-								</TableCell>
-								<TableCell className="text-[#F26522] text-center">
-									<Link
-										href={
-											formData.formStatus == "อนุมัติ"
-												? `/user/form/${FormPath[selectedForm]}/${formData.id}`
-												: userData?.role == "STUDENT" && formData.formStatus == "เเก้ไข"
-												? `/user/form/${FormPath[selectedForm]}/updateStd/${formData.id}`
-												: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
-										}
-									>
-										คลิกเพื่อดูเพิ่มเติม
-									</Link>
-								</TableCell>
-								<TableCell className="text-center">
-									<Button disabled={formData.formStatus != "อนุมัติ"} type="button" variant="outline">
-										<Download className="mr-2" />
-										ดาวน์โหลด
-									</Button>
-								</TableCell>
-							</TableRow>
-						))}
+						{formData &&
+							formData?.map((formData, index) => (
+								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
+									<TableCell className="text-center">{index + 1}</TableCell>
+									<TableCell className="text-center">
+										{formData.dateOutlineCommitteeSign
+											? new Date(formData.dateOutlineCommitteeSign).toLocaleDateString("th")
+											: "ยังไม่ทำการสอบ"}
+									</TableCell>
+									<TableCell className="text-center">{formData?.thesisNameTH}</TableCell>
+									<TableCell className="text-center">{formData?.thesisNameEN}</TableCell>
+									<TableCell className="text-center">{formData?.student.username}</TableCell>
+									<TableCell className="text-center">
+										{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
+									</TableCell>
+									<TableCell className="flex justify-center">
+										<FormStatus formStatus={formData.formStatus} />
+									</TableCell>
+									<TableCell className="text-[#F26522] text-center">
+										<Link
+											href={
+												formData.formStatus == "อนุมัติ" || user?.role == "STUDENT"
+													? `/user/form/${FormPath[selectedForm]}/${formData.id}`
+													: user?.role == "STUDENT" && formData.formStatus == "เเก้ไข"
+													? `/user/form/${FormPath[selectedForm]}/updateStd/${formData.id}`
+													: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
+											}
+										>
+											คลิกเพื่อดูเพิ่มเติม
+										</Link>
+									</TableCell>
+									<TableCell className="text-center">
+										<Button disabled={formData.formStatus != "อนุมัติ"} type="button" variant="outline">
+											<Download className="mr-2" />
+											ดาวน์โหลด
+										</Button>
+									</TableCell>
+								</TableRow>
+							))}
 					</TableBody>
 				</Table>
 			</div>

@@ -6,31 +6,29 @@ import { ICoAdvisorStudents } from "./coAdvisorStudents";
 import { ICertificate } from "./certificate";
 
 export type IUser = {
-	name: string;
-	map(arg0: (data: IUser) => import("react").JSX.Element): import("react").ReactNode;
 	id: number;
 	prefixID: number;
-	prefix :IPrefix
+	prefix?: IPrefix ;
 	firstNameTH: string;
 	lastNameTH: string;
 	firstNameEN: string;
 	lastNameEN: string;
 	username: string;
-	password: string;
+	password?: string;
 	email: string;
 	phone: string;
 	sex: string;
 	degree: string;
-	certificate: ICertificate[] | undefined;
+	certificate?: ICertificate[]; 
 
 	instituteID: number;
-	institute: IInstitute | undefined;
+	institute?: IInstitute;
 
 	schoolID: number;
-	school: ISchool | undefined;
+	school?: ISchool;
 
 	programID: number;
-	program: IProgram | undefined;
+	program?: IProgram | null ;
 
 	position: string;
 	role: string;
@@ -39,7 +37,7 @@ export type IUser = {
 	profileUrl: string;
 
 	advisorID: number;
-	advisor: IUser | undefined;
+	advisor?: IUser | null ;
 
-	coAdvisedStudents: ICoAdvisorStudents[]
+	coAdvisedStudents?: ICoAdvisorStudents[] | null ;
 };

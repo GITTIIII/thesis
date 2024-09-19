@@ -1,3 +1,4 @@
+"use client";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useRef, useState } from "react";
@@ -18,12 +19,9 @@ import { Check, ChevronsUpDown } from "lucide-react";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { DatePicker } from "@/components/datePicker/datePicker";
 import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
-import signature from "@/../../public/asset/signature.png";
 import ThesisProcessPlan from "../thesisProcessPlan";
-import Image from "next/image";
 import axios from "axios";
 import qs from "query-string";
-import useSWR, { mutate } from "swr";
 import InputForm from "@/components/inputForm/inputForm";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
@@ -40,14 +38,18 @@ const formSchema = z.object({
 	headSchoolID: z.number(),
 });
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
+const ThesisProgressFormUpdate = ({
+	formData,
+	user,
+	approvedForm,
+	headSchool,
+}: {
+	formData: IThesisProgressForm;
+	user: IUser;
+	approvedForm: IOutlineForm;
+	headSchool: IUser[];
+}) => {
 	const router = useRouter();
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
-	const { data: headSchool } = useSWR<IUser[]>("/api/getHeadSchool", fetcher);
-	const { data: formData } = useSWR<IThesisProgressForm>(formId ? `/api/get06FormById/${formId}` : "", fetcher);
-	const { data: approvedForm } = useSWR<IOutlineForm>(formData ? `/api/get05ApprovedFormByStdId/${formData?.student.id}` : "", fetcher);
 	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
@@ -117,7 +119,6 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 			});
 			setTimeout(() => {
 				form.reset();
-				mutate(`/api/get06FormById/${formId}`);
 				router.refresh();
 				router.back();
 			}, 1000);
@@ -135,10 +136,10 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 	useEffect(() => {
 		reset({
 			...form.getValues(),
-			id: formId,
+			id: formData.id,
 			percentage: formData?.percentage ? formData?.percentage : 0,
 		});
-	}, [formId, formData]);
+	}, [formData]);
 
 	const handleCancel = () => {
 		setLoading(false);
@@ -199,7 +200,7 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 					{/* ฝั่งขวา */}
 					<div className="w-full">
 						<InputForm
-							value={`${formData?.student.advisor?.prefix.prefixTH}${formData?.student.advisor?.firstNameTH} ${formData?.student.advisor?.lastNameTH}`}
+							value={`${formData?.student?.advisor?.prefix?.prefixTH}${formData?.student.advisor?.firstNameTH} ${formData?.student.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษา / Advisor"
 						/>
 
@@ -283,82 +284,27 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 				<hr className="่่justify-center mx-auto w-3/4 my-5 border-t-2 border-[#eeee]" />
 
 				{/* อาจารย์ที่ปรึกษา */}
-				<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
-					<h1 className="mb-2 font-bold text-center">ผลการประเมินความคืบหน้าของการทำวิทยานิพนธ์โดยอาจารย์ที่ปรึกษา</h1>
-					<FormField
-						control={form.control}
-						name="assessmentResult"
-						render={({ field }) => (
-							<FormItem className="w-3/4 h-[100px]">
-								<FormControl>
-									<Textarea
-										disabled={
-											formData?.assessmentResult
-												? true
-												: false ||
-												  (user?.position != "ADVISOR" &&
-														user?.position != "HEAD_OF_SCHOOL" &&
-														user?.role != "SUPER_ADMIN")
-										}
-										placeholder="ความเห็น..."
-										className="resize-none h-full text-md mb-2"
-										value={formData?.assessmentResult ? formData?.assessmentResult : field.value}
-										onChange={field.onChange}
-									/>
-								</FormControl>
-								<FormMessage />
-							</FormItem>
-						)}
-					/>
-					<SignatureDialog
-						disable={formData?.advisorSignUrl ? true : false}
-						signUrl={formData?.advisorSignUrl || form.getValues("advisorSignUrl")}
-						onConfirm={handleDrawingSignAdvisor}
-						isOpen={openAdvisor}
-						setIsOpen={setOpenAdvisor}
-					/>
-					<Label className="mb-2">{`${formData?.student?.advisor?.prefix.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
-
-					<div className="w-max h-max flex mt-2 items-center">
-						<Label className="mr-2">วันที่</Label>
-						{formData?.dateAdvisor ? (
-							<Label>{formData?.dateAdvisor ? new Date(formData?.dateAdvisor).toLocaleDateString("th") : "__________"}</Label>
-						) : (
-							<FormField
-								control={form.control}
-								name="dateAdvisor"
-								render={({ field }) => (
-									<div className="flex flex-row items-center justify-center">
-										<FormItem>
-											<DatePicker onDateChange={field.onChange} />
-											<FormMessage />
-										</FormItem>
-									</div>
-								)}
-							/>
-						)}
-					</div>
-				</div>
-
-				{/* หัวหน้าสาขา */}
-				{(user?.position === "HEAD_OF_SCHOOL" || user?.role === "SUPER_ADMIN") && (
-					<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
-						<h1 className="mb-2 font-bold text-center">ความเห็นของหัวหน้าสาขาวิชา</h1>
+				<div className="w-full flex flex-col sm:flex-row">
+					<div className="w-full h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
+						<h1 className="mb-2 font-bold text-center">ผลการประเมินความคืบหน้าของการทำวิทยานิพนธ์โดยอาจารย์ที่ปรึกษา</h1>
 						<FormField
 							control={form.control}
-							name="headSchoolComment"
+							name="assessmentResult"
 							render={({ field }) => (
 								<FormItem className="w-3/4 h-[100px]">
 									<FormControl>
 										<Textarea
 											disabled={
-												formData?.headSchoolComment
+												formData?.assessmentResult
 													? true
-													: false || (user?.position != "HEAD_OF_SCHOOL" && user?.role != "SUPER_ADMIN")
+													: false ||
+													  (user?.position != "ADVISOR" &&
+															user?.position != "HEAD_OF_SCHOOL" &&
+															user?.role != "SUPER_ADMIN")
 											}
 											placeholder="ความเห็น..."
 											className="resize-none h-full text-md mb-2"
-											value={formData?.headSchoolComment ? formData?.headSchoolComment : field.value}
+											value={formData?.assessmentResult ? formData?.assessmentResult : field.value}
 											onChange={field.onChange}
 										/>
 									</FormControl>
@@ -367,85 +313,24 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 							)}
 						/>
 						<SignatureDialog
-							disable={formData?.headSchoolSignUrl ? true : false}
-							signUrl={formData?.headSchoolSignUrl || form.getValues("headSchoolSignUrl")}
-							onConfirm={handleDrawingSignHeadSchool}
-							isOpen={openHeadSchool}
-							setIsOpen={setOpenHeadSchool}
+							disable={formData?.advisorSignUrl ? true : false}
+							signUrl={formData?.advisorSignUrl || form.getValues("advisorSignUrl")}
+							onConfirm={handleDrawingSignAdvisor}
+							isOpen={openAdvisor}
+							setIsOpen={setOpenAdvisor}
 						/>
-						{formData?.headSchoolID ? (
-							<Label className="mb-2">{`${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`}</Label>
-						) : (
-							<FormField
-								control={form.control}
-								name="headSchoolID"
-								render={({ field }) => (
-									<>
-										<Popover>
-											<PopoverTrigger
-												asChild
-												disabled={user?.position != "HEAD_OF_SCHOOL" && user?.role != "SUPER_ADMIN"}
-											>
-												<FormControl>
-													<Button
-														variant="outline"
-														role="combobox"
-														className={cn("w-[180px] justify-between", !field.value && "text-muted-foreground")}
-													>
-														{field.value
-															? `${
-																	headSchool?.find((headSchool) => headSchool.id === field.value)
-																		?.firstNameTH
-															  } ${
-																	headSchool?.find((headSchool) => headSchool.id === field.value)
-																		?.lastNameTH
-															  } `
-															: "ค้นหาหัวหน้าสาขา"}
-														<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-													</Button>
-												</FormControl>
-											</PopoverTrigger>
-											<PopoverContent className="w-full p-0">
-												<Command>
-													<CommandInput placeholder="ค้นหาหัวหน้าสาขา" />
-													<CommandList>
-														<CommandEmpty>ไม่พบหัวหน้าสาขา</CommandEmpty>
-														{headSchool?.map((headSchool) => (
-															<CommandItem
-																value={`${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
-																key={headSchool.id}
-																onSelect={() => {
-																	form.setValue("headSchoolID", headSchool.id);
-																}}
-															>
-																<Check
-																	className={cn(
-																		"mr-2 h-4 w-4",
-																		field.value === headSchool.id ? "opacity-100" : "opacity-0"
-																	)}
-																/>
-																{`${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
-															</CommandItem>
-														))}
-													</CommandList>
-												</Command>
-											</PopoverContent>
-										</Popover>
-										<FormMessage />
-									</>
-								)}
-							/>
-						)}
+						<Label className="mb-2">{`${formData?.student?.advisor?.prefix?.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label>
+
 						<div className="w-max h-max flex mt-2 items-center">
 							<Label className="mr-2">วันที่</Label>
-							{formData?.dateHeadSchool ? (
+							{formData?.dateAdvisor ? (
 								<Label>
-									{formData?.dateHeadSchool ? new Date(formData?.dateHeadSchool).toLocaleDateString("th") : "__________"}
+									{formData?.dateAdvisor ? new Date(formData?.dateAdvisor).toLocaleDateString("th") : "__________"}
 								</Label>
 							) : (
 								<FormField
 									control={form.control}
-									name="dateHeadSchool"
+									name="dateAdvisor"
 									render={({ field }) => (
 										<div className="flex flex-row items-center justify-center">
 											<FormItem>
@@ -458,7 +343,132 @@ const ThesisProgressFormUpdate = ({ formId }: { formId: number }) => {
 							)}
 						</div>
 					</div>
-				)}
+
+					{/* หัวหน้าสาขา */}
+					{(user?.position === "HEAD_OF_SCHOOL" || user?.role === "SUPER_ADMIN") && (
+						<div className="w-full h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
+							<h1 className="mb-2 font-bold text-center">ความเห็นของหัวหน้าสาขาวิชา</h1>
+							<FormField
+								control={form.control}
+								name="headSchoolComment"
+								render={({ field }) => (
+									<FormItem className="w-3/4 h-[100px]">
+										<FormControl>
+											<Textarea
+												disabled={
+													formData?.headSchoolComment
+														? true
+														: false || (user?.position != "HEAD_OF_SCHOOL" && user?.role != "SUPER_ADMIN")
+												}
+												placeholder="ความเห็น..."
+												className="resize-none h-full text-md mb-2"
+												value={formData?.headSchoolComment ? formData?.headSchoolComment : field.value}
+												onChange={field.onChange}
+											/>
+										</FormControl>
+										<FormMessage />
+									</FormItem>
+								)}
+							/>
+							<SignatureDialog
+								disable={formData?.headSchoolSignUrl ? true : false}
+								signUrl={formData?.headSchoolSignUrl || form.getValues("headSchoolSignUrl")}
+								onConfirm={handleDrawingSignHeadSchool}
+								isOpen={openHeadSchool}
+								setIsOpen={setOpenHeadSchool}
+							/>
+							{formData?.headSchoolID ? (
+								<Label className="mb-2">{`${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`}</Label>
+							) : (
+								<FormField
+									control={form.control}
+									name="headSchoolID"
+									render={({ field }) => (
+										<>
+											<Popover>
+												<PopoverTrigger
+													asChild
+													disabled={user?.position != "HEAD_OF_SCHOOL" && user?.role != "SUPER_ADMIN"}
+												>
+													<FormControl>
+														<Button
+															variant="outline"
+															role="combobox"
+															className={cn(
+																"w-[180px] justify-between",
+																!field.value && "text-muted-foreground"
+															)}
+														>
+															{field.value
+																? `${
+																		headSchool?.find((headSchool) => headSchool.id === field.value)
+																			?.firstNameTH
+																  } ${
+																		headSchool?.find((headSchool) => headSchool.id === field.value)
+																			?.lastNameTH
+																  } `
+																: "ค้นหาหัวหน้าสาขา"}
+															<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+														</Button>
+													</FormControl>
+												</PopoverTrigger>
+												<PopoverContent className="w-full p-0">
+													<Command>
+														<CommandInput placeholder="ค้นหาหัวหน้าสาขา" />
+														<CommandList>
+															<CommandEmpty>ไม่พบหัวหน้าสาขา</CommandEmpty>
+															{headSchool?.map((headSchool) => (
+																<CommandItem
+																	value={`${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
+																	key={headSchool.id}
+																	onSelect={() => {
+																		form.setValue("headSchoolID", headSchool.id);
+																	}}
+																>
+																	<Check
+																		className={cn(
+																			"mr-2 h-4 w-4",
+																			field.value === headSchool.id ? "opacity-100" : "opacity-0"
+																		)}
+																	/>
+																	{`${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
+																</CommandItem>
+															))}
+														</CommandList>
+													</Command>
+												</PopoverContent>
+											</Popover>
+											<FormMessage />
+										</>
+									)}
+								/>
+							)}
+							<div className="w-max h-max flex mt-2 items-center">
+								<Label className="mr-2">วันที่</Label>
+								{formData?.dateHeadSchool ? (
+									<Label>
+										{formData?.dateHeadSchool
+											? new Date(formData?.dateHeadSchool).toLocaleDateString("th")
+											: "__________"}
+									</Label>
+								) : (
+									<FormField
+										control={form.control}
+										name="dateHeadSchool"
+										render={({ field }) => (
+											<div className="flex flex-row items-center justify-center">
+												<FormItem>
+													<DatePicker onDateChange={field.onChange} />
+													<FormMessage />
+												</FormItem>
+											</div>
+										)}
+									/>
+								)}
+							</div>
+						</div>
+					)}
+				</div>
 				<hr className="่่justify-center mx-auto w-3/4 my-5 border-t-2 border-[#eeee]" />
 				<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg">
 					<h1 className="mb-2 font-bold text-center">เเผนการดำเนินการจัดทำวิทยานิพนธ์</h1>

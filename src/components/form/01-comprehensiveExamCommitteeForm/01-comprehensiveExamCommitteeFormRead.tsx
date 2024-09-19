@@ -1,22 +1,19 @@
+"use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { IComprehensiveExamCommitteeForm } from "@/interface/form";
-import useSWR from "swr";
 import InputForm from "../../inputForm/inputForm";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { CircleAlert } from "lucide-react";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-const ComprehensiveExamCommitteeFormRead = ({ formId }: { formId: number }) => {
+const ComprehensiveExamCommitteeFormRead = ({ formData }: { formData: IComprehensiveExamCommitteeForm }) => {
 	const router = useRouter();
-	const { data: formData } = useSWR<IComprehensiveExamCommitteeForm>(`/api/get01FormById/${formId}`, fetcher);
 
 	return (
 		<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg">
-			<div className="w-full flex px-0 lg:px-20 mb-2">
+			<div className="w-full flex justify-start">
 				<Button
 					variant="outline"
 					type="reset"
@@ -65,7 +62,7 @@ const ComprehensiveExamCommitteeFormRead = ({ formId }: { formId: number }) => {
 						<Label className="mb-2">
 							{formData?.headSchool
 								? `${formData?.headSchool?.prefix?.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`
-								: "ไม่พบข้อมูล"}
+								: ""}
 						</Label>
 						<Label className="my-2">{`หัวหน้าสาขาวิชา ${
 							formData?.headSchool ? formData?.headSchool?.school?.schoolNameTH : ""

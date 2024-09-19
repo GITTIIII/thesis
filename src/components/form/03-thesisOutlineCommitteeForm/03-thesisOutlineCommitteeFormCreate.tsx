@@ -1,3 +1,4 @@
+"use client";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { use, useEffect, useState } from "react";
@@ -15,19 +16,17 @@ import { ICoAdvisorStudents } from "@/interface/coAdvisorStudents";
 import { DatePicker } from "@/components/datePicker/datePicker";
 import { CircleAlert } from "lucide-react";
 import Link from "next/link";
-import useSWR from "swr";
 import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
 
 const formSchema = z.object({
 	date: z.date(),
 	studentID: z.number(),
-	advisorID: z.number(),
 	times: z.number().min(1, { message: "กรุณาระบุครั้ง / Times required" }),
 	trimester: z
 		.number()
 		.min(1, { message: "กรุณาระบุภาคเรียน / Trimester required" })
 		.max(3, { message: "กรุณาระบุเลขเทอมระหว่าง 1-3 / Trimester must be between 1-3" }),
-	academicYear: z.number().min(1, { message: "กรุณากรอกปีการศึกษา / Academic year required" }),
+	academicYear: z.string().min(1, { message: "กรุณากรอกปีการศึกษา / Academic year required" }),
 	committeeMembers: z
 		.array(
 			z.object({
@@ -40,12 +39,9 @@ const formSchema = z.object({
 	examDate: z.date(),
 });
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-const ThesisOutlineCommitteeFormCreate = () => {
+const ThesisOutlineCommitteeFormCreate = ({ user }: { user: IUser }) => {
 	const router = useRouter();
 	const { toast } = useToast();
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
 
@@ -53,13 +49,12 @@ const ThesisOutlineCommitteeFormCreate = () => {
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			date: undefined as unknown as Date,
-			studentID: 0,
-			advisorID: 0,
 			times: 0,
 			trimester: 0,
-			academicYear: 0,
-			committeeMembers: [{ name: "" }],
+			academicYear: "",
+			committeeMembers: [{ name: "" }, { name: "" }, { name: "" }, { name: "" }, { name: "" }],
 			examDate: undefined as unknown as Date,
+			studentID: 0,
 		},
 		mode: "onSubmit",
 	});
@@ -77,8 +72,7 @@ const ThesisOutlineCommitteeFormCreate = () => {
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		console.log("Form values: ", values);
-
+		setLoading(true);
 		try {
 			const url = qs.stringifyUrl({ url: `/api/03ThesisOutlineCommitteeForm` });
 			const res = await axios.post(url, values);
@@ -117,7 +111,6 @@ const ThesisOutlineCommitteeFormCreate = () => {
 			reset({
 				...form.getValues(),
 				studentID: user.id,
-				advisorID: user.advisorID,
 				date: today,
 			});
 		}
@@ -194,10 +187,7 @@ const ThesisOutlineCommitteeFormCreate = () => {
 										<FormLabel>
 											ปีการศึกษา / Academic year <span className="text-red-500">*</span>
 										</FormLabel>
-										<Input
-											value={field.value ? field.value : ""}
-											onChange={(e) => field.onChange(Number(e.target.value))}
-										/>
+										<Input value={field.value ? field.value : ""} onChange={(e) => field.onChange(e.target.value)} />
 										<FormMessage />
 									</FormItem>
 								</div>
@@ -225,7 +215,7 @@ const ThesisOutlineCommitteeFormCreate = () => {
 						<InputForm value={`${user?.program?.programNameTH}`} label="หลักสูตร / Program" />
 						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร / Program Year" />
 						<InputForm
-							value={`${user?.advisor.firstNameTH} ${user?.advisor.lastNameTH}`}
+							value={`${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษา / The Advisor"
 						/>
 						{user?.coAdvisedStudents &&
@@ -233,7 +223,7 @@ const ThesisOutlineCommitteeFormCreate = () => {
 							user.coAdvisedStudents.map((member: ICoAdvisorStudents, index: number) => (
 								<InputForm
 									key={index}
-									value={`${member.coAdvisor.firstNameTH} ${member.coAdvisor.lastNameTH}`}
+									value={`${member.coAdvisor?.firstNameTH} ${member.coAdvisor?.lastNameTH}`}
 									label="อาจารย์ที่ปรึกษาร่วม / CoAdvisor"
 								/>
 							))}
@@ -265,13 +255,15 @@ const ThesisOutlineCommitteeFormCreate = () => {
 														onChange={field.onChange}
 														className="w-[300px]"
 													/>
-													<Button
-														type="button"
-														onClick={() => remove(index)}
-														className="bg-[#fff] hover:text-black hover:bg-white text-[#A67436] border-2 border-[#A67436] rounded-lg"
-													>
-														ลบ
-													</Button>
+													{index > 4 && (
+														<Button
+															type="button"
+															onClick={() => remove(index)}
+															className="bg-[#fff] hover:text-black hover:bg-white text-[#A67436] border-2 border-[#A67436] rounded-lg"
+														>
+															ลบ
+														</Button>
+													)}
 												</div>
 												<FormMessage className="flex item-center justify-center" />
 											</FormItem>

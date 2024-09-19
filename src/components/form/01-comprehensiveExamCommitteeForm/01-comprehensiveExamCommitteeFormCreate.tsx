@@ -1,3 +1,4 @@
+"use client";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
@@ -8,14 +9,13 @@ import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { IUser } from "@/interface/user";
 import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { CircleAlert } from "lucide-react";
+import { DatePicker } from "@/components/datePicker/datePicker";
+import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
+import Link from "next/link";
 import axios from "axios";
 import qs from "query-string";
 import InputForm from "../../inputForm/inputForm";
-import { CircleAlert } from "lucide-react";
-import Link from "next/link";
-import { DatePicker } from "@/components/datePicker/datePicker";
-import useSWR from "swr";
-import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
 
 const formSchema = z.object({
 	date: z.date(),
@@ -35,15 +35,12 @@ const formSchema = z.object({
 	studentID: z.number(),
 });
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-const ComprehensiveExamCommitteeFormCreate = () => {
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
+const ComprehensiveExamCommitteeFormCreate = ({ user }: { user: IUser }) => {
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
 	const router = useRouter();
-
 	const { toast } = useToast();
+
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
 		defaultValues: {

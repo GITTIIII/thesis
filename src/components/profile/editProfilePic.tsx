@@ -1,5 +1,4 @@
 "use client";
-import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { GoPencil } from "react-icons/go";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -9,16 +8,16 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import Cropper, { Area, Point } from "react-easy-crop";
-import getCroppedImg from "@/lib/cropImage";
 import { Slider } from "@/components/ui/slider";
-import qs from "query-string";
 import { useToast } from "@/components/ui/use-toast";
 import { IUser } from "@/interface/user";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { useSWRConfig } from "swr";
+import axios from "axios";
+import getCroppedImg from "@/lib/cropImage";
+import qs from "query-string";
 
-const EditProfilePic = ({ user }: { user: IUser | undefined }) => {
+const EditProfilePic = ({ user }: { user: IUser }) => {
 	const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
 	const [zoom, setZoom] = useState<number>(1);
 	const [rotation, setRotation] = useState<number>(0);
@@ -27,7 +26,7 @@ const EditProfilePic = ({ user }: { user: IUser | undefined }) => {
 	const { toast } = useToast();
 	const [open, setOpen] = useState(false);
 	const router = useRouter();
-	const { mutate } = useSWRConfig();
+
 	const formSchema = z.object({
 		id: z.number(),
 		profileUrl: z.string(),
@@ -84,10 +83,7 @@ const EditProfilePic = ({ user }: { user: IUser | undefined }) => {
 		const url = qs.stringifyUrl({
 			url: `/api/user`,
 		});
-		// const aTag = document.createElement("a");
-		// aTag.href = cropImage;
-		// aTag.download = "test";
-		// aTag.click();
+		
 		const res = await axios.patch(url, values);
 		if (res.status === 200) {
 			toast({
@@ -97,7 +93,6 @@ const EditProfilePic = ({ user }: { user: IUser | undefined }) => {
 			});
 			form.reset();
 			router.refresh();
-			mutate("/api/getCurrentUser");
 			setOpen(false);
 		} else {
 			toast({

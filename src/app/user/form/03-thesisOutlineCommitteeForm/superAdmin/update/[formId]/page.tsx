@@ -1,11 +1,19 @@
-"use client";
-
 import Image from "next/image";
 import learning1 from "@/../../public/asset/learning1.png";
 import SuperAdminForm03Update from "@/components/form/03-thesisOutlineCommitteeForm/03-superAdminFormUpdate";
+import { get03FormById } from "@/app/action/getFormById";
+import { getHeadSchool } from "@/app/action/headSchool";
+import { currentUser } from "@/app/action/current-user";
 
-export default function SuperAdminForm08UpdatePage({ params }: { params: { formId: number } }) {
+export default async function SuperAdminForm03UpdatePage({ params }: { params: { formId: number } }) {
   const formId = params.formId;
+	const formData = await get03FormById(formId);
+	const headSchool = await getHeadSchool();
+	const user = await currentUser();
+
+	if (!formData || !user || !headSchool) {
+		return <div>ไม่พบข้อมูล</div>;
+	}
   return (
     <>
       <div className="w-full h-max bg-transparent py-12 px-2 lg:px-28">
@@ -17,7 +25,7 @@ export default function SuperAdminForm08UpdatePage({ params }: { params: { formI
         </div>
         <div className="h-full w-full flex items-center bg-[#EEEEEE] p-2 md:p-8 rounded-md">
           <div className="w-full h-full">
-            <SuperAdminForm03Update formId={Number(formId)} />
+            <SuperAdminForm03Update formData={formData} user={user} headSchool={headSchool} />
           </div>
         </div>
       </div>

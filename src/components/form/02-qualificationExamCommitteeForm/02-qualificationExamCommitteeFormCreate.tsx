@@ -1,6 +1,7 @@
+"use client"
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +15,6 @@ import InputForm from "../../inputForm/inputForm";
 import { CircleAlert } from "lucide-react";
 import Link from "next/link";
 import { DatePicker } from "@/components/datePicker/datePicker";
-import useSWR from "swr";
 import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
 
 const formSchema = z.object({
@@ -35,12 +35,9 @@ const formSchema = z.object({
 	studentID: z.number(),
 });
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-const QualificationExamCommitteeFormCreate = () => {
+const QualificationExamCommitteeFormCreate = ({ user }: { user: IUser }) => {
 	const router = useRouter();
 	const { toast } = useToast();
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
 

@@ -4,21 +4,22 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
 export async function GET() {
-	const session = await getServerSession(authOptions);
+  const session = await getServerSession(authOptions);
 
-	if (!session) {
-		return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
-	}
+  if (!session) {
+    return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
+  }
 
-	const user = await db.user.findMany({
-		where: {
-			role: "ADMIN",
-			position: "ADVISOR",
-		},
-		include: {
-			prefix: true,
-		},
-	});
+  const user = await db.user.findMany({
+    where: {
+      role: "ADMIN",
+      position: "ADVISOR",
+    },
+    include: {
+      prefix: true,
+      school: true,
+    },
+  });
 
-	return NextResponse.json(user);
+  return NextResponse.json(user);
 }
