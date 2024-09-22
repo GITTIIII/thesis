@@ -20,6 +20,7 @@ import {
 	get05FormByStdId,
 	get06FormByStdId,
 	get07FormByStdId,
+	get08FormByStdId
 } from "@/app/action/getFormByStdId";
 import { IUser } from "@/interface/user";
 
@@ -50,6 +51,8 @@ const fetchFormData = async (formSelect: string, user: IUser) => {
 			return await get06FormByStdId(user.id);
 		case "form07":
 			return await get07FormByStdId(user.id);
+		case "form08":
+			return await get08FormByStdId(user.id);
 		default:
 			return;
 	}
@@ -81,6 +84,8 @@ export default async function StudentTablePage({ searchParams }: { searchParams:
 				return <ThesisProgressFormTable user={user} formData={formData} />;
 			case "form07":
 				return <ExamAppointmentFormTable user={user} formData={formData} />;
+			case "form08":
+				return <ThesisExamFormTable user={user} formData={formData} />;
 			default:
 				return <div>ไม่มีตาราง</div>;
 		}
@@ -100,93 +105,8 @@ export default async function StudentTablePage({ searchParams }: { searchParams:
 						{labels[selectedForm]}
 					</label>
 				</div>
-<<<<<<< HEAD
-				<div className="w-max ml-auto flex flex-col sm:flex-row items-center justify-center">
-					<Select onValueChange={handleSelectChange} defaultValue={selectedForm}>
-						<SelectTrigger className="w-max">
-							<SelectValue placeholder="แบบคำขออนุมัติแต่งตั้งกรรมการสอบประมวลความรู้" defaultValue={"form01"} />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectItem
-								// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 1}
-								value="form01"
-							>
-								แบบคำขออนุมัติแต่งตั้งกรรมการสอบประมวลความรู้
-							</SelectItem>
-							<SelectItem
-								// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 2}
-								value="form02"
-							>
-								แบบคำขออนุมัติแต่งตั้งกรรมการสอบวัดคุณสมบัติ
-							</SelectItem>
-							<SelectItem
-								// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 3}
-								value="form03"
-							>
-								แบบคำขออนุมัติแต่งตั้งกรรมการสอบโครงร่างวิทยานิพนธ์
-							</SelectItem>
-
-							<SelectItem
-								// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 4}
-								value="form04"
-							>
-								แบบคำขออนุมัติแต่งตั้งกรรมการสอบวิทยานิพนธ์
-							</SelectItem>
-
-							<SelectItem
-								// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 5}
-								value="form05"
-							>
-								แบบคำขออนุมัติโครงร่างวิทยานิพนธ์
-							</SelectItem>
-
-							<SelectItem
-								// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 6}
-								value="form06"
-							>
-								เเบบรายงานความคืบหน้าของการทำวิทยานิพนธ์
-							</SelectItem>
-							<SelectItem
-								// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 7}
-								value="form07"
-							>
-								คำขอนัดสอบวิทยานิพนธ์
-							</SelectItem>
-							<SelectItem
-								// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 7}
-								value="form08"
-							>
-								แบบประเมินการสอบวิทยานิพนธ์
-							</SelectItem>
-						</SelectContent>
-					</Select>
-					{user?.role === "STUDENT" && (
-						<Button
-							type="button"
-							variant="default"
-							className="bg-[#F26522] w-auto text-md text-white rounded-md ml-auto sm:ml-4 border-[#F26522] mt-2 sm:mt-0"
-							onClick={() => router.push(`/user/form/${FormPath[selectedForm]}/create`)}
-							disabled={isDisabled}
-						>
-							<Image src={createForm} width={24} height={24} alt={"createForm"} className="mr-2" />
-							เพิ่มฟอร์ม
-						</Button>
-					)}
-				</div>
-				<div className="h-full w-full flex items-center py-4">
-					{selectedForm == "form01" && <ComprehensiveExamCommitteeFormTable userData={user} />}
-					{selectedForm == "form02" && <QualificationExamCommitteeFormTable userData={user} />}
-					{selectedForm == "form03" && <OutlineExamCommitteeFormTable userData={user} />}
-					{selectedForm == "form04" && <ThesisExamCommitteeFormTable userData={user} />}
-					{selectedForm == "form05" && <OutlineFormTable userData={user} />}
-					{selectedForm == "form06" && <ThesisProgressFormTable userData={user} />}
-					{selectedForm == "form07" && <ExamAppointmentFormTable userData={user} />}
-					{selectedForm == "form08" && <ThesisExamFormTable userData={user} />}
-				</div>
-=======
 				<SelectAndCreate user={user} />
 				<div className="h-full w-full flex items-center py-4">{renderFormTable()}</div>
->>>>>>> 51eb9f2f3733acb13a9bdf0a9648c865fe05c77c
 			</div>
 		</>
 	);

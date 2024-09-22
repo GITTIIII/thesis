@@ -18,17 +18,17 @@ import InputForm from "../../inputForm/inputForm";
 import { IUser } from "@/interface/user";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DatePicker } from "@/components/datePicker/datePicker";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const formSchema = z.object({
 	thesisNameTH: z.string(),
 	thesisNameEN: z.string(),
 	studentID: z.number(),
-	examinationDate:z.date(),
-	disClosed:z.boolean(),
+	publishmentName:z.string(),
 	date:z.date(),
-	newNameTH: z.string().optional(), 
-  	newNameEN: z.string().optional(), 
-	reviseTitle: z.boolean(),
+	studentSignUrl:z.string(),
+	startingDate:z.date(),
+	endDate:z.date(),
 });
 
 async function getUser() {
@@ -36,19 +36,22 @@ async function getUser() {
 	return res.json();
 }
 
-async function getAllAdvisor() {
-	const res = await fetch("/api/getAdvisor");
-	return res.json();
-}
 
 const userPromise = getUser();
 
-const ThesisExamAssessmentFormCreate = () => {
+const ThesisExamFormCreate = () => {
 	const router = useRouter();
 	const user: IUser = use(userPromise);
-	const [loading, setLoading] = useState(false);
-
+	const [openSign, setOpenSign] = useState(false);
 	const { toast } = useToast();
+	
+	const handleDrawingSign = (signUrl: string) => {
+		reset({
+			...form.getValues(),
+			studentSignUrl: signUrl,
+		});
+		setOpenSign(false);
+	};
 	const form = useForm({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -56,25 +59,15 @@ const ThesisExamAssessmentFormCreate = () => {
 			thesisNameTH: "",
 			thesisNameEN: "",
 			studentID: 0,
-			examinationDate: new Date(),
-			disClosed:true,
-			newNameTH:"",
-			newNameEN:"",
-			reviseTitle: false,
+			publishmentName:"",
+			studentSignUrl:"",
+			startingDate:new Date(),
+			endDate:new Date()
 		},
 	});
-	const disclosed = form.watch('disClosed');
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		console.log("values:", values)
-		if (values.disClosed===true && (values.newNameEN === undefined || values.newNameTH === undefined)) {
-			toast({
-				title: "Error",
-				description: "กรุณากรอกชื่อวิท",
-				variant: "destructive",
-			});
-			return;
-		}
 		const url = qs.stringifyUrl({
 			url: `/api/08ThesisExamForm`,
 		});
@@ -121,13 +114,7 @@ const ThesisExamAssessmentFormCreate = () => {
 	}, [user, reset]);
 
 	
-	const [isChecked, setIsChecked] = useState(false)
 
-  	const checkHandler = (checked: boolean) => {
-    	setIsChecked(!isChecked)
-		form.setValue('reviseTitle', checked)
-		console.log("check:",isChecked)
-  	}
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">
@@ -164,7 +151,7 @@ const ThesisExamAssessmentFormCreate = () => {
 					{/* ฝั่งขวา */}
 					<div className="w-full ">
 						<div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
-							<div className="text-center mb-5">ชื่อวิทยานิพนธ์</div>
+						<div className="text-center mb-5">ชื่อวิทยานิพนธ์</div>
 							<FormField
 								control={form.control}
 								name="thesisNameTH"
@@ -195,35 +182,31 @@ const ThesisExamAssessmentFormCreate = () => {
 									</div>
 								)}
 							/>
-							<RadioGroup
-								className="space-y-1 mt-2 justify-center"
-								value={disclosed ? 'disclosed' : 'nondisclosure'}
-								onValueChange={(value) => form.setValue('disClosed', value === 'disclosed')}
-								>
-								<div className="w-[300px]">
-									<RadioGroupItem value="disclosed" {...form.register('disClosed')} />
-									<FormLabel className="ml-2 text-sm">
-									วิทยานิพนธ์เผยแพร่ได้ / <br /> This Thesis can be disclosed.
-									</FormLabel>
-								</div>
-								<div>
-									<RadioGroupItem value="nondisclosure" {...form.register('disClosed')} />
-									<FormLabel className="ml-2 text-sm mb-6">
-									วิทยานิพนธ์ปกปิด (โปรดกรอก ทบ.24) / <br /> This Thesis is subject to nondisclosure <br />
-									(Please attach form No.24).
-									</FormLabel>
-								</div>
-							</RadioGroup>
-
 							<FormField
 								control={form.control}
-								name="examinationDate"
+								name="publishmentName"
 								render={({ field }) => (
-									<div className="flex flex-row items-center my-6 justify-center">
+									<div className="flex flex-row items-center mb-6 justify-center">
 										<FormItem className="w-auto">
-											<FormLabel>วันที่สอบ / This Examination Date</FormLabel>
+											<FormLabel>ชื่อวารสารที่ต้องการนำวิทยานิพนธ์ไปตีพิมพ์ / scientific journal name</FormLabel>
 											<FormControl>
-												<div className="w-[300px]">
+												<Input className="text-sm p-2 w-[300px] m-auto  rounded-lg" {...field} />
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									</div>
+								)}
+							/>
+							<div className="flex flex-row justify-center">
+							<FormField
+								control={form.control}
+								name="startingDate"
+								render={({ field }) => (
+									<div className="flex flex-row ">
+										<FormItem className="w-auto">
+											<FormLabel>ตั้งแต่วันที่ / Starting Date</FormLabel>
+											<FormControl>
+												<div>
 													<DatePicker
 														onDateChange={field.onChange}
 														value={field.value ? new Date(field.value) : undefined}
@@ -235,93 +218,20 @@ const ThesisExamAssessmentFormCreate = () => {
 									</div>
 								)}
 							/>
-							<div className="px-4 m-0 text-xs text-justify">
-								<span className="font-bold">หมายเหตุ:</span>&nbsp;กรณีนักศึกษามีส่วนที่ต้องปรับปรุง
-								ต้องดำเนินการให้แล้วเสร็จ
-								<span className="font-bold underline">ภายในระยะเวลา 30 วัน</span>
-								และไม่เกินวันสุดท้ายของภาคการศึกษาที่ขอสอบวิทยานิพนธ์ หากดำเนินการไม่ทันภาคการศึกษาดังกล่าว
-								นักศึกษาต้องลงทะเบียนรักษาสภาพในภาคการศึกษาถัดไป
-								และกำหนดให้วันที่นักศึกษาส่งเล่มวิทยานิพนธ์เป็นวันที่สำเร็จการศึกษา
-							</div>
-							<div className="px-4 m-0 text-xs text-justify">
-								<span className="font-bold">Remask:</span>&nbsp;In the event thesis amendments are required, the
-								student&nbsp;
-								<span className="font-bold underline">must complete all amendments within 30 days</span>
-								&nbsp; and no later than the last day of the term in which the thesis examination took place. Failure to do
-								so will result in the student maintaining student status in the following term. The thesis submission date
-								shall be deemed the students graduation date.
-							</div>
-						</div>
-						{/* <div className="flex justify-center my-8 bg-[#ffff]  text-[#000] underline rounded-lg">
-							ผลการพิจารณาการสอบวิทยานพนธ์ / Results of Examination
-						</div> */}
-						<div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg my-5 border-[#eeee]">
-							{/* <RadioGroup className="space-y-1 mt-2 justify-center">
-								<div className="w-[300px]">
-									<RadioGroupItem value="Excellent" />
-									<FormLabel className="ml-2 font-normal">ดีมาก / Excellent</FormLabel>
-								</div>
-								<div className="w-[300px]">
-									<RadioGroupItem value="Pass" />
-									<FormLabel className="ml-2 font-normal">ผ่าน / Pass</FormLabel>
-								</div>
-								<div className="w-[300px]">
-									<RadioGroupItem value="Fail" />
-									<FormLabel className="ml-2 font-normal">ไม่ผ่าน / Fail</FormLabel>
-								</div>
-								</RadioGroup> */}
-								<div className="w-[300px]">
-									
-									<div className="items-top flex space-x-2 mt-2">
-									<Checkbox 
-										value="ReviseTile" 
-										checked={form.watch('reviseTitle')} 
-										onCheckedChange={checkHandler} 
-										/>
-										<div className="grid gap-1.5 leading-none">
-											<FormLabel className="ml-2 font-normal mb-6">
-												ปรับเปลี่ยนชื่อวิทยานิพนธ์ / <br />
-												if the thesis title requires revision, <br />
-												provide both revised Thai and English titles.
-											</FormLabel>
-										</div>
-										</div>
-									</div>
 							<FormField
 								control={form.control}
-								name="newNameTH"
+								name="endDate"
 								render={({ field }) => (
-									<div className="flex flex-row items-center mt-5 justify-center">
+									<div className="flex flex-row ">
 										<FormItem className="w-auto">
-											<FormLabel>ชื่อวิทยานิพนธ์ภาษาไทย / Thai thesis title</FormLabel>
+											<FormLabel>จนถึงวันที่ / Until Date</FormLabel>
 											<FormControl>
-												<Input
-													type="int"
-													className="text-sm p-2 w-[300px] rounded-lg"
-													disabled={!isChecked}
-													{...field}
-												/>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									</div>
-								)}
-							/>
-
-							<FormField
-								control={form.control}
-								name="newNameEN"
-								render={({ field }) => (
-									<div className="flex flex-row items-center my-5 justify-center">
-										<FormItem className="w-auto">
-											<FormLabel>ชื่อวิทยานิพนธ์อังกฤษ / English thesis title</FormLabel>
-											<FormControl>
-												<Input
-													type="text"
-													className="text-sm p-2 w-[300px] rounded-lg"
-													disabled={!isChecked}
-													{...field}
-												/>
+												<div>
+													<DatePicker
+														onDateChange={field.onChange}
+														value={field.value ? new Date(field.value) : undefined}
+													/>
+												</div>
 											</FormControl>
 											<FormMessage />
 										</FormItem>
@@ -330,6 +240,26 @@ const ThesisExamAssessmentFormCreate = () => {
 							/>
 						</div>
 					</div>
+					<div className="flex item-center justify-center ">
+					<div className="w-3/4 flex flex-col item-center justify-center md:flex-row border-2 rounded-lg py-5 my-5 border-[#eeee] ">
+						{(user.role == "STUDENT") && (
+							<div className="w-full sm:1/3 flex flex-col items-center mb-6 justify-center">
+								{/* อาจารย์ที่ปรึกษา */}
+								<div className="text-center mb-2">
+									ลายเซ็นต์นักศึกษา / <br />
+									Student Signature
+								</div>
+								<SignatureDialog
+											signUrl={form.getValues("studentSignUrl")}
+											onConfirm={handleDrawingSign}
+											isOpen={openSign}
+											setIsOpen={setOpenSign} disable={false}								/>
+								{/* <Label className="mb-2">{`${formData?.student?.advisor?.prefix?.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label> */}
+							</div>
+						)}
+						</div>
+						</div>
+					</div>				
 				</div>
 				<hr className="่่justify-center mx-auto w-3/4 my-5 border-t-2 border-[#eeee]" />
 
@@ -355,4 +285,4 @@ const ThesisExamAssessmentFormCreate = () => {
 	);
 };
 
-export default ThesisExamAssessmentFormCreate;
+export default ThesisExamFormCreate;

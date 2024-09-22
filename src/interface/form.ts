@@ -207,8 +207,9 @@ export type IExamForm = {
 	thesisNameEN: string;
 	examinationDate: Date;
 	disClosed: boolean;
-	newNameTH: string;
-	newNameEN: string;
-	reviseTitle: string;
+	newNameTH?: string;
+	newNameEN?: string;
+	reviseTitle?: Boolean;
+  	committeeSignUrl?:     String
 
 };

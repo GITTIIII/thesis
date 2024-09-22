@@ -1,9 +1,9 @@
 "use client";
 import Image from "next/image";
 import learning1 from "@/../../public/asset/learning1.png";
-import ThesisExamFormRead from "@/components/form/08-thesisExamAssessmentForm/08-thesisExamAssessmentFormRead";
+import ThesisExamAssessmentFormCreateRead from "@/components/form/08-thesisExamAssessmentForm/08-thesisExamAssessmentFormRead";
 
-export default function ThesisExamAppointmentFormReadPage({ params }: { params: { formId: number } }) {
+export default function ThesisExamAssessmentFormReadPage({ params }: { params: { formId: number } }) {
 	const formId = params.formId;
 	return (
 		<>
@@ -16,7 +16,7 @@ export default function ThesisExamAppointmentFormReadPage({ params }: { params: 
 				</div>
 				<div className="h-full w-full flex items-center bg-[#EEEEEE] p-2 md:p-8 rounded-md">
 					<div className="w-full h-full">
-						<ThesisExamFormRead formId={Number(formId)} />
+						<ThesisExamAssessmentFormCreateRead formId={Number(formId)} />
 					</div>
 				</div>
 			</div>

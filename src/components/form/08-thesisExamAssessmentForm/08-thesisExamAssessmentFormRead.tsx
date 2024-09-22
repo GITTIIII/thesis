@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-const ThesisExamFormRead = ({ formId }: { formId: number }) => {
+const ThesisExamAssessmentFormCreate = ({ formId }: { formId: number }) => {
 	const router = useRouter();
 	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
 	const { data: formData } = useSWR<IExamForm>(formId ? `/api/get08FormById/${formId}` : "", fetcher);
@@ -122,4 +122,4 @@ const ThesisExamFormRead = ({ formId }: { formId: number }) => {
 	);
 };
 
-export default ThesisExamFormRead;
+export default ThesisExamAssessmentFormCreate;

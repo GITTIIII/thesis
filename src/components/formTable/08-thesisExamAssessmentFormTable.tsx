@@ -25,22 +25,22 @@ async function get08FormData() {
 	return res.json();
 }
 
-export default function ThesisExamFormTable({ userData }: { userData: IUser | undefined }) {
-	const [formData, setFormData] = useState<IExamForm[]>();
+export default function ThesisExamFormTable({ formData, user }: { user: IUser; formData?: IExamForm[]}) {
+	
 	const { selectedForm, setSelectedForm } = useSelectForm();
 
-	useEffect(() => {
-		async function fetchData() {
-			if (userData?.role === "STUDENT") {
-				const formData = await get08FormByStdId(userData?.id);
-				setFormData(formData);
-			} else {
-				const formData = await get08FormData();
-				setFormData(formData);
-			}
-		}
-		fetchData();
-	}, [userData]);
+	// useEffect(() => {
+	// 	async function fetchData() {
+	// 		if (userData?.role === "STUDENT") {
+	// 			const formData = await get08FormByStdId(userData?.id);
+	// 			setFormData(formData);
+	// 		} else {
+	// 			const formData = await get08FormData();
+	// 			setFormData(formData);
+	// 		}
+	// 	}
+	// 	fetchData();
+	// }, [userData]);
 
 	return (
 		<>
@@ -62,10 +62,6 @@ export default function ThesisExamFormTable({ userData }: { userData: IUser | un
 					</TableHeader>
 					<TableBody>
 						{formData && formData
-							?.filter(
-								(formData) =>
-									(userData?.role === "STUDENT" && userData?.id === formData?.student?.id) || userData?.role != "STUDENT"
-							)
 							.map((formData, index) => (
 								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
 									<TableCell className="text-center">{index + 1}</TableCell>
@@ -81,7 +77,7 @@ export default function ThesisExamFormTable({ userData }: { userData: IUser | un
 									<TableCell className="text-[#F26522] text-center">
 										<Link
 											href={
-												userData?.role == "SUPER_ADMIN" || userData?.role == "STUDENT"
+												user?.role == "SUPER_ADMIN" || user?.role == "STUDENT"
 													? `/user/form/${FormPath[selectedForm]}/${formData.id}`
 													: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
 											}
@@ -90,7 +86,7 @@ export default function ThesisExamFormTable({ userData }: { userData: IUser | un
 										</Link>
 									</TableCell>
 									<TableCell className="text-center">
-										<Button disabled={userData?.role !== "SUPER_ADMIN"} type="button" variant="outline">
+										<Button disabled={user?.role !== "SUPER_ADMIN"} type="button" variant="outline">
 											<Download className="mr-2" />
 											ดาวน์โหลด
 										</Button>

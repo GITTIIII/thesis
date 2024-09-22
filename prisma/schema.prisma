@@ -167,8 +167,8 @@ model User {
   outlineForm                                OutlineForm[]                        @relation("outlineFormOwner")
   thesisProgressForm                         ThesisProgressForm[]                 @relation("thesisProgressFormOwner")
   thesisExamAppointmentForm                  ThesisExamAppointmentForm[]          @relation("thesisExamAppointmentFormOwner")
-  ThesisExamForm                             ThesisExamForm[]                     @relation("thesisExamCommitteeFormOwner")
-  
+  ThesisExamForm                             ThesisExamForm[]                     @relation("thesisExamFormOwner")
+  DelayThesisForm                            DelayThesisForm[]                    @relation("delayThesisFormOwner")
 
  //เป็นกรรมการสำนักในฟอมโครงร่าง
   instituteCommittee                         OutlineForm[]      @relation("instituteCommittee")
@@ -182,14 +182,10 @@ model User {
   headSchool07                               ThesisExamAppointmentForm[]           @relation("headSchool")
 
   createdAt DateTime @default(now())
-<<<<<<< HEAD
   updatedAt DateTime @updatedAt
 
-  advisor03 ThesisOutlineCommitteeForm[] @relation(name: "advisor")
-  advisor04 ThesisExamCommitteeForm[] @relation(name: "advisor")
-=======
-  updatedAt DateTime @updatedAt 
->>>>>>> 51eb9f2f3733acb13a9bdf0a9648c865fe05c77c
+
+  institute08 DelayThesisForm[] @relation(name: "institute")
 }
 
 model CoAdvisorStudent{
@@ -275,6 +271,7 @@ model ThesisOutlineCommitteeForm {
   
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
+
 }
 
 // 04
@@ -300,11 +297,8 @@ model ThesisExamCommitteeForm {
   
   addNotes             Json?   
   createdAt            DateTime @default(now())
-<<<<<<< HEAD
   updatedAt            DateTime @updatedAt 
-=======
-  updatedAt            DateTime @updatedAt
->>>>>>> 51eb9f2f3733acb13a9bdf0a9648c865fe05c77c
+
 }
 
 // 05
@@ -423,8 +417,26 @@ model ThesisExamForm {
   newNameEN            String?
   committeeSignUrl     Json?
   studentID            Int
-  student              User     @relation(fields: [studentID], references: [id], name: "thesisExamCommitteeFormOwner") 
+  student              User     @relation(fields: [studentID], references: [id], name: "thesisExamFormOwner") 
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt 
 }
 
+model DelayThesisForm {
+  id                   Int      @id @default(autoincrement())
+  headCommitteeName    String
+  startDate            DateTime
+  endDate              String
+  studentSignalUrl     Json
+  InstituteSignalUrl   Json?
+  instituteID          Int?
+  institute            User?  @relation(fields:[instituteID], references: [id], name:"institute")
+  approve              Boolean?
+  dayApprove           DateTime?
+  date                 DateTime
+  publishmentName       String
+  studentID            Int
+  student              User     @relation(fields: [studentID], references: [id], name: "delayThesisFormOwner") 
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt 
+}
