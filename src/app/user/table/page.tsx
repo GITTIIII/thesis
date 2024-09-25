@@ -7,7 +7,7 @@ import ThesisExamCommitteeFormTable from "@/components/formTable/04-thesisExamCo
 import OutlineFormTable from "@/components/formTable/05-outlineFormTable";
 import ThesisProgressFormTable from "@/components/formTable/06-thesisProgressFormTable";
 import ExamAppointmentFormTable from "@/components/formTable/07-thesisExamAppointmentFormTable";
-import ThesisExamFormTable from "@/components/formTable/08-thesisExamAssessmentFormTable"
+import ThesisExamFormTable from "@/components/formTable/08-thesisExamAssessmentFormTable";
 import studentFormPage from "@/../../public/asset/studentFormPage.png";
 import SelectAndCreate from "@/components/formTable/selectAndCreate";
 import { currentUser } from "@/app/action/current-user";
@@ -20,8 +20,9 @@ import {
 	get05FormByStdId,
 	get06FormByStdId,
 	get07FormByStdId,
-	get08FormByStdId
+	get08FormByStdId,
 } from "@/app/action/getFormByStdId";
+import fetchFormData from "./fetchForm";
 import { IUser } from "@/interface/user";
 
 const labels: { [key: string]: string } = {
@@ -32,30 +33,7 @@ const labels: { [key: string]: string } = {
 	form05: "แบบคำขออนุมัติโครงร่างวิทยานิพนธ์",
 	form06: "เเบบรายงานความคืบหน้าของการทำวิทยานิพนธ์",
 	form07: "คำขอนัดสอบวิทยานิพนธ์",
-	form08: "แบบประเมินการสอบวิทยานิพนธ์"
-};
-
-const fetchFormData = async (formSelect: string, user: IUser) => {
-	switch (formSelect) {
-		case "form01":
-			return await get01FormByStdId(user.id);
-		case "form02":
-			return await get02FormByStdId(user.id);
-		case "form03":
-			return await get03FormByStdId(user.id);
-		case "form04":
-			return await get04FormByStdId(user.id);
-		case "form05":
-			return await get05FormByStdId(user.id);
-		case "form06":
-			return await get06FormByStdId(user.id);
-		case "form07":
-			return await get07FormByStdId(user.id);
-		case "form08":
-			return await get08FormByStdId(user.id);
-		default:
-			return;
-	}
+	form08: "แบบประเมินการสอบวิทยานิพนธ์",
 };
 
 export default async function StudentTablePage({ searchParams }: { searchParams: { [key: string]: string } }) {
