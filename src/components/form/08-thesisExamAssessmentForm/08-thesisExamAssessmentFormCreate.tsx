@@ -270,9 +270,8 @@ const ThesisExamAssessmentFormCreate = () => {
 									<FormLabel className="ml-2 font-normal">ไม่ผ่าน / Fail</FormLabel>
 								</div>
 								</RadioGroup> */}
-								<div className="w-[300px]">
-									
-									<div className="items-top flex space-x-2 mt-2">
+								<div>
+									<div className="items-top flex space-x-2 mt-2 justify-center item-center">
 									<Checkbox 
 										value="ReviseTile" 
 										checked={form.watch('reviseTitle')} 

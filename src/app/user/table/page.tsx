@@ -11,19 +11,7 @@ import ThesisExamFormTable from "@/components/formTable/08-thesisExamAssessmentF
 import studentFormPage from "@/../../public/asset/studentFormPage.png";
 import SelectAndCreate from "@/components/formTable/selectAndCreate";
 import { currentUser } from "@/app/action/current-user";
-import { get05ApprovedFormByStdId } from "@/app/action/get05ApprovedFormByStdId";
-import {
-	get01FormByStdId,
-	get02FormByStdId,
-	get03FormByStdId,
-	get04FormByStdId,
-	get05FormByStdId,
-	get06FormByStdId,
-	get07FormByStdId,
-	get08FormByStdId,
-} from "@/app/action/getFormByStdId";
 import fetchFormData from "./fetchForm";
-import { IUser } from "@/interface/user";
 
 const labels: { [key: string]: string } = {
 	form01: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบประมวลความรู้",

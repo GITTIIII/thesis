@@ -405,6 +405,13 @@ model ThesisExamAppointmentForm{
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+enum resultExam {
+  excellent
+  pass
+  fail
+}
+
 model ThesisExamForm {
   id                   Int      @id @default(autoincrement())
   date                 DateTime
@@ -416,6 +423,18 @@ model ThesisExamForm {
   newNameTH            String?
   newNameEN            String?
   committeeSignUrl     Json?
+  resultExam           resultExam?
+//institute
+  approve              Boolean?
+  headOfCommitteeSignUrl  String?   @db.LongText
+  dateOfDecision       DateTime?
+  meetingNo            Int?
+  meetingDate          DateTime?
+  headOfCommitteeName  String?
+  
+  presentationComment  String?
+  explanationComment   String?
+  answerQuestionsCooment  String?
   studentID            Int
   student              User     @relation(fields: [studentID], references: [id], name: "thesisExamFormOwner") 
   createdAt            DateTime @default(now())
@@ -434,7 +453,7 @@ model DelayThesisForm {
   approve              Boolean?
   dayApprove           DateTime?
   date                 DateTime
-  publishmentName       String
+  publishmentName      String
   studentID            Int
   student              User     @relation(fields: [studentID], references: [id], name: "delayThesisFormOwner") 
   createdAt            DateTime @default(now())

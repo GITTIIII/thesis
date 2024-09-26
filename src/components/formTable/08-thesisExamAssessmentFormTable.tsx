@@ -1,8 +1,7 @@
-"use Client";
+"use client";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
 import { IExamForm} from "@/interface/form";
 import { IUser } from "@/interface/user";
@@ -25,22 +24,9 @@ async function get08FormData() {
 	return res.json();
 }
 
-export default function ThesisExamFormTable({ formData, user }: { user: IUser; formData?: IExamForm[]}) {
+export default function ThesisExamFormTable({ formData, user }: { user: IUser; formData?: IExamForm[] }) {
 	
-	const { selectedForm, setSelectedForm } = useSelectForm();
-
-	// useEffect(() => {
-	// 	async function fetchData() {
-	// 		if (userData?.role === "STUDENT") {
-	// 			const formData = await get08FormByStdId(userData?.id);
-	// 			setFormData(formData);
-	// 		} else {
-	// 			const formData = await get08FormData();
-	// 			setFormData(formData);
-	// 		}
-	// 	}
-	// 	fetchData();
-	// }, [userData]);
+	const { selectedForm } = useSelectForm();
 
 	return (
 		<>

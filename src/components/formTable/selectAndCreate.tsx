@@ -87,6 +87,11 @@ export default function SelectAndCreate({ approvedForm, user }: { approvedForm?:
 					value="form07">
 						คำขอนัดสอบวิทยานิพนธ์
 					</SelectItem>
+					<SelectItem 
+					// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 7} 
+					value="form08">
+						แบบประเมินการสอบวิทยานิพนธ์
+					</SelectItem>
 				</SelectContent>
 			</Select>
 			{user?.role === "STUDENT" && (

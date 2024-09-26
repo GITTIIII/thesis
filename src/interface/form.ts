@@ -210,6 +210,15 @@ export type IExamForm = {
 	newNameTH?: string;
 	newNameEN?: string;
 	reviseTitle?: Boolean;
-  	committeeSignUrl?:     String
-
+	committeeSignUrl?:     Array<any>;
+	resultExam?	:String;
+	presentationComment?:		string;
+	explanationComment?:	string;
+	answerQuestionsComment?: string;
+	headOfCommitteeSignUrl?:	string;
+	meetingNo?: number;
+	dateOfDecision?: Date;
+	meetingDate?:Date;
+	headOfCommitteeName?:string;
+	approve?:	Boolean;
 };

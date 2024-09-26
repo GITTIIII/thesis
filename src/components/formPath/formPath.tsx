@@ -6,5 +6,5 @@ export const FormPath: { [key: string]: string } = {
 	form05: "05-outlineForm",
 	form06: "06-thesisProgressForm",
 	form07: "07-thesisExamAppointmentForm",
-	form08: "08-thesisExamForm"
+	form08: "08-thesisExamAssessmentForm"
 };

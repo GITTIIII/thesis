@@ -70,60 +70,67 @@ export async function GET() {
 }
 
 // PATCH: อัปเดตข้อมูลที่ต้องการ
-// export async function PATCH(req: Request) {
-//     try {
-//         const session = await getServerSession(authOptions);
+export async function PATCH(req: Request) {
+    try {
+        // const session = await getServerSession(authOptions);
 
-//         if (!session) {
-//             return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
-//         }
+        // if (!session) {
+        //     return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
+        // }
 
-//         const body = await req.json();
-//         const {
-//                 id,
-//                 date,
-//                 studentID,
-//                 examinationDate,
-//                 thesisNameTH,
-//                 thesisNameEN,
-//                 disClosed,
-//                 newNameTH,
-//                 newNameEN,
-//         } = body;
+        const body = await req.json();
+        const {
+                id,
+                studentID,
+                examinationDate,
+                committeeSignUrl,
+                resultExam,
+                presentationComment,
+                explanationComment,
+                answerQuestionsCooment,
+                approve,
+                headOfCommitteeSignUrl,
+                dateOfDecision,
+                meetingNo,
+                meetingDate,
+                headOfCommitteeName
 
-//         if (!id) {
-//             return NextResponse.json({ message: "Form ID is required for update" }, { status: 400 });
-//         }
+        } = body;
 
-//         const existingThesisExamForm = await db.thesisExamForm.findUnique({
-//             where: { id },
-//         });
+        if (!id) {
+            return NextResponse.json({ message: "Form ID is required for update" }, { status: 400 });
+        }
 
-//         if (!existingThesisExamForm) {
-//             return NextResponse.json({ message: "Form not found" }, { status: 404 });
-//         }
+        const existingThesisExamForm = await db.thesisExamForm.findUnique({
+            where: { id },
+        });
 
-//         const updatedForm = await db.thesisOutlineCommitteeForm.update({
-//             where: { id },
-//             data: {
-//                 date: date ?? existingThesisExamForm.date,
-//                 trimester: trimester !== undefined ? trimester : existingThesisExamForm.trimester,
-//                 academicYear: academicYear ?? existingOutlineCommitteeForm.academicYear,
-//                 committeeMembers: committeeMembers ?? existingOutlineCommitteeForm.committeeMembers,
-//                 times: times !== undefined ? times : existingOutlineCommitteeForm.times,
-//                 examDate: examDate ?? existingOutlineCommitteeForm.examDate,
-//                 studentID: studentID !== undefined ? studentID : existingOutlineCommitteeForm.studentID,
-//                 headSchoolID: headSchoolID !== undefined ? headSchoolID : existingOutlineCommitteeForm.headSchoolID,
-//                 headSchoolSignUrl: headSchoolSignUrl ?? existingOutlineCommitteeForm.headSchoolSignUrl,
-//                 advisorID: advisorID !== undefined ? advisorID : existingOutlineCommitteeForm.advisorID,
-//                 advisorSignUrl: advisorSignUrl ?? existingOutlineCommitteeForm.advisorSignUrl,
-//                 instituteComSignUrl: instituteComSignUrl ?? existingOutlineCommitteeForm.instituteComSignUrl,
-//                 addNotes: addNotes ?? existingOutlineCommitteeForm.addNotes
-//             },
-//         });
+        if (!existingThesisExamForm) {
+            return NextResponse.json({ message: "Form not found" }, { status: 404 });
+        }
 
-//         return NextResponse.json({ form: updatedForm, message: "Form Updated" }, { status: 200 });
-//     } catch (error) {
-//         return NextResponse.json({ message: error }, { status: 500 });
-//     }
-// }
+        const updatedForm = await db.thesisExamForm.update({
+            where: { id },
+            data: {
+                studentID: studentID !== undefined ? studentID : existingThesisExamForm.studentID,
+                examinationDate: examinationDate !== undefined ? examinationDate : existingThesisExamForm.examinationDate,
+                committeeSignUrl: committeeSignUrl !== undefined ? committeeSignUrl : existingThesisExamForm.committeeSignUrl,
+                resultExam: resultExam ?? existingThesisExamForm.resultExam,
+                presentationComment: presentationComment !== undefined ? presentationComment : existingThesisExamForm.presentationComment,
+                explanationComment: explanationComment ?? existingThesisExamForm.explanationComment,
+                answerQuestionsCooment: answerQuestionsCooment ?? existingThesisExamForm.answerQuestionsCooment,
+                
+                headOfCommitteeName: headOfCommitteeName ?? existingThesisExamForm.headOfCommitteeName,
+                approve: approve ?? existingThesisExamForm.approve,
+                headOfCommitteeSignUrl: headOfCommitteeSignUrl ?? existingThesisExamForm.headOfCommitteeSignUrl,
+                dateOfDecision: dateOfDecision ?? existingThesisExamForm.dateOfDecision,
+                meetingNo: meetingNo ?? existingThesisExamForm.meetingNo,
+                meetingDate: meetingDate ?? existingThesisExamForm.meetingDate,
+            },
+        });
+
+        return NextResponse.json({ form: updatedForm, message: "Form Updated" }, { status: 200 });
+    } catch (error) {
+        return NextResponse.json({ message: error }, { status: 500 });
+    }
+}

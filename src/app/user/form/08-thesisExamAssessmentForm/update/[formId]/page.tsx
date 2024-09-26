@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import learning1 from "@/../../public/asset/learning1.png";
-import SuperAdminForm08Update from "@/components/form/08-thesisExamAssessmentForm/08-superAdminFormUpdate";
-export default function SuperAdminForm08UpdatePage({ params }: { params: { formId: number } }) {
+import ThesisExamAssessmentFormUpdate from "@/components/form/08-thesisExamAssessmentForm/08-thesisExamAssessmentFormUpdate";
+export default function thesisExamAssessmentFormUpdatePage({ params }: { params: { formId: number } }) {
   const formId = params.formId;
   return (
     <>
@@ -16,7 +16,7 @@ export default function SuperAdminForm08UpdatePage({ params }: { params: { formI
         </div>
         <div className="h-full w-full flex items-center bg-[#EEEEEE] p-2 md:p-8 rounded-md">
           <div className="w-full h-full">
-            <SuperAdminForm08Update formId={Number(formId)} />
+            <ThesisExamAssessmentFormUpdate formId={Number(formId)} />
           </div>
         </div>
       </div>
