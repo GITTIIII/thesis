@@ -93,54 +93,6 @@ const ExameCommitteeFormUpdate = ({ formData, user, headSchool }: { formData: IE
 		name: "addNotes",
 	});
 
-<<<<<<< HEAD
-	const clear = (type: "headSchool" | "advisor" | "instituteCom") => {
-		if (type === "headSchool" && sigCanvasHeadSchool.current) {
-			sigCanvasHeadSchool.current.clear();
-		}
-		if (type === "advisor" && sigCanvasAdvisor.current) {
-			sigCanvasAdvisor.current.clear();
-		}
-		if (type === "instituteCom" && sigCanvasinstituteCom.current) {
-			sigCanvasinstituteCom.current.clear();
-		}
-	};
-
-	const handleDrawingSign = (type: "headSchool" | "advisor" | "instituteCom") => {
-		const canvas =
-			type === "headSchool"
-				? sigCanvasHeadschool?.current
-				: type === "advisor"
-				? sigCanvasAdvisor.current
-				: sigCanvasinstituteCom.current;
-
-		if (canvas?.isEmpty()) {
-			toast({
-				title: "Error",
-				description: "กรุณาวาดลายเซ็น",
-				variant: "destructive",
-			});
-			return;
-		}
-
-		if (canvas) {
-			const newSignUrl = canvas.getTrimmedCanvas().toDataURL("image/png");
-
-			if (type === "headSchool") {
-				form.setValue("headSchoolSignUrl", newSignUrl);
-				setOpenHeadSchoolDialog(false);
-			} else if (type === "advisor") {
-				form.setValue("advisorSignUrl", newSignUrl);
-				setOpenAdvisorDialog(false);
-			} else if (type === "instituteCom") {
-				form.setValue("instituteComSignUrl", newSignUrl);
-				setOpeninstituteComDialog(false);
-			}
-		}
-	};
-
-=======
->>>>>>> 51eb9f2f3733acb13a9bdf0a9648c865fe05c77c
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		console.log("Submitting form with values:", values);
 		setLoading(true);
@@ -253,13 +205,10 @@ const ExameCommitteeFormUpdate = ({ formData, user, headSchool }: { formData: IE
 					</div>
 
 					{/* ฝั่งขวา */}
-<<<<<<< HEAD
+
 					<div className="w-full sm:2/4">
 						<h1 className="text-center font-semibold mb-2">ขอเสนอเเต่งตั้งคณะกรรมการวิทยานิพนธ์</h1>
-=======
-					<div className="w-full ">
-						<h1 className="text-center font-semibold mb-2">ขอเสนอเเต่งตั้งคณะกรรมการสอบประมวลความรู้</h1>
->>>>>>> 51eb9f2f3733acb13a9bdf0a9648c865fe05c77c
+
 						<div className="flex items-center justify-center text-sm">
 							<CircleAlert className="mr-1" />
 							สามารถดูรายชื่อกรรมการที่ได้รับการรับรองเเล้ว
@@ -274,7 +223,7 @@ const ExameCommitteeFormUpdate = ({ formData, user, headSchool }: { formData: IE
 				</div>
 				<div className="flex item-center justify-center ">
 					<div className="w-full flex flex-col item-center justify-center md:flex-row border-2 rounded-lg py-5 my-5 border-[#eeee] ">
-						{(user.role == "SUPER_ADMIN" || user.position == "ADVISOR") && (
+						{(formData?.advisorSignUrl || user.role == "SUPER_ADMIN" || user.position == "ADVISOR" || user.position == "HEAD_OF_SCHOOL") && (
 							<div className="w-full sm:1/3 flex flex-col items-center mb-6 justify-center">
 								{/* อาจารย์ที่ปรึกษา */}
 								<div className="text-center mb-2">
