@@ -229,7 +229,7 @@ const OutlineCommitteeFormUpdate = ({
 				</div>
 				<div className="flex item-center justify-center ">
 					<div className="w-full flex flex-col item-center justify-center md:flex-row border-2 rounded-lg py-5 my-5 border-[#eeee] ">
-						{(user.role == "SUPER_ADMIN" || user.position == "ADVISOR") && (
+						{(formData?.advisorSignUrl || user.role == "SUPER_ADMIN" || user.position == "ADVISOR" || user.position == "HEAD_OF_SCHOOL") && (
 							<div className="w-full sm:1/3 flex flex-col items-center mb-6 justify-center">
 								{/* อาจารย์ที่ปรึกษา */}
 								<div className="text-center mb-2">

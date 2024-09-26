@@ -10,8 +10,10 @@ import ExamAppointmentFormTable from "@/components/formTable/07-thesisExamAppoin
 import ThesisExamFormTable from "@/components/formTable/08-thesisExamAssessmentFormTable";
 import studentFormPage from "@/../../public/asset/studentFormPage.png";
 import SelectAndCreate from "@/components/formTable/selectAndCreate";
-import { currentUser } from "@/app/action/current-user";
 import fetchFormData from "./fetchForm";
+import { currentUser } from "@/app/action/current-user";
+import { get05ApprovedFormByStdId } from "@/app/action/get05ApprovedFormByStdId";
+
 
 const labels: { [key: string]: string } = {
 	form01: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบประมวลความรู้",
@@ -31,6 +33,8 @@ export default async function StudentTablePage({ searchParams }: { searchParams:
 	}
 
 	const selectedForm = searchParams.form || "form01";
+	
+	const approvedForm = await get05ApprovedFormByStdId(user.id);
 
 	const formData: any = await fetchFormData(selectedForm, user);
 
@@ -71,7 +75,7 @@ export default async function StudentTablePage({ searchParams }: { searchParams:
 						{labels[selectedForm]}
 					</label>
 				</div>
-				<SelectAndCreate user={user} />
+				<SelectAndCreate user={user} approvedForm={approvedForm}/>
 				<div className="h-full w-full flex items-center py-4">{renderFormTable()}</div>
 			</div>
 		</>

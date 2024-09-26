@@ -236,7 +236,7 @@ const ThesisOutlineCommitteeFormCreate = ({ user }: { user: IUser }) => {
 								<CircleAlert className="mr-1" />
 								สามารถดูรายชื่อกรรมการที่ได้รับการรับรองเเล้ว
 								<Button variant="link" type="button" className="p-1 text-[#A67436]">
-									<Link href="/user/expertTable">คลิกที่นี่</Link>
+									<Link href="/user/expertTable" target="_blank">คลิกที่นี่</Link>
 								</Button>
 							</div>
 							<div>

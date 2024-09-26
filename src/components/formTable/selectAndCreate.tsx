@@ -10,6 +10,17 @@ import createForm from "@/../../public/asset/createForm.png";
 import { IOutlineForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 
+const labels: { [key: string]: string } = {
+	form01: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบประมวลความรู้",
+	form02: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบวัดคุณสมบัติ",
+	form03: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบโครงร่างวิทยานิพนธ์",
+	form04: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบวิทยานิพนธ์",
+	form05: "แบบคำขออนุมัติโครงร่างวิทยานิพนธ์",
+	form06: "เเบบรายงานความคืบหน้าของการทำวิทยานิพนธ์",
+	form07: "คำขอนัดสอบวิทยานิพนธ์",
+	form08: "แบบประเมินการสอบวิทยานิพนธ์",
+};
+
 const numbers: { [key: string]: number } = {
 	form01: 1,
 	form02: 2,
@@ -33,7 +44,9 @@ export default function SelectAndCreate({ approvedForm, user }: { approvedForm?:
 
 	useEffect(() => {
 		if (
-			(approvedForm && selectedForm === "form05" && user?.role === "STUDENT") 
+			approvedForm &&
+			selectedForm === "form05" &&
+			user?.role === "STUDENT"
 			// ||(user?.role == "STUDENT" && (user?.formState ?? 0) < numbers[selectedForm])
 		) {
 			setIsDisabled(true);
@@ -42,14 +55,16 @@ export default function SelectAndCreate({ approvedForm, user }: { approvedForm?:
 		}
 	}, [selectedForm, user, approvedForm]);
 
+
 	return (
 		<div className="w-max ml-auto flex flex-col sm:flex-row items-center justify-center">
 			<Select onValueChange={handleSelectChange} defaultValue={selectedForm}>
 				<SelectTrigger className="w-max">
-					<SelectValue placeholder="แบบคำขออนุมัติแต่งตั้งกรรมการสอบประมวลความรู้" defaultValue={"form01"} />
+					<SelectValue placeholder={labels[selectedForm]} defaultValue={selectedForm} />
 				</SelectTrigger>
 				<SelectContent>
 					<SelectItem 
+					
 					// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 1} 
 					value="form01">
 						แบบคำขออนุมัติแต่งตั้งกรรมการสอบประมวลความรู้
