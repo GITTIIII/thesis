@@ -9,6 +9,12 @@ import {
   GoX,
 } from "react-icons/go";
 import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+
+import {
   Select,
   SelectContent,
   SelectGroup,
@@ -22,6 +28,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -50,11 +57,6 @@ const userProperty = [
   { key: "schoolName", value: "สาขาวิชา" },
   { key: "program", value: "หลักสูตร" },
   { key: "programYear", value: "ปีการศึกษา" },
-  { key: "position", value: "ตำแหน่ง" },
-  { key: "role", value: "บทบาท" },
-  { key: "formState", value: "สถานะฟอร์ม" },
-  { key: "signatureUrl", value: "ลายเซ็น" },
-  { key: "profileUrl", value: "รูปโปรไฟล์" },
 ];
 
 export default function CreateStudentExel() {
@@ -70,10 +72,9 @@ export default function CreateStudentExel() {
     { key: "D", value: "lastName" },
     { key: "E", value: "password" },
     { key: "F", value: "email" },
-    { key: "G", value: "sex" },
-    { key: "H", value: "degree" },
-    { key: "I", value: "instituteName" },
-    { key: "J", value: "schoolName" },
+    { key: "G", value: "degree" },
+    { key: "H", value: "instituteName" },
+    { key: "I", value: "schoolName" },
   ]);
   const ListTemPlate = ({
     index,
@@ -88,66 +89,62 @@ export default function CreateStudentExel() {
     const userPropertyValue =
       userPropertyIndex !== -1 ? userProperty[userPropertyIndex].value : "เลือกค่าคีย์";
     return (
-      <div className="relative">
-        <div
-          className="w-6 h-6 bg-[#f8d7da] border border-[#f5c6cb] flex items-center justify-center rounded-full absolute -right-2 -top-3 hover:cursor-pointer"
-          onClick={() => setList(list.filter((item) => item !== value))}
-        >
-          <GoTrash color="#721c24" />
-        </div>
+      <div className="flex justify-between">
         <div>
-          <div className="flex justify-between">
-            <div>
-              <Select
-                onValueChange={(e) =>
-                  setList(() => {
-                    const prev = [...list];
-                    prev[index].key = e;
-                    return prev;
-                  })
-                }
-              >
-                <SelectTrigger className="h-12 w-32">
-                  <SelectValue placeholder={`${list[index].key}`} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {alphabet.map((alp, index) => (
-                      <SelectItem value={alp} key={index}>
-                        {alp}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="flex items-center">
-              <GoChevronRight size={30} color="#898A8D" />
-            </div>
-            <div>
-              <Select
-                onValueChange={(e) =>
-                  setList(() => {
-                    const prev = [...list];
-                    prev[index].value = e;
-                    return prev;
-                  })
-                }
-              >
-                <SelectTrigger className="h-12 w-44 focus-visible:ring-offset-0 focus-visible:ring-0">
-                  <SelectValue placeholder={userPropertyValue} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {userProperty.map((userP) => (
-                      <SelectItem value={userP.key} key={userP.key}>
-                        {userP.value}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
+          <Select
+            onValueChange={(e) =>
+              setList(() => {
+                const prev = [...list];
+                prev[index].key = e;
+                return prev;
+              })
+            }
+          >
+            <SelectTrigger className="h-full ">
+              <SelectValue placeholder={`${list[index].key}`} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {alphabet.map((alp, index) => (
+                  <SelectItem value={alp} key={index}>
+                    {alp}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="flex items-center">
+          <GoChevronRight size={30} color="#898A8D" />
+        </div>
+        <div className=" flex gap-[0.10rem]">
+          <Select
+            onValueChange={(e) =>
+              setList(() => {
+                const prev = [...list];
+                prev[index].value = e;
+                return prev;
+              })
+            }
+          >
+            <SelectTrigger className="h-12 w-44 focus-visible:ring-offset-0 focus-visible:ring-0">
+              <SelectValue placeholder={userPropertyValue} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                {userProperty.map((userP) => (
+                  <SelectItem value={userP.key} key={userP.key}>
+                    {userP.value}
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+          <div
+            className=" h-full p-1 rounded-sm bg-[#f8d7da] border border-[#f5c6cb] flex items-center justify-center   hover:cursor-pointer"
+            onClick={() => setList(list.filter((item) => item !== value))}
+          >
+            <GoTrash color="#721c24" />
           </div>
         </div>
       </div>
@@ -291,75 +288,170 @@ export default function CreateStudentExel() {
       .catch((error) => {});
   };
   return (
-    <div className=" px-20 overflow-auto">
-      <div className="mt-8 flex gap-4 ">
-        <div className="flex flex-col gap-3 ">
-          <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="excel ">อัพโหลด excel </Label>
-            <Input
-              id="picture"
-              type="file"
-              onChange={(e) => {
-                const selectFile = e.target.files ? e.target.files[0] : null;
-                if (selectFile) {
-                  setFileObject(selectFile);
-                }
-              }}
-              accept=".xlsx"
-            />
+    <div className=" space-y-16">
+      <ResizablePanelGroup direction="horizontal">
+        {/* Left Panel: Form Inputs */}
+        <ResizablePanel defaultSize={30}>
+          <div className="mt-8 w-fit flex flex-col gap-4">
+            <div className="flex flex-col gap-3">
+              <div className="grid w-full items-center gap-1.5">
+                <Label htmlFor="excel">อัพโหลด excel</Label>
+                <Input
+                  id="picture"
+                  type="file"
+                  onChange={(e) => {
+                    const selectFile = e.target.files ? e.target.files[0] : null;
+                    if (selectFile) {
+                      setFileObject(selectFile);
+                    }
+                  }}
+                  accept=".xlsx"
+                />
+              </div>
+              {list.map((value, key) => (
+                <ListTemPlate value={value} key={key} index={key} />
+              ))}
+              <AddList />
+              <Button onClick={onSubmit} disabled={disabled}>
+                {disabled && (
+                  <AiOutlineLoading3Quarters className="mr-2 h-4 w-4 animate-spin" />
+                )}
+                ยืนยัน
+              </Button>
+            </div>
           </div>
-          {list.map((value, key) => (
-            <ListTemPlate value={value} key={key} index={key} />
-          ))}
-          <AddList />
-          <Button onClick={onSubmit} disabled={disabled}>
-            {disabled && (
-              <AiOutlineLoading3Quarters className="mr-2 h-4 w-4 animate-spin" />
-            )}
-            ยืนยัน
-          </Button>
-        </div>
-        <div className="border min-w-[1250px] h-full bg-white overflow-x-auto ">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                {list.map((data, key) => (
-                  <TableHead key={key}>
-                    <div className=" flex flex-col text-center items-center">
-                      <p>{data.key}</p>
-                      <GoChevronDown />
-                      <p>
-                        {
-                          userProperty.find(
-                            (prop) =>
-                              prop.key ===
-                              list.find((item) => item.key === data.key)?.value
-                          )?.value
-                        }
-                      </p>
-                    </div>
-                  </TableHead>
-                ))}
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.map((d, rowKey) => (
-                <TableRow key={rowKey}>
-                  {alphabet.map((letter, cellKey) => (
-                    <>
-                      {d[letter] && (
-                        <TableCell className=" text-center" key={cellKey}>
-                          {d[letter]}
-                        </TableCell>
-                      )}
-                    </>
+        </ResizablePanel>
+
+        {/* Handle for resizing */}
+        <ResizableHandle withHandle />
+
+        {/* Right Panel: Table Display */}
+        <ResizablePanel
+          className="text-sm p-4 overflow-scroll"
+          style={{ overflow: "scroll" }}
+        >
+          <div className="border min-w-[1250px] h-full rounded-sm bg-white ">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  {list.map((data, key) => (
+                    <TableHead key={key}>
+                      <div className="flex flex-col text-center items-center">
+                        <p>{data.key}</p>
+                        <GoChevronDown />
+                        <p>
+                          {
+                            userProperty.find(
+                              (prop) =>
+                                prop.key ===
+                                list.find((item) => item.key === data.key)?.value
+                            )?.value
+                          }
+                        </p>
+                      </div>
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
+              </TableHeader>
+              <TableBody>
+                {data.map((d, rowKey) => (
+                  <TableRow key={rowKey}>
+                    {alphabet.map((letter, cellKey) => (
+                      <>
+                        {d[letter] && (
+                          <TableCell className="text-center" key={cellKey}>
+                            {d[letter]}
+                          </TableCell>
+                        )}
+                      </>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="text-center">รหัสนักศึกษา</TableHead>
+            <TableHead className="text-center">ชื่อ นามสกุล</TableHead>
+            <TableHead className="text-center">สถานะ</TableHead>
+            <TableHead className="text-center">หมายเหตุ</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {std.map((stdItem, index) => (
+            <TableRow key={index}>
+              <TableCell className="font-medium">{stdItem.id}</TableCell>
+              <TableCell>{stdItem.name}</TableCell>
+              <TableCell>
+                {stdItem.status ? (
+                  <>
+                    <div className="text-center text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400 dark:border-green-800">
+                      <div>
+                        <span className="font-medium">บันทึกสำเร็จ</span>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div
+                      className=" text-center text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800"
+                      role="alert"
+                    >
+                      <div>
+                        <span className="font-medium">บันทึกไม่สำเร็จ</span>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </TableCell>
+              <TableCell className=" space-x-2">
+                {stdItem.operationStatus?.map((status, idx) => (
+                  <div
+                    key={idx}
+                    className=" inline px-2  text-center text-sm *:text-yellow-800 border border-yellow-300 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300 dark:border-yellow-800"
+                  >
+                    <span className="font-medium">{status}</span>
+                  </div>
+                ))}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TableCell
+              colSpan={4}
+              className="text-right text-green-800"
+            >{`บันทึกสำเร็จ ${10}`}</TableCell>
+            <TableCell className="text-right text-red-800">{`บันทึกไม่สำเร็จ ${10}`}</TableCell>
+          </TableRow>
+        </TableFooter>
+      </Table>
     </div>
   );
 }
+
+const std = [
+  {
+    id: "B6419936",
+    name: "ธีรโชติ สนนอก",
+    status: false,
+    operationStatus: ["ชื่อทีข้อผิดพลาด", "ชื่อทีข้อผิดพลาด2", "ชื่อทีข้อผิดพลาด3"],
+  },
+  {
+    id: "B6419936",
+    name: "ธีรโชติ สนนอก",
+    status: false,
+
+    operationStatus: ["ชื่อทีข้อผิดพลาด", "ชื่อทีข้อผิดพลาด2", "ชื่อทีข้อผิดพลาด3"],
+  },
+  {
+    id: "B6419936",
+    name: "ธีรโชติ สนนอก",
+    status: true,
+  },
+];
