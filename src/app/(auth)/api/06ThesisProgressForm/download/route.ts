@@ -52,14 +52,18 @@ export async function GET(request: NextRequest) {
   }
 
   const data = {
-    times: thesisProgressForm.times,
-    trimester: thesisProgressForm.trimester,
-    nameAdv: `${thesisProgressForm.student.advisor?.prefix?.prefixTH}${thesisProgressForm.student.advisor?.firstNameTH} ${thesisProgressForm.student.advisor?.lastNameTH}`,
-    nameStd: `${thesisProgressForm.student.prefix?.prefixTH}${thesisProgressForm.student.firstNameTH} ${thesisProgressForm.student.lastNameTH}`,
-    stdId: thesisProgressForm.student.username,
-    schoolName: thesisProgressForm.student.school?.schoolNameTH,
-    programName: thesisProgressForm.student.program?.programNameTH,
-    programYear: thesisProgressForm.student.program?.programYear,
+    times: thesisProgressForm.times || "",
+    trimester: thesisProgressForm.trimester || "",
+    nameAdv:
+      `${thesisProgressForm.student.advisor?.prefix?.prefixTH}${thesisProgressForm.student.advisor?.firstNameTH} ${thesisProgressForm.student.advisor?.lastNameTH}` ||
+      "",
+    nameStd:
+      `${thesisProgressForm.student.prefix?.prefixTH}${thesisProgressForm.student.firstNameTH} ${thesisProgressForm.student.lastNameTH}` ||
+      "",
+    stdId: thesisProgressForm.student.username || "",
+    schoolName: thesisProgressForm.student.school?.schoolNameTH || "",
+    programName: thesisProgressForm.student.program?.programNameTH || "",
+    programYear: thesisProgressForm.student.program?.programYear || "",
     degree: degree,
     status1: thesisProgressForm.status === "มีการเปลี่ยนแผนที่วางไว้" ? "☑" : "☐",
     status2: thesisProgressForm.status === "เป็นไปตามแผนที่วางไว้ทุกประการ" ? "☑" : "☐",
@@ -67,18 +71,20 @@ export async function GET(request: NextRequest) {
       thesisProgressForm.status === "มีการเปลี่ยนแผนที่วางไว้"
         ? thesisProgressForm.statusComment
         : " ",
-    percentage: thesisProgressForm.percentage,
-    percentageComment: thesisProgressForm.percentageComment,
-    issues: thesisProgressForm.issues,
-    stdSignUrl: thesisProgressForm.student.signatureUrl,
-    dateStd: dateShortTH(thesisProgressForm.date),
-    assessmentResult: thesisProgressForm.assessmentResult,
-    advSignUrl: thesisProgressForm.advisorSignUrl,
-    dateadv: dateShortTH(thesisProgressForm.dateAdvisor!),
-    headSchoolComment: thesisProgressForm.headSchoolComment,
-    headSignUrl: thesisProgressForm.headSchoolSignUrl,
-    nameHead: `${thesisProgressForm.headSchool?.prefix?.prefixTH}${thesisProgressForm.headSchool?.firstNameTH} ${thesisProgressForm.headSchool?.lastNameTH}`,
-    dateHead: dateShortTH(thesisProgressForm.dateHeadSchool!),
+    percentage: thesisProgressForm.percentage || "",
+    percentageComment: thesisProgressForm.percentageComment || "",
+    issues: thesisProgressForm.issues || "",
+    stdSignUrl: thesisProgressForm.student.signatureUrl || "",
+    dateStd: dateShortTH(thesisProgressForm.date) || "",
+    assessmentResult: thesisProgressForm.assessmentResult || "",
+    advSignUrl: thesisProgressForm.advisorSignUrl || "",
+    dateadv: dateShortTH(thesisProgressForm.dateAdvisor!) || "",
+    headSchoolComment: thesisProgressForm.headSchoolComment || "",
+    headSignUrl: thesisProgressForm.headSchoolSignUrl || "",
+    nameHead:
+      `${thesisProgressForm.headSchool?.prefix?.prefixTH}${thesisProgressForm.headSchool?.firstNameTH} ${thesisProgressForm.headSchool?.lastNameTH}` ||
+      "",
+    dateHead: dateShortTH(thesisProgressForm.dateHeadSchool!) || "",
   };
   try {
     const doc1 = await genDocx("FM-ENG-GRD-06.docx", data);

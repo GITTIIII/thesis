@@ -68,40 +68,44 @@ export async function GET(request: NextRequest) {
         : "",
   };
   const data = {
-    createdAt: dateShortTH(outlineForm.createdAt),
-    advisorPrefix: outlineForm.student.prefix?.prefixTH,
-    advisorFirstName: outlineForm.student.advisor?.firstNameTH,
-    advisorLastName: outlineForm.student.advisor?.lastNameTH,
-    advisorSignUrl: outlineForm.student.advisor?.signatureUrl,
-    stdPrefix: outlineForm.student.prefix?.prefixTH,
-    stdFirstName: outlineForm.student.firstNameTH,
-    stdLastName: outlineForm.student.lastNameTH,
-    studentId: outlineForm.student.username,
-    stdSignUrl: outlineForm.student.signatureUrl,
-    degree: degree,
-    schoolName: outlineForm.student.school?.schoolNameTH,
+    createdAt: dateShortTH(outlineForm.createdAt) || "",
+    advisorPrefix: outlineForm.student.prefix?.prefixTH || "",
+    advisorFirstName: outlineForm.student.advisor?.firstNameTH || "",
+    advisorLastName: outlineForm.student.advisor?.lastNameTH || "",
+    advisorSignUrl: outlineForm.student.advisor?.signatureUrl || "",
+    stdPrefix: outlineForm.student.prefix?.prefixTH || "",
+    stdFirstName: outlineForm.student.firstNameTH || "",
+    stdLastName: outlineForm.student.lastNameTH || "",
+    studentId: outlineForm.student.username || "",
+    stdSignUrl: outlineForm.student.signatureUrl || "",
+    degree: degree || "",
+    schoolName: outlineForm.student.school?.schoolNameTH || "",
     programName: outlineForm.student.program?.programNameTH,
-    programYear: outlineForm.student.program?.programYear,
-    thesisNameTH: outlineForm.thesisNameTH,
-    thesisNameEN: outlineForm.thesisNameEN,
-    occP: outlineCommitteeCommentP,
-    occF: outlineCommitteeCommentF,
-    OCSignUrl: outlineForm.outlineCommitteeSignUrl,
-    outlineCommitteeName: `${outlineForm.outlineCommittee?.prefix} ${outlineForm.outlineCommittee?.firstName} ${outlineForm.outlineCommittee?.lastName}`,
-    dateOutlineCommitteeSign: dateShortTH(outlineForm.dateOutlineCommitteeSign!),
-    date: dateShortTH(outlineForm.date),
-    times: outlineForm.times,
-    instituteCommitteeStatus: `${
-      outlineForm.instituteCommitteeStatus === "อนุมัติ" ? "☑" : "☐"
-    } อนุมัติ ${
-      outlineForm.instituteCommitteeStatus !== "อนุมัติ" ? "☑" : "☐"
-    } ไม่อนุมัติ`,
-    instituteCommitteeComment: outlineForm.instituteCommitteeComment,
-    ICSignUrl: outlineForm.instituteCommitteeSignUrl,
-    instituteCommitteeName: `${outlineForm.instituteCommittee?.prefix?.prefixTH} ${outlineForm.instituteCommittee?.firstNameTH} ${outlineForm.instituteCommittee?.lastNameTH}`,
-    dateInstituteCommitteeSign: dateShortTH(outlineForm.dateInstituteCommitteeSign!),
-    thesisStartMonth: outlineForm.thesisStartMonth,
-    thesisStartYear: outlineForm.thesisStartYear,
+    programYear: outlineForm.student.program?.programYear || "",
+    thesisNameTH: outlineForm.thesisNameTH || "",
+    thesisNameEN: outlineForm.thesisNameEN || "",
+    occP: outlineCommitteeCommentP || "",
+    occF: outlineCommitteeCommentF || "",
+    OCSignUrl: outlineForm.outlineCommitteeSignUrl || "",
+    outlineCommitteeName:
+      `${outlineForm.outlineCommittee?.prefix} ${outlineForm.outlineCommittee?.firstName} ${outlineForm.outlineCommittee?.lastName}` ||
+      "",
+    dateOutlineCommitteeSign: dateShortTH(outlineForm.dateOutlineCommitteeSign!) || "",
+    date: dateShortTH(outlineForm.date) || "",
+    times: outlineForm.times || "",
+    instituteCommitteeStatus:
+      `${outlineForm.instituteCommitteeStatus === "อนุมัติ" ? "☑" : "☐"} อนุมัติ ${
+        outlineForm.instituteCommitteeStatus !== "อนุมัติ" ? "☑" : "☐"
+      } ไม่อนุมัติ` || "",
+    instituteCommitteeComment: outlineForm.instituteCommitteeComment || "",
+    ICSignUrl: outlineForm.instituteCommitteeSignUrl || "",
+    instituteCommitteeName:
+      `${outlineForm.instituteCommittee?.prefix?.prefixTH} ${outlineForm.instituteCommittee?.firstNameTH} ${outlineForm.instituteCommittee?.lastNameTH}` ||
+      "",
+    dateInstituteCommitteeSign:
+      dateShortTH(outlineForm.dateInstituteCommitteeSign!) || "",
+    thesisStartMonth: outlineForm.thesisStartMonth || "",
+    thesisStartYear: outlineForm.thesisStartYear || "",
   };
   try {
     const doc1 = await genDocx("FM-ENG-GRD-05-01.docx", data);
