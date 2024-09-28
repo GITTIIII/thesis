@@ -2,32 +2,32 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
 import { IOutlineForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 import FormStatus from "../formStatus/formStatus";
 import { useSelectForm } from "@/hook/selectFormHook";
 import { FormPath } from "../formPath/formPath";
-
-async function getAll05FormByStdId(stdId: number | undefined) {
-	if (stdId) {
-		const res = await fetch(`/api/get05FormByStdId/${stdId}`, {
-			next: { revalidate: 10 },
-		});
-		return res.json();
-	}
-}
-
-async function getAll05Form() {
-	const res = await fetch(`/api/05OutlineForm`, {
-		next: { revalidate: 10 },
-	});
-	return res.json();
-}
+import saveAs from "file-saver";
 
 export default function OutlineFormTable({ formData, user }: { user: IUser; formData?: IOutlineForm[] }) {
 	const { selectedForm } = useSelectForm();
+
+	const handleDownload = async (formData: IOutlineForm) => {
+		if (formData.formStatus === "อนุมัติ") {
+			try {
+				const response = await fetch(`/api/05OutlineForm/download?id=${formData.id}`);
+				if (response.ok) {
+					const blob = await response.blob();
+					saveAs(blob, "FM-ENG-GRD-05.docx"); // Change the file name if needed
+				} else {
+					console.error("Failed to download file", response.statusText);
+				}
+			} catch (error) {
+				console.error("Error downloading the file", error);
+			}
+		}
+	};
 
 	return (
 		<>
@@ -68,10 +68,10 @@ export default function OutlineFormTable({ formData, user }: { user: IUser; form
 									<TableCell className="text-[#F26522] text-center">
 										<Link
 											href={
-												formData.formStatus == "อนุมัติ" || user?.role == "STUDENT"
-													? `/user/form/${FormPath[selectedForm]}/${formData.id}`
-													: user?.role == "STUDENT" && formData.formStatus == "เเก้ไข"
+												user?.role == "STUDENT" && formData.formStatus == "เเก้ไข"
 													? `/user/form/${FormPath[selectedForm]}/updateStd/${formData.id}`
+													: formData.formStatus == "อนุมัติ" || user?.role == "STUDENT"
+													? `/user/form/${FormPath[selectedForm]}/${formData.id}`
 													: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
 											}
 										>
@@ -79,7 +79,12 @@ export default function OutlineFormTable({ formData, user }: { user: IUser; form
 										</Link>
 									</TableCell>
 									<TableCell className="text-center">
-										<Button disabled={formData.formStatus != "อนุมัติ"} type="button" variant="outline">
+										<Button
+											onClick={() => handleDownload(formData)}
+											disabled={formData.formStatus != "อนุมัติ"}
+											type="button"
+											variant="outline"
+										>
 											<Download className="mr-2" />
 											ดาวน์โหลด
 										</Button>

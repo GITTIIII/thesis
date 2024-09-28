@@ -20,6 +20,7 @@ import axios from "axios";
 import qs from "query-string";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 import Link from "next/link";
+import { updateStdFormState } from "@/app/action/updateStdFormState";
 
 const formSchema = z.object({
 	id: z.number(),
@@ -82,6 +83,7 @@ const QualificationExamCommitteeFormUpdate = ({
 				description: "บันทึกสำเร็จแล้ว",
 				variant: "default",
 			});
+			updateStdFormState(formData.studentID)
 			setTimeout(() => {
 				form.reset();
 				router.refresh();

@@ -13,7 +13,7 @@ export default async function ThesisProgressFormCreatePage() {
 	const last06Form = await getLast06FormByStdId(user.id);
 	const approvedForm = await get05ApprovedFormByStdId(user.id);
 
-	if (!approvedForm || !last06Form) {
+	if (!approvedForm) {
 		return <div>ไม่พบข้อมูล</div>;
 	}
 	return (

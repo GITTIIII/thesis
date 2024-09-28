@@ -126,15 +126,15 @@ export const get03FormById = async (formId: number) => {
 							prefix: true,
 						},
 					},
-					coAdvisors: {
-						include: {
-							coAdvisor: {
-								include: {
-									prefix: true,
-								},
-							},
-						},
-					},
+					coAdvisedStudents:{
+						include:{
+							coAdvisor:{
+								include:{
+									prefix:true
+								}
+							}
+						}
+					}
 				},
 			},
 			headSchool: {
@@ -173,15 +173,15 @@ export const get04FormById = async (formId: number) => {
 							prefix: true,
 						},
 					},
-					coAdvisors: {
-						include: {
-							coAdvisor: {
-								include: {
-									prefix: true,
-								},
-							},
-						},
-					},
+					coAdvisedStudents:{
+						include:{
+							coAdvisor:{
+								include:{
+									prefix:true
+								}
+							}
+						}
+					}
 				},
 			},
 			headSchool: {
@@ -220,15 +220,15 @@ export const get05FormById = async (formId: number) => {
 							prefix: true,
 						},
 					},
-					coAdvisors: {
-						include: {
-							coAdvisor: {
-								include: {
-									prefix: true,
-								},
-							},
-						},
-					},
+					coAdvisedStudents:{
+						include:{
+							coAdvisor:{
+								include:{
+									prefix:true
+								}
+							}
+						}
+					}
 				},
 			},
 			outlineCommittee: true,
@@ -266,15 +266,15 @@ export const get06FormById = async (formId: number) => {
 							prefix: true,
 						},
 					},
-					coAdvisors: {
-						include: {
-							coAdvisor: {
-								include: {
-									prefix: true,
-								},
-							},
-						},
-					},
+					coAdvisedStudents:{
+						include:{
+							coAdvisor:{
+								include:{
+									prefix:true
+								}
+							}
+						}
+					}
 				},
 			},
 			headSchool: {
@@ -311,14 +311,14 @@ export const get07FormById = async (formId: number) => {
 							prefix: true,
 						},
 					},
-					coAdvisors: {
-						include: {
-							coAdvisor: {
-								include: {
-									prefix: true,
-								},
-							},
-						},
+					coAdvisedStudents:{
+						include:{
+							coAdvisor:{
+								include:{
+									prefix:true
+								}
+							}
+						}
 					},
 					certificate: true,
 				},

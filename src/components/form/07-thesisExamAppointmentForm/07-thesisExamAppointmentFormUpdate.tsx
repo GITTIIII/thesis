@@ -26,6 +26,7 @@ import qs from "query-string";
 import InputForm from "@/components/inputForm/inputForm";
 import UserCertificate from "@/components/profile/userCertificate";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
+import { updateStdFormState } from "@/app/action/updateStdFormState";
 
 const formSchema = z.object({
 	id: z.number(),
@@ -154,6 +155,9 @@ const ThesisProgressFormUpdate = ({
 				description: "บันทึกสำเร็จแล้ว",
 				variant: "default",
 			});
+			if (values.headSchoolID) {
+				await updateStdFormState(formData.studentID);
+			}
 			setTimeout(() => {
 				form.reset();
 				router.refresh();
@@ -586,6 +590,9 @@ const ThesisProgressFormUpdate = ({
 																{field.value
 																	? `${
 																			headSchool?.find((headSchool) => headSchool.id === field.value)
+																				?.prefix?.prefixTH
+																	  }${
+																			headSchool?.find((headSchool) => headSchool.id === field.value)
 																				?.firstNameTH
 																	  } ${
 																			headSchool?.find((headSchool) => headSchool.id === field.value)
@@ -603,7 +610,7 @@ const ThesisProgressFormUpdate = ({
 																<CommandEmpty>ไม่พบหัวหน้าสาขา</CommandEmpty>
 																{headSchool?.map((headSchool) => (
 																	<CommandItem
-																		value={`${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
+																		value={`${headSchool.prefix?.prefixTH}${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
 																		key={headSchool.id}
 																		onSelect={() => {
 																			form.setValue("headSchoolID", headSchool.id);
@@ -615,7 +622,7 @@ const ThesisProgressFormUpdate = ({
 																				field.value === headSchool.id ? "opacity-100" : "opacity-0"
 																			)}
 																		/>
-																		{`${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
+																		{`${headSchool.prefix?.prefixTH}${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
 																	</CommandItem>
 																))}
 															</CommandList>

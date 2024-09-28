@@ -2,7 +2,7 @@ import Image from "next/image";
 import learning1 from "@/../../public/asset/learning1.png";
 import SuperAdminForm03Update from "@/components/form/03-thesisOutlineCommitteeForm/03-superAdminFormUpdate";
 import { get03FormById } from "@/app/action/getFormById";
-import { getHeadSchool } from "@/app/action/headSchool";
+import { getHeadSchool } from "@/app/action/getHeadSchool";
 import { currentUser } from "@/app/action/current-user";
 
 export default async function SuperAdminForm03UpdatePage({ params }: { params: { formId: number } }) {

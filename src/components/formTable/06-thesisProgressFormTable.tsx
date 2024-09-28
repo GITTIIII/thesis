@@ -7,9 +7,26 @@ import { IUser } from "@/interface/user";
 import { useSelectForm } from "@/hook/selectFormHook";
 import { FormPath } from "../formPath/formPath";
 import Link from "next/link";
+import saveAs from "file-saver";
 
 export default function ThesisProgressFormTable({ formData, user }: { user: IUser; formData?: IThesisProgressForm[] }) {
 	const { selectedForm } = useSelectForm();
+
+	const handleDownload = async (formData: IThesisProgressForm) => {
+		if (formData.headSchoolID) {
+			try {
+				const response = await fetch(`/api/06ThesisProgressForm/download?id=${formData.id}`);
+				if (response.ok) {
+					const blob = await response.blob();
+					saveAs(blob, "FM-ENG-GRD-06.docx"); // Change the file name if needed
+				} else {
+					console.error("Failed to download file", response.statusText);
+				}
+			} catch (error) {
+				console.error("Error downloading the file", error);
+			}
+		}
+	};
 
 	return (
 		<>
@@ -55,7 +72,7 @@ export default function ThesisProgressFormTable({ formData, user }: { user: IUse
 										</Link>
 									</TableCell>
 									<TableCell className="text-center">
-										<Button type="button" variant="outline">
+										<Button onClick={() => handleDownload(formData)} type="button" variant="outline">
 											<Download className="mr-2" />
 											ดาวน์โหลด
 										</Button>

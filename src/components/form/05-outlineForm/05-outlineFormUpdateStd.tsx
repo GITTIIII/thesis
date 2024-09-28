@@ -48,7 +48,7 @@ const OutlineFormUpdateStd = ({ formData, user }: { formData: IOutlineForm; user
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
-		values.formStatus = "รอดำเนินการ";
+		values.formStatus = "เเก้ไขเเล้ว";
 		const url = qs.stringifyUrl({
 			url: `/api/05OutlineForm`,
 		});

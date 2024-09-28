@@ -6,6 +6,12 @@ export interface IProcessPlan {
 	months: number[];
 }
 
+export interface addNotes {
+	committeeNumber?: number;
+	meetingNumber?: number;
+	date?: Date;
+}
+
 // 01
 export type IComprehensiveExamCommitteeForm = {
 	id: number;
@@ -71,7 +77,7 @@ export type IOutlineCommitteeForm = {
 
 	instituteComSignUrl?: string;
 
-	addNotes?: Array<any>;
+	addNotes?: Array<addNotes>;
 };
 
 //04
@@ -97,14 +103,8 @@ export type IExamCommitteeForm = {
 	
 	instituteComSignUrl?: string;
 	
-	addNotes?: Array<any>;
+	addNotes?: Array<addNotes>;
 };
-
-interface AddNote {
-	committeeNumber: number;
-	meetingNumber: number;
-	date: Date;
-}
 
 // 05
 export type IOutlineForm = {

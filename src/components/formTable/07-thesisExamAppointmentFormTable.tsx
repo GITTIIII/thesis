@@ -2,31 +2,31 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { Download } from "lucide-react";
 import { IThesisExamAppointmentForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 import { useSelectForm } from "@/hook/selectFormHook";
 import { FormPath } from "../formPath/formPath";
-
-async function getAll07FormByStdId(stdId: number | undefined) {
-	if (stdId) {
-		const res = await fetch(`/api/get07FormByStdId/${stdId}`, {
-			next: { revalidate: 10 },
-		});
-		return res.json();
-	}
-}
-
-async function getAll07Form() {
-	const res = await fetch(`/api/07ThesisExamAppointmentForm`, {
-		next: { revalidate: 10 },
-	});
-	return res.json();
-}
+import saveAs from "file-saver";
 
 export default function ThesisExamAppointmentFormTable({ formData, user }: { user: IUser; formData?: IThesisExamAppointmentForm[] }) {
 	const { selectedForm } = useSelectForm();
+
+	const handleDownload = async (formData: IThesisExamAppointmentForm) => {
+		if (formData.headSchoolID) {
+			try {
+				const response = await fetch(`/api/07ThesisExamAppointmentForm/download?id=${formData.id}`);
+				if (response.ok) {
+					const blob = await response.blob();
+					saveAs(blob, "FM-ENG-GRD-07.docx"); // Change the file name if needed
+				} else {
+					console.error("Failed to download file", response.statusText);
+				}
+			} catch (error) {
+				console.error("Error downloading the file", error);
+			}
+		}
+	};
 
 	return (
 		<>

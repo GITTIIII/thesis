@@ -2,7 +2,7 @@ import Image from "next/image";
 import learning1 from "@/../../public/asset/learning1.png";
 import ExamCommitteeFormUpdate from "@/components/form/04-thesisExamCommitteeForm/04-thesisExamCommitteeFormUpdate";
 import { get04FormById } from "@/app/action/getFormById";
-import { getHeadSchool } from "@/app/action/headSchool";
+import { getHeadSchool } from "@/app/action/getHeadSchool";
 import { currentUser } from "@/app/action/current-user";
 
 export default async function ComprehensiveExamCommitteeFormUpdatePage({ params }: { params: { formId: number } }) {

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import learning1 from "@/../../public/asset/learning1.png";
 import OutlineCommitteeFormUpdate from "@/components/form/03-thesisOutlineCommitteeForm/03-thesisOutlineCommitteeFormUpdate";
-import { getHeadSchool } from "@/app/action/headSchool";
+import { getHeadSchool } from "@/app/action/getHeadSchool";
 import { currentUser } from "@/app/action/current-user";
 import { get03FormById } from "@/app/action/getFormById";
 

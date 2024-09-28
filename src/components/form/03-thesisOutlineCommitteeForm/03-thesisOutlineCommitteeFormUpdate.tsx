@@ -22,6 +22,13 @@ import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { updateStdFormState } from "@/app/action/updateStdFormState";
+
+const addNoteSchema = z.object({
+	committeeNumber: z.number().optional(),
+	meetingNumber: z.number().optional(),
+	date: z.date().optional(),
+});
 
 const formSchema = z.object({
 	id: z.number(),
@@ -29,13 +36,7 @@ const formSchema = z.object({
 	headSchoolSignUrl: z.string().default(""),
 	advisorSignUrl: z.string().default(""),
 	instituteComSignUrl: z.string().default(""),
-	addNotes: z.array(
-		z.object({
-			committeeNumber: z.number(),
-			meetingNumber: z.number(),
-			date: z.date().optional(),
-		})
-	),
+	addNotes: z.array(addNoteSchema),
 });
 
 const OutlineCommitteeFormUpdate = ({
@@ -86,7 +87,7 @@ const OutlineCommitteeFormUpdate = ({
 			headSchoolSignUrl: "",
 			advisorSignUrl: "",
 			instituteComSignUrl: "",
-			addNotes: formData.addNotes || [{ committeeNumber: 0, meetingNumber: 0, date: undefined as unknown as Date }],
+			addNotes: [{ committeeNumber: 0, meetingNumber: 0, date: undefined }], 
 		},
 	});
 
@@ -104,7 +105,9 @@ const OutlineCommitteeFormUpdate = ({
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		console.log("Submitting form with values:", values);
 		setLoading(true);
-
+		if (values.addNotes[0].committeeNumber == 0 && values.addNotes[0].meetingNumber == 0) {
+			values.addNotes = [];
+		}
 		if (
 			(values.advisorSignUrl == "" && user.role == "ADVISOR") ||
 			(values.headSchoolSignUrl == "" && values.headSchoolID != 0) ||
@@ -130,6 +133,9 @@ const OutlineCommitteeFormUpdate = ({
 				description: "บันทึกสำเร็จแล้ว",
 				variant: "default",
 			});
+			if (values.headSchoolID) {
+				updateStdFormState(formData.studentID);
+			}
 			setTimeout(() => {
 				form.reset();
 				router.refresh();
@@ -153,7 +159,7 @@ const OutlineCommitteeFormUpdate = ({
 
 	const handleAddNote = () => {
 		setShowFields(true);
-		append({ committeeNumber: 0, meetingNumber: 0, date: undefined as unknown as Date });
+		append({ committeeNumber: 0, meetingNumber: 0, date: undefined });
 	};
 
 	const handleCancel = () => {
@@ -229,7 +235,10 @@ const OutlineCommitteeFormUpdate = ({
 				</div>
 				<div className="flex item-center justify-center ">
 					<div className="w-full flex flex-col item-center justify-center md:flex-row border-2 rounded-lg py-5 my-5 border-[#eeee] ">
-						{(formData?.advisorSignUrl || user.role == "SUPER_ADMIN" || user.position == "ADVISOR" || user.position == "HEAD_OF_SCHOOL") && (
+						{(formData?.advisorSignUrl ||
+							user.role == "SUPER_ADMIN" ||
+							user.position == "ADVISOR" ||
+							user.position == "HEAD_OF_SCHOOL") && (
 							<div className="w-full sm:1/3 flex flex-col items-center mb-6 justify-center">
 								{/* อาจารย์ที่ปรึกษา */}
 								<div className="text-center mb-2">
@@ -353,41 +362,48 @@ const OutlineCommitteeFormUpdate = ({
 					<div className="flex flex-col items-center justify-center md:flex-row">
 						<div className="w-full sm:w-3/4 flex flex-col justify-center items-center ml-4">
 							{formData?.addNotes &&
-								formData?.addNotes.map((field, index) => (
-									<div key={index} className="mb-4 flex flex-col md:flex-row justify-center">
-										<div className="mb-4 flex flex-row justify-center items-center">
-											<label className="block text-gray-700 mx-2">กรรมการลำดับที่</label>
-											<input
-												type="text"
-												value={`${field.committeeNumber}`}
-												readOnly
-												className="mt-1 block w-[80px] p-2 border border-gray-300 rounded-md"
-											/>
-										</div>
-										<div className="mb-4 flex flex-row justify-center items-center">
-											<label className="block text-gray-700 mx-2">ในการประชุมครั้งที่</label>
-											<input
-												type="text"
-												value={`${field.meetingNumber}`}
-												readOnly
-												className="mt-1 block w-[80px] p-2 border border-gray-300 rounded-md"
-											/>
-										</div>
-										<div className="mb-4 flex flex-row justify-center items-center">
-											<label className="block text-gray-700 mx-2">เมื่อวันที่</label>
-											<input
-												type="text"
-												value={`${new Date(field.date).toLocaleDateString("th")}`}
-												readOnly
-												className="mt-1 block w-[95px] p-2 border border-gray-300 rounded-md"
-											/>
-										</div>
-									</div>
-								))}
+								formData.addNotes.map(
+									(field, index) =>
+										// Ensure to check the conditions correctly before rendering the component
+										field.committeeNumber &&
+										field.meetingNumber &&
+										field.date && (
+											<div key={index} className="mb-4 flex flex-col md:flex-row justify-center">
+												<div className="mb-4 flex flex-row justify-center items-center">
+													<label className="block text-gray-700 mx-2">กรรมการลำดับที่</label>
+													<input
+														type="text"
+														value={`${field.committeeNumber}`}
+														readOnly
+														className="mt-1 block w-[80px] p-2 border border-gray-300 rounded-md"
+													/>
+												</div>
+												<div className="mb-4 flex flex-row justify-center items-center">
+													<label className="block text-gray-700 mx-2">ในการประชุมครั้งที่</label>
+													<input
+														type="text"
+														value={`${field.meetingNumber}`}
+														readOnly
+														className="mt-1 block w-[80px] p-2 border border-gray-300 rounded-md"
+													/>
+												</div>
+												<div className="mb-4 flex flex-row justify-center items-center">
+													<label className="block text-gray-700 mx-2">เมื่อวันที่</label>
+													<input
+														type="text"
+														value={`${new Date(field.date).toLocaleDateString("th")}`}
+														readOnly
+														className="mt-1 block w-[95px] p-2 border border-gray-300 rounded-md"
+													/>
+												</div>
+											</div>
+										)
+								)}
+
 							{showFields &&
 								fields.map((field, index) => (
 									<FormItem key={field.id} className="m-5 w-full">
-										<div className="flex flex-wrap items-center justify-center  space-x-3 whitespace-nowrap">
+										<div className="flex flex-wrap items-center justify-center space-x-3 whitespace-nowrap">
 											<FormField
 												control={form.control}
 												name={`addNotes.${index}.committeeNumber`}
@@ -396,7 +412,8 @@ const OutlineCommitteeFormUpdate = ({
 														<FormLabel>กรรมการลำดับที่</FormLabel>
 														<Input
 															type="number"
-															value={field.value ? field.value : ""}
+															min={0}
+															value={field.value || ""}
 															onChange={(e) => field.onChange(Number(e.target.value))}
 															className="w-[80px]"
 														/>
@@ -411,7 +428,8 @@ const OutlineCommitteeFormUpdate = ({
 														<FormLabel>ในการประชุมครั้งที่</FormLabel>
 														<Input
 															type="number"
-															value={field.value ? field.value : ""}
+															min={0}
+															value={field.value || ""}
 															onChange={(e) => field.onChange(Number(e.target.value))}
 															className="w-[80px]"
 														/>
@@ -426,7 +444,7 @@ const OutlineCommitteeFormUpdate = ({
 														<FormLabel>เมื่อวันที่</FormLabel>
 														<DatePicker
 															onDateChange={(date) => field.onChange(date)}
-															value={field.value ? field.value : undefined}
+															value={field.value || undefined}
 														/>
 													</div>
 												)}
@@ -441,6 +459,7 @@ const OutlineCommitteeFormUpdate = ({
 										</div>
 									</FormItem>
 								))}
+
 							<div className="w-full flex justify-center items-center mx-auto">
 								<Button
 									type="button"

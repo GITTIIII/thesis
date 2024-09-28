@@ -12,7 +12,7 @@ import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const OutlineFormRead = ({ formData }: { formData: IOutlineForm }) => {
 	const router = useRouter();
-	
+
 	return (
 		<>
 			<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg">
@@ -61,13 +61,25 @@ const OutlineFormRead = ({ formData }: { formData: IOutlineForm }) => {
 						<InputForm value={`${formData?.thesisNameTH}`} label="ชื่อภาษาไทย / ThesisName(TH)" />
 						<InputForm value={`${formData?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / ThesisName(EN)" />
 						<InputForm
-							value={`${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}
+							value={`${formData?.student?.advisor?.prefix?.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษา / Advisor"
 						/>
 						<InputForm
-							value={`${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}
+							value={
+								formData?.student?.coAdvisedStudents && formData.student.coAdvisedStudents.length > 0
+									? formData.student.coAdvisedStudents
+											.map((student) => {
+												const prefix = student.coAdvisor?.prefix?.prefixTH || ""; // Get the prefix, default to empty string
+												const firstName = student.coAdvisor?.firstNameTH || ""; // Get the first name, default to empty string
+												const lastName = student.coAdvisor?.lastNameTH || ""; // Get the last name, default to empty string
+												return `${prefix} ${firstName} ${lastName}`.trim(); // Concatenate and trim the result
+											})
+											.join(", ") // Join the results with a comma
+									: ""
+							}
 							label="อาจารย์ที่ปรึกษาร่วม / Co-advisor"
 						/>
+
 						<div className="flex flex-col items-center mt-6 justify-center">
 							<Label>ลายเซ็น / Signature</Label>
 							<SignatureDialog
@@ -110,7 +122,10 @@ const OutlineFormRead = ({ formData }: { formData: IOutlineForm }) => {
 								defaultValue={formData?.outlineCommitteeComment}
 							/>
 						</div>
-						<SignatureDialog signUrl={formData?.outlineCommitteeSignUrl ? formData?.outlineCommitteeSignUrl : ""} disable={true} />
+						<SignatureDialog
+							signUrl={formData?.outlineCommitteeSignUrl ? formData?.outlineCommitteeSignUrl : ""}
+							disable={true}
+						/>
 						<Label className="mb-2">
 							{formData?.outlineCommittee
 								? `${formData?.outlineCommittee.prefix}${formData?.outlineCommittee.firstName} ${formData?.outlineCommittee.lastName}`
@@ -148,7 +163,10 @@ const OutlineFormRead = ({ formData }: { formData: IOutlineForm }) => {
 								defaultValue={formData?.instituteCommitteeComment}
 							/>
 						</div>
-						<SignatureDialog signUrl={formData?.instituteCommitteeSignUrl ? formData?.instituteCommitteeSignUrl : ""} disable={true} />
+						<SignatureDialog
+							signUrl={formData?.instituteCommitteeSignUrl ? formData?.instituteCommitteeSignUrl : ""}
+							disable={true}
+						/>
 						<Label className="mb-2">
 							{formData?.instituteCommittee
 								? `${formData?.instituteCommittee.prefix?.prefixTH}${formData?.instituteCommittee.firstNameTH} ${formData?.instituteCommittee.lastNameTH}`
