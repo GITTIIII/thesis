@@ -56,14 +56,19 @@ export const POST = async (req: Request) => {
         name: `${user.prefix} ${user.firstName} ${user.lastName}`,
         message: [],
       };
-
       const emptyFields = checkEmptyFields(user);
       if (emptyFields.length > 0) {
-        userMessage.message.push(`Empty fields: ${emptyFields.join(", ")}`);
+        const formattedFields = emptyFields
+          .map((field) =>
+            field.replace(/([A-Z])/g, " $1").replace(/^./, (str) => str.toUpperCase())
+          )
+          .join(", ");
+
+        userMessage.message.push(`มีข้อมูลว่าง: ${formattedFields}`);
       }
 
       if (!validateEmail(user.email)) {
-        userMessage.message.push("Invalid email format");
+        userMessage.message.push("รูปแบบอีเมลไม่ถูกต้อง");
       }
 
       const institute = await db.institute.findFirst({
@@ -72,7 +77,7 @@ export const POST = async (req: Request) => {
         },
       });
       if (institute == null) {
-        userMessage.message.push("Institute not found");
+        userMessage.message.push("ไม่พบสำนักวิชา");
       }
 
       const program = await db.program.findFirst({
@@ -81,7 +86,7 @@ export const POST = async (req: Request) => {
         },
       });
       if (program == null) {
-        userMessage.message.push("Program not found");
+        userMessage.message.push("ไม่พบหลักสูตร");
       }
 
       const school = await db.school.findFirst({
@@ -90,7 +95,7 @@ export const POST = async (req: Request) => {
         },
       });
       if (school == null) {
-        userMessage.message.push("School not found");
+        userMessage.message.push("ไม่พบสาขาวิชา");
       }
 
       const prefix = await db.prefix.findFirst({
@@ -99,7 +104,16 @@ export const POST = async (req: Request) => {
         },
       });
       if (prefix == null) {
-        userMessage.message.push("Prefix not found");
+        userMessage.message.push("ไม่พบคำนำหน้า");
+      }
+
+      const username = await db.user.findFirst({
+        where: {
+          username: user.username,
+        },
+      });
+      if (username != null) {
+        userMessage.message.push("มีชื่อผู้ใช้นี้แล้ว");
       }
 
       if (userMessage.message.length == 0) {

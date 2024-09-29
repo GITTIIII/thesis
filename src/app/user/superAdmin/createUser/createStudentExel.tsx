@@ -42,6 +42,11 @@ import { useRouter } from "next/navigation";
 interface RowData {
   [key: string]: string | number;
 }
+interface IResult {
+  id: string;
+  name: string;
+  message: string[];
+}
 const alphabet = "ABCDEFGHIJKLMNOPQ".split("");
 const userProperty = [
   { key: "prefix", value: "คำนำหน้า" },
@@ -53,10 +58,9 @@ const userProperty = [
   { key: "phone", value: "เบอร์โทร" },
   { key: "sex", value: "เพศ" },
   { key: "degree", value: "ระดับการศึกษา" },
-  { key: "instituteName", value: "สำนักวิชา" },
-  { key: "schoolName", value: "สาขาวิชา" },
+  { key: "institute", value: "สำนักวิชา" },
+  { key: "school", value: "สาขาวิชา" },
   { key: "program", value: "หลักสูตร" },
-  { key: "programYear", value: "ปีการศึกษา" },
 ];
 
 export default function CreateStudentExel() {
@@ -65,6 +69,7 @@ export default function CreateStudentExel() {
   const [disabled, setDisabled] = useState<boolean>(false);
   const [fileObject, setFileObject] = useState<File>();
   const [data, setData] = useState<any[]>([]);
+  const [result, setResult] = useState<IResult[]>([]);
   const [list, setList] = useState<{ key: string; value: string }[]>([
     { key: "A", value: "username" },
     { key: "B", value: "prefix" },
@@ -73,8 +78,9 @@ export default function CreateStudentExel() {
     { key: "E", value: "password" },
     { key: "F", value: "email" },
     { key: "G", value: "degree" },
-    { key: "H", value: "instituteName" },
-    { key: "I", value: "schoolName" },
+    { key: "H", value: "institute" },
+    { key: "I", value: "school" },
+    { key: "J", value: "program" },
   ]);
   const ListTemPlate = ({
     index,
@@ -179,17 +185,20 @@ export default function CreateStudentExel() {
         if (err) {
           console.log(err);
         } else {
-          const modifyData = resp.rows?.map((itm: any, index: any) => {
+          const modifyData = resp.rows?.map((itm: any) => {
             const rowData: RowData = {};
             alphabet.forEach((alp, key) => {
               rowData[alp] = itm[key] || "";
             });
-            setData((prevData) => [...prevData, rowData]);
+            return rowData;
           });
+
+          setData(modifyData);
         }
       });
     }
   }, [fileObject]);
+
   const onSubmit = async () => {
     setDisabled(true);
     if (
@@ -236,23 +245,13 @@ export default function CreateStudentExel() {
     data.append("columnKey", JSON.stringify(columnKey));
     fetch(`/api/user/importExcel`, {
       method: "POST",
-      // headers: {},
       body: data,
     })
       .then((response) => response.json())
       .then((result) => {
-        if (result.message === "Users Created") {
-          toast({
-            description: (
-              <div className=" flex items-center">
-                {<GoCheckCircleFill color={"#28A645"} className="mr-2" size={30} />}
-                <p>{`สร้างผู้ใช้เรียบร้อยแล้ว จำนวน ${result.result.count} คน`}</p>
-              </div>
-            ),
-          });
-          setTimeout(() => {
-            router.push("/user/superAdmin");
-          }, 3000);
+        if (result.data) {
+          setResult(result.data);
+          setDisabled(false);
         } else if (result.Error.code === "P2002") {
           toast({
             variant: "destructive",
@@ -372,86 +371,106 @@ export default function CreateStudentExel() {
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="text-center">รหัสนักศึกษา</TableHead>
-            <TableHead className="text-center">ชื่อ นามสกุล</TableHead>
-            <TableHead className="text-center">สถานะ</TableHead>
-            <TableHead className="text-center">หมายเหตุ</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {std.map((stdItem, index) => (
-            <TableRow key={index}>
-              <TableCell className="font-medium">{stdItem.id}</TableCell>
-              <TableCell>{stdItem.name}</TableCell>
-              <TableCell>
-                {stdItem.status ? (
-                  <>
-                    <div className="text-center text-sm text-green-800 border border-green-300 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400 dark:border-green-800">
-                      <div>
-                        <span className="font-medium">บันทึกสำเร็จ</span>
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div
-                      className=" text-center text-sm text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400 dark:border-red-800"
-                      role="alert"
-                    >
-                      <div>
-                        <span className="font-medium">บันทึกไม่สำเร็จ</span>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </TableCell>
-              <TableCell className=" space-x-2">
-                {stdItem.operationStatus?.map((status, idx) => (
-                  <div
-                    key={idx}
-                    className=" inline px-2  text-center text-sm *:text-yellow-800 border border-yellow-300 rounded-lg bg-yellow-50 dark:bg-gray-800 dark:text-yellow-300 dark:border-yellow-800"
-                  >
-                    <span className="font-medium">{status}</span>
-                  </div>
-                ))}
-              </TableCell>
+      {result.length != 0 && (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="text-center">รหัสนักศึกษา</TableHead>
+              <TableHead className="text-center">ชื่อ นามสกุล</TableHead>
+              <TableHead className="text-center">สถานะ</TableHead>
+              <TableHead className="text-center">หมายเหตุ</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TableCell
-              colSpan={4}
-              className="text-right text-green-800"
-            >{`บันทึกสำเร็จ ${10}`}</TableCell>
-            <TableCell className="text-right text-red-800">{`บันทึกไม่สำเร็จ ${10}`}</TableCell>
-          </TableRow>
-        </TableFooter>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {result.map((stdItem, index) => (
+              <TableRow key={index}>
+                <TableCell className="font-medium">{stdItem.id}</TableCell>
+                <TableCell>{stdItem.name}</TableCell>
+                <TableCell>
+                  {stdItem.message.length === 0 ? (
+                    <>
+                      <span className="inline-flex items-center justify-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-emerald-700">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth="1.5"
+                          stroke="currentColor"
+                          className="-ms-1 me-1.5 size-4"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                          />
+                        </svg>
+
+                        <p className="whitespace-nowrap text-sm">บันทึกสำเร็จ</p>
+                      </span>
+                    </>
+                  ) : (
+                    <>
+                      <span className="inline-flex items-center justify-center rounded-full bg-red-100 px-2.5 py-0.5 text-red-700">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          strokeWidth="1.5"
+                          stroke="currentColor"
+                          className="-ms-1 me-1.5 size-4"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+                          />
+                        </svg>
+
+                        <p className="whitespace-nowrap text-sm">บันทึกไม่สำเร็จ</p>
+                      </span>
+                    </>
+                  )}
+                </TableCell>
+                <TableCell className=" space-x-2">
+                  {stdItem.message?.map((status, idx) => (
+                    <>
+                      <span className="inline-flex items-center justify-center rounded-full border border-amber-500 px-2.5 py-0.5 text-amber-700">
+                        <p className="whitespace-nowrap text-sm">{status}</p>
+                      </span>
+                    </>
+                  ))}
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell
+                colSpan={4}
+                className="text-right text-green-800"
+              >{`บันทึกสำเร็จ ${countStatus(result)[0]}`}</TableCell>
+              <TableCell className="text-right text-red-800">{`บันทึกไม่สำเร็จ ${
+                countStatus(result)[1]
+              }`}</TableCell>
+            </TableRow>
+          </TableFooter>
+        </Table>
+      )}
     </div>
   );
 }
 
-const std = [
-  {
-    id: "B6419936",
-    name: "ธีรโชติ สนนอก",
-    status: false,
-    operationStatus: ["ชื่อทีข้อผิดพลาด", "ชื่อทีข้อผิดพลาด2", "ชื่อทีข้อผิดพลาด3"],
-  },
-  {
-    id: "B6419936",
-    name: "ธีรโชติ สนนอก",
-    status: false,
+function countStatus(stdList: IResult[]) {
+  let x = 0;
+  let y = 0;
 
-    operationStatus: ["ชื่อทีข้อผิดพลาด", "ชื่อทีข้อผิดพลาด2", "ชื่อทีข้อผิดพลาด3"],
-  },
-  {
-    id: "B6419936",
-    name: "ธีรโชติ สนนอก",
-    status: true,
-  },
-];
+  stdList.forEach((std) => {
+    if (std.message.length === 0) {
+      x++;
+    } else {
+      y++;
+    }
+  });
+
+  return [x, y];
+}

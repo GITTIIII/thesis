@@ -30,7 +30,7 @@ interface User {
 const convertToUsers = async (arr: any[]): Promise<User[]> => {
   return Promise.all(
     arr.map(async (obj) => {
-      const hashedPassword = await hash(String(obj.password), 10);
+      const hashedPassword = obj.password && (await hash(String(obj.password), 10));
       const user: User = {
         prefix: obj.prefix ? String(obj.prefix) : "",
         firstName: obj.firstName ? String(obj.firstName) : "",
