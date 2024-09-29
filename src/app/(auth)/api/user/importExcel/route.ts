@@ -13,6 +13,8 @@ interface User {
   phone: string;
   sex: string;
   degree: string;
+  institute: string;
+  school: string;
 }
 export const POST = async (req: Request) => {
   const formData = await req.formData();
@@ -43,25 +45,118 @@ export const POST = async (req: Request) => {
   const pathExcel = path.join(process.cwd(), `public/asset/${filename}`);
 
   try {
+    const message: Message[] = [];
     await writeFile(pathExcel, buffer);
-    const users: User[] = await excelFileToJson(pathExcel, columnKey);
-    const result = await CreateMultipleStudent(users);
-    return NextResponse.json({ message: "Users Created", result }, { status: 200 });
+    const users = await excelFileToJson(pathExcel, columnKey);
+
+    for (let user of users) {
+      // Initialize an empty message object for the current user
+      const userMessage: Message = {
+        id: user.username,
+        name: `${user.prefix} ${user.firstName} ${user.lastName}`,
+        message: [],
+      };
+
+      const emptyFields = checkEmptyFields(user);
+      if (emptyFields.length > 0) {
+        userMessage.message.push(`Empty fields: ${emptyFields.join(", ")}`);
+      }
+
+      if (!validateEmail(user.email)) {
+        userMessage.message.push("Invalid email format");
+      }
+
+      const institute = await db.institute.findFirst({
+        where: {
+          instituteNameTH: user.institute,
+        },
+      });
+      if (institute == null) {
+        userMessage.message.push("Institute not found");
+      }
+
+      const program = await db.program.findFirst({
+        where: {
+          programNameTH: user.program,
+        },
+      });
+      if (program == null) {
+        userMessage.message.push("Program not found");
+      }
+
+      const school = await db.school.findFirst({
+        where: {
+          schoolNameTH: user.school,
+        },
+      });
+      if (school == null) {
+        userMessage.message.push("School not found");
+      }
+
+      const prefix = await db.prefix.findFirst({
+        where: {
+          prefixTH: user.prefix,
+        },
+      });
+      if (prefix == null) {
+        userMessage.message.push("Prefix not found");
+      }
+
+      if (userMessage.message.length == 0) {
+        await CreateStudent({
+          prefixID: prefix?.id,
+          firstNameTH: user.firstName,
+          lastNameTH: user.lastName,
+          username: user.username,
+          password: user.password,
+          email: user.email,
+          degree: user.degree,
+          sex: user.sex,
+          position: user.position,
+          role: user.role,
+        });
+      }
+      message.push(userMessage);
+    }
+    return NextResponse.json(
+      { message: "Users Created", data: message },
+      { status: 200 }
+    );
   } catch (error) {
     return NextResponse.json({ Error: error || "An error occurred" }, { status: 500 });
   } finally {
     await unlink(pathExcel);
   }
 };
-
-const CreateMultipleStudent = async (users: any) => {
+interface Message {
+  id: string;
+  name: string;
+  message: string[];
+}
+const CreateStudent = async (users: any) => {
   try {
-    const newUsers = await db.user.createMany({
-      data: [...users],
-      skipDuplicates: true,
+    const newUsers = await db.user.create({
+      data: users,
     });
     return newUsers;
   } catch (error) {
     throw error;
   }
 };
+function checkEmptyFields(user: any): string[] {
+  const emptyFields = [];
+  for (const key in user) {
+    if (key === "phone" || key === "sex") {
+      continue;
+    }
+    if (user[key] === "" || user[key] === null || user[key] === undefined) {
+      emptyFields.push(key);
+    }
+  }
+  return emptyFields;
+}
+
+function validateEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(email);
+}

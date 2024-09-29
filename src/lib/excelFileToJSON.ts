@@ -1,6 +1,5 @@
 const excelToJson = require("convert-excel-to-json");
 import { hash } from "bcrypt";
-import { db } from "@/lib/db";
 
 export const excelFileToJson = async (
   path: string,
@@ -11,30 +10,26 @@ export const excelFileToJson = async (
     sourceFile: path,
     columnToKey: columnKey_,
   });
-
   return await convertToUsers(result.Sheet1);
 };
 interface User {
+  program: string;
   prefix: string;
   firstName: string;
   lastName: string;
   username: string;
   password: string;
   email: string;
-  phone: string;
   sex: string;
   degree: string;
   role: string;
   position: string;
-  instituteID: number;
-  schoolID: number;
+  institute: string;
+  school: string;
 }
 const convertToUsers = async (arr: any[]): Promise<User[]> => {
   return Promise.all(
     arr.map(async (obj) => {
-      const schoolID = await db.school.findUnique({
-        where: { schoolName: obj.schoolName ? String(obj.schoolName) : "" },
-      });
       const hashedPassword = await hash(String(obj.password), 10);
       const user: User = {
         prefix: obj.prefix ? String(obj.prefix) : "",
@@ -43,13 +38,13 @@ const convertToUsers = async (arr: any[]): Promise<User[]> => {
         password: hashedPassword,
         username: obj.username ? String(obj.username) : "",
         email: obj.email ? String(obj.email) : "",
-        phone: obj.phone ? String(obj.phone) : "",
         sex: obj.sex ? String(obj.sex) : "",
         degree: obj.degree ? String(obj.degree) : "",
         role: "STUDENT",
         position: "NONE",
-        instituteID: Number(schoolID?.instituteID),
-        schoolID: Number(schoolID?.id),
+        institute: obj.institute ? String(obj.institute) : "",
+        school: obj.school ? String(obj.school) : "",
+        program: obj.program ? String(obj.program) : "",
       };
       return user;
     })
