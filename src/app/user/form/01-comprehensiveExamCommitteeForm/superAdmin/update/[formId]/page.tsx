@@ -3,7 +3,7 @@ import learning1 from "@/../../public/asset/learning1.png";
 import SuperAdminForm01Update from "@/components/form/01-comprehensiveExamCommitteeForm/01-superAdminFormUpdate";
 import { get01FormById } from "@/app/action/getFormById";
 import { currentUser } from "@/app/action/current-user";
-import { getHeadSchool } from "@/app/action/headSchool";
+import { getHeadSchool } from "@/app/action/getHeadSchool";
 
 export default async function SuperAdminForm01UpdatePage({ params }: { params: { formId: number } }) {
 	const formId = params.formId;

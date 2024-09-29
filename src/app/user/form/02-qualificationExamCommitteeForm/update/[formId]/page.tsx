@@ -1,7 +1,7 @@
 import Image from "next/image";
 import learning1 from "@/../../public/asset/learning1.png";
 import QualificationExamCommitteeFormUpdate from "@/components/form/02-qualificationExamCommitteeForm/02-qualificationExamCommitteeFormUpdate";
-import { getHeadSchool } from "@/app/action/headSchool";
+import { getHeadSchool } from "@/app/action/getHeadSchool";
 import { currentUser } from "@/app/action/current-user";
 import { get02FormById } from "@/app/action/getFormById";
 

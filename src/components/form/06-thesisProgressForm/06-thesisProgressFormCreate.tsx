@@ -43,7 +43,7 @@ const ThesisProgressFormCreate = ({
 }: {
 	user: IUser;
 	approvedForm: IOutlineForm;
-	last06Form: IThesisProgressForm;
+	last06Form?: IThesisProgressForm;
 }) => {
 	const router = useRouter();
 	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
@@ -219,7 +219,7 @@ const ThesisProgressFormCreate = ({
 					{/* ฝั่งขวา */}
 					<div className="w-full">
 						<InputForm
-							value={`${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`}
+							value={`${user?.advisor?.prefix?.prefixTH}${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษา / Advisor"
 						/>
 
@@ -352,11 +352,11 @@ const ThesisProgressFormCreate = ({
 						<Input disabled className="w-max my-2 sm:my-0" value={`${approvedForm?.thesisStartYear}`} />
 					</div>
 					<div className="w-full h-max overflow-auto flex justify-center">
-						{last06Form && approvedForm && (
+						{approvedForm && (
 							<ThesisProcessPlan
 								degree={user!.degree}
 								canEdit={true}
-								processPlans={last06Form.processPlan ? last06Form.processPlan : approvedForm.processPlan}
+								processPlans={last06Form?.processPlan ? last06Form?.processPlan : approvedForm.processPlan}
 								setProcessPlans={setProcessPlans}
 							/>
 						)}

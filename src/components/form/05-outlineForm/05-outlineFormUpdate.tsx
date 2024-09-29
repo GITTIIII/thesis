@@ -25,6 +25,7 @@ import ThesisProcessPlan from "../thesisProcessPlan";
 import axios from "axios";
 import qs from "query-string";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
+import { updateStdFormState } from "@/app/action/updateStdFormState";
 
 const formSchema = z.object({
 	id: z.number(),
@@ -60,7 +61,6 @@ const OutlineFormUpdate = ({
 	const [openInstitute, setOpenInstitute] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
-
 	const handleDrawingSignOutline = (signUrl: string) => {
 		reset({
 			...form.getValues(),
@@ -100,7 +100,7 @@ const OutlineFormUpdate = ({
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
-		console.log(values);
+		
 		if (
 			(values.outlineCommitteeStatus == "" && values.outlineCommitteeID != 0) ||
 			(values.instituteCommitteeStatus == "" && values.instituteCommitteeID != 0)
@@ -114,8 +114,8 @@ const OutlineFormUpdate = ({
 			return;
 		}
 		if (
-			(values.outlineCommitteeSignUrl == "" && values.outlineCommitteeID != 0) ||
-			(values.instituteCommitteeSignUrl == "" && values.instituteCommitteeID != 0)
+			(values.outlineCommitteeStatus != "" && values.outlineCommitteeSignUrl == "" && values.outlineCommitteeID != 0) ||
+			(values.instituteCommitteeStatus != "" && values.instituteCommitteeSignUrl == "" && values.instituteCommitteeID != 0)
 		) {
 			toast({
 				title: "Error",
@@ -135,6 +135,7 @@ const OutlineFormUpdate = ({
 		) {
 			values.formStatus = "อนุมัติ";
 			values.editComment = "";
+			updateStdFormState(formData.studentID);
 		} else if (formData?.outlineCommitteeStatus == "อนุมัติ" && values.editComment != "" && user?.role == "SUPER_ADMIN") {
 			values.formStatus = "เเก้ไข";
 			values.instituteCommitteeID = 0;
@@ -181,6 +182,19 @@ const OutlineFormUpdate = ({
 			editComment: formData?.editComment ? formData?.editComment : "",
 		});
 	}, [formData]);
+
+	useEffect(() => {
+		reset({
+			...form.getValues(),
+			formStatus: "",
+			times: "",
+			instituteCommitteeID: 0,
+			instituteCommitteeStatus: "",
+			instituteCommitteeComment: "",
+			instituteCommitteeSignUrl: "",
+			dateInstituteCommitteeSign: undefined,
+		});
+	}, [form.watch("editComment")]);
 
 	const handleCancel = () => {
 		setLoading(false);
@@ -283,7 +297,7 @@ const OutlineFormUpdate = ({
 						<div className="flex flex-col items-center mb-6 justify-center">
 							<FormLabel>ลายเซ็น / Signature</FormLabel>
 							<SignatureDialog
-								disable={false}
+								disable={true}
 								signUrl={formData?.student.signatureUrl ? formData?.student.signatureUrl : ""}
 							/>
 							<Label>{`วันที่ ${formData?.date ? new Date(formData?.date).toLocaleDateString("th") : "__________"}`}</Label>

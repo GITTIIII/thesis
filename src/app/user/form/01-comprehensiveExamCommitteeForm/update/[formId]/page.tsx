@@ -3,7 +3,7 @@ import learning1 from "@/../../public/asset/learning1.png";
 import ComprehensiveExamCommitteeFormUpdate from "@/components/form/01-comprehensiveExamCommitteeForm/01-comprehensiveExamCommitteeFormUpdate";
 import { get01FormById } from "@/app/action/getFormById";
 import { currentUser } from "@/app/action/current-user";
-import { getHeadSchool } from "@/app/action/headSchool";
+import { getHeadSchool } from "@/app/action/getHeadSchool";
 
 export default async function ComprehensiveExamCommitteeFormUpdatePage({ params }: { params: { formId: number } }) {
 	const formId = params.formId;

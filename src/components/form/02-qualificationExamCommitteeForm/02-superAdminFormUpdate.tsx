@@ -11,7 +11,6 @@ import { z } from "zod";
 import { useToast } from "@/components/ui/use-toast";
 import SignatureCanvas from "react-signature-canvas";
 import axios from "axios";
-import useSWR from "swr";
 import qs from "query-string";
 import InputForm from "../../inputForm/inputForm";
 import { DatePicker } from "@/components/datePicker/datePicker";
@@ -25,8 +24,6 @@ import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown, CircleAlert } from "lucide-react";
 import signature from "../../../../public/asset/signature.png";
-
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const formSchema = z.object({
 	id: z.number(),

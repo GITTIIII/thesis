@@ -2,7 +2,7 @@ import Image from "next/image";
 import learning1 from "@/../../public/asset/learning1.png";
 import SuperAdminForm06Update from "@/components/form/06-thesisProgressForm/06-superAdminFormUpdate";
 import { get06FormById } from "@/app/action/getFormById";
-import { getHeadSchool } from "@/app/action/headSchool";
+import { getHeadSchool } from "@/app/action/getHeadSchool";
 import { currentUser } from "@/app/action/current-user";
 import { get05ApprovedFormByStdId } from "@/app/action/get05ApprovedFormByStdId";
 

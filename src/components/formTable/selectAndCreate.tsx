@@ -23,13 +23,13 @@ const labels: { [key: string]: string } = {
 
 const numbers: { [key: string]: number } = {
 	form01: 1,
-	form02: 2,
-	form03: 3,
-	form04: 4,
-	form05: 5,
-	form06: 6,
-	form07: 7,
-	form08: 8,
+	form02: 1,
+	form03: 2,
+	form04: 3,
+	form05: 4,
+	form06: 5,
+	form07: 6,
+	form08: 7,
 };
 
 export default function SelectAndCreate({ approvedForm, user }: { approvedForm?: IOutlineForm; user?: IUser }) {
@@ -44,10 +44,8 @@ export default function SelectAndCreate({ approvedForm, user }: { approvedForm?:
 
 	useEffect(() => {
 		if (
-			approvedForm &&
-			selectedForm === "form05" &&
-			user?.role === "STUDENT"
-			// ||(user?.role == "STUDENT" && (user?.formState ?? 0) < numbers[selectedForm])
+			(approvedForm && selectedForm === "form05" && user?.role === "STUDENT") ||
+			(user?.role == "STUDENT" && (user?.formState ?? 0) < numbers[selectedForm])
 		) {
 			setIsDisabled(true);
 		} else {
@@ -55,60 +53,60 @@ export default function SelectAndCreate({ approvedForm, user }: { approvedForm?:
 		}
 	}, [selectedForm, user, approvedForm]);
 
+	useEffect(() => {
+		if (user?.position == "ADVISOR" && selectedForm == "form01") {
+			handleSelectChange("form03");
+		}
+	}, []);
 
 	return (
 		<div className="w-max ml-auto flex flex-col sm:flex-row items-center justify-center">
-			<Select onValueChange={handleSelectChange} defaultValue={selectedForm}>
-				<SelectTrigger className="w-max">
-					<SelectValue placeholder={labels[selectedForm]} defaultValue={selectedForm} />
-				</SelectTrigger>
-				<SelectContent>
-					<SelectItem 
-					
-					// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 1} 
-					value="form01">
-						แบบคำขออนุมัติแต่งตั้งกรรมการสอบประมวลความรู้
-					</SelectItem>
-					<SelectItem 
-					// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 2} 
-					value="form02">
-						แบบคำขออนุมัติแต่งตั้งกรรมการสอบวัดคุณสมบัติ
-					</SelectItem>
-					<SelectItem 
-					// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 3} 
-					value="form03">
-						แบบคำขออนุมัติแต่งตั้งกรรมการสอบโครงร่างวิทยานิพนธ์
-					</SelectItem>
+			{user && (
+				<Select onValueChange={handleSelectChange} value={selectedForm}>
+					<SelectTrigger className="w-max">
+						<SelectValue placeholder={labels[selectedForm]} />
+					</SelectTrigger>
+					<SelectContent>
+						{user.position != "ADVISOR" && (
+							<>
+								{user.degree != "Doctoral" && (
+									<SelectItem disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 1} value="form01">
+										แบบคำขออนุมัติแต่งตั้งกรรมการสอบประมวลความรู้
+									</SelectItem>
+								)}
 
-					<SelectItem 
-					// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 4} 
-					value="form04">
-						แบบคำขออนุมัติแต่งตั้งกรรมการสอบวิทยานิพนธ์
-					</SelectItem>
+								{user.degree != "Master" && (
+									<SelectItem disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 1} value="form02">
+										แบบคำขออนุมัติแต่งตั้งกรรมการสอบวัดคุณสมบัติ
+									</SelectItem>
+								)}
+							</>
+						)}
 
-					<SelectItem 
-					// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 5} 
-					value="form05">
-						แบบคำขออนุมัติโครงร่างวิทยานิพนธ์
-					</SelectItem>
+						<SelectItem disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 2} value="form03">
+							แบบคำขออนุมัติแต่งตั้งกรรมการสอบโครงร่างวิทยานิพนธ์
+						</SelectItem>
 
-					<SelectItem 
-					// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 6} 
-					value="form06">
-						เเบบรายงานความคืบหน้าของการทำวิทยานิพนธ์
-					</SelectItem>
-					<SelectItem 
-					// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 7} 
-					value="form07">
-						คำขอนัดสอบวิทยานิพนธ์
-					</SelectItem>
-					<SelectItem 
-					// disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 7} 
-					value="form08">
-						แบบประเมินการสอบวิทยานิพนธ์
-					</SelectItem>
-				</SelectContent>
-			</Select>
+						<SelectItem disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 3} value="form04">
+							แบบคำขออนุมัติแต่งตั้งกรรมการสอบวิทยานิพนธ์
+						</SelectItem>
+
+						<SelectItem disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 4} value="form05">
+							แบบคำขออนุมัติโครงร่างวิทยานิพนธ์
+						</SelectItem>
+
+						<SelectItem disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 5} value="form06">
+							เเบบรายงานความคืบหน้าของการทำวิทยานิพนธ์
+						</SelectItem>
+						<SelectItem disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 6} value="form07">
+							คำขอนัดสอบวิทยานิพนธ์
+						</SelectItem>
+						<SelectItem disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 7} value="form08">
+							แบบประเมินการสอบวิทยานิพนธ์
+						</SelectItem>
+					</SelectContent>
+				</Select>
+			)}
 			{user?.role === "STUDENT" && (
 				<Button
 					type="button"
