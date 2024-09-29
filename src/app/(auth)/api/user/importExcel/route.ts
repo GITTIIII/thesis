@@ -118,7 +118,6 @@ export const POST = async (req: Request) => {
 
       if (userMessage.message.length == 0) {
         await CreateStudent({
-          prefixID: prefix?.id,
           firstNameTH: user.firstName,
           lastNameTH: user.lastName,
           username: user.username,
@@ -128,6 +127,10 @@ export const POST = async (req: Request) => {
           sex: user.sex,
           position: user.position,
           role: user.role,
+          prefixID: prefix?.id,
+          schoolID: school?.id,
+          programID: program?.id,
+          instituteID: institute?.id,
         });
       }
       message.push(userMessage);
@@ -137,6 +140,7 @@ export const POST = async (req: Request) => {
       { status: 200 }
     );
   } catch (error) {
+    console.log(error);
     return NextResponse.json({ Error: error || "An error occurred" }, { status: 500 });
   } finally {
     await unlink(pathExcel);
@@ -147,10 +151,10 @@ interface Message {
   name: string;
   message: string[];
 }
-const CreateStudent = async (users: any) => {
+const CreateStudent = async (user: any) => {
   try {
     const newUsers = await db.user.create({
-      data: users,
+      data: user,
     });
     return newUsers;
   } catch (error) {
