@@ -1,15 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import useSWR from "swr";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { File, PlusCircle } from "lucide-react";
+import { PlusCircle } from "lucide-react";
 import { DataTable } from "@/components/tanStackTable/dataTable";
 import { userColumns } from "./user-columns";
 import { IUser } from "@/interface/user";
 import { IExpert } from "@/interface/expert";
-import useSWR from "swr";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -20,7 +20,7 @@ export default function UserDashboard() {
   const { data: expertData = [] } = useSWR<IExpert[]>("/api/expert", fetcher);
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-muted/40">
+    <div className="flex flex-col w-svh h-svh">
       <div className="flex flex-col sm:gap-4 sm:py-4">
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6"></header>
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
@@ -33,13 +33,7 @@ export default function UserDashboard() {
                 <TabsTrigger value="expert">ผู้เชี่ยวชาญ</TabsTrigger>
               </TabsList>
               <div className="ml-auto flex items-center gap-2">
-                <Link href="/user/superAdmin/createUser">
-                  <Button size="sm" variant="outline" className="h-7 gap-1">
-                    <File className="h-3.5 w-3.5" />
-                    <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">นำเข้ารายชื่อ</span>
-                  </Button>
-                </Link>
-                <Link href="/user/superAdmin/createUser">
+                <Link href="/user/superAdmin/user/createUser">
                   <Button size="sm" className="h-7 gap-1 bg-[#F26522]">
                     <PlusCircle className="h-3.5 w-3.5" />
                     <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">เพิ่มรายชื่อ</span>

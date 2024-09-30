@@ -71,8 +71,9 @@ export default function CreateProgram() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-1/2 bg-white shadow-md rounded-xl">
-        <div className="w-96 mx-auto py-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="p-4 mx-96 my-8 bg-white shadow-md rounded-xl">
+        <div className="text-2xl font-medium py-4">เพิ่มหลักสูตร</div>
+        <div className="flex flex-col justify-center">
           <FormField
             control={form.control}
             name="programNameTH"
@@ -113,7 +114,7 @@ export default function CreateProgram() {
             )}
           />
         </div>
-        <div>
+        <div className="py-4">
           <FormField
             control={form.control}
             name="schools"
@@ -152,7 +153,7 @@ export default function CreateProgram() {
             )}
           />
         </div>
-        <div className="w-96 mx-96 p-4">
+        <div className="flex justify-end gap-4 p-4">
           <Button variant="outline" type="reset" onClick={() => router.push("/user/superAdmin")} className="">
             ยกเลิก
           </Button>

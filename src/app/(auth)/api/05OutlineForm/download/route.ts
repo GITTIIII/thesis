@@ -7,16 +7,13 @@ import { Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 import JSZip from "jszip";
-import test from "node:test";
+
 export async function GET(request: NextRequest) {
   const outlineFormId = request.nextUrl.searchParams.get("id");
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    return NextResponse.json(
-      { user: null, message: "Session not found" },
-      { status: 404 }
-    );
+    return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
   }
   const outlineForm = await db.outlineForm.findFirst({
     where: {
@@ -55,17 +52,11 @@ export async function GET(request: NextRequest) {
 
   const outlineCommitteeCommentP = {
     status: outlineForm.outlineCommitteeStatus === "อนุมัติ" ? "☑" : "☐",
-    comment:
-      outlineForm.outlineCommitteeStatus === "อนุมัติ"
-        ? outlineForm.outlineCommitteeComment
-        : "",
+    comment: outlineForm.outlineCommitteeStatus === "อนุมัติ" ? outlineForm.outlineCommitteeComment : "",
   };
   const outlineCommitteeCommentF = {
     status: outlineForm.outlineCommitteeStatus !== "อนุมัติ" ? "☑" : "☐",
-    comment:
-      outlineForm.outlineCommitteeStatus !== "อนุมัติ"
-        ? outlineForm.outlineCommitteeComment
-        : "",
+    comment: outlineForm.outlineCommitteeStatus !== "อนุมัติ" ? outlineForm.outlineCommitteeComment : "",
   };
   const data = {
     createdAt: dateShortTH(outlineForm.createdAt) || "",
@@ -88,8 +79,7 @@ export async function GET(request: NextRequest) {
     occF: outlineCommitteeCommentF || "",
     OCSignUrl: outlineForm.outlineCommitteeSignUrl || "",
     outlineCommitteeName:
-      `${outlineForm.outlineCommittee?.prefix} ${outlineForm.outlineCommittee?.firstName} ${outlineForm.outlineCommittee?.lastName}` ||
-      "",
+      `${outlineForm.outlineCommittee?.prefix} ${outlineForm.outlineCommittee?.firstName} ${outlineForm.outlineCommittee?.lastName}` || "",
     dateOutlineCommitteeSign: dateShortTH(outlineForm.dateOutlineCommitteeSign!) || "",
     date: dateShortTH(outlineForm.date) || "",
     times: outlineForm.times || "",
@@ -102,19 +92,14 @@ export async function GET(request: NextRequest) {
     instituteCommitteeName:
       `${outlineForm.instituteCommittee?.prefix?.prefixTH} ${outlineForm.instituteCommittee?.firstNameTH} ${outlineForm.instituteCommittee?.lastNameTH}` ||
       "",
-    dateInstituteCommitteeSign:
-      dateShortTH(outlineForm.dateInstituteCommitteeSign!) || "",
+    dateInstituteCommitteeSign: dateShortTH(outlineForm.dateInstituteCommitteeSign!) || "",
     thesisStartMonth: outlineForm.thesisStartMonth || "",
     thesisStartYear: outlineForm.thesisStartYear || "",
   };
   try {
     const doc1 = await genDocx("FM-ENG-GRD-05-01.docx", data);
     var doc2;
-    if (
-      outlineForm.processPlan &&
-      typeof outlineForm.processPlan === "object" &&
-      Array.isArray(outlineForm.processPlan)
-    ) {
+    if (outlineForm.processPlan && typeof outlineForm.processPlan === "object" && Array.isArray(outlineForm.processPlan)) {
       const processPlanObject = outlineForm.processPlan as Prisma.JsonArray;
       doc2 = await genDocProcessPlan(
         {
@@ -140,8 +125,7 @@ export async function GET(request: NextRequest) {
     });
     return new NextResponse(filezip, {
       headers: {
-        "Content-Type":
-          "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "Content-Type": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "Content-Disposition": "attachment; filename=FM-ENG-GRD-05.zip",
       },
     });

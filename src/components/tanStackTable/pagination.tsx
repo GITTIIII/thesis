@@ -10,9 +10,9 @@ interface DataTablePaginationProps<TData> {
 
 export function DataTablePagination<TData>({ table }: DataTablePaginationProps<TData>) {
   return (
-    <div className="flex items-center justify-between p-2">
+    <div className="flex items-center justify-between pt-2">
       <div className="flex-1 text-sm text-muted-foreground">
-        เลือก {table.getFilteredSelectedRowModel().rows.length} จาก {table.getFilteredRowModel().rows.length} แถว
+        {/* เลือก {table.getFilteredSelectedRowModel().rows.length} จาก {table.getFilteredRowModel().rows.length} แถว */}
       </div>
       <div className="flex items-center space-x-6 lg:space-x-8">
         <div className="flex items-center space-x-2">
@@ -44,21 +44,11 @@ export function DataTablePagination<TData>({ table }: DataTablePaginationProps<T
             <span className="sr-only">กลับไปหน้าแรก</span>
             <DoubleArrowLeftIcon className="h-4 w-4" />
           </Button>
-          <Button
-            variant="outline"
-            className="h-8 w-8 p-0"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
+          <Button variant="outline" className="h-8 w-8 p-0" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
             <span className="sr-only">ย้อนกลับ</span>
             <ChevronLeftIcon className="h-4 w-4" />
           </Button>
-          <Button
-            variant="outline"
-            className="h-8 w-8 p-0"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
+          <Button variant="outline" className="h-8 w-8 p-0" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
             <span className="sr-only">ถัดไป</span>
             <ChevronRightIcon className="h-4 w-4" />
           </Button>

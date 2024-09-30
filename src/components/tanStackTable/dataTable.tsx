@@ -48,8 +48,8 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
   });
 
   return (
-    <div>
-      <div className="flex items-center py-4">
+    <div className="w-full h-full">
+      <div className="flex items-center pb-4">
         <Input
           placeholder="ค้นหา..."
           value={(globalFilter as string) ?? ""}
@@ -81,7 +81,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border">
+      <div className="h-[65vh] rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

@@ -1,4 +1,5 @@
 "use client";
+
 import { getSession, signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
@@ -12,101 +13,100 @@ import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
 
 const formSchema = z.object({
-	username: z.string().min(1, { message: "กรุณากรอกชื่อผู้ใช้" }),
-	password: z.string().min(1, { message: "กรุณากรอกรหัสผ่าน" }),
+  username: z.string().min(1, { message: "กรุณากรอกชื่อผู้ใช้" }),
+  password: z.string().min(1, { message: "กรุณากรอกรหัสผ่าน" }),
 });
 
-const SignInForm = () => {
-	const router = useRouter();
-	const [loading, setLoading] = useState(false);
-	const { toast } = useToast();
-	const form = useForm({
-		resolver: zodResolver(formSchema),
-		defaultValues: {
-			username: "",
-			password: "",
-		},
-	});
+export default function SignInForm() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
-	const onSubmit: (values: z.infer<typeof formSchema>) => Promise<void> = async (values) => {
-		try {
-			setLoading(true);
-			const signInData = await signIn("credentials", {
-				username: values.username,
-				password: values.password,
-				redirect: false,
-			});
+  const form = useForm({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+  });
 
-			if (signInData?.error) {
-				toast({
-					title: "Error",
-					description: signInData?.error,
-					variant: "destructive",
-				});
-				setLoading(false);
-			} else {
-				toast({
-					title: "Success",
-					description: "เข้าสู่ระบบสำเร็จ",
-					variant: "default",
-				});
+  const onSubmit: (values: z.infer<typeof formSchema>) => Promise<void> = async (values) => {
+    try {
+      setLoading(true);
+      const signInData = await signIn("credentials", {
+        username: values.username,
+        password: values.password,
+        redirect: false,
+      });
 
-				const session = await getSession();
-				if (session?.user.role === "STUDENT") {
-					router.push("/user/student");
-				} else if (session?.user.role === "ADMIN") {
-					router.push("/user/table");
-				} else if (session?.user.role === "SUPER_ADMIN") {
-					router.push("/user/superAdmin");
-				}
-			}
-		} catch (error) {
-			console.error("Sign-in failed", error);
-		}
-	};
+      if (signInData?.error) {
+        toast({
+          title: "Error",
+          description: signInData?.error,
+          variant: "destructive",
+        });
+        setLoading(false);
+      } else {
+        toast({
+          title: "Success",
+          description: "เข้าสู่ระบบสำเร็จ",
+          variant: "default",
+        });
 
-	return (
-		<Form {...form}>
-			<form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col w-3/4 sm:w-2/4">
-				<div className="text-black mb-4">
-					<FormField
-						control={form.control}
-						name="username"
-						render={({ field }) => (
-							<div className="flex flex-row items-center mb-6 justify-center">
-								<FormItem className="w-3/4">
-									<FormLabel>ชื่อผู้ใช้</FormLabel>
-									<FormControl>
-										<Input className="text-sm p-2 w-full rounded-lg" {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							</div>
-						)}
-					/>
-					<FormField
-						control={form.control}
-						name="password"
-						render={({ field }) => (
-							<div className="flex flex-row items-center mb-6 justify-center">
-								<FormItem className="w-3/4">
-									<FormLabel>รหัสผ่าน</FormLabel>
-									<FormControl>
-										<Input type="password" autoComplete="true" className="text-sm p-2 w-full rounded-lg" {...field} />
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							</div>
-						)}
-					/>
-				</div>
-				<Button disabled={loading} className="bg-[#F26522] w-2/4 mx-auto text-white rounded-xl">
-					{loading && <LoaderCircle className="mr-2 animate-spin" />}
-					เข้าสู่ระบบ
-				</Button>
-			</form>
-		</Form>
-	);
-};
+        const session = await getSession();
+        if (session?.user.role === "STUDENT") {
+          router.push("/user/student");
+        } else if (session?.user.role === "ADMIN") {
+          router.push("/user/table");
+        } else if (session?.user.role === "SUPER_ADMIN") {
+          router.push("/user/superAdmin/form");
+        }
+      }
+    } catch (error) {
+      console.error("Sign-in failed", error);
+    }
+  };
 
-export default SignInForm;
+  return (
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col w-3/4 sm:w-2/4">
+        <div className="text-black mb-4">
+          <FormField
+            control={form.control}
+            name="username"
+            render={({ field }) => (
+              <div className="flex flex-row items-center mb-6 justify-center">
+                <FormItem className="w-3/4">
+                  <FormLabel>ชื่อผู้ใช้</FormLabel>
+                  <FormControl>
+                    <Input className="text-sm p-2 w-full rounded-lg" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </div>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <div className="flex flex-row items-center mb-6 justify-center">
+                <FormItem className="w-3/4">
+                  <FormLabel>รหัสผ่าน</FormLabel>
+                  <FormControl>
+                    <Input type="password" autoComplete="true" className="text-sm p-2 w-full rounded-lg" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </div>
+            )}
+          />
+        </div>
+        <Button disabled={loading} className="bg-[#F26522] w-2/4 mx-auto text-white rounded-xl">
+          {loading && <LoaderCircle className="mr-2 animate-spin" />}
+          เข้าสู่ระบบ
+        </Button>
+      </form>
+    </Form>
+  );
+}

@@ -12,6 +12,7 @@ import {
   IOutlineForm,
   IThesisProgressForm,
   IThesisExamAppointmentForm,
+  IExamForm,
 } from "@/interface/form";
 import { Tabs, TabsContent } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
@@ -33,11 +34,12 @@ export default function FormDashborad() {
   const { data: form05Data = [] } = useSWR<IOutlineForm[]>("/api/05OutlineForm", fetcher);
   const { data: form06Data = [] } = useSWR<IThesisProgressForm[]>("/api/06ThesisProgressForm", fetcher);
   const { data: form07Data = [] } = useSWR<IThesisExamAppointmentForm[]>("/api/07ThesisExamAppointmentForm", fetcher);
+  const { data: form08Data = [] } = useSWR<IExamForm[]>("/api/08ThesisExamForm", fetcher);
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="py-6 mx-6">
       <Card>
-        <CardHeader className="p-4">
+        <CardHeader className="pt-4 pb-0">
           <Select onValueChange={handleSelectChange} value={selectedForm}>
             <SelectTrigger className="w-max border-none shadow-none text-xl focus:outline-none focus:ring-0 focus:ring-ring">
               <SelectValue defaultValue={selectedForm} />
@@ -81,7 +83,7 @@ export default function FormDashborad() {
               <DataTable columns={formColumns.form07Columns} data={form07Data} />
             </TabsContent>
             <TabsContent value="form08">
-              <div>FORM 8</div>
+              <DataTable columns={formColumns.form08Columns} data={form08Data} />
             </TabsContent>
           </Tabs>
         </CardContent>

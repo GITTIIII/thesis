@@ -6,7 +6,7 @@ import { IUser } from "@/interface/user";
 import { IExpert } from "@/interface/expert";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
-import ActionMenu from "@/components/actionMenu/ActionMenu";
+import ActionMenu from "@/components/actionMenu/actionMenu";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
