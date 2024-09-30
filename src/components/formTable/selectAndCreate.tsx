@@ -35,7 +35,15 @@ const numbers: { [key: string]: number } = {
 	form08: 7,
 };
 
-export default function SelectAndCreate({ approvedForm, user }: { approvedForm?: IOutlineForm; user?: IUser }) {
+export default function SelectAndCreate({
+	approvedForm,
+	user,
+	searchParams,
+}: {
+	approvedForm?: IOutlineForm;
+	user?: IUser;
+	searchParams: { [key: string]: string };
+}) {
 	const { selectedForm, setSelectedForm } = useSelectForm();
 	const [isDisabled, setIsDisabled] = useState(false);
 	const router = useRouter();
@@ -61,6 +69,10 @@ export default function SelectAndCreate({ approvedForm, user }: { approvedForm?:
 			handleSelectChange("form03");
 		}
 	}, []);
+
+	useEffect(() => {
+		setSelectedForm(searchParams.form || "form01");
+	}, [searchParams]);
 
 	return (
 		<div className="w-full flex">

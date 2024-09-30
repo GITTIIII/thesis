@@ -54,12 +54,12 @@ export default function ComprehensiveExamCommitteeFormTable({
 		<>
 			<div className="w-full h-full bg-white shadow-2xl rounded-md p-2 overflow-auto ">
 				<div className="w-max flex px-2 mb-2">
-					<FilterTable
-						filterAdvisor={false}
-						filterHeadSchool={true}
-						setHeadSchool={setHeadchool}
-						setStatus={setStatus}
-					/>
+					<FilterTable 
+					filterAdvisor={false} 
+					filterHeadSchool={true} 
+					setHeadSchool={setHeadchool} 
+					setStatus={setStatus} 
+				/>
 					<Search studentID={studentID} setStudentID={setStudentID} />
 				</div>
 				<Table>

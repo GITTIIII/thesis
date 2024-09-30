@@ -75,7 +75,7 @@ export default async function StudentTablePage({ searchParams }: { searchParams:
 						{labels[selectedForm]}
 					</label>
 				</div>
-				<SelectAndCreate user={user} approvedForm={approvedForm}/>
+				<SelectAndCreate user={user} approvedForm={approvedForm} searchParams={searchParams} />
 				<div className="h-full w-full flex items-center py-4">{renderFormTable()}</div>
 			</div>
 		</>
