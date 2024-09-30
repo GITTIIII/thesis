@@ -50,7 +50,7 @@ export default function QualificationExamCommitteeFormTable({
 	});
 	return (
 		<>
-			<div className="w-full h-full bg-white shadow-2xl rounded-md p-2 ">
+			<div className="w-full h-full bg-white shadow-2xl rounded-md p-2 overflow-auto ">
 				<div className="w-max flex px-2 mb-2">
 					<FilterTable filterAdvisor={false} filterHeadSchool={true} setHeadSchool={setHeadchool} setStatus={setStatus} />
 					<Search studentID={studentID} setStudentID={setStudentID} />
@@ -74,50 +74,50 @@ export default function QualificationExamCommitteeFormTable({
 					<TableBody>
 						{formData &&
 							filteredData?.map((formData, index) => (
-									<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
-										<TableCell className="text-center">{index + 1}</TableCell>
-										<TableCell className="text-center">{new Date(formData.date).toLocaleDateString("th")}</TableCell>
-										<TableCell className="text-center">{formData.trimester}</TableCell>
-										<TableCell className="text-center">{formData.academicYear}</TableCell>
-										<TableCell className="text-center">{formData?.student.username}</TableCell>
-										<TableCell className="text-center">
-											{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
-										</TableCell>
-										<TableCell className="text-center">{formData.times}</TableCell>
-										<TableCell className="text-center">{new Date(formData.examDay).toLocaleDateString("th")}</TableCell>
-										<TableCell className="text-center">
-											{formData.headSchoolID ? (
-												<span className="text-green-500">มีการเซ็นเรียบร้อยแล้ว</span>
-											) : (
-												<span className="text-orange-600">กำลังรอการเซ็น</span>
-											)}
-										</TableCell>
-										<TableCell className="text-[#F26522] text-center">
-											<Link
-												href={
-													formData.headSchoolID || user?.role == "STUDENT"
-														? `/user/form/${FormPath[selectedForm]}/${formData.id}`
-														: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
-												}
+								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
+									<TableCell className="text-center">{index + 1}</TableCell>
+									<TableCell className="text-center">{new Date(formData.date).toLocaleDateString("th")}</TableCell>
+									<TableCell className="text-center">{formData.trimester}</TableCell>
+									<TableCell className="text-center">{formData.academicYear}</TableCell>
+									<TableCell className="text-center">{formData?.student.username}</TableCell>
+									<TableCell className="text-center">
+										{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
+									</TableCell>
+									<TableCell className="text-center">{formData.times}</TableCell>
+									<TableCell className="text-center">{new Date(formData.examDay).toLocaleDateString("th")}</TableCell>
+									<TableCell className="text-center">
+										{formData.headSchoolID ? (
+											<span className="text-green-500">มีการเซ็นเรียบร้อยแล้ว</span>
+										) : (
+											<span className="text-orange-600">กำลังรอการเซ็น</span>
+										)}
+									</TableCell>
+									<TableCell className="text-[#F26522] text-center">
+										<Link
+											href={
+												formData.headSchoolID || user?.role == "STUDENT"
+													? `/user/form/${FormPath[selectedForm]}/${formData.id}`
+													: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
+											}
+										>
+											คลิกเพื่อดูเพิ่มเติม
+										</Link>
+									</TableCell>
+									<TableCell className="text-center">
+										{formData && (
+											<Button
+												onClick={() => handleDownload(formData)}
+												disabled={!formData.headSchoolID}
+												type="button"
+												variant="outline"
 											>
-												คลิกเพื่อดูเพิ่มเติม
-											</Link>
-										</TableCell>
-										<TableCell className="text-center">
-											{formData && (
-												<Button
-													onClick={() => handleDownload(formData)}
-													disabled={!formData.headSchoolID}
-													type="button"
-													variant="outline"
-												>
-													<DownloadIcon className="mr-2" />
-													ดาวน์โหลด
-												</Button>
-											)}
-										</TableCell>
-									</TableRow>
-								))}
+												<DownloadIcon className="mr-2" />
+												ดาวน์โหลด
+											</Button>
+										)}
+									</TableCell>
+								</TableRow>
+							))}
 					</TableBody>
 				</Table>
 			</div>

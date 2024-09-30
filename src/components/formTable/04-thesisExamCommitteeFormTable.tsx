@@ -47,7 +47,7 @@ export default function ThesisExamCommitteeFormTable({ formData, user }: { user:
 
 	return (
 		<>
-			<div className="w-full h-full bg-white shadow-2xl rounded-md p-2 ">
+			<div className="w-full h-full bg-white shadow-2xl rounded-md p-2 overflow-auto ">
 				<div className="w-max flex px-2 mb-2">
 					<FilterTable
 						filterAdvisor={true}
