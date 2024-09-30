@@ -8,10 +8,27 @@ import { useSelectForm } from "@/hook/selectFormHook";
 import { FormPath } from "../formPath/formPath";
 import Link from "next/link";
 import saveAs from "file-saver";
-
+import { useState } from "react";
+import { Search } from "./search";
+import { FilterTable } from "./filter";
 export default function ThesisProgressFormTable({ formData, user }: { user: IUser; formData?: IThesisProgressForm[] }) {
 	const { selectedForm } = useSelectForm();
+	const [studentID, setStudentID] = useState("");
+	const [advisor, setAdvisor] = useState(false);
+	const [headSchool, setHeadSchool] = useState(false);
+	const [status, setStatus] = useState("");
 
+	const filteredData = formData?.filter((formData) => {
+		const matchesStudentID = studentID === "" || formData.student.username.includes(studentID);
+		const matchesAdvisor =
+			advisor &&
+			((status === "มีการเซ็นเรียบร้อยแล้ว" && formData.advisorSignUrl) || (status === "กำลังรอการเซ็น" && !formData.advisorSignUrl));
+		const matchesHeadSchool =
+			headSchool &&
+			((status === "มีการเซ็นเรียบร้อยแล้ว" && formData.headSchoolID) || (status === "กำลังรอการเซ็น" && !formData.headSchoolID));
+
+		return matchesStudentID && (!advisor || matchesAdvisor) && (!headSchool || matchesHeadSchool);
+	});
 	const handleDownload = async (formData: IThesisProgressForm) => {
 		if (formData.headSchoolID) {
 			try {
@@ -31,6 +48,17 @@ export default function ThesisProgressFormTable({ formData, user }: { user: IUse
 	return (
 		<>
 			<div className="w-full h-full bg-white shadow-2xl rounded-md p-2 ">
+				<div className="w-max flex px-2 mb-2">
+					<FilterTable
+						filterAdvisor={true}
+						filterHeadSchool={true}
+						filterFormStatus={false}
+						setAdvisor={setAdvisor}
+						setHeadSchool={setHeadSchool}
+						setStatus={setStatus}
+					/>
+					<Search studentID={studentID} setStudentID={setStudentID} />
+				</div>
 				<Table>
 					<TableHeader>
 						<TableRow>
@@ -41,13 +69,15 @@ export default function ThesisProgressFormTable({ formData, user }: { user: IUse
 							<TableHead className="text-center">วันที่สร้าง</TableHead>
 							<TableHead className="text-center">รหัสนักศึกษา</TableHead>
 							<TableHead className="text-center">ชื่อ นศ.</TableHead>
+							<TableHead className="text-center">สถานะลายเซ็นอาจารย์ที่ปรึกษา</TableHead>
+							<TableHead className="text-center">สถานะลายเซ็นหัวหน้าสาขาวิชา</TableHead>
 							<TableHead className="text-center">รายละเอียด</TableHead>
 							<TableHead className="text-center">ดาวน์โหลดฟอร์ม</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
 						{formData &&
-							formData?.map((formData, index) => (
+							filteredData?.map((formData, index) => (
 								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d] h-[52px]` : "" + `h-[52px]`}>
 									<TableCell className="text-center">{index + 1}</TableCell>
 									<TableCell className="text-center">{formData.trimester}</TableCell>
@@ -59,6 +89,20 @@ export default function ThesisProgressFormTable({ formData, user }: { user: IUse
 									<TableCell className="text-center">{formData?.student.username}</TableCell>
 									<TableCell className="text-center">
 										{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
+									</TableCell>
+									<TableCell className="text-center">
+										{formData.advisorSignUrl ? (
+											<span className="text-green-500">มีการเซ็นเรียบร้อยแล้ว</span>
+										) : (
+											<span className="text-orange-600">กำลังรอการเซ็น</span>
+										)}
+									</TableCell>
+									<TableCell className="text-center">
+										{formData.headSchoolID ? (
+											<span className="text-green-500">มีการเซ็นเรียบร้อยแล้ว</span>
+										) : (
+											<span className="text-orange-600">กำลังรอการเซ็น</span>
+										)}
 									</TableCell>
 									<TableCell className="text-[#F26522] text-center">
 										<Link

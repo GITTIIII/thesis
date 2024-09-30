@@ -9,10 +9,27 @@ import FormStatus from "../formStatus/formStatus";
 import { useSelectForm } from "@/hook/selectFormHook";
 import { FormPath } from "../formPath/formPath";
 import saveAs from "file-saver";
-
+import { useState } from "react";
+import { Search } from "./search";
+import { FilterTable } from "./filter";
 export default function OutlineFormTable({ formData, user }: { user: IUser; formData?: IOutlineForm[] }) {
 	const { selectedForm } = useSelectForm();
+	const [studentID, setStudentID] = useState("");
 
+	const [status, setStatus] = useState("");
+
+	const filteredData = formData?.filter((formData) => {
+		const matchesStudentID = studentID === "" || formData.student.username.includes(studentID);
+		const matchesFormStatus =
+			status &&
+			((status === "อนุมัติ" && formData.formStatus == "อนุมัติ") ||
+				(status === "รอดำเนินการ" && formData.formStatus == "รอดำเนินการ") ||
+				(status === "เเก้ไข" && formData.formStatus == "เเก้ไข") ||
+				(status === "เเก้ไขเเล้ว" && formData.formStatus == "เเก้ไขเเล้ว") ||
+				(status === "ไม่อนุมัติ" && formData.formStatus == "ไม่อนุมัติ"));
+
+		return matchesStudentID && (!status || matchesFormStatus);
+	});
 	const handleDownload = async (formData: IOutlineForm) => {
 		if (formData.formStatus === "อนุมัติ") {
 			try {
@@ -32,6 +49,10 @@ export default function OutlineFormTable({ formData, user }: { user: IUser; form
 	return (
 		<>
 			<div className="w-full h-full bg-white shadow-2xl rounded-md p-2 overflow-auto ">
+				<div className="w-max flex px-2 mb-2">
+					<FilterTable filterAdvisor={false} filterHeadSchool={false} filterFormStatus={true} setStatus={setStatus} />
+					<Search studentID={studentID} setStudentID={setStudentID} />
+				</div>
 				<Table>
 					<TableHeader>
 						<TableRow>
@@ -48,7 +69,7 @@ export default function OutlineFormTable({ formData, user }: { user: IUser; form
 					</TableHeader>
 					<TableBody>
 						{formData &&
-							formData?.map((formData, index) => (
+							filteredData?.map((formData, index) => (
 								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
 									<TableCell className="text-center">{index + 1}</TableCell>
 									<TableCell className="text-center">

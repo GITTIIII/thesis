@@ -32,7 +32,7 @@ export default async function StudentTablePage({ searchParams }: { searchParams:
 		return <div>ไม่พบข้อมูล</div>;
 	}
 
-	const selectedForm = searchParams.form;
+	const selectedForm = searchParams.form || "form01";
 	
 	const approvedForm = await get05ApprovedFormByStdId(user.id);
 

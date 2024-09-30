@@ -3,11 +3,13 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Download } from "lucide-react";
-import { IExamForm} from "@/interface/form";
+import { IExamForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 import { useSelectForm } from "@/hook/selectFormHook";
 import { FormPath } from "../formPath/formPath";
-
+import { useState } from "react";
+import { Search } from "./search";
+import { FilterTable } from "./filter";
 async function get08FormByStdId(stdId: number | undefined) {
 	if (stdId) {
 		const res = await fetch(`/api/get08FormByStdId/${stdId}`, {
@@ -25,12 +27,15 @@ async function get08FormData() {
 }
 
 export default function ThesisExamFormTable({ formData, user }: { user: IUser; formData?: IExamForm[] }) {
-	
 	const { selectedForm } = useSelectForm();
-
+	const [studentID, setStudentID] = useState("");
 	return (
 		<>
 			<div className="w-full h-full bg-white shadow-2xl rounded-md p-2 ">
+				<div className="w-max flex px-2 mb-2">
+					<FilterTable />
+					<Search studentID={studentID} setStudentID={setStudentID} />
+				</div>
 				<Table>
 					<TableHeader>
 						<TableRow>
@@ -47,38 +52,42 @@ export default function ThesisExamFormTable({ formData, user }: { user: IUser; f
 						</TableRow>
 					</TableHeader>
 					<TableBody>
-						{formData && formData
-							.map((formData, index) => (
-								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
-									<TableCell className="text-center">{index + 1}</TableCell>
-									<TableCell className="text-center">{new Date(formData.date).toLocaleDateString("th")}</TableCell>
-									<TableCell className="text-center">-</TableCell>
-									<TableCell className="text-center">-</TableCell>
-									<TableCell className="text-center">{formData?.student.username}</TableCell>
-									<TableCell className="text-center">
-										{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
-									</TableCell>
-									<TableCell className="text-center">-</TableCell>
-									<TableCell className="text-center">{new Date(formData.examinationDate).toLocaleDateString("th")}</TableCell>
-									<TableCell className="text-[#F26522] text-center">
-										<Link
-											href={
-												user?.role == "SUPER_ADMIN" || user?.role == "STUDENT"
-													? `/user/form/${FormPath[selectedForm]}/${formData.id}`
-													: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
-											}
-										>
-											คลิกเพื่อดูเพิ่มเติม
-										</Link>
-									</TableCell>
-									<TableCell className="text-center">
-										<Button disabled={user?.role !== "SUPER_ADMIN"} type="button" variant="outline">
-											<Download className="mr-2" />
-											ดาวน์โหลด
-										</Button>
-									</TableCell>
-								</TableRow>
-							))}
+						{formData &&
+							formData
+								.filter((formData) => studentID === "" || formData.student.username.includes(studentID))
+								.map((formData, index) => (
+									<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
+										<TableCell className="text-center">{index + 1}</TableCell>
+										<TableCell className="text-center">{new Date(formData.date).toLocaleDateString("th")}</TableCell>
+										<TableCell className="text-center">-</TableCell>
+										<TableCell className="text-center">-</TableCell>
+										<TableCell className="text-center">{formData?.student.username}</TableCell>
+										<TableCell className="text-center">
+											{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
+										</TableCell>
+										<TableCell className="text-center">-</TableCell>
+										<TableCell className="text-center">
+											{new Date(formData.examinationDate).toLocaleDateString("th")}
+										</TableCell>
+										<TableCell className="text-[#F26522] text-center">
+											<Link
+												href={
+													user?.role == "SUPER_ADMIN" || user?.role == "STUDENT"
+														? `/user/form/${FormPath[selectedForm]}/${formData.id}`
+														: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
+												}
+											>
+												คลิกเพื่อดูเพิ่มเติม
+											</Link>
+										</TableCell>
+										<TableCell className="text-center">
+											<Button disabled={user?.role !== "SUPER_ADMIN"} type="button" variant="outline">
+												<Download className="mr-2" />
+												ดาวน์โหลด
+											</Button>
+										</TableCell>
+									</TableRow>
+								))}
 					</TableBody>
 				</Table>
 			</div>
