@@ -61,6 +61,7 @@ const userProperty = [
   { key: "institute", value: "สำนักวิชา" },
   { key: "school", value: "สาขาวิชา" },
   { key: "program", value: "หลักสูตร" },
+  { key: "advisor", value: "อาจารย์ที่ปรึกษา" },
 ];
 
 export default function CreateStudentExel() {
@@ -81,6 +82,7 @@ export default function CreateStudentExel() {
     { key: "H", value: "institute" },
     { key: "I", value: "school" },
     { key: "J", value: "program" },
+    { key: "K", value: "advisor" },
   ]);
   const ListTemPlate = ({
     index,

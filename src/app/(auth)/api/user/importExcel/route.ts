@@ -15,6 +15,7 @@ interface User {
   degree: string;
   institute: string;
   school: string;
+  advisor: string;
 }
 export const POST = async (req: Request) => {
   const formData = await req.formData();
@@ -79,6 +80,14 @@ export const POST = async (req: Request) => {
       if (institute == null) {
         userMessage.message.push("ไม่พบสำนักวิชา");
       }
+      const advisor = await db.user.findFirst({
+        where: {
+          firstNameTH: user.advisor.split(" ")[0],
+        },
+      });
+      if (advisor == null) {
+        userMessage.message.push("ไม่พบอาจารย์ที่ปรึกษา");
+      }
 
       const program = await db.program.findFirst({
         where: {
@@ -131,6 +140,7 @@ export const POST = async (req: Request) => {
           schoolID: school?.id,
           programID: program?.id,
           instituteID: institute?.id,
+          advisorID: advisor?.id,
         });
       }
       message.push(userMessage);

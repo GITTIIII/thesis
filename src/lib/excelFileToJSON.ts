@@ -26,6 +26,7 @@ interface User {
   position: string;
   institute: string;
   school: string;
+  advisor: string;
 }
 const convertToUsers = async (arr: any[]): Promise<User[]> => {
   return Promise.all(
@@ -45,6 +46,7 @@ const convertToUsers = async (arr: any[]): Promise<User[]> => {
         institute: obj.institute ? String(obj.institute) : "",
         school: obj.school ? String(obj.school) : "",
         program: obj.program ? String(obj.program) : "",
+        advisor: obj.advisor ? String(obj.advisor) : "",
       };
       return user;
     })
