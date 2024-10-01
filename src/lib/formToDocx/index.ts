@@ -1,7 +1,7 @@
 import createReport from "docx-templates";
 import fs from "fs";
 
-export const genDocx = async (docName: string, data: any) => {
+export const genDocx = async (docName: string, data: any, width = 5, height = 2) => {
   const path = `src/lib/formToDocx/docTemplate/${docName}`;
   try {
     const template = fs.readFileSync(path);
@@ -15,7 +15,7 @@ export const genDocx = async (docName: string, data: any) => {
       additionalJsContext: {
         image: (url: string) => {
           const data = url.slice("data:image/png;base64,".length);
-          return { width: 5, height: 2, data, extension: ".png" };
+          return { width: width, height: height, data, extension: ".png" };
         },
       },
     });
