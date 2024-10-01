@@ -1,34 +1,30 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormEvent, use, useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useForm } from "react-hook-form";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import signature from "@/../../public/asset/signature.png";
-import Image from "next/image";
 import axios from "axios";
 import qs from "query-string";
 import { useToast } from "@/components/ui/use-toast";
 import InputForm from "../../inputForm/inputForm";
 import { IUser } from "@/interface/user";
-import { Checkbox } from "@/components/ui/checkbox";
 import { DatePicker } from "@/components/datePicker/datePicker";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const formSchema = z.object({
 	thesisNameTH: z.string(),
-	thesisNameEN: z.string(),
+	thesisNameEN: z.string().toUpperCase(),
 	studentID: z.number(),
 	publishmentName:z.string(),
 	date:z.date(),
 	studentSignUrl:z.string(),
-	startingDate:z.date(),
+	startDate:z.date(),
 	endDate:z.date(),
+	headCommitteeName:z.string(),
 });
 
 async function getUser() {
@@ -39,7 +35,7 @@ async function getUser() {
 
 const userPromise = getUser();
 
-const ThesisExamFormCreate = () => {
+const DelayDisseminationThesisFormCreate = () => {
 	const router = useRouter();
 	const user: IUser = use(userPromise);
 	const [openSign, setOpenSign] = useState(false);
@@ -61,7 +57,8 @@ const ThesisExamFormCreate = () => {
 			studentID: 0,
 			publishmentName:"",
 			studentSignUrl:"",
-			startingDate:new Date(),
+			headCommitteeName:"",
+			startDate:new Date(),
 			endDate:new Date()
 		},
 	});
@@ -69,7 +66,7 @@ const ThesisExamFormCreate = () => {
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		console.log("values:", values)
 		const url = qs.stringifyUrl({
-			url: `/api/08ThesisExamForm`,
+			url: `/api/09DelayDisseminationThesisForm`,
 		});
 		const res = await axios.post(url, values);
 		if (res.status === 200) {
@@ -118,7 +115,7 @@ const ThesisExamFormCreate = () => {
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">
-				<div className="flex flex-col justify-center md:flex-row">
+				<div className="flex flex-col justify-center xl:flex-row">
 					{/* ฝั่งซ้าย */}
 
 					<div className="w-full  mt-5">
@@ -145,11 +142,30 @@ const ThesisExamFormCreate = () => {
 						<InputForm value={`${user?.program?.programNameTH}`} label="หลักสูตร / Program" />
 
 						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร / Program Year" />
+					
 					</div>
 					<div className="border-l border-[#eeee]"></div>
 
 					{/* ฝั่งขวา */}
 					<div className="w-full ">
+						<div>
+							<div className="text-center my-5">เรียนประธานคณะกรรมการ / To Head of Committee</div>
+							<FormField
+								control={form.control}
+								name="headCommitteeName"
+								render={({ field }) => (
+									<div className="flex flex-row items-center mb-6 justify-center">
+										<FormItem className="w-auto">
+											<FormLabel>ชื่อประธารคณะกรรมการ / Head of Committee name</FormLabel>
+											<FormControl>
+												<Input className="text-sm p-2 w-[300px] m-auto  rounded-lg" {...field} />
+											</FormControl>
+											<FormMessage />
+										</FormItem>
+									</div>
+								)}
+							/>
+						</div>
 						<div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
 						<div className="text-center mb-5">ชื่อวิทยานิพนธ์</div>
 							<FormField
@@ -160,7 +176,7 @@ const ThesisExamFormCreate = () => {
 										<FormItem className="w-auto">
 											<FormLabel>ชื่อภาษาไทย / ThesisName(TH)</FormLabel>
 											<FormControl>
-												<Input className="text-sm p-2 w-[300px] m-auto  rounded-lg" {...field} />
+												<Input className="text-sm p-2 w-[300px] m-auto  rounded-lg"{...field} />
 											</FormControl>
 											<FormMessage />
 										</FormItem>
@@ -200,7 +216,7 @@ const ThesisExamFormCreate = () => {
 							<div className="flex flex-row justify-center">
 							<FormField
 								control={form.control}
-								name="startingDate"
+								name="startDate"
 								render={({ field }) => (
 									<div className="flex flex-row ">
 										<FormItem className="w-auto">
@@ -285,4 +301,4 @@ const ThesisExamFormCreate = () => {
 	);
 };
 
-export default ThesisExamFormCreate;
+export default DelayDisseminationThesisFormCreate;

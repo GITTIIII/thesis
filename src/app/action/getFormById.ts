@@ -6,6 +6,8 @@ import {
 	IOutlineForm,
 	IThesisProgressForm,
 	IThesisExamAppointmentForm,
+	IDelayThesisForm,
+	IExamForm,
 } from "@/interface/form";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -334,4 +336,91 @@ export const get07FormById = async (formId: number) => {
 	if (!form07) return;
 
 	return form07 as IThesisExamAppointmentForm;
+};
+
+export const get08FormById = async (formId: number) => {
+	const session = await getServerSession(authOptions);
+
+	if (!session) return;
+
+	const form08 = await db.thesisExamForm.findUnique({
+		where: {
+			id: Number(formId),
+		},
+		include: {
+			student: {
+				include: {
+					prefix: true,
+					institute: true,
+					school: true,
+					program: true,
+					advisor: {
+						include: {
+							prefix: true,
+						},
+					},
+					coAdvisedStudents:{
+						include:{
+							coAdvisor:{
+								include:{
+									prefix:true
+								}
+							}
+						}
+					}
+			},
+			},
+		},
+	});
+
+	if (!form08) return;
+
+	return form08 as IExamForm;
+};
+
+export const get09FormById = async (formId: number) => {
+	const session = await getServerSession(authOptions);
+
+	if (!session) return;
+
+	const form09 = await db.delayThesisForm.findUnique({
+		where: {
+			id: Number(formId),
+		},
+		include: {
+			student: {
+				include: {
+					prefix: true,
+					institute: true,
+					school: true,
+					program: true,
+					advisor: {
+						include: {
+							prefix: true,
+						},
+					},
+					coAdvisedStudents:{
+						include:{
+							coAdvisor:{
+								include:{
+									prefix:true
+								}
+							}
+						}
+					}
+				},
+			},
+			institute: {
+				include: {
+					prefix: true,
+					institute: true,
+					school: true,
+				},
+			},
+		},
+	});
+
+	if (!form09) return;
+
+	return form09 as IDelayThesisForm;
 };

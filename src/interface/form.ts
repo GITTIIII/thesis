@@ -1,3 +1,4 @@
+import { date, number, string } from "zod";
 import { IExpert } from "./expert";
 import { IUser } from "./user";
 
@@ -211,7 +212,7 @@ export type IExamForm = {
 	newNameEN?: string;
 	reviseTitle?: Boolean;
 	committeeSignUrl?:     Array<any>;
-	resultExam?	:String;
+	resultExam?	:string;
 	presentationComment?:		string;
 	explanationComment?:	string;
 	answerQuestionsComment?: string;
@@ -222,3 +223,24 @@ export type IExamForm = {
 	headOfCommitteeName?:string;
 	approve?:	Boolean;
 };
+
+export type IDelayThesisForm = {
+  	id:                   number;
+	headCommitteeName:    string;
+	startDate:            Date;
+	endDate:              Date;
+	studentSignUrl:       string; 
+	thesisNameTH:         string;
+	thesisNameEN:         string;
+	date:                 Date;
+	publishmentName:      string;
+
+	instituteSignUrl?:    string;
+	instituteID?:         number;
+	approve?:             string;
+	timeApprove:		  number;
+	dayApprove?:          Date;
+	studentID:            number;
+	student:			  IUser;
+	institute:			  IUser;
+}

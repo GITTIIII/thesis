@@ -1,23 +1,29 @@
+"use client"
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { FormLabel } from "@/components/ui/form";
+import { FormControl, FormField, FormItem, Label
+, FormMessage } from "@/components/ui/form";
 import InputForm from "../../inputForm/inputForm";
 import { IUser } from "@/interface/user";
 import { Checkbox } from "@/components/ui/checkbox";
 import useSWR from "swr";
 import { IExamForm } from "@/interface/form";
-import { Label } from "@/components/ui/label";
+import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
-const ThesisExamAssessmentFormRead = ({ formId }: { formId: number }) => {
+const ThesisExamAssessmentFormRead = ({
+	user,
+	formData,
+}: {
+  user: IUser
+	formData: IExamForm;
+}) => {
 	const router = useRouter();
-	const { data: user } = useSWR<IUser>("/api/getCurrentUser", fetcher);
-	const { data: formData } = useSWR<IExamForm>(formId ? `/api/get08FormById/${formId}` : "", fetcher);
 
 	return (
-        <>
+        <div>
 		<div className="w-full h-full bg-white p-4">
             	<div className="w-full flex px-0 sm:px-10 mb-2">
 					<Button
@@ -113,12 +119,118 @@ const ThesisExamAssessmentFormRead = ({ formId }: { formId: number }) => {
                                     </div>
                                 </div>							
 						</div>				
-                        : undefined}                                        
-						</div>
-                    </div>
-				<hr className="่่justify-center mx-auto w-3/4 my-5 border-t-2 border-[#eeee]" />
+                        : undefined}   
+						<hr className="่่justify-center mx-auto w-3/4 my-5 border-t-2 border-[#eeee]" />
                 </div>
-            </>
+				</div>
+						<div className="flex flex-col">
+			<div className="text-center">
+				แบบประเมินการสอบวิทยานิพนธ์ (ต่อ) / Thesis Examination Assessment Form (continued)
+			</div>
+			<div>
+				<div className="w-full flex flex-row flex-wrap item-center justify-center">
+				{formData?.committeeSignUrl?.map((field, index) => (
+					<div className="flex justify-center flex-col m-5 px-5" key={index}>
+					<div className="flex justify-center">
+						<SignatureDialog
+						signUrl={formData?.committeeSignUrl?.[index]?.signUrl || ""}
+						isOpen={false}
+						disable={!!formData?.committeeSignUrl?.[index]?.signUrl}
+						/>
+					</div>
+					<div className="flex justify-center mb-2">
+						<Label
+			className="font-normal">กรรมการ / Committee</Label
+			>
+					</div>
+					<div className="flex justify-center item-center mb-5">
+						<InputForm
+						value={`${formData?.committeeSignUrl?.[index]?.name}`}
+						label="ชื่อวิทยานิพนธ์ภาษาไทย / Thai thesis title"
+						/>
+					</div>
+					</div>
+				))}
+				</div>
+			</div>
+			<hr className="justify-center mx-auto w-[88%] my-5 border-t-2 border-[#eeee]" />
+
+			{/* ส่วนของหัวหน้ากรรมการประจำสำนักวิชา */}
+			<div>
+				{(user.role === "SUPER_ADMIN" || user.position === "HEAD_OF_INSTITUTE") && (
+				<div className="w-[88%] mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
+					<div className="text-center">
+					ผลการพิจารณาของคณะกรรมการประจำสำนักวิชา / Institute Committee Decision
+					</div>
+
+					<div className="flex justify-center">
+					<div className="flex flex-row items-center m-6 justify-center">
+						<Label
+			className="font-normal">การประชุมครั้งที่ / Meeting No.</Label>
+						<InputForm
+						value={`${formData?.meetingNo}`}
+						label="Meeting No."
+						
+						/>
+					</div>
+
+					<div className="flex flex-row items-center m-6 justify-center">
+						<Label
+						className="font-normal">วันที่ / This Date/</Label>
+						
+						<InputForm
+						value={formData?.meetingDate ? new Date(formData?.meetingDate).toLocaleDateString() : ""}
+						label="Meeting Date"
+						/>
+					</div>
+					</div>
+					
+					<div className="flex item-center justify-center">
+          <div className="flex items-center">
+           <div className="w-[300px] flex flex-col items-left mb-6 justify-left mx-auto">
+							<Label className="font-normal">ผลการพิจารณาการสอบวิทยานพนธ์</Label>
+							<RadioGroup disabled className="space-y-1 mt-2">
+								<div>
+									<RadioGroupItem checked={formData?.resultExam === "excellent"} value="excellent" />
+									<Label className="ml-2 font-normal">ดีมาก</Label>
+								</div>
+								<div>
+									<RadioGroupItem checked={formData?.resultExam === "good"} value="good" />
+									<Label className="ml-2 font-normal">ผ่าน</Label>
+								</div>
+								<div>
+									<RadioGroupItem checked={formData?.resultExam === "fail"} value="fail" />
+									<Label className="ml-2 font-normal">ไม่ผ่าน</Label>
+								</div>
+							</RadioGroup>
+						</div>
+          </div>
+        </div>
+					<div className="w-full sm:1/3 flex flex-col items-center mb-6 justify-center">
+					<div className="text-center mb-2">
+						ประธานคณะกรรมการ / Head of Committee
+					</div>
+					<SignatureDialog
+						disable={!!formData?.headOfCommitteeSignUrl}
+						signUrl={formData?.headOfCommitteeSignUrl || ""}
+						isOpen={false}
+					/>
+					<InputForm
+						value={formData?.headOfCommitteeName || ""}
+						label="ลงชื่อประธานคณะกรรมการ / Head of Committee Name"
+						
+					/>
+					</div>
+
+      </div>
+    )}
+  </div>
+</div>
+
+
+				
+            </div>
+		</div>
 	);
 };
 

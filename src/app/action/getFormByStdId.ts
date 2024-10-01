@@ -7,6 +7,7 @@ import {
 	IThesisProgressForm,
 	IThesisExamAppointmentForm,
 	IExamForm,
+	IDelayThesisForm,
 } from "@/interface/form";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -368,3 +369,29 @@ export const get08FormByStdId = async (stdId: number) => {
 
 	return form08 as IExamForm[];
 }
+
+export const get09FormByStdId = async (stdId: number) => {
+	const session = await getServerSession(authOptions);
+
+	if (!session) return;
+
+	const form09 = await db.delayThesisForm.findMany({
+		where: {
+			studentID: Number(stdId),
+		},
+		include: {
+			student: {
+				include: {
+					prefix: true,
+					institute: true, // รวมข้อมูล institute ด้วย
+				},
+			},
+		},
+	});
+
+	if (!form09) return;
+
+	
+
+	return form09 as unknown as IDelayThesisForm[];
+};

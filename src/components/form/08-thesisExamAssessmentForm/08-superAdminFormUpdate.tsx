@@ -1,3 +1,4 @@
+"use client"
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
@@ -24,7 +25,6 @@ enum ResultExam {
   Pass = "pass",
   Fail = "fail"
 }
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
 const formSchema = z.object({
 	thesisNameTH: z.string(),
 	thesisNameEN: z.string(),
@@ -52,10 +52,15 @@ const formSchema = z.object({
 });
 
 
-const ThesisExamAssessmentFormSuperAdmin = ({ formId }: { formId: number })  => {
+const ThesisExamAssessmentFormSuperAdmin = ({
+	user,
+	formData,
+}: {
+  user: IUser
+	formData: IExamForm;
+}) => {
 	const router = useRouter();
 	const { toast } = useToast();
-  const { data: formData } = useSWR<IExamForm>(formId ? `/api/get08FormById/${formId}` : "", fetcher);
   
 	const form = useForm({
 		resolver: zodResolver(formSchema),

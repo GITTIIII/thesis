@@ -1,3 +1,4 @@
+"use client"
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { use, useEffect, useState } from "react";
@@ -46,11 +47,15 @@ async function getUser() {
 }
 const userPromise = getUser();
 
-const ThesisExamAssessmentFormUpdate = ({ formId }: { formId: number })  => {
+const ThesisExamAssessmentFormUpdate = ({
+	user,
+	formData,
+}: {
+  user: IUser
+	formData: IExamForm;
+}) => {
 	const router = useRouter();
 	const { toast } = useToast();
-    const user: IUser = use(userPromise);
-    const { data: formData } = useSWR<IExamForm>(formId ? `/api/get08FormById/${formId}` : "", fetcher);
   
 	const form = useForm({
         resolver: zodResolver(formSchema),

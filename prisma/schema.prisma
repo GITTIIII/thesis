@@ -445,15 +445,19 @@ model DelayThesisForm {
   id                   Int      @id @default(autoincrement())
   headCommitteeName    String
   startDate            DateTime
-  endDate              String
-  studentSignalUrl     Json
-  InstituteSignalUrl   Json?
-  instituteID          Int?
-  institute            User?  @relation(fields:[instituteID], references: [id], name:"institute")
-  approve              Boolean?
-  dayApprove           DateTime?
+  endDate              DateTime
+  studentSignUrl     String @db.LongText
+  thesisNameTH         String
+  thesisNameEN         String
   date                 DateTime
   publishmentName      String
+
+  instituteSignUrl   String? @db.LongText
+  instituteID          Int?
+  institute            User?  @relation(fields:[instituteID], references: [id], name:"institute")
+  approve              String?
+  dayApprove           DateTime?
+  timeApprove          Int?
   studentID            Int
   student              User     @relation(fields: [studentID], references: [id], name: "delayThesisFormOwner") 
   createdAt            DateTime @default(now())
