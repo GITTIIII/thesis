@@ -100,7 +100,7 @@ const OutlineFormUpdate = ({
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
-		
+
 		if (
 			(values.outlineCommitteeStatus == "" && values.outlineCommitteeID != 0) ||
 			(values.instituteCommitteeStatus == "" && values.instituteCommitteeID != 0)
@@ -258,7 +258,7 @@ const OutlineFormUpdate = ({
 						<h1 className="text-center mb-2 font-bold">ข้อมูลนักศึกษา</h1>
 						<InputForm
 							value={`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
-							label="ชื่อ-นามสกุล / Full Name"
+							label="ชื่อ-นามสกุล / Full name"
 						/>
 						<InputForm value={`${formData?.student.username} `} label="รหัสนักศึกษา / StudentID" />
 
@@ -278,7 +278,7 @@ const OutlineFormUpdate = ({
 
 						<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
 						<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${formData?.student.program?.programYear}`} label="ปีหลักสูตร / Program Year" />
+						<InputForm value={`${formData?.student.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />
 					</div>
 
 					{/* ฝั่งขวา */}
@@ -711,7 +711,7 @@ const OutlineFormUpdate = ({
 							isOpen={isOpen}
 							setIsOpen={setIsOpen}
 						>
-							ยืนยันเเล้วไม่สามารถเเก้ไขได้
+							กรุณาตรวจสอบข้อมูลอย่างละเอียดอีกครั้ง หลังจากการยืนยัน จะไม่สามารถแก้ไขข้อมูลนี้ได้
 						</ConfirmDialog>
 					</div>
 				) : null}

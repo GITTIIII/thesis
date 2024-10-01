@@ -19,19 +19,18 @@ const formSchema = z.object({
 	thesisNameTH: z.string(),
 	thesisNameEN: z.string().toUpperCase(),
 	studentID: z.number(),
-	publishmentName:z.string(),
-	date:z.date(),
-	studentSignUrl:z.string(),
-	startDate:z.date(),
-	endDate:z.date(),
-	headCommitteeName:z.string(),
+	publishmentName: z.string(),
+	date: z.date(),
+	studentSignUrl: z.string(),
+	startDate: z.date(),
+	endDate: z.date(),
+	headCommitteeName: z.string(),
 });
 
 async function getUser() {
 	const res = await fetch("/api/getCurrentUser");
 	return res.json();
 }
-
 
 const userPromise = getUser();
 
@@ -40,7 +39,7 @@ const DelayDisseminationThesisFormCreate = () => {
 	const user: IUser = use(userPromise);
 	const [openSign, setOpenSign] = useState(false);
 	const { toast } = useToast();
-	
+
 	const handleDrawingSign = (signUrl: string) => {
 		reset({
 			...form.getValues(),
@@ -55,16 +54,16 @@ const DelayDisseminationThesisFormCreate = () => {
 			thesisNameTH: "",
 			thesisNameEN: "",
 			studentID: 0,
-			publishmentName:"",
-			studentSignUrl:"",
-			headCommitteeName:"",
-			startDate:new Date(),
-			endDate:new Date()
+			publishmentName: "",
+			studentSignUrl: "",
+			headCommitteeName: "",
+			startDate: new Date(),
+			endDate: new Date(),
 		},
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		console.log("values:", values)
+		console.log("values:", values);
 		const url = qs.stringifyUrl({
 			url: `/api/09DelayDisseminationThesisForm`,
 		});
@@ -110,8 +109,6 @@ const DelayDisseminationThesisFormCreate = () => {
 		}
 	}, [user, reset]);
 
-	
-
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">
@@ -141,8 +138,7 @@ const DelayDisseminationThesisFormCreate = () => {
 						<InputForm value={`${user?.institute?.instituteNameTH}`} label="สำนักวิชา / Institute" />
 						<InputForm value={`${user?.program?.programNameTH}`} label="หลักสูตร / Program" />
 
-						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร / Program Year" />
-					
+						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />
 					</div>
 					<div className="border-l border-[#eeee]"></div>
 
@@ -167,7 +163,7 @@ const DelayDisseminationThesisFormCreate = () => {
 							/>
 						</div>
 						<div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
-						<div className="text-center mb-5">ชื่อวิทยานิพนธ์</div>
+							<div className="text-center mb-5">ชื่อวิทยานิพนธ์</div>
 							<FormField
 								control={form.control}
 								name="thesisNameTH"
@@ -176,7 +172,7 @@ const DelayDisseminationThesisFormCreate = () => {
 										<FormItem className="w-auto">
 											<FormLabel>ชื่อภาษาไทย / ThesisName(TH)</FormLabel>
 											<FormControl>
-												<Input className="text-sm p-2 w-[300px] m-auto  rounded-lg"{...field} />
+												<Input className="text-sm p-2 w-[300px] m-auto  rounded-lg" {...field} />
 											</FormControl>
 											<FormMessage />
 										</FormItem>
@@ -214,68 +210,70 @@ const DelayDisseminationThesisFormCreate = () => {
 								)}
 							/>
 							<div className="flex flex-row justify-center">
-							<FormField
-								control={form.control}
-								name="startDate"
-								render={({ field }) => (
-									<div className="flex flex-row ">
-										<FormItem className="w-auto">
-											<FormLabel>ตั้งแต่วันที่ / Starting Date</FormLabel>
-											<FormControl>
-												<div>
-													<DatePicker
-														onDateChange={field.onChange}
-														value={field.value ? new Date(field.value) : undefined}
-													/>
-												</div>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									</div>
-								)}
-							/>
-							<FormField
-								control={form.control}
-								name="endDate"
-								render={({ field }) => (
-									<div className="flex flex-row ">
-										<FormItem className="w-auto">
-											<FormLabel>จนถึงวันที่ / Until Date</FormLabel>
-											<FormControl>
-												<div>
-													<DatePicker
-														onDateChange={field.onChange}
-														value={field.value ? new Date(field.value) : undefined}
-													/>
-												</div>
-											</FormControl>
-											<FormMessage />
-										</FormItem>
-									</div>
-								)}
-							/>
+								<FormField
+									control={form.control}
+									name="startDate"
+									render={({ field }) => (
+										<div className="flex flex-row ">
+											<FormItem className="w-auto">
+												<FormLabel>ตั้งแต่วันที่ / Starting Date</FormLabel>
+												<FormControl>
+													<div>
+														<DatePicker
+															onDateChange={field.onChange}
+															value={field.value ? new Date(field.value) : undefined}
+														/>
+													</div>
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										</div>
+									)}
+								/>
+								<FormField
+									control={form.control}
+									name="endDate"
+									render={({ field }) => (
+										<div className="flex flex-row ">
+											<FormItem className="w-auto">
+												<FormLabel>จนถึงวันที่ / Until Date</FormLabel>
+												<FormControl>
+													<div>
+														<DatePicker
+															onDateChange={field.onChange}
+															value={field.value ? new Date(field.value) : undefined}
+														/>
+													</div>
+												</FormControl>
+												<FormMessage />
+											</FormItem>
+										</div>
+									)}
+								/>
+							</div>
 						</div>
-					</div>
-					<div className="flex item-center justify-center ">
-					<div className="w-3/4 flex flex-col item-center justify-center md:flex-row border-2 rounded-lg py-5 my-5 border-[#eeee] ">
-						{(user.role == "STUDENT") && (
-							<div className="w-full sm:1/3 flex flex-col items-center mb-6 justify-center">
-								{/* อาจารย์ที่ปรึกษา */}
-								<div className="text-center mb-2">
-									ลายเซ็นต์นักศึกษา / <br />
-									Student Signature
-								</div>
-								<SignatureDialog
+						<div className="flex item-center justify-center ">
+							<div className="w-3/4 flex flex-col item-center justify-center md:flex-row border-2 rounded-lg py-5 my-5 border-[#eeee] ">
+								{user.role == "STUDENT" && (
+									<div className="w-full sm:1/3 flex flex-col items-center mb-6 justify-center">
+										{/* อาจารย์ที่ปรึกษา */}
+										<div className="text-center mb-2">
+											ลายเซ็นต์นักศึกษา / <br />
+											Student Signature
+										</div>
+										<SignatureDialog
 											signUrl={form.getValues("studentSignUrl")}
 											onConfirm={handleDrawingSign}
 											isOpen={openSign}
-											setIsOpen={setOpenSign} disable={false}								/>
-								{/* <Label className="mb-2">{`${formData?.student?.advisor?.prefix?.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label> */}
+											setIsOpen={setOpenSign}
+											disable={false}
+										/>
+										{/* <Label className="mb-2">{`${formData?.student?.advisor?.prefix?.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label> */}
+									</div>
+								)}
 							</div>
-						)}
 						</div>
-						</div>
-					</div>				
+					</div>
 				</div>
 				<hr className="่่justify-center mx-auto w-3/4 my-5 border-t-2 border-[#eeee]" />
 

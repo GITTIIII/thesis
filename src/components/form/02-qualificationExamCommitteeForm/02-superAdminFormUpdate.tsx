@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -31,7 +31,7 @@ const formSchema = z.object({
 		.number()
 		.min(1, { message: "กรุณาระบุภาคเรียน / Trimester requierd" })
 		.max(3, { message: "กรุณาระบุเลขเทอมระหว่าง 1-3 / Trimester must be between 1-3" }),
-	academicYear: z.string().min(1, { message: "กรุณากรอกปีการศึกษา / Academic year requierd" }),
+	academicYear: z.string().min(1, { message: "กรุณากรอกปีการศึกษา (พ.ศ.) / Academic year (B.E.) requierd" }),
 	committeeName1: z.string().min(1, { message: "กรุณากรอก คำนำหน้า ชื่อ-นามสกุล กรรมการ / Please fill prefix & full name of committee" }),
 	committeeName2: z.string().min(1, { message: "กรุณากรอก คำนำหน้า ชื่อ-นามสกุล กรรมการ / Please fill prefix & full name of committee" }),
 	committeeName3: z.string().min(1, { message: "กรุณากรอก คำนำหน้า ชื่อ-นามสกุล กรรมการ / Please fill prefix & full name of committee" }),
@@ -239,7 +239,7 @@ export default function SuperAdminForm02Update({
 								<div className="flex flex-row items-center mb-6 justify-center">
 									<FormItem className="w-[300px]">
 										<FormLabel>
-											ปีการศึกษา / Academic year <span className="text-red-500">*</span>
+											ปีการศึกษา (พ.ศ.) / Academic year (B.E.) <span className="text-red-500">*</span>
 										</FormLabel>
 										<Input {...field} />
 										<FormMessage />
@@ -271,7 +271,7 @@ export default function SuperAdminForm02Update({
 						/>
 						<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
 						<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${formData?.student.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+						<InputForm value={`${formData?.student.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />
 					</div>
 
 					<div className="w-full ">

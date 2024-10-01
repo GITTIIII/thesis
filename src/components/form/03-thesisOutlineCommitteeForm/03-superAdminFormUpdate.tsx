@@ -26,7 +26,7 @@ const formSchema = z.object({
 		.number()
 		.min(1, { message: "กรุณาระบุภาคเรียน / Trimester required" })
 		.max(3, { message: "กรุณาระบุเลขเทอมระหว่าง 1-3 / Trimester must be between 1-3" }),
-	academicYear: z.number().min(1, { message: "กรุณากรอกปีการศึกษา / Academic year required" }),
+	academicYear: z.number().min(1, { message: "กรุณากรอกปีการศึกษา (พ.ศ.) / Academic year (B.E.) required" }),
 	committeeMembers: z
 		.array(z.object({ name: z.string().min(1, { message: "กรุณากรอกชื่อกรรมการ / Committee member required" }) }))
 		.min(5, { message: "กรุณาเพิ่มกรรมการอย่างน้อย 5 คน / At least 5 committee members required" }),
@@ -209,7 +209,7 @@ export default function SuperAdminForm03Update({
 						<h1 className="text-center font-semibold mb-2">รายละเอียดการสอบ</h1>
 						<InputForm value={`${formData?.times}`} label="สอบครั้งที่ / Exam. No." />
 						<InputForm value={`${formData?.trimester}`} label="ภาคเรียน / Trimester" />
-						<InputForm value={`${formData?.academicYear}`} label="ปีการศึกษา / Academic year" />
+						<InputForm value={`${formData?.academicYear}`} label="ปีการศึกษา (พ.ศ.) / Academic year (B.E.)" />
 						<InputForm
 							value={formData?.examDate ? new Date(formData?.examDate).toLocaleDateString("th") : ""}
 							label="วันที่สอบ / Date of the examination"
@@ -223,7 +223,7 @@ export default function SuperAdminForm03Update({
 						/>
 						<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
 						<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${formData?.student.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+						<InputForm value={`${formData?.student.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />
 					</div>
 
 					<div className="w-full ">
@@ -232,7 +232,9 @@ export default function SuperAdminForm03Update({
 							<CircleAlert className="mr-1" />
 							สามารถดูรายชื่อกรรมการที่ได้รับการรับรองเเล้ว
 							<Button type="button" variant="link" className="p-1 text-[#A67436]">
-								<Link href="/user/expertTable">คลิกที่นี่</Link>
+								<Link target="_blank" href="/user/expertTable">
+									คลิกที่นี่
+								</Link>
 							</Button>
 						</div>
 						{formData?.committeeMembers.map((member, index) => (

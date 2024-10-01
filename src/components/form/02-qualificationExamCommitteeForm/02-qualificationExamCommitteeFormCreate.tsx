@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
@@ -24,7 +24,7 @@ const formSchema = z.object({
 		.number()
 		.min(1, { message: "กรุณาระบุภาคเรียน / Trimester requierd" })
 		.max(3, { message: "กรุณาระบุเลขเทอมระหว่าง 1-3 / Trimester must be between 1-3" }),
-	academicYear: z.string().min(1, { message: "กรุณากรอกปีการศึกษา / Academic year requierd" }),
+	academicYear: z.string().min(1, { message: "กรุณากรอกปีการศึกษา (พ.ศ.) / Academic year (B.E.) requierd" }),
 	committeeName1: z.string().min(1, { message: "กรุณากรอก คำนำหน้า ชื่อ-นามสกุล กรรมการ / Please fill prefix & full name of committee" }),
 	committeeName2: z.string().min(1, { message: "กรุณากรอก คำนำหน้า ชื่อ-นามสกุล กรรมการ / Please fill prefix & full name of committee" }),
 	committeeName3: z.string().min(1, { message: "กรุณากรอก คำนำหน้า ชื่อ-นามสกุล กรรมการ / Please fill prefix & full name of committee" }),
@@ -153,7 +153,7 @@ const QualificationExamCommitteeFormCreate = ({ user }: { user: IUser }) => {
 								<div className="flex flex-row items-center mb-6 justify-center">
 									<FormItem className="w-[300px]">
 										<FormLabel>
-											ปีการศึกษา / Academic year <span className="text-red-500">*</span>
+											ปีการศึกษา (พ.ศ.) / Academic year (B.E.) <span className="text-red-500">*</span>
 										</FormLabel>
 										<Input {...field} />
 										<FormMessage />
@@ -181,7 +181,7 @@ const QualificationExamCommitteeFormCreate = ({ user }: { user: IUser }) => {
 						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Fullname" />
 						<InputForm value={`${user?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
 						<InputForm value={`${user?.program?.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />
 					</div>
 
 					<div className="w-full">
@@ -288,7 +288,7 @@ const QualificationExamCommitteeFormCreate = ({ user }: { user: IUser }) => {
 						isOpen={isOpen}
 						setIsOpen={setIsOpen}
 					>
-						ยืนยันเเล้วไม่สามารถเเก้ไขได้
+						กรุณาตรวจสอบข้อมูลอย่างละเอียดอีกครั้ง หลังจากการยืนยัน จะไม่สามารถแก้ไขข้อมูลนี้ได้
 					</ConfirmDialog>
 				</div>
 			</form>

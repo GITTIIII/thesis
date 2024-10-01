@@ -7,6 +7,7 @@ import signature from "@../../../public/asset/signature.png";
 import SignatureCanvas from "react-signature-canvas";
 import Image from "next/image";
 interface DialogProps {
+	userSignUrl?: string;
 	signUrl?: string;
 	onConfirm?: Function;
 	isOpen?: boolean;
@@ -41,7 +42,7 @@ export default function SignatureDialog(props: DialogProps) {
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
 			<DialogTrigger onClick={() => setIsOpen?.(!isOpen)} disabled={disable}>
-				<div className="w-60 my-4 h-max flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
+				<div className="w-60 my-4 h-36 flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
 					<Image
 						src={signUrl ? signUrl : signature}
 						width={100}

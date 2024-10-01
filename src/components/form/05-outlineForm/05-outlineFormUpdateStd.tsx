@@ -142,7 +142,7 @@ const OutlineFormUpdateStd = ({ formData, user }: { formData: IOutlineForm; user
 
 						<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
 						<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${formData?.student?.program?.programYear}`} label="ปีหลักสูตร / Program Year" />
+						<InputForm value={`${formData?.student?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />
 					</div>
 
 					{/* ฝั่งขวา */}
@@ -311,7 +311,7 @@ const OutlineFormUpdateStd = ({ formData, user }: { formData: IOutlineForm; user
 						isOpen={isOpen}
 						setIsOpen={setIsOpen}
 					>
-						ยืนยันเเล้วไม่สามารถเเก้ไขได้
+						กรุณาตรวจสอบข้อมูลอย่างละเอียดอีกครั้ง หลังจากการยืนยัน จะไม่สามารถแก้ไขข้อมูลนี้ได้
 					</ConfirmDialog>
 				</div>
 

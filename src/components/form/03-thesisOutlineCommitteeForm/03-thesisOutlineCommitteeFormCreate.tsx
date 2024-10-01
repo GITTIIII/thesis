@@ -26,7 +26,7 @@ const formSchema = z.object({
 		.number()
 		.min(1, { message: "กรุณาระบุภาคเรียน / Trimester required" })
 		.max(3, { message: "กรุณาระบุเลขเทอมระหว่าง 1-3 / Trimester must be between 1-3" }),
-	academicYear: z.string().min(1, { message: "กรุณากรอกปีการศึกษา / Academic year required" }),
+	academicYear: z.string().min(1, { message: "กรุณากรอกปีการศึกษา (พ.ศ.) / Academic year (B.E.) required" }),
 	committeeMembers: z
 		.array(
 			z.object({
@@ -185,7 +185,7 @@ const ThesisOutlineCommitteeFormCreate = ({ user }: { user: IUser }) => {
 								<div className="flex flex-row items-center mb-6 justify-center">
 									<FormItem className="w-[300px]">
 										<FormLabel>
-											ปีการศึกษา / Academic year <span className="text-red-500">*</span>
+											ปีการศึกษา (พ.ศ.) / Academic year (B.E.) <span className="text-red-500">*</span>
 										</FormLabel>
 										<Input value={field.value ? field.value : ""} onChange={(e) => field.onChange(e.target.value)} />
 										<FormMessage />
@@ -209,21 +209,21 @@ const ThesisOutlineCommitteeFormCreate = ({ user }: { user: IUser }) => {
 							)}
 						/>
 						<h1 className="text-center font-semibold mb-2">รายละเอียดนักศึกษา</h1>
-						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Full Name" />
+						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Full name" />
 						<InputForm value={`${user?.username}`} label="รหัสนักศึกษา / Student ID" />
 						<InputForm value={`${user?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
 						<InputForm value={`${user?.program?.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร / Program Year" />
+						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />
 						<InputForm
-							value={`${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`}
+							value={`${user?.advisor?.prefix?.prefixTH}${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษา / The Advisor"
 						/>
 						{user?.coAdvisedStudents &&
 							user.coAdvisedStudents.length > 0 &&
-							user.coAdvisedStudents.map((member: ICoAdvisorStudents, index: number) => (
+							user.coAdvisedStudents.map((coAdvisors: ICoAdvisorStudents, index: number) => (
 								<InputForm
 									key={index}
-									value={`${member.coAdvisor?.firstNameTH} ${member.coAdvisor?.lastNameTH}`}
+									value={`${coAdvisors.coAdvisor?.prefix?.prefixTH}${coAdvisors.coAdvisor?.firstNameTH} ${coAdvisors.coAdvisor?.lastNameTH}`}
 									label="อาจารย์ที่ปรึกษาร่วม / CoAdvisor"
 								/>
 							))}
@@ -236,7 +236,9 @@ const ThesisOutlineCommitteeFormCreate = ({ user }: { user: IUser }) => {
 								<CircleAlert className="mr-1" />
 								สามารถดูรายชื่อกรรมการที่ได้รับการรับรองเเล้ว
 								<Button variant="link" type="button" className="p-1 text-[#A67436]">
-									<Link href="/user/expertTable" target="_blank">คลิกที่นี่</Link>
+									<Link href="/user/expertTable" target="_blank">
+										คลิกที่นี่
+									</Link>
 								</Button>
 							</div>
 							<div>
@@ -302,7 +304,7 @@ const ThesisOutlineCommitteeFormCreate = ({ user }: { user: IUser }) => {
 						isOpen={isOpen}
 						setIsOpen={setIsOpen}
 					>
-						ยืนยันเเล้วไม่สามารถเเก้ไขได้
+						กรุณาตรวจสอบข้อมูลอย่างละเอียดอีกครั้ง หลังจากการยืนยัน จะไม่สามารถแก้ไขข้อมูลนี้ได้
 					</ConfirmDialog>
 				</div>
 			</form>

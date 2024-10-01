@@ -76,10 +76,10 @@ export default function SelectAndCreate({
 
 	return (
 		<div className="w-full flex">
-			<div className="w-max ml-auto flex flex-col sm:flex-row items-center justify-center">
+			<div className="w-full sm:w-max ml-auto flex flex-col sm:flex-row items-center justify-center">
 				{user && (
 					<Select onValueChange={handleSelectChange} value={selectedForm}>
-						<SelectTrigger className="w-max">
+						<SelectTrigger className="w-full sm:w-max">
 							<SelectValue placeholder={labels[selectedForm]} />
 						</SelectTrigger>
 						<SelectContent>

@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { DropdownMenuSeparator } from "../ui/dropdown-menu";
 
 interface DialogProps {
 	loading: boolean;
@@ -28,7 +29,7 @@ export function ConfirmDialog(props: DialogProps) {
 				</Button>
 			</DialogTrigger>
 			<DialogContent
-				className="sm:max-w-[425px]"
+				className="sm:max-w-[450px]"
 				onCloseAutoFocus={(event) => {
 					event.preventDefault();
 				}}
@@ -36,7 +37,8 @@ export function ConfirmDialog(props: DialogProps) {
 				<DialogHeader>
 					<DialogTitle>{title}</DialogTitle>
 				</DialogHeader>
-				<div className="grid gap-4 py-4">{children}</div>
+				<DropdownMenuSeparator/>
+				<div className="grid gap-4">{children}</div>
 				<DialogFooter>
 					<Button
 						type="reset"

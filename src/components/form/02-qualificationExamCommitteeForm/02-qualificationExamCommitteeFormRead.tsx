@@ -28,7 +28,7 @@ const QualificationExamCommitteeFormRead = ({ formData }: { formData: IQualifica
 					<h1 className="text-center font-semibold mb-2">รายละเอียดการสอบ</h1>
 					<InputForm value={`${formData?.times}`} label="สอบครั้งที่ / Exam. No." />
 					<InputForm value={`${formData?.trimester}`} label="ภาคเรียน / Trimester" />
-					<InputForm value={`${formData?.academicYear}`} label="ปีการศึกษา / Academic year" />
+					<InputForm value={`${formData?.academicYear}`} label="ปีการศึกษา (พ.ศ.) / Academic year (B.E.)" />
 					<InputForm
 						value={`${formData?.examDay ? new Date(formData?.examDay).toLocaleDateString("th") : ""}`}
 						label="วันที่สอบ / Date of the examination"
@@ -39,7 +39,7 @@ const QualificationExamCommitteeFormRead = ({ formData }: { formData: IQualifica
 					<InputForm value={`${formData?.student.firstNameTH} ${formData?.student.lastNameTH}`} label="ชื่อ-นามสกุล / Fullname" />
 					<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
 					<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
-					<InputForm value={`${formData?.student.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+					<InputForm value={`${formData?.student.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />
 				</div>
 
 				<div className="w-full ">

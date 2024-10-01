@@ -28,7 +28,7 @@ const ThesisOutlineCommitteeFormRead = ({ formData }: { formData: IOutlineCommit
 					<h1 className="text-center font-semibold mb-2">รายละเอียดการสอบ</h1>
 					<InputForm value={`${formData?.times}`} label="สอบครั้งที่ / Exam. No." />
 					<InputForm value={`${formData?.trimester}`} label="ภาคเรียน / Trimester" />
-					<InputForm value={`${formData?.academicYear}`} label="ปีการศึกษา / Academic year" />
+					<InputForm value={`${formData?.academicYear}`} label="ปีการศึกษา (พ.ศ.) / Academic year (B.E.)" />
 					<InputForm
 						value={`${formData?.examDate ? new Date(formData?.examDate).toLocaleDateString("th") : ""}`}
 						label="วันที่สอบ / Date of the examination"
@@ -39,7 +39,7 @@ const ThesisOutlineCommitteeFormRead = ({ formData }: { formData: IOutlineCommit
 					<InputForm value={`${formData?.student.firstNameTH} ${formData?.student.lastNameTH}`} label="ชื่อ-นามสกุล / Fullname" />
 					<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
 					<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
-					<InputForm value={`${formData?.student.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+					<InputForm value={`${formData?.student.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />
 				</div>
 
 				<div className="w-full ">
@@ -56,8 +56,8 @@ const ThesisOutlineCommitteeFormRead = ({ formData }: { formData: IOutlineCommit
 					))}
 				</div>
 			</div>
-			<div className="w-full h-max flex justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
-				<div className="w-full h-full flex flex-col justify-center items-center">
+			<div className="w-full h-auto gap-4 flex flex-col md:flex-row justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
+				<div className="w-full h-64 flex flex-col items-center">
 					<h1 className="font-bold">ลายเซ็นอาจารย์ที่ปรึกษา</h1>
 					<SignatureDialog signUrl={formData?.advisorSignUrl ? formData?.advisorSignUrl : ""} disable={true} />
 					<Label className="mb-2">
@@ -67,10 +67,10 @@ const ThesisOutlineCommitteeFormRead = ({ formData }: { formData: IOutlineCommit
 					</Label>
 				</div>
 
-				<div className="w-full h-full flex flex-col justify-center items-center">
+				<div className="w-full h-64 flex flex-col items-center">
 					<h1 className="font-bold">ลายเซ็นหัวหน้าสาขาวิชา</h1>
 					<SignatureDialog signUrl={formData?.headSchoolSignUrl ? formData?.headSchoolSignUrl : ""} disable={true} />
-					<Label className="">
+					<Label className="mb-2">
 						{formData?.headSchool
 							? `${formData?.headSchool?.prefix?.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`
 							: ""}
@@ -80,7 +80,7 @@ const ThesisOutlineCommitteeFormRead = ({ formData }: { formData: IOutlineCommit
 					}`}</Label>
 				</div>
 
-				<div className="w-full h-full flex flex-col justify-center items-center">
+				<div className="w-full h-64 flex flex-col items-center">
 					<h1 className="font-bold">ลายเซ็นหัวหน้าสำนักวิชา</h1>
 					<SignatureDialog signUrl={formData?.instituteComSignUrl ? formData?.instituteComSignUrl : ""} disable={true} />
 					{/* <Label className="">

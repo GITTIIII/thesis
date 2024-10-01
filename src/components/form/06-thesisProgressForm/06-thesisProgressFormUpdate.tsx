@@ -44,11 +44,13 @@ const ThesisProgressFormUpdate = ({
 	user,
 	approvedForm,
 	headSchool,
+	last06Form,
 }: {
 	formData: IThesisProgressForm;
 	user: IUser;
 	approvedForm: IOutlineForm;
 	headSchool: IUser[];
+	last06Form?: IThesisProgressForm;
 }) => {
 	const router = useRouter();
 	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
@@ -118,7 +120,7 @@ const ThesisProgressFormUpdate = ({
 				description: "บันทึกสำเร็จแล้ว",
 				variant: "default",
 			});
-			if (values.headSchoolID && formData.times === 4) {
+			if (values.headSchoolID && !last06Form) {
 				updateStdFormState(formData.studentID);
 			}
 			setTimeout(() => {
@@ -178,7 +180,7 @@ const ThesisProgressFormUpdate = ({
 						/>
 						<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
 						<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${formData?.student?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+						<InputForm value={`${formData?.student?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />
 
 						<div className="flex flex-col items-center mb-6 justify-center">
 							<FormLabel className="font-normal">ระดับการศึกษา / Education Level</FormLabel>
@@ -518,7 +520,7 @@ const ThesisProgressFormUpdate = ({
 							isOpen={isOpen}
 							setIsOpen={setIsOpen}
 						>
-							ยืนยันเเล้วไม่สามารถเเก้ไขได้
+							กรุณาตรวจสอบข้อมูลอย่างละเอียดอีกครั้ง หลังจากการยืนยัน จะไม่สามารถแก้ไขข้อมูลนี้ได้
 						</ConfirmDialog>
 					</div>
 				) : null}

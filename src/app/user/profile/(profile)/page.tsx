@@ -137,7 +137,7 @@ export default async function Profile() {
 									</div>
 								</div>
 								<div>
-									<label>{`ทุนอื่นๆ`}</label>
+									<label>{`ทุนอื่น ๆ`}</label>
 									<div className="">
 										<UserCertificate canUpload={true} user={user} certificateType="4" />
 									</div>

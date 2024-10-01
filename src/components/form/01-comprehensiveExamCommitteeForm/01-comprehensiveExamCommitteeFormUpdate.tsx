@@ -22,7 +22,6 @@ import qs from "query-string";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 import { updateStdFormState } from "../../../app/action/updateStdFormState";
 
-
 const formSchema = z.object({
 	id: z.number(),
 	headSchoolID: z.number(),
@@ -84,7 +83,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({
 				description: "บันทึกสำเร็จแล้ว",
 				variant: "default",
 			});
-			await updateStdFormState(formData.studentID)
+			await updateStdFormState(formData.studentID);
 			setTimeout(() => {
 				form.reset();
 				router.refresh();
@@ -137,7 +136,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({
 						<h1 className="text-center font-semibold mb-2">รายละเอียดการสอบ</h1>
 						<InputForm value={`${formData?.times}`} label="สอบครั้งที่ / Exam. No." />
 						<InputForm value={`${formData?.trimester}`} label="ภาคเรียน / Trimester" />
-						<InputForm value={`${formData?.academicYear}`} label="ปีการศึกษา / Academic year" />
+						<InputForm value={`${formData?.academicYear}`} label="ปีการศึกษา (พ.ศ.) / Academic year (B.E.)" />
 						<InputForm
 							value={formData?.examDay ? new Date(formData?.examDay).toLocaleDateString("th") : ""}
 							label="วันที่สอบ / Date of the examination"
@@ -151,7 +150,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({
 						/>
 						<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
 						<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${formData?.student.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+						<InputForm value={`${formData?.student.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />
 					</div>
 
 					<div className="w-full">
@@ -275,7 +274,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({
 						isOpen={isOpen}
 						setIsOpen={setIsOpen}
 					>
-						ยืนยันเเล้วไม่สามารถเเก้ไขได้
+						กรุณาตรวจสอบข้อมูลอย่างละเอียดอีกครั้ง หลังจากการยืนยัน จะไม่สามารถแก้ไขข้อมูลนี้ได้
 					</ConfirmDialog>
 				</div>
 			</form>

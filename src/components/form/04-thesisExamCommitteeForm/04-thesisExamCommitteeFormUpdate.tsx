@@ -193,7 +193,7 @@ const ExameCommitteeFormUpdate = ({ formData, user, headSchool }: { formData: IE
 						<h1 className="text-center font-semibold mb-2">รายละเอียดการสอบ</h1>
 						<InputForm value={`${formData?.times}`} label="สอบครั้งที่ / Exam. No." />
 						<InputForm value={`${formData?.trimester}`} label="ภาคเรียน / Trimester" />
-						<InputForm value={`${formData?.academicYear}`} label="ปีการศึกษา / Academic year" />
+						<InputForm value={`${formData?.academicYear}`} label="ปีการศึกษา (พ.ศ.) / Academic year (B.E.)" />
 						<InputForm
 							value={formData?.examDate ? new Date(formData?.examDate).toLocaleDateString("th") : ""}
 							label="วันที่สอบ / Date of the examination"
@@ -207,7 +207,7 @@ const ExameCommitteeFormUpdate = ({ formData, user, headSchool }: { formData: IE
 						/>
 						<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
 						<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${formData?.student.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+						<InputForm value={`${formData?.student.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />
 					</div>
 
 					{/* ฝั่งขวา */}
@@ -219,7 +219,9 @@ const ExameCommitteeFormUpdate = ({ formData, user, headSchool }: { formData: IE
 							<CircleAlert className="mr-1" />
 							สามารถดูรายชื่อกรรมการที่ได้รับการรับรองเเล้ว
 							<Button type="button" variant="link" className="p-1 text-[#A67436]">
-								<Link href="/user/expertTable">คลิกที่นี่</Link>
+								<Link target="_blank" href="/user/expertTable">
+									คลิกที่นี่
+								</Link>
 							</Button>
 						</div>
 						{formData?.committeeMembers.map((member, index) => (
@@ -228,12 +230,12 @@ const ExameCommitteeFormUpdate = ({ formData, user, headSchool }: { formData: IE
 					</div>
 				</div>
 				<div className="flex item-center justify-center ">
-					<div className="w-full flex flex-col item-center justify-center md:flex-row border-2 rounded-lg py-5 my-5 border-[#eeee] ">
+					<div className="w-full flex flex-col item-center justify-center md:flex-row rounded-lg py-5 my-5 ">
 						{(formData?.advisorSignUrl ||
 							user.role == "SUPER_ADMIN" ||
 							user.position == "ADVISOR" ||
 							user.position == "HEAD_OF_SCHOOL") && (
-							<div className="w-full sm:1/3 flex flex-col items-center mb-6 justify-center">
+							<div className="w-full sm:1/3 flex flex-col items-center mb-6 ">
 								{/* อาจารย์ที่ปรึกษา */}
 								<div className="text-center mb-2">
 									อาจารย์ที่ปรึกษา / <br />
@@ -265,7 +267,7 @@ const ExameCommitteeFormUpdate = ({ formData, user, headSchool }: { formData: IE
 									setIsOpen={setOpenHeadSchoolDialog}
 								/>
 								{formData?.headSchoolID ? (
-									<Label className="mb-2">{`${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`}</Label>
+									<Label className="mb-2">{`${formData?.headSchool?.prefix?.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`}</Label>
 								) : (
 									<FormField
 										control={form.control}
@@ -288,6 +290,9 @@ const ExameCommitteeFormUpdate = ({ formData, user, headSchool }: { formData: IE
 															>
 																{field.value
 																	? `${
+																			headSchool?.find((headSchool) => headSchool.id === field.value)
+																				?.prefix?.prefixTH
+																	  }${
 																			headSchool?.find((headSchool) => headSchool.id === field.value)
 																				?.firstNameTH
 																	  } ${
@@ -318,7 +323,7 @@ const ExameCommitteeFormUpdate = ({ formData, user, headSchool }: { formData: IE
 																				field.value === headSchool.id ? "opacity-100" : "opacity-0"
 																			)}
 																		/>
-																		{`${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
+																		{`${headSchool.prefix?.prefixTH}${headSchool.firstNameTH} ${headSchool.lastNameTH}`}
 																	</CommandItem>
 																))}
 															</CommandList>
@@ -484,7 +489,7 @@ const ExameCommitteeFormUpdate = ({ formData, user, headSchool }: { formData: IE
 						isOpen={isOpen}
 						setIsOpen={setIsOpen}
 					>
-						ยืนยันเเล้วไม่สามารถเเก้ไขได้
+						กรุณาตรวจสอบข้อมูลอย่างละเอียดอีกครั้ง หลังจากการยืนยัน จะไม่สามารถแก้ไขข้อมูลนี้ได้
 					</ConfirmDialog>
 				</div>
 			</form>

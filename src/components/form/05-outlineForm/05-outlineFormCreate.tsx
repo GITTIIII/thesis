@@ -22,6 +22,7 @@ import axios from "axios";
 import qs from "query-string";
 import InputForm from "../../inputForm/inputForm";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
+import { ICoAdvisorStudents } from "@/interface/coAdvisorStudents";
 
 const defaultProcessPlans: IProcessPlan[] = [
 	{
@@ -106,7 +107,7 @@ const formSchema = z.object({
 	studentID: z.number(),
 });
 
-const OutlineFormCreate = ({user}:{user:IUser}) => {
+const OutlineFormCreate = ({ user }: { user: IUser }) => {
 	const router = useRouter();
 	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
 	const [loading, setLoading] = useState(false);
@@ -211,7 +212,7 @@ const OutlineFormCreate = ({user}:{user:IUser}) => {
 					{/* ฝั่งซ้าย */}
 					<div className="w-full">
 						<h1 className="mb-2 font-bold text-center">ข้อมูลนักศึกษา</h1>
-						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Full Name" />
+						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Full name" />
 						<InputForm value={`${user?.username} `} label="รหัสนักศึกษา / Student ID" />
 
 						<div className="flex flex-col items-center mb-6 justify-center">
@@ -230,7 +231,7 @@ const OutlineFormCreate = ({user}:{user:IUser}) => {
 
 						<InputForm value={`${user?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
 						<InputForm value={`${user?.program?.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร / Program Year" />
+						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />
 					</div>
 
 					{/* ฝั่งขวา */}
@@ -243,7 +244,7 @@ const OutlineFormCreate = ({user}:{user:IUser}) => {
 								<div className="flex flex-row items-center mb-6 justify-center">
 									<FormItem className="w-full sm:w-auto">
 										<FormLabel>
-											ชื่อภาษาไทย / ThesisName(TH) <span className="text-red-500">*</span>
+											ชื่อภาษาไทย / Thesis name (TH) <span className="text-red-500">*</span>
 										</FormLabel>
 										<FormControl>
 											<Input className="text-sm p-2 w-full sm:w-[300px] m-auto  rounded-lg" {...field} />
@@ -260,7 +261,7 @@ const OutlineFormCreate = ({user}:{user:IUser}) => {
 								<div className="flex flex-row items-center mb-6 justify-center">
 									<FormItem className="w-full sm:w-auto">
 										<FormLabel>
-											ชื่อภาษาอังกฤษ / ThesisName(EN) <span className="text-red-500">*</span>
+											ชื่อภาษาอังกฤษ / Thesis name (EN) <span className="text-red-500">*</span>
 										</FormLabel>
 										<FormControl>
 											<Input className="text-sm p-2 w-full sm:w-[300px] m-auto  rounded-lg" {...field} />
@@ -271,13 +272,18 @@ const OutlineFormCreate = ({user}:{user:IUser}) => {
 							)}
 						/>
 						<InputForm
-							value={`${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`}
+							value={`${user?.advisor?.prefix?.prefixTH}${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษา / Advisor"
 						/>
-						<InputForm
-							value={`${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`}
-							label="อาจารย์ที่ปรึกษาร่วม / Co-advisor"
-						/>
+						{user?.coAdvisedStudents &&
+							user.coAdvisedStudents.length > 0 &&
+							user.coAdvisedStudents.map((coAdvisors: ICoAdvisorStudents, index: number) => (
+								<InputForm
+									key={index}
+									value={`${coAdvisors.coAdvisor?.prefix?.prefixTH}${coAdvisors.coAdvisor?.firstNameTH} ${coAdvisors.coAdvisor?.lastNameTH}`}
+									label="อาจารย์ที่ปรึกษาร่วม / CoAdvisor"
+								/>
+							))}
 						<div className="flex flex-col items-center mb-6 justify-center">
 							<FormLabel>ลายเซ็น / Signature</FormLabel>
 							<SignatureDialog
@@ -396,7 +402,7 @@ const OutlineFormCreate = ({user}:{user:IUser}) => {
 						isOpen={isOpen}
 						setIsOpen={setIsOpen}
 					>
-						ยืนยันเเล้วไม่สามารถเเก้ไขได้
+						กรุณาตรวจสอบข้อมูลอย่างละเอียดอีกครั้ง หลังจากการยืนยัน จะไม่สามารถแก้ไขข้อมูลนี้ได้
 					</ConfirmDialog>
 				</div>
 			</form>

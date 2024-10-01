@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormEvent, use, useEffect, useState } from "react";
@@ -24,11 +24,11 @@ const formSchema = z.object({
 	thesisNameTH: z.string(),
 	thesisNameEN: z.string(),
 	studentID: z.number(),
-	examinationDate:z.date(),
-	disClosed:z.boolean(),
-	date:z.date(),
-	newNameTH: z.string().optional(), 
-  	newNameEN: z.string().optional(), 
+	examinationDate: z.date(),
+	disClosed: z.boolean(),
+	date: z.date(),
+	newNameTH: z.string().optional(),
+	newNameEN: z.string().optional(),
 	reviseTitle: z.boolean(),
 });
 
@@ -58,17 +58,17 @@ const ThesisExamAssessmentFormCreate = () => {
 			thesisNameEN: "",
 			studentID: 0,
 			examinationDate: new Date(),
-			disClosed:true,
-			newNameTH:"",
-			newNameEN:"",
+			disClosed: true,
+			newNameTH: "",
+			newNameEN: "",
 			reviseTitle: false,
 		},
 	});
-	const disclosed = form.watch('disClosed');
+	const disclosed = form.watch("disClosed");
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		console.log("values:", values)
-		if (values.disClosed===true && (values.newNameEN === undefined || values.newNameTH === undefined)) {
+		console.log("values:", values);
+		if (values.disClosed === true && (values.newNameEN === undefined || values.newNameTH === undefined)) {
 			toast({
 				title: "Error",
 				description: "กรุณากรอกชื่อวิท",
@@ -121,14 +121,13 @@ const ThesisExamAssessmentFormCreate = () => {
 		}
 	}, [user, reset]);
 
-	
-	const [isChecked, setIsChecked] = useState(false)
+	const [isChecked, setIsChecked] = useState(false);
 
-  	const checkHandler = (checked: boolean) => {
-    	setIsChecked(!isChecked)
-		form.setValue('reviseTitle', checked)
-		console.log("check:",isChecked)
-  	}
+	const checkHandler = (checked: boolean) => {
+		setIsChecked(!isChecked);
+		form.setValue("reviseTitle", checked);
+		console.log("check:", isChecked);
+	};
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">
@@ -158,7 +157,7 @@ const ThesisExamAssessmentFormCreate = () => {
 						<InputForm value={`${user?.institute?.instituteNameTH}`} label="สำนักวิชา / Institute" />
 						<InputForm value={`${user?.program?.programNameTH}`} label="หลักสูตร / Program" />
 
-						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร / Program Year" />
+						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />
 					</div>
 					<div className="border-l border-[#eeee]"></div>
 
@@ -198,20 +197,20 @@ const ThesisExamAssessmentFormCreate = () => {
 							/>
 							<RadioGroup
 								className="space-y-1 mt-2 justify-center"
-								value={disclosed ? 'disclosed' : 'nondisclosure'}
-								onValueChange={(value) => form.setValue('disClosed', value === 'disclosed')}
-								>
+								value={disclosed ? "disclosed" : "nondisclosure"}
+								onValueChange={(value) => form.setValue("disClosed", value === "disclosed")}
+							>
 								<div className="w-[300px]">
-									<RadioGroupItem value="disclosed" {...form.register('disClosed')} />
+									<RadioGroupItem value="disclosed" {...form.register("disClosed")} />
 									<FormLabel className="ml-2 text-sm">
-									วิทยานิพนธ์เผยแพร่ได้ / <br /> This Thesis can be disclosed.
+										วิทยานิพนธ์เผยแพร่ได้ / <br /> This Thesis can be disclosed.
 									</FormLabel>
 								</div>
 								<div>
-									<RadioGroupItem value="nondisclosure" {...form.register('disClosed')} />
+									<RadioGroupItem value="nondisclosure" {...form.register("disClosed")} />
 									<FormLabel className="ml-2 text-sm mb-6">
-									วิทยานิพนธ์ปกปิด (โปรดกรอก ทบ.24) / <br /> This Thesis is subject to nondisclosure <br />
-									(Please attach form No.24).
+										วิทยานิพนธ์ปกปิด (โปรดกรอก ทบ.24) / <br /> This Thesis is subject to nondisclosure <br />
+										(Please attach form No.24).
 									</FormLabel>
 								</div>
 							</RadioGroup>
@@ -271,22 +270,18 @@ const ThesisExamAssessmentFormCreate = () => {
 									<FormLabel className="ml-2 font-normal">ไม่ผ่าน / Fail</FormLabel>
 								</div>
 								</RadioGroup> */}
-								<div>
-									<div className="items-top flex space-x-2 mt-2 justify-center item-center">
-									<Checkbox 
-										value="ReviseTile" 
-										checked={form.watch('reviseTitle')} 
-										onCheckedChange={checkHandler} 
-										/>
-										<div className="grid gap-1.5 leading-none">
-											<FormLabel className="ml-2 font-normal mb-6">
-												ปรับเปลี่ยนชื่อวิทยานิพนธ์ / <br />
-												if the thesis title requires revision, <br />
-												provide both revised Thai and English titles.
-											</FormLabel>
-										</div>
-										</div>
+							<div>
+								<div className="items-top flex space-x-2 mt-2 justify-center item-center">
+									<Checkbox value="ReviseTile" checked={form.watch("reviseTitle")} onCheckedChange={checkHandler} />
+									<div className="grid gap-1.5 leading-none">
+										<FormLabel className="ml-2 font-normal mb-6">
+											ปรับเปลี่ยนชื่อวิทยานิพนธ์ / <br />
+											if the thesis title requires revision, <br />
+											provide both revised Thai and English titles.
+										</FormLabel>
 									</div>
+								</div>
+							</div>
 							<FormField
 								control={form.control}
 								name="newNameTH"

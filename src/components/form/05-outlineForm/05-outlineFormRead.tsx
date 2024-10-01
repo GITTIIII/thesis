@@ -52,7 +52,7 @@ const OutlineFormRead = ({ formData }: { formData: IOutlineForm }) => {
 
 						<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
 						<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${formData?.student?.program?.programYear}`} label="ปีหลักสูตร / Program Year" />
+						<InputForm value={`${formData?.student?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />
 					</div>
 
 					{/* ฝั่งขวา */}

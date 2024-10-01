@@ -63,14 +63,14 @@ export default async function StudentTablePage({ searchParams }: { searchParams:
 
 	return (
 		<>
-			<div className="w-full h-full bg-transparent py-12 px-2 lg:px-28">
+			<div className="w-full h-full bg-transparent py-12 px-2 xl:px-28">
 				{user?.role == "STUDENT" && (
 					<div className="w-full h-max p-4 flex justify-center items-center">
 						<Stepper step={user?.formState ?? 0} />
 					</div>
 				)}
 				<div className="h-max w-full flex items-center text-2xl p-2">
-					<Image src={studentFormPage} width={100} height={100} alt="documentation" />
+					<Image src={studentFormPage} width={80} height={80} alt="documentation" />
 					<label className="ml-5 bg-[#FFF4EF] px-4 text-[#F26522] border-2 border-[#F26522] rounded-lg text-xl">
 						{labels[selectedForm]}
 					</label>

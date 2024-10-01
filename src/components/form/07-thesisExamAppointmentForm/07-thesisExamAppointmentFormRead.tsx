@@ -40,7 +40,7 @@ const ThesisProgressFormRead = ({
 				{/* ฝั่งซ้าย */}
 				<div className="w-full">
 					<InputForm value={`${formData?.trimester} `} label="ภาคเรียน / Trimester" />
-					<InputForm value={`${formData?.academicYear}`} label="ปีการศึกษา / Academic year" />
+					<InputForm value={`${formData?.academicYear}`} label="ปีการศึกษา (พ.ศ.) / Academic year (B.E.)" />
 					<h1 className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</h1>
 					<InputForm value={`${formData?.gpa}`} label="คะเเนนสะสมเฉลี่ย / GPA" />
 					<InputForm value={`${formData?.credits}`} label="หน่วยกิต / Credits" />
@@ -52,7 +52,7 @@ const ThesisProgressFormRead = ({
 					/>
 					<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
 					<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
-					<InputForm value={`${formData?.student?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+					<InputForm value={`${formData?.student?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />
 
 					<div className="flex flex-col items-center mb-6 justify-center">
 						<Label className="font-normal">ระดับการศึกษา / Education Level</Label>
@@ -157,7 +157,7 @@ const ThesisProgressFormRead = ({
 					<div className="flex flex-row items-center space-x-3 space-y-0 mb-2 rounded-md border p-4 shadow">
 						<Checkbox disabled checked={formData?.hasOtherCertificate} />
 
-						<Label>{`ทุนอื่นๆ`}</Label>
+						<Label>{`ทุนอื่น ๆ`}</Label>
 					</div>
 
 					<UserCertificate canUpload={false} user={formData?.student} certificateType="4" />

@@ -203,7 +203,7 @@ const ThesisProgressFormUpdate = ({
 					{/* ฝั่งซ้าย */}
 					<div className="w-full">
 						<InputForm value={`${formData?.trimester} `} label="ภาคเรียน / Trimester" />
-						<InputForm value={`${formData?.academicYear}`} label="ปีการศึกษา / Academic year" />
+						<InputForm value={`${formData?.academicYear}`} label="ปีการศึกษา (พ.ศ.) / Academic year (B.E.)" />
 						<h1 className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</h1>
 						<InputForm value={`${formData?.gpa}`} label="คะเเนนสะสมเฉลี่ย / GPA" />
 						<InputForm value={`${formData?.credits}`} label="หน่วยกิต / Credits" />
@@ -215,7 +215,7 @@ const ThesisProgressFormUpdate = ({
 						/>
 						<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
 						<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${formData?.student?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+						<InputForm value={`${formData?.student?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />
 
 						<div className="flex flex-col items-center mb-6 justify-center">
 							<Label className="font-normal">ระดับการศึกษา / Education Level</Label>
@@ -367,7 +367,7 @@ const ThesisProgressFormUpdate = ({
 											onCheckedChange={field.onChange}
 										/>
 									</FormControl>
-									<FormLabel>{`ทุนอื่นๆ`}</FormLabel>
+									<FormLabel>{`ทุนอื่น ๆ`}</FormLabel>
 								</FormItem>
 							)}
 						/>
@@ -682,7 +682,7 @@ const ThesisProgressFormUpdate = ({
 							isOpen={isOpen}
 							setIsOpen={setIsOpen}
 						>
-							ยืนยันเเล้วไม่สามารถเเก้ไขได้
+							กรุณาตรวจสอบข้อมูลอย่างละเอียดอีกครั้ง หลังจากการยืนยัน จะไม่สามารถแก้ไขข้อมูลนี้ได้
 						</ConfirmDialog>
 					</div>
 				) : null}

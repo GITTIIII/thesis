@@ -5,18 +5,23 @@ import { get06FormById } from "@/app/action/getFormById";
 import { getHeadSchool } from "@/app/action/getHeadSchool";
 import { currentUser } from "@/app/action/current-user";
 import { get05ApprovedFormByStdId } from "@/app/action/get05ApprovedFormByStdId";
+import { getLast06FormByStdId } from "@/app/action/getLast06FormByStdId";
 
 export default async function ThesisProgressFormUpdatePage({ params }: { params: { formId: number } }) {
 	const formId = params.formId;
 	const formData = await get06FormById(formId);
 	const headSchool = await getHeadSchool();
 	const user = await currentUser();
-	if (!formData) {
+	if (!user || !headSchool) {
+		return <div>ไม่พบข้อมูล</div>;
+	}
+	const last06Form = await getLast06FormByStdId(user.id);
+	if (!formData || !last06Form) {
 		return <div>ไม่พบข้อมูล</div>;
 	}
 	const approvedForm = await get05ApprovedFormByStdId(formData?.studentID);
 
-	if (!approvedForm || !headSchool || !user) {
+	if (!approvedForm) {
 		return <div>ไม่พบข้อมูล</div>;
 	}
 	return (
@@ -30,7 +35,7 @@ export default async function ThesisProgressFormUpdatePage({ params }: { params:
 				</div>
 				<div className="h-full w-full flex items-center bg-[#EEEEEE] p-2 md:p-8 rounded-md">
 					<div className="w-full h-full">
-						<ThesisProgressFormUpdate formData={formData} user={user} approvedForm={approvedForm} headSchool={headSchool} />
+						<ThesisProgressFormUpdate formData={formData} user={user} approvedForm={approvedForm} headSchool={headSchool} last06Form={last06Form} />
 					</div>
 				</div>
 			</div>

@@ -27,7 +27,7 @@ const formSchema = z.object({
 		.number()
 		.min(1, { message: "กรุณาระบุภาคเรียน / Trimester requierd" })
 		.max(3, { message: "กรุณาระบุเลขเทอมระหว่าง 1-3 / Trimester must be between 1-3" }),
-	academicYear: z.string().min(1, { message: "กรุณากรอกปีการศึกษา / Academic year requierd" }),
+	academicYear: z.string().min(1, { message: "กรุณากรอกปีการศึกษา (พ.ศ.) / Academic year (B.E.) requierd" }),
 	gpa: z.string().min(1, { message: "กรุณากรอกคะแนนเฉลี่ยสะสม / GPA requierd" }),
 	credits: z.number().min(1, { message: "กรุณากรอกหน่วยกิต / Credits requierd" }),
 	date: z.date(),
@@ -149,7 +149,7 @@ const ThesisExamAppointmentFormCreate = ({ user, approvedForm }: { user: IUser; 
 								<div className="flex flex-row items-center mb-6 justify-center">
 									<FormItem className="w-[300px]">
 										<FormLabel>
-											ปีการศึกษา / Academic year <span className="text-red-500">*</span>
+											ปีการศึกษา (พ.ศ.) / Academic year (B.E.) <span className="text-red-500">*</span>
 										</FormLabel>
 										<Input {...field} />
 										<FormMessage />
@@ -211,7 +211,7 @@ const ThesisExamAppointmentFormCreate = ({ user, approvedForm }: { user: IUser; 
 						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Fullname" />
 						<InputForm value={`${user?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
 						<InputForm value={`${user?.program?.programNameTH}`} label="หลักสูตร / Program" />
-						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program Year (B.E.)" />
+						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />
 
 						<div className="flex flex-col items-center mb-6 justify-center">
 							<FormLabel className="font-normal">ระดับการศึกษา / Education Level</FormLabel>
@@ -290,7 +290,7 @@ const ThesisExamAppointmentFormCreate = ({ user, approvedForm }: { user: IUser; 
 						isOpen={isOpen}
 						setIsOpen={setIsOpen}
 					>
-						ยืนยันเเล้วไม่สามารถเเก้ไขได้
+						กรุณาตรวจสอบข้อมูลอย่างละเอียดอีกครั้ง หลังจากการยืนยัน จะไม่สามารถแก้ไขข้อมูลนี้ได้
 					</ConfirmDialog>
 				</div>
 				<div className="w-1/2 h-full mx-auto bg-white p-4 flex flex-col gap-4">
@@ -334,7 +334,7 @@ const ThesisExamAppointmentFormCreate = ({ user, approvedForm }: { user: IUser; 
 						<UserCertificate canUpload={false} user={user} certificateType="3" />
 					</div>
 					<div>
-						<FormLabel className="font-bold">{`ทุนอื่นๆ`}</FormLabel>
+						<FormLabel className="font-bold">{`ทุนอื่น ๆ`}</FormLabel>
 
 						<UserCertificate canUpload={false} user={user} certificateType="4" />
 					</div>
