@@ -132,7 +132,7 @@ export default function ThesisProcessPlan({
               <div className=" inline-flex ">
                 {Array.from({ length: months }).map((_, index) => (
                   <div key={index} className=" self-end flex flex-col items-center ">
-                    {index > 11 ? (
+                    {index > 11 && canEdit ? (
                       <div>
                         <GoX
                           className=" self-center  hover:cursor-pointer "

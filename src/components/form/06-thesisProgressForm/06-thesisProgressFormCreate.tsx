@@ -19,6 +19,7 @@ import axios from "axios";
 import qs from "query-string";
 import InputForm from "@/components/inputForm/inputForm";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
+import { checkPlannedWorkSum } from "@/lib/utils";
 
 const formSchema = z.object({
 	times: z.number().min(1, { message: "กรุณาระบุครั้ง / Times requierd" }),
@@ -70,6 +71,17 @@ const ThesisProgressFormCreate = ({
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
+		const checkSum = checkPlannedWorkSum(processPlans!);
+		if (!checkSum[0]) {
+			toast({
+				title: "เกิดข้อผิดพลาด",
+				description: `ผลรวมปริมาณงานที่วางแผนไว้ไม่เท่ากับ 100%, ผลรวมที่ได้คือ: ${Number(checkSum[1] || 0)}%`,
+				variant: "destructive",
+			});
+			setLoading(false);
+
+			return;
+		}
 		if (!user?.signatureUrl) {
 			toast({
 				title: "Error",
@@ -294,7 +306,8 @@ const ThesisProgressFormCreate = ({
 									<div className="flex flex-row items-center mb-6 justify-center">
 										<FormItem className="w-[300px]">
 											<FormLabel>
-												คิดเป็นร้อยละการทำงานของเป้าหมาย<span className="text-red-500">*</span>
+												คิดเป็นร้อยละการทำงานของเป้าหมาย
+												<span className="text-red-500">*</span>
 											</FormLabel>
 											<Input
 												value={field.value ? field.value : ""}

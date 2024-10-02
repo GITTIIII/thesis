@@ -23,6 +23,7 @@ import qs from "query-string";
 import InputForm from "../../inputForm/inputForm";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 import { ICoAdvisorStudents } from "@/interface/coAdvisorStudents";
+import { checkPlannedWorkSum } from "@/lib/utils";
 
 const defaultProcessPlans: IProcessPlan[] = [
 	{
@@ -132,6 +133,17 @@ const OutlineFormCreate = ({ user }: { user: IUser }) => {
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
+		const checkSum = checkPlannedWorkSum(processPlans!);
+		if (!checkSum[0]) {
+			toast({
+				title: "เกิดข้อผิดพลาด",
+				description: `ผลรวมปริมาณงานที่วางแผนไว้ไม่เท่ากับ 100%, ผลรวมที่ได้คือ: ${Number(checkSum[1] || 0)}%`,
+				variant: "destructive",
+			});
+			setLoading(false);
+
+			return;
+		}
 		if (!user?.signatureUrl) {
 			toast({
 				title: "เกิดข้อผิดพลาด",
@@ -228,7 +240,6 @@ const OutlineFormCreate = ({ user }: { user: IUser }) => {
 								</div>
 							</RadioGroup>
 						</div>
-
 						<InputForm value={`${user?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
 						<InputForm value={`${user?.program?.programNameTH}`} label="หลักสูตร / Program" />
 						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />

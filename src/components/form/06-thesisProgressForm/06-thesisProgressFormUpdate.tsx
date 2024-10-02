@@ -14,7 +14,7 @@ import { IOutlineForm, IProcessPlan, IThesisProgressForm } from "@/interface/for
 import { IUser } from "@/interface/user";
 import { Label } from "@/components/ui/label";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { cn } from "@/lib/utils";
+import { checkPlannedWorkSum, cn } from "@/lib/utils";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { DatePicker } from "@/components/datePicker/datePicker";
@@ -95,6 +95,19 @@ const ThesisProgressFormUpdate = ({
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		console.log(values);
 		setLoading(true);
+		const checkSum = checkPlannedWorkSum(processPlans!);
+		console.log(checkSum);
+		if (!checkSum[0]) {
+			toast({
+				title: "เกิดข้อผิดพลาด",
+				description: `ผลรวมปริมาณงานที่วางแผนไว้ไม่เท่ากับ 100%, ผลรวมที่ได้คือ: ${Number(checkSum[1] || 0)}%`,
+				variant: "destructive",
+			});
+			setLoading(false);
+
+			return;
+		}
+
 		if (
 			(values.advisorSignUrl == "" && values.dateAdvisor != undefined) ||
 			(values.headSchoolSignUrl == "" && values.headSchoolID != 0)
@@ -371,12 +384,12 @@ const ThesisProgressFormUpdate = ({
 					{/* หัวหน้าสาขา */}
 					{(user?.position === "HEAD_OF_SCHOOL" || user?.role === "SUPER_ADMIN") && (
 						<div className="w-full h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
-							<h1 className="mb-2 sm:mb-8 font-bold text-center">ความเห็นของหัวหน้าสาขาวิชา</h1>
+							<h1 className="mb-2 font-bold text-center">ความเห็นของหัวหน้าสาขาวิชา</h1>
 							<FormField
 								control={form.control}
 								name="headSchoolComment"
 								render={({ field }) => (
-									<FormItem className="w-max h-[100px]">
+									<FormItem className="w-3/4 h-[100px]">
 										<FormControl>
 											<Textarea
 												disabled={
@@ -385,7 +398,7 @@ const ThesisProgressFormUpdate = ({
 														: false || (user?.position != "HEAD_OF_SCHOOL" && user?.role != "SUPER_ADMIN")
 												}
 												placeholder="ความเห็น..."
-												className="resize-none w-[240px] h-full text-md mb-2"
+												className="resize-none h-full text-md mb-2"
 												value={formData?.headSchoolComment ? formData?.headSchoolComment : field.value}
 												onChange={field.onChange}
 											/>
@@ -395,7 +408,6 @@ const ThesisProgressFormUpdate = ({
 								)}
 							/>
 							<SignatureDialog
-								userSignUrl={user.position == "HEAD_OF_SCHOOL" ? user.signatureUrl : ""}
 								disable={formData?.headSchoolSignUrl ? true : false}
 								signUrl={formData?.headSchoolSignUrl || form.getValues("headSchoolSignUrl")}
 								onConfirm={handleDrawingSignHeadSchool}
@@ -510,7 +522,7 @@ const ThesisProgressFormUpdate = ({
 						{formData && (
 							<ThesisProcessPlan
 								degree={user!.degree}
-								canEdit={user?.role === "ADMIN" && user.position !== "NONE"}
+								canEdit={user?.position === "ADVISOR"}
 								processPlans={formData?.processPlan}
 								setProcessPlans={setProcessPlans}
 							/>
