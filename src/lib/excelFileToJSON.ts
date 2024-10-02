@@ -20,13 +20,13 @@ interface User {
   username: string;
   password: string;
   email: string;
-  sex: string;
   degree: string;
-  role: string;
-  position: string;
   institute: string;
   school: string;
   advisor: string;
+  sex: string;
+  phone: string;
+  rawPassword: string;
 }
 const convertToUsers = async (arr: any[]): Promise<User[]> => {
   return Promise.all(
@@ -37,16 +37,16 @@ const convertToUsers = async (arr: any[]): Promise<User[]> => {
         firstName: obj.firstName ? String(obj.firstName) : "",
         lastName: obj.lastName ? String(obj.lastName) : "",
         password: hashedPassword,
+        rawPassword: obj.password ? String(obj.password) : "",
         username: obj.username ? String(obj.username) : "",
         email: obj.email ? String(obj.email) : "",
-        sex: obj.sex ? String(obj.sex) : "",
         degree: obj.degree ? String(obj.degree) : "",
-        role: "STUDENT",
-        position: "NONE",
         institute: obj.institute ? String(obj.institute) : "",
         school: obj.school ? String(obj.school) : "",
         program: obj.program ? String(obj.program) : "",
         advisor: obj.advisor ? String(obj.advisor) : "",
+        sex: obj.sex ? String(obj.sex) : "",
+        phone: obj.phone ? String(obj.phone) : "",
       };
       return user;
     })

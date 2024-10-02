@@ -26,7 +26,7 @@ const CreateUser = () => {
         <Image src={createUser} width={100} height={100} alt="createUser" />
         <Label className="text-2xl">เพิ่มรายชื่อผู้ใช้</Label>
       </div>
-      <Tabs defaultValue="studentExcel" className="w-full">
+      <Tabs defaultValue="student" className="w-full">
         <TabsList className="w-max h-16">
           <TabsTrigger className="h-full lg:text-lg" value="student">
             นักศึกษา

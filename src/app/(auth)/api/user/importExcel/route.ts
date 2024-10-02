@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import path from "path";
 import { writeFile, unlink } from "fs/promises";
 import { excelFileToJson } from "../../../../../lib/excelFileToJSON";
+import { jsonToExcel } from "@/lib/jsonToExcel";
 interface User {
   prefix: string;
   firstName: string;
@@ -10,12 +11,14 @@ interface User {
   username: string;
   password: string;
   email: string;
-  phone: string;
-  sex: string;
   degree: string;
   institute: string;
   school: string;
   advisor: string;
+  sex: string;
+  phone: string;
+  program: string;
+  rawPassword: string;
 }
 export const POST = async (req: Request) => {
   const formData = await req.formData();
@@ -47,6 +50,7 @@ export const POST = async (req: Request) => {
 
   try {
     const message: Message[] = [];
+    const dataError = [];
     await writeFile(pathExcel, buffer);
     const users = await excelFileToJson(pathExcel, columnKey);
 
@@ -54,7 +58,7 @@ export const POST = async (req: Request) => {
       // Initialize an empty message object for the current user
       const userMessage: Message = {
         id: user.username,
-        name: `${user.prefix} ${user.firstName} ${user.lastName}`,
+        name: `${user.prefix}${user.firstName} ${user.lastName}`,
         message: [],
       };
       const emptyFields = checkEmptyFields(user);
@@ -124,7 +128,13 @@ export const POST = async (req: Request) => {
       if (username != null) {
         userMessage.message.push("มีชื่อผู้ใช้นี้แล้ว");
       }
-
+      const sex = user.sex == "ชาย" ? "Male" : user.sex == "หญิง" ? "Female" : "";
+      const degree =
+        user.degree == "ปริญญาโท"
+          ? "Master"
+          : user.degree == "ปริญญาเอก"
+          ? "Doctoral"
+          : "user.degree";
       if (userMessage.message.length == 0) {
         await CreateStudent({
           firstNameTH: user.firstName,
@@ -132,21 +142,44 @@ export const POST = async (req: Request) => {
           username: user.username,
           password: user.password,
           email: user.email,
-          degree: user.degree,
-          sex: user.sex,
-          position: user.position,
-          role: user.role,
+          degree: degree,
+          role: "STUDENT",
+          position: "NONE",
           prefixID: prefix?.id,
           schoolID: school?.id,
           programID: program?.id,
           instituteID: institute?.id,
           advisorID: advisor?.id,
+          phone: user.phone,
+          sex: sex,
+          formState: 1,
+        });
+      } else {
+        dataError.push({
+          firstName: user.firstName,
+          lastName: user.lastName,
+          username: user.username,
+          password: user.rawPassword,
+          email: user.email,
+          degree: degree,
+          prefix: user.prefix,
+          school: user.school,
+          program: user.program,
+          institute: user.institute,
+          advisor: user.advisor,
+          phone: user.phone,
+          sex: user.sex,
         });
       }
       message.push(userMessage);
     }
+    const excel = dataError.length !== 0 ? await jsonToExcel(dataError) : undefined;
     return NextResponse.json(
-      { message: "Users Created", data: message },
+      {
+        message: "Users Created",
+        data: message,
+        dataError: dataError.length !== 0 ? excel : null,
+      },
       { status: 200 }
     );
   } catch (error) {
