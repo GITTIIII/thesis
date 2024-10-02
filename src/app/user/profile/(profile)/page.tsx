@@ -81,17 +81,17 @@ export default async function Profile() {
 								)}
 							</section>
 						</div>
-						<div className="relative w-full sm:w-2/4 h-auto bg-white p-4 rounded-xl shadow-[0px_0px_5px_1px_#e2e8f0]">
+						<div className="relative w-full sm:w-2/4 h-auto justify-center items-center bg-white p-4 rounded-xl shadow-[0px_0px_5px_1px_#e2e8f0]">
 							<div className="w-full h-max flex items-center">
 								<label className="text-xl">ลายเซ็น</label>
 								<div className="w-full h-max px-4 absolute flex justify-end">
 									<EditSignature user={user} />
 								</div>
 							</div>
-							<div className="w-full h-max flex justify-center items-center">
+							<div className="w-full h-52 flex justify-center items-center">
 								<Image
 									src={user?.signatureUrl ? user?.signatureUrl : signature}
-									width={200}
+									width={100}
 									height={100}
 									style={{
 										width: "auto",

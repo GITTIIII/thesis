@@ -169,10 +169,10 @@ const EditSignature = ({ user }: { user: IUser }) => {
 						<div className="w-full h-full">
 							{active == 1 && (
 								<div className="w-full h-full p-2">
-									<div className="w-auto h-auto flex justify-center border-2 p-4 rounded-md">
+									<div className="w-auto h-46 flex justify-center border-2 p-4 rounded-md">
 										<Image
 											src={user?.signatureUrl ? user?.signatureUrl : signature}
-											width={200}
+											width={100}
 											height={100}
 											style={{
 												width: "auto",

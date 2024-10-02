@@ -11,6 +11,7 @@ import saveAs from "file-saver";
 import { useState } from "react";
 import { Search } from "./search";
 import { FilterTable } from "./filter";
+import { HoverCardTable } from "./hoverCard";
 export default function ThesisExamAppointmentFormTable({ formData, user }: { user: IUser; formData?: IThesisExamAppointmentForm[] }) {
 	const { selectedForm } = useSelectForm();
 	const [studentID, setStudentID] = useState("");
@@ -82,31 +83,45 @@ export default function ThesisExamAppointmentFormTable({ formData, user }: { use
 							filteredData?.map((formData, index) => (
 								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d] h-[52px]` : "h-[52px]"}>
 									<TableCell className="text-center">{index + 1}</TableCell>
-									<TableCell className="text-center">{new Date(formData.date).toLocaleDateString("th")}</TableCell>
-									<TableCell className="text-center">{formData.trimester}</TableCell>
-									<TableCell className="text-center">{formData.academicYear}</TableCell>
-									<TableCell className="text-center">{formData.gpa}</TableCell>
-									<TableCell className="text-center">{formData.credits}</TableCell>
-									<TableCell className="text-center">{new Date(formData.dateExam).toLocaleDateString("th")}</TableCell>
-									<TableCell className="text-center">{formData?.student.username}</TableCell>
 									<TableCell className="text-center">
-										{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
+										<HoverCardTable data={new Date(formData.date).toLocaleDateString("th")} />
 									</TableCell>
 									<TableCell className="text-center">
+										<HoverCardTable data={formData.trimester.toString()} />
+									</TableCell>
+									<TableCell className="text-center">
+										<HoverCardTable data={formData.academicYear} />
+									</TableCell>
+									<TableCell className="text-center">
+										<HoverCardTable data={formData.gpa} />
+									</TableCell>
+									<TableCell className="text-center">
+										<HoverCardTable data={formData.credits.toString()} />
+									</TableCell>
+									<TableCell className="text-center">
+										<HoverCardTable data={new Date(formData.dateExam).toLocaleDateString("th")} />
+									</TableCell>
+									<TableCell className="text-center">
+										<HoverCardTable data={formData?.student.username} />
+									</TableCell>
+									<TableCell className="text-center">
+										<HoverCardTable data={`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`} />
+									</TableCell>
+									<TableCell className="text-center truncate">
 										{formData.advisorSignUrl ? (
 											<span className="text-green-500">มีการเซ็นเรียบร้อยแล้ว</span>
 										) : (
 											<span className="text-orange-600">กำลังรอการเซ็น</span>
 										)}
 									</TableCell>
-									<TableCell className="text-center">
+									<TableCell className="text-center truncate">
 										{formData.headSchoolID ? (
 											<span className="text-green-500">มีการเซ็นเรียบร้อยแล้ว</span>
 										) : (
 											<span className="text-orange-600">กำลังรอการเซ็น</span>
 										)}
 									</TableCell>
-									<TableCell className="text-[#F26522] text-center">
+									<TableCell className="text-[#F26522] text-center truncate">
 										<Link
 											href={
 												(formData.dateAdvisor && formData.dateHeadSchool) || user?.role == "STUDENT"
@@ -118,7 +133,7 @@ export default function ThesisExamAppointmentFormTable({ formData, user }: { use
 										</Link>
 									</TableCell>
 									<TableCell className="text-center">
-										<Button type="button" variant="outline">
+										<Button type="button" variant="outline" onClick={() => handleDownload(formData)}>
 											<Download className="mr-2" />
 											ดาวน์โหลด
 										</Button>

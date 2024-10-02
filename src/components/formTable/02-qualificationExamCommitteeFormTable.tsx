@@ -11,6 +11,7 @@ import saveAs from "file-saver";
 import { useState } from "react";
 import { Search } from "./search";
 import { FilterTable } from "./filter";
+import { HoverCardTable } from "./hoverCard";
 const handleDownload = async (formData: IQualificationExamCommitteeForm) => {
 	if (formData.headSchoolID) {
 		try {
@@ -76,23 +77,35 @@ export default function QualificationExamCommitteeFormTable({
 							filteredData?.map((formData, index) => (
 								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
 									<TableCell className="text-center">{index + 1}</TableCell>
-									<TableCell className="text-center">{new Date(formData.date).toLocaleDateString("th")}</TableCell>
-									<TableCell className="text-center">{formData.trimester}</TableCell>
-									<TableCell className="text-center">{formData.academicYear}</TableCell>
-									<TableCell className="text-center">{formData?.student.username}</TableCell>
 									<TableCell className="text-center">
-										{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
+										<HoverCardTable data={new Date(formData.date).toLocaleDateString("th")} />
 									</TableCell>
-									<TableCell className="text-center">{formData.times}</TableCell>
-									<TableCell className="text-center">{new Date(formData.examDay).toLocaleDateString("th")}</TableCell>
 									<TableCell className="text-center">
+										<HoverCardTable data={formData.trimester.toString()} />
+									</TableCell>
+									<TableCell className="text-center">
+										<HoverCardTable data={formData.academicYear} />
+									</TableCell>
+									<TableCell className="text-center">
+										<HoverCardTable data={formData?.student.username} />
+									</TableCell>
+									<TableCell className="text-center">
+										<HoverCardTable data={`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`} />
+									</TableCell>
+									<TableCell className="text-center">
+										<HoverCardTable data={formData.times.toString()} />
+									</TableCell>
+									<TableCell className="text-center">
+										<HoverCardTable data={new Date(formData.examDay).toLocaleDateString("th")} />
+									</TableCell>
+									<TableCell className="text-center truncate">
 										{formData.headSchoolID ? (
 											<span className="text-green-500">มีการเซ็นเรียบร้อยแล้ว</span>
 										) : (
 											<span className="text-orange-600">กำลังรอการเซ็น</span>
 										)}
 									</TableCell>
-									<TableCell className="text-[#F26522] text-center">
+									<TableCell className="text-[#F26522] text-center truncate">
 										<Link
 											href={
 												formData.headSchoolID || user?.role == "STUDENT"

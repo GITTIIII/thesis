@@ -11,6 +11,7 @@ import { FormPath } from "../formPath/formPath";
 import { Search } from "./search";
 import { useState } from "react";
 import { FilterTable } from "./filter";
+import { HoverCardTable } from "./hoverCard";
 
 const handleDownload = async (formData: IComprehensiveExamCommitteeForm) => {
 	if (formData.headSchoolID) {
@@ -54,12 +55,7 @@ export default function ComprehensiveExamCommitteeFormTable({
 		<>
 			<div className="w-full h-full bg-white shadow-2xl rounded-md p-2 overflow-auto ">
 				<div className="w-max flex px-2 mb-2">
-					<FilterTable 
-					filterAdvisor={false} 
-					filterHeadSchool={true} 
-					setHeadSchool={setHeadchool} 
-					setStatus={setStatus} 
-				/>
+					<FilterTable filterAdvisor={false} filterHeadSchool={true} setHeadSchool={setHeadchool} setStatus={setStatus} />
 					<Search studentID={studentID} setStudentID={setStudentID} />
 				</div>
 				<Table>
@@ -83,23 +79,35 @@ export default function ComprehensiveExamCommitteeFormTable({
 							filteredData?.map((formData, index) => (
 								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
 									<TableCell className="text-center">{index + 1}</TableCell>
-									<TableCell className="text-center">{new Date(formData.date).toLocaleDateString("th")}</TableCell>
-									<TableCell className="text-center">{formData.trimester}</TableCell>
-									<TableCell className="text-center">{formData.academicYear}</TableCell>
-									<TableCell className="text-center">{formData?.student.username}</TableCell>
 									<TableCell className="text-center">
-										{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
+										<HoverCardTable data={new Date(formData.date).toLocaleDateString("th")} />
 									</TableCell>
-									<TableCell className="text-center">{formData.times}</TableCell>
-									<TableCell className="text-center">{new Date(formData.examDay).toLocaleDateString("th")}</TableCell>
 									<TableCell className="text-center">
+										<HoverCardTable data={formData.trimester.toString()} />
+									</TableCell>
+									<TableCell className="text-center">
+										<HoverCardTable data={formData.academicYear} />
+									</TableCell>
+									<TableCell className="text-center">
+										<HoverCardTable data={formData?.student.username} />
+									</TableCell>
+									<TableCell className="text-center">
+										<HoverCardTable data={`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`} />
+									</TableCell>
+									<TableCell className="text-center">
+										<HoverCardTable data={formData.times.toString()} />
+									</TableCell>
+									<TableCell className="text-center">
+										<HoverCardTable data={new Date(formData.examDay).toLocaleDateString("th")} />
+									</TableCell>
+									<TableCell className="text-center truncate">
 										{formData.headSchoolID ? (
 											<span className="text-green-500">มีการเซ็นเรียบร้อยแล้ว</span>
 										) : (
 											<span className="text-orange-600">กำลังรอการเซ็น</span>
 										)}
 									</TableCell>
-									<TableCell className="text-[#F26522] text-center">
+									<TableCell className="text-[#F26522] text-center truncate">
 										<Link
 											href={
 												formData.headSchoolID || user?.role == "STUDENT"

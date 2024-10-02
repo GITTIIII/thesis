@@ -40,7 +40,23 @@ const ThesisProgressFormRead = ({
 					<div className="w-full">
 						<InputForm value={`${formData?.times} `} label="ครั้งที่ / No." />
 
-						<InputForm value={`${formData?.trimester} `} label="ภาคเรียน / Trimester" />
+						<div className="m-auto w-[300px] mb-6">
+							<Label className="text-sm font-medium">ภาคเรียน / Trimester</Label>
+							<RadioGroup disabled className="mt-2 flex flex-col justify-center ">
+								<div className="flex items-center space-x-3 space-y-0">
+									<RadioGroupItem checked={formData.trimester === 1} value="1" />
+									<Label className="ml-2 font-normal">1</Label>
+								</div>
+								<div className="flex items-center space-x-3 space-y-0">
+									<RadioGroupItem checked={formData.trimester === 2} value="2" />
+									<Label className="ml-2 font-normal">2</Label>
+								</div>
+								<div className="flex items-center space-x-3 space-y-0">
+									<RadioGroupItem checked={formData.trimester === 3} value="3" />
+									<Label className="ml-2 font-normal">3</Label>
+								</div>
+							</RadioGroup>
+						</div>
 
 						<h1 className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</h1>
 						<InputForm value={`${user?.username}`} label="รหัสนักศึกษา / Student ID" />

@@ -290,7 +290,7 @@ const OutlineFormCreate = ({ user }: { user: IUser }) => {
 								signUrl={user?.signatureUrl && user.role === "STUDENT" ? user?.signatureUrl : ""}
 								disable={true}
 							/>
-							<Label className="mt-2">{`วันที่ ${
+							<Label >{`วันที่ ${
 								form.getValues().date ? form.getValues().date.toLocaleDateString("th") : "__________"
 							}`}</Label>
 						</div>
