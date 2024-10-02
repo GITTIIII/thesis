@@ -24,6 +24,7 @@ import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@
 import { cn } from "@/lib/utils";
 import { Check, ChevronsUpDown, CircleAlert } from "lucide-react";
 import signature from "../../../../public/asset/signature.png";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const formSchema = z.object({
 	id: z.number(),
@@ -218,20 +219,41 @@ export default function SuperAdminForm02Update({
 							control={form.control}
 							name="trimester"
 							render={({ field }) => (
-								<div className="flex flex-row items-center mb-6 justify-center">
+								<div className="flex flex-col mb-6 justify-center items-center">
 									<FormItem className="w-[300px]">
 										<FormLabel>
 											ภาคเรียน / Trimester <span className="text-red-500">*</span>
 										</FormLabel>
-										<Input
-											value={field.value ? field.value : ""}
-											onChange={(e) => field.onChange(Number(e.target.value))}
-										/>
+										<RadioGroup
+											onValueChange={(value) => field.onChange(Number(value))}
+											defaultValue={field.value.toString()}
+											className="flex flex-col space-y-2"
+										>
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="1" />
+												</FormControl>
+												<FormLabel className="font-normal">1</FormLabel>
+											</FormItem>
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="2" />
+												</FormControl>
+												<FormLabel className="font-normal">2</FormLabel>
+											</FormItem>
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="3" />
+												</FormControl>
+												<FormLabel className="font-normal">3</FormLabel>
+											</FormItem>
+										</RadioGroup>
 										<FormMessage />
 									</FormItem>
 								</div>
 							)}
 						/>
+
 						<FormField
 							control={form.control}
 							name="academicYear"

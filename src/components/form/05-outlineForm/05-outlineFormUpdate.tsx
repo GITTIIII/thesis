@@ -26,6 +26,7 @@ import axios from "axios";
 import qs from "query-string";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 import { updateStdFormState } from "@/app/action/updateStdFormState";
+import { ICoAdvisorStudents } from "@/interface/coAdvisorStudents";
 
 const formSchema = z.object({
 	id: z.number(),
@@ -287,13 +288,18 @@ const OutlineFormUpdate = ({
 						<InputForm value={`${formData?.thesisNameTH}`} label="ชื่อภาษาไทย / ThesisName(TH)" />
 						<InputForm value={`${formData?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / ThesisName(EN)" />
 						<InputForm
-							value={`${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}
+							value={`${formData?.student?.advisor?.prefix?.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษา / Advisor"
 						/>
-						<InputForm
-							value={`${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}
-							label="อาจารย์ที่ปรึกษาร่วม / Co-advisor"
-						/>
+						{formData.student.coAdvisedStudents &&
+							formData.student.coAdvisedStudents.length > 0 &&
+							formData.student.coAdvisedStudents.map((coAdvisors: ICoAdvisorStudents, index: number) => (
+								<InputForm
+									key={index}
+									value={`${coAdvisors.coAdvisor?.prefix?.prefixTH}${coAdvisors.coAdvisor?.firstNameTH} ${coAdvisors.coAdvisor?.lastNameTH}`}
+									label="อาจารย์ที่ปรึกษาร่วม / CoAdvisor"
+								/>
+							))}
 						<div className="flex flex-col items-center mb-6 justify-center">
 							<FormLabel>ลายเซ็น / Signature</FormLabel>
 							<SignatureDialog
@@ -396,7 +402,7 @@ const OutlineFormUpdate = ({
 							control={form.control}
 							name="outlineCommitteeComment"
 							render={({ field }) => (
-								<FormItem className="w-1/2">
+								<FormItem className="w-60">
 									<FormControl>
 										<Textarea
 											disabled={
@@ -589,7 +595,7 @@ const OutlineFormUpdate = ({
 								control={form.control}
 								name="instituteCommitteeComment"
 								render={({ field }) => (
-									<FormItem className="w-1/2">
+									<FormItem className="w-60">
 										<FormControl>
 											<Textarea
 												disabled={formData?.instituteCommitteeComment || user?.role != "SUPER_ADMIN" ? true : false}

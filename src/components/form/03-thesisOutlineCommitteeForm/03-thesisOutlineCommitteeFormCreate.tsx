@@ -10,14 +10,14 @@ import { useToast } from "@/components/ui/use-toast";
 import axios from "axios";
 import qs from "query-string";
 import InputForm from "../../inputForm/inputForm";
-import { Form, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { IUser } from "@/interface/user";
 import { ICoAdvisorStudents } from "@/interface/coAdvisorStudents";
 import { DatePicker } from "@/components/datePicker/datePicker";
 import { CircleAlert } from "lucide-react";
 import Link from "next/link";
 import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
-
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 const formSchema = z.object({
 	date: z.date(),
 	studentID: z.number(),
@@ -164,20 +164,41 @@ const ThesisOutlineCommitteeFormCreate = ({ user }: { user: IUser }) => {
 							control={form.control}
 							name="trimester"
 							render={({ field }) => (
-								<div className="flex flex-row items-center mb-6 justify-center">
+								<div className="flex flex-col mb-6 justify-center items-center">
 									<FormItem className="w-[300px]">
 										<FormLabel>
 											ภาคเรียน / Trimester <span className="text-red-500">*</span>
 										</FormLabel>
-										<Input
-											value={field.value ? field.value : ""}
-											onChange={(e) => field.onChange(Number(e.target.value))}
-										/>
+										<RadioGroup
+											onValueChange={(value) => field.onChange(Number(value))}
+											defaultValue={field.value.toString()}
+											className="flex flex-col space-y-2"
+										>
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="1" />
+												</FormControl>
+												<FormLabel className="font-normal">1</FormLabel>
+											</FormItem>
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="2" />
+												</FormControl>
+												<FormLabel className="font-normal">2</FormLabel>
+											</FormItem>
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="3" />
+												</FormControl>
+												<FormLabel className="font-normal">3</FormLabel>
+											</FormItem>
+										</RadioGroup>
 										<FormMessage />
 									</FormItem>
 								</div>
 							)}
 						/>
+
 						<FormField
 							control={form.control}
 							name="academicYear"

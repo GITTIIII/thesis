@@ -92,7 +92,7 @@ const OutlineFormRead = ({ formData }: { formData: IOutlineForm }) => {
 						</div>
 					</div>
 				</div>
-				<div className="flex flex-col items-center mt-4 sm:mt-0 mb-6 justify-center md:flex-row">
+				<div className="flex flex-col items-center mt-4 sm:mt-2 mb-6 justify-center md:flex-row">
 					<div className="flex flex-col justify-center items-center p-4 lg:px-20">
 						<h1 className="mb-2 font-bold">ความเห็นของคณะกรรมการพิจารณาโครงร่างวิทยานิพนธ์</h1>
 						<Label className="mt-2">{`วันที่ ${

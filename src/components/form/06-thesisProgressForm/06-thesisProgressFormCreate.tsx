@@ -167,26 +167,45 @@ const ThesisProgressFormCreate = ({
 							)}
 						/>
 
-						<div>
-							<FormField
-								control={form.control}
-								name="trimester"
-								render={({ field }) => (
-									<div className="flex flex-row items-center mb-6 justify-center">
-										<FormItem className="w-[300px]">
-											<FormLabel>
-												ภาคเรียน / Trimester <span className="text-red-500">*</span>
-											</FormLabel>
-											<Input
-												value={field.value ? field.value : ""}
-												onChange={(e) => field.onChange(Number(e.target.value))}
-											/>
-											<FormMessage />
-										</FormItem>
-									</div>
-								)}
-							/>
-						</div>
+						<FormField
+							control={form.control}
+							name="trimester"
+							render={({ field }) => (
+								<div className="flex flex-col mb-6 justify-center items-center">
+									<FormItem className="w-[300px]">
+										<FormLabel>
+											ภาคเรียน / Trimester <span className="text-red-500">*</span>
+										</FormLabel>
+										<RadioGroup
+											onValueChange={(value) => field.onChange(Number(value))}
+											defaultValue={field.value.toString()}
+											className="flex flex-col space-y-2"
+										>
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="1" />
+												</FormControl>
+												<FormLabel className="font-normal">1</FormLabel>
+											</FormItem>
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="2" />
+												</FormControl>
+												<FormLabel className="font-normal">2</FormLabel>
+											</FormItem>
+											<FormItem className="flex items-center space-x-3 space-y-0">
+												<FormControl>
+													<RadioGroupItem value="3" />
+												</FormControl>
+												<FormLabel className="font-normal">3</FormLabel>
+											</FormItem>
+										</RadioGroup>
+										<FormMessage />
+									</FormItem>
+								</div>
+							)}
+						/>
+
 						<h1 className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</h1>
 						<InputForm value={`${user?.username}`} label="รหัสนักศึกษา / Student ID" />
 						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Fullname" />
@@ -254,7 +273,7 @@ const ThesisProgressFormCreate = ({
 									<FormItem className="w-full">
 										<FormControl>
 											<Textarea
-												className="mt-2"
+												className="mt-2 w-[300px]"
 												placeholder="มีการเปลี่ยนแปลงดังนี้..."
 												disabled={isDisabled}
 												value={field.value}
@@ -273,7 +292,7 @@ const ThesisProgressFormCreate = ({
 								name="percentage"
 								render={({ field }) => (
 									<div className="flex flex-row items-center mb-6 justify-center">
-										<FormItem className="w-auto">
+										<FormItem className="w-[300px]">
 											<FormLabel>
 												คิดเป็นร้อยละการทำงานของเป้าหมาย<span className="text-red-500">*</span>
 											</FormLabel>
@@ -329,7 +348,7 @@ const ThesisProgressFormCreate = ({
 								)}
 							/>
 						</div>
-						<div className="flex flex-col items-center mt-6 mb-6 justify-center">
+						<div className="w-full flex flex-col items-center mt-6 mb-6 justify-center">
 							<FormLabel>ลายเซ็น / Signature</FormLabel>
 							<SignatureDialog
 								signUrl={user?.signatureUrl && user.role === "STUDENT" ? user?.signatureUrl : ""}
