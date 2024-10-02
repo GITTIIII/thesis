@@ -125,7 +125,7 @@ const headInstituteColumns: ColumnDef<IUser>[] = [
   },
   {
     header: "สำนักวิชา",
-    accessorKey: "institute",
+    accessorKey: "institute.instituteNameTH",
   },
 
   {
