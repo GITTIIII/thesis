@@ -21,7 +21,7 @@ export function HoverCardTable({ data }: { data: string }) {
 					<ExpandableText text={data || ""} />
 				</Button>
 			</HoverCardTrigger>
-			<HoverCardContent className="w-max p-3">
+			<HoverCardContent className="w-[320px] sm:w-max p-3">
 				<div className="flex justify-between space-x-4">{data}</div>
 			</HoverCardContent>
 		</HoverCard>

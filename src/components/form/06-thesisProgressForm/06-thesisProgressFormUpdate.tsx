@@ -260,7 +260,7 @@ const ThesisProgressFormUpdate = ({
 										<FormItem className="w-auto">
 											<FormLabel>คิดเป็นร้อยละการทำงานของเป้าหมาย</FormLabel>
 											<Input
-												disabled={user?.position != "ADVISOR"}
+												disabled={user?.role !== "ADMIN" && user.position !== "NONE"}
 												value={field.value ? field.value : ""}
 												onChange={(e) => field.onChange(Number(e.target.value))}
 											/>
@@ -314,7 +314,7 @@ const ThesisProgressFormUpdate = ({
 							control={form.control}
 							name="assessmentResult"
 							render={({ field }) => (
-								<FormItem className="w-3/4 h-[100px]">
+								<FormItem className="w-max h-[100px]">
 									<FormControl>
 										<Textarea
 											disabled={
@@ -326,7 +326,7 @@ const ThesisProgressFormUpdate = ({
 															user?.role != "SUPER_ADMIN")
 											}
 											placeholder="ความเห็น..."
-											className="resize-none h-full text-md mb-2"
+											className="resize-none w-[240px] h-full text-md mb-2"
 											value={formData?.assessmentResult ? formData?.assessmentResult : field.value}
 											onChange={field.onChange}
 										/>
@@ -336,6 +336,7 @@ const ThesisProgressFormUpdate = ({
 							)}
 						/>
 						<SignatureDialog
+							userSignUrl={user.role == "ADMIN" && user.position !== "NONE" ? user.signatureUrl : ""}
 							disable={formData?.advisorSignUrl ? true : false}
 							signUrl={formData?.advisorSignUrl || form.getValues("advisorSignUrl")}
 							onConfirm={handleDrawingSignAdvisor}
@@ -370,12 +371,12 @@ const ThesisProgressFormUpdate = ({
 					{/* หัวหน้าสาขา */}
 					{(user?.position === "HEAD_OF_SCHOOL" || user?.role === "SUPER_ADMIN") && (
 						<div className="w-full h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
-							<h1 className="mb-2 font-bold text-center">ความเห็นของหัวหน้าสาขาวิชา</h1>
+							<h1 className="mb-2 sm:mb-8 font-bold text-center">ความเห็นของหัวหน้าสาขาวิชา</h1>
 							<FormField
 								control={form.control}
 								name="headSchoolComment"
 								render={({ field }) => (
-									<FormItem className="w-3/4 h-[100px]">
+									<FormItem className="w-max h-[100px]">
 										<FormControl>
 											<Textarea
 												disabled={
@@ -384,7 +385,7 @@ const ThesisProgressFormUpdate = ({
 														: false || (user?.position != "HEAD_OF_SCHOOL" && user?.role != "SUPER_ADMIN")
 												}
 												placeholder="ความเห็น..."
-												className="resize-none h-full text-md mb-2"
+												className="resize-none w-[240px] h-full text-md mb-2"
 												value={formData?.headSchoolComment ? formData?.headSchoolComment : field.value}
 												onChange={field.onChange}
 											/>
@@ -394,6 +395,7 @@ const ThesisProgressFormUpdate = ({
 								)}
 							/>
 							<SignatureDialog
+								userSignUrl={user.position == "HEAD_OF_SCHOOL" ? user.signatureUrl : ""}
 								disable={formData?.headSchoolSignUrl ? true : false}
 								signUrl={formData?.headSchoolSignUrl || form.getValues("headSchoolSignUrl")}
 								onConfirm={handleDrawingSignHeadSchool}
@@ -508,7 +510,7 @@ const ThesisProgressFormUpdate = ({
 						{formData && (
 							<ThesisProcessPlan
 								degree={user!.degree}
-								canEdit={user?.position === "ADVISOR"}
+								canEdit={user?.role === "ADMIN" && user.position !== "NONE"}
 								processPlans={formData?.processPlan}
 								setProcessPlans={setProcessPlans}
 							/>

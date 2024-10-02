@@ -215,14 +215,14 @@ const OutlineFormCreate = ({ user }: { user: IUser }) => {
 						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Full name" />
 						<InputForm value={`${user?.username} `} label="รหัสนักศึกษา / Student ID" />
 
-						<div className="flex flex-col items-center mb-6 justify-center">
-							<FormLabel className="font-normal">ระดับการศึกษา / Education Level</FormLabel>
+						<div className="m-auto w-[300px] mb-6">
+							<FormLabel className="text-sm font-medium">ระดับการศึกษา / Education Level</FormLabel>
 							<RadioGroup disabled className="space-y-1 mt-2">
-								<div>
+								<div className="flex items-center space-x-3 space-y-0">
 									<RadioGroupItem checked={user?.degree === "Master"} value="Master" />
 									<FormLabel className="ml-2 font-normal">ปริญญาโท (Master Degree)</FormLabel>
 								</div>
-								<div>
+								<div className="flex items-center space-x-3 space-y-0">
 									<RadioGroupItem checked={user?.degree === "Doctoral"} value="Doctoral" />
 									<FormLabel className="ml-2 font-normal">ปริญญาเอก (Doctoral Degree)</FormLabel>
 								</div>
@@ -290,7 +290,7 @@ const OutlineFormCreate = ({ user }: { user: IUser }) => {
 								signUrl={user?.signatureUrl && user.role === "STUDENT" ? user?.signatureUrl : ""}
 								disable={true}
 							/>
-							<Label >{`วันที่ ${
+							<Label>{`วันที่ ${
 								form.getValues().date ? form.getValues().date.toLocaleDateString("th") : "__________"
 							}`}</Label>
 						</div>
