@@ -37,6 +37,7 @@ export default function ThesisProcessPlan({
     setMonths(() => {
       return Math.max(...processPlans.map((plan) => plan.months.length));
     });
+    setProcessPlans?.(processPlans)
   }, [processPlans]);
   useEffect(() => {
     if (setProcessPlans !== undefined) {

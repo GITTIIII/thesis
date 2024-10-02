@@ -130,12 +130,12 @@ const ThesisExamAppointmentFormCreate = ({ user, approvedForm }: { user: IUser; 
 								<div className="flex flex-col mb-6 justify-center items-center">
 									<FormItem className="w-[300px]">
 										<FormLabel>
-											ภาคเรียน / Trimester <span className="text-red-500">*</span>
+											ภาคเรียนที่ / Trimester <span className="text-red-500">*</span>
 										</FormLabel>
 										<RadioGroup
 											onValueChange={(value) => field.onChange(Number(value))}
 											defaultValue={field.value.toString()}
-											className="flex flex-col space-y-2"
+											className="flex flex-col space-y-1"
 										>
 											<FormItem className="flex items-center space-x-3 space-y-0">
 												<FormControl>
@@ -233,14 +233,14 @@ const ThesisExamAppointmentFormCreate = ({ user, approvedForm }: { user: IUser; 
 						<InputForm value={`${user?.program?.programNameTH}`} label="หลักสูตร / Program" />
 						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />
 
-						<div className="flex flex-col items-center mb-6 justify-center">
-							<FormLabel className="font-normal">ระดับการศึกษา / Education Level</FormLabel>
+						<div className="m-auto w-[300px] mb-6">
+							<FormLabel className="text-sm font-medium">ระดับการศึกษา / Education Level</FormLabel>
 							<RadioGroup disabled className="space-y-1 mt-2">
-								<div>
+								<div className="flex items-center space-x-3 space-y-0">
 									<RadioGroupItem checked={user?.degree === "Master"} value="Master" />
 									<FormLabel className="ml-2 font-normal">ปริญญาโท (Master Degree)</FormLabel>
 								</div>
-								<div>
+								<div className="flex items-center space-x-3 space-y-0">
 									<RadioGroupItem checked={user?.degree === "Doctoral"} value="Doctoral" />
 									<FormLabel className="ml-2 font-normal">ปริญญาเอก (Doctoral Degree)</FormLabel>
 								</div>

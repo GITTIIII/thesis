@@ -226,12 +226,12 @@ export default function SuperAdminForm01Update({
 								<div className="flex flex-col mb-6 justify-center items-center">
 									<FormItem className="w-[300px]">
 										<FormLabel>
-											ภาคเรียน / Trimester <span className="text-red-500">*</span>
+											ภาคเรียนที่ / Trimester <span className="text-red-500">*</span>
 										</FormLabel>
 										<RadioGroup
 											onValueChange={(value) => field.onChange(Number(value))}
 											defaultValue={field.value.toString()}
-											className="flex flex-col space-y-2"
+											className="flex flex-col space-y-1"
 										>
 											<FormItem className="flex items-center space-x-3 space-y-0">
 												<FormControl>
