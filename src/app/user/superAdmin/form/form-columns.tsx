@@ -16,6 +16,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowUpDown } from "lucide-react";
 import ActionMenu from "@/components/actionMenu/actionMenu";
 import FormStatus from "@/components/formStatus/formStatus";
+import { HoverCardTable } from "@/components/formTable/hoverCard";
+import { MessageSquareMore } from "lucide-react";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -271,8 +273,24 @@ const form05Columns: ColumnDef<IOutlineForm>[] = [
     accessorFn: (row) => `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
   },
   {
-    header: "ชื่อวิทยานิพนธ์",
-    accessorKey: "thesisNameTH",
+    header: "ชื่อวิทยานิพนธ์ (ไทย)",
+    cell: ({ row }) => {
+      return (
+        <div className="w-[150px] truncate">
+          <HoverCardTable data={row.original.thesisNameTH} />
+        </div>
+      );
+    },
+  },
+  {
+    header: "ชื่อวิทยานิพนธ์ (อังกฤษ)",
+    cell: ({ row }) => {
+      return (
+        <div className="w-[150px] truncate">
+          <HoverCardTable data={row.original.thesisNameEN} />
+        </div>
+      );
+    },
   },
   {
     header: "วันที่สร้าง",
@@ -291,6 +309,14 @@ const form05Columns: ColumnDef<IOutlineForm>[] = [
     cell: (row) => (
       <Link className="text-[#F26522] text-center" href={`/user/form/05-outlineForm/${row.row.original.id}`}>
         คลิกเพื่อดูเพิ่มเติม
+      </Link>
+    ),
+  },
+  {
+    header: "ความเห็น",
+    cell: (row) => (
+      <Link className="flex justify-center" href={`/user/form/05-outlineForm/update/${row.row.original.id}`}>
+        <MessageSquareMore className="h-6 w-6" color="#F26522" />
       </Link>
     ),
   },
@@ -327,10 +353,10 @@ const form06Columns: ColumnDef<IThesisProgressForm>[] = [
     header: "ชื่อนักศึกษา",
     accessorFn: (row) => `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
   },
-  {
-    header: "ชื่อวิทยานิพนธ์",
-    accessorKey: "thesisNameTH",
-  },
+  // {
+  //   header: "ชื่อวิทยานิพนธ์",
+  //   accessorKey: "thesisNameTH",
+  // },
   {
     header: "ความก้าวหน้า",
     accessorFn: (row) => `${row.percentage}%`,
@@ -384,10 +410,10 @@ const form07Columns: ColumnDef<IThesisExamAppointmentForm>[] = [
     header: "ชื่อนักศึกษา",
     accessorFn: (row) => `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
   },
-  {
-    header: "ชื่อวิทยานิพนธ์",
-    accessorKey: "thesisNameTH",
-  },
+  // {
+  //   header: "ชื่อวิทยานิพนธ์",
+  //   accessorKey: "thesisNameTH",
+  // },
   {
     header: "GPA",
     accessorKey: "gpa",
@@ -425,21 +451,6 @@ const form07Columns: ColumnDef<IThesisExamAppointmentForm>[] = [
 ];
 const form08Columns: ColumnDef<any>[] = [
   {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && "indeterminate")}
-        onCheckedChange={(value: any) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox checked={row.getIsSelected()} onCheckedChange={(value: any) => row.toggleSelected(!!value)} aria-label="Select row" />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
     header: "ลำดับ",
     cell: (row) => row.row.index + 1,
   },
@@ -461,9 +472,43 @@ const form08Columns: ColumnDef<any>[] = [
     accessorFn: (row) => `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
   },
   {
+    header: "ชื่อวิทยานิพนธ์ (ไทย)",
+    cell: ({ row }) => {
+      return (
+        <div className="w-[150px] truncate">
+          <HoverCardTable data={row.original.thesisNameTH} />
+        </div>
+      );
+    },
+  },
+  {
+    header: "ชื่อวิทยานิพนธ์ (อังกฤษ)",
+    cell: ({ row }) => {
+      return (
+        <div className="w-[150px] truncate">
+          <HoverCardTable data={row.original.thesisNameEN} />
+        </div>
+      );
+    },
+  },
+  {
+    header: "วิทยานิพนธ์",
+    cell: ({ row }) => {
+      const reply = row.original.disClosed ? "วิทยานิพนธ์เผยแพร่ได้" : "วิทยานิพนธ์ปกปิด";
+      return <div className="w-[150px] truncate">{reply}</div>;
+    },
+  },
+  {
+    header: "เปลี่ยนชื่อวิทยานิพนธ์",
+    cell: ({ row }) => {
+      const reply = row.original.reviseTitle ? "ปรับเปลี่ยนชื่อวิทยานิพนธ์" : "ใช้ชื่อเดิม";
+      return <div className="w-[150px] truncate">{reply}</div>;
+    },
+  },
+  {
     header: "รายละเอียด",
     cell: (row) => (
-      <Link className="text-[#F26522] text-center" href={`/user/form/07-thesisProgressForm/${row.row.original.id}`}>
+      <Link className="text-[#F26522] text-center" href={`/user/form/08-thesisExamAssessmentForm/${row.row.original.id}`}>
         คลิกเพื่อดูเพิ่มเติม
       </Link>
     ),
@@ -473,7 +518,7 @@ const form08Columns: ColumnDef<any>[] = [
     cell: ({ row }) => {
       const form08 = row.original.id;
       const deleteAPI = `/api/delete08FormById/${form08}`;
-      const updatePath = `/user/form/08-thesisExamForm/superAdmin/update/${form08}`;
+      const updatePath = `/user/form/08-thesisExamAssessmentForm/superAdmin/update/${form08}`;
       const fetchAPI = `/api/08ThesisExam/Form`;
       return <ActionMenu deleteAPI={deleteAPI} updatePath={updatePath} fetchAPI={fetchAPI} />;
     },

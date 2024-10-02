@@ -407,6 +407,7 @@ const ThesisProgressFormUpdate = ({
 							)}
 						/>
 						<SignatureDialog
+							userSignUrl={user.role == "ADMIN" && user.position !== "NONE" ? user.signatureUrl : ""}
 							disable={false}
 							signUrl={formData?.presentationFundSignUrl || form.getValues("presentationFundSignUrl")}
 							onConfirm={handleDrawingSign1}
@@ -452,6 +453,7 @@ const ThesisProgressFormUpdate = ({
 							)}
 						/>
 						<SignatureDialog
+							userSignUrl={user.role == "ADMIN" && user.position !== "NONE" ? user.signatureUrl : ""}
 							disable={false}
 							signUrl={formData?.researchProjectFundSignUrl || form.getValues("researchProjectFundSignUrl")}
 							onConfirm={handleDrawingSign2}
@@ -523,6 +525,7 @@ const ThesisProgressFormUpdate = ({
 								)}
 							/>
 							<SignatureDialog
+								userSignUrl={user.role == "ADMIN" && user.position !== "NONE" ? user.signatureUrl : ""}
 								disable={formData?.advisorSignUrl ? true : false}
 								signUrl={formData?.advisorSignUrl || form.getValues("advisorSignUrl")}
 								onConfirm={handleDrawingSignAdvisor}
@@ -575,6 +578,7 @@ const ThesisProgressFormUpdate = ({
 									)}
 								/>
 								<SignatureDialog
+									userSignUrl={user.position == "HEAD_OF_SCHOOL" ? user.signatureUrl : ""}
 									disable={formData?.headSchoolSignUrl ? true : false}
 									signUrl={formData?.headSchoolSignUrl || form.getValues("headSchoolSignUrl")}
 									onConfirm={handleDrawingSignHeadSchool}
@@ -582,7 +586,7 @@ const ThesisProgressFormUpdate = ({
 									setIsOpen={setOpenHeadSchool}
 								/>
 								{formData?.headSchoolID ? (
-									<Label>{`${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`}</Label>
+									<Label>{`${formData?.headSchool?.prefix?.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`}</Label>
 								) : (
 									<FormField
 										control={form.control}

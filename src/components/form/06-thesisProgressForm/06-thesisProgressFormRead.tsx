@@ -42,7 +42,7 @@ const ThesisProgressFormRead = ({
 
 						<div className="m-auto w-[300px] mb-6">
 							<Label className="text-sm font-medium">ภาคเรียน / Trimester</Label>
-							<RadioGroup disabled className="mt-2 flex flex-col justify-center ">
+							<RadioGroup disabled className="mt-2 flex flex-col justify-center">
 								<div className="flex items-center space-x-3 space-y-0">
 									<RadioGroupItem checked={formData.trimester === 1} value="1" />
 									<Label className="ml-2 font-normal">1</Label>

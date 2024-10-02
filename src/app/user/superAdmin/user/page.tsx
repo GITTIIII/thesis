@@ -53,7 +53,7 @@ export default function UserDashboard() {
               <TabsList>
                 <TabsTrigger value="student">บัณฑิตศึกษา</TabsTrigger>
                 <TabsTrigger value="advisor">อาจารย์ที่ปรึกษา</TabsTrigger>
-                <TabsTrigger value="committee">หัวหน้าสำนักวิชา</TabsTrigger>
+                <TabsTrigger value="committee">ผู้บริหาร</TabsTrigger>
                 <TabsTrigger value="expert">ผู้เชี่ยวชาญ</TabsTrigger>
               </TabsList>
               <div className="ml-auto flex items-center gap-2">
@@ -112,7 +112,7 @@ export default function UserDashboard() {
             <TabsContent value="committee">
               <Card>
                 <CardHeader>
-                  <CardTitle>รายชื่อหัวหน้าสำนักวิชา</CardTitle>
+                  <CardTitle>รายชื่อผู้บริหาร</CardTitle>
                   <CardDescription>สามารถคลิกที่เมนูด้านขวาเพื่อดูข้อมูลเพิ่มเติมได้</CardDescription>
                 </CardHeader>
                 <CardContent>

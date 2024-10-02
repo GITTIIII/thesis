@@ -253,10 +253,7 @@ const OutlineCommitteeFormUpdate = ({
 				</div>
 				<div className="flex item-center justify-center ">
 					<div className="w-full flex flex-col item-center justify-center md:flex-row rounded-lg py-5 my-5">
-						{(formData?.advisorSignUrl ||
-							user.role == "SUPER_ADMIN" ||
-							user.position == "ADVISOR" ||
-							user.position == "HEAD_OF_SCHOOL") && (
+						{(formData?.advisorSignUrl || user.role == "SUPER_ADMIN" || (user.role == "ADMIN" && user.position !== "NONE")) && (
 							<div className="w-full sm:1/3 p-0 flex flex-col items-center mb-6">
 								{/* อาจารย์ที่ปรึกษา */}
 								<div className="text-center mb-2">
@@ -264,6 +261,7 @@ const OutlineCommitteeFormUpdate = ({
 									Thesis advisor
 								</div>
 								<SignatureDialog
+									userSignUrl={user.role == "ADMIN" && user.position !== "NONE" ? user.signatureUrl : ""}
 									signUrl={formData?.advisorSignUrl || form.getValues("advisorSignUrl")}
 									disable={formData?.advisorSignUrl ? true : false}
 									onConfirm={handleDrawingAdvisorSign}
@@ -282,6 +280,7 @@ const OutlineCommitteeFormUpdate = ({
 									Head of the School
 								</div>
 								<SignatureDialog
+									userSignUrl={user.position == "HEAD_OF_SCHOOL" ? user.signatureUrl : ""}
 									disable={formData?.headSchoolSignUrl ? true : false}
 									signUrl={formData?.headSchoolSignUrl || form.getValues("headSchoolSignUrl")}
 									onConfirm={handleDrawingHeadSchoolSign}
@@ -368,6 +367,7 @@ const OutlineCommitteeFormUpdate = ({
 									Associate Dean for Academic Affairs
 								</div>
 								<SignatureDialog
+									userSignUrl={user.position == "HEAD_OF_INSTITUTE" ? user.signatureUrl : ""}
 									disable={formData?.instituteComSignUrl ? true : false}
 									signUrl={formData?.instituteComSignUrl || form.getValues("instituteComSignUrl")}
 									onConfirm={handleDrawingInstituteComSign}

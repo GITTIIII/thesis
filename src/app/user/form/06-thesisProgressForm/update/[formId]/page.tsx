@@ -16,7 +16,7 @@ export default async function ThesisProgressFormUpdatePage({ params }: { params:
 		return <div>ไม่พบข้อมูล</div>;
 	}
 	const last06Form = await getLast06FormByStdId(user.id);
-	if (!formData || !last06Form) {
+	if (!formData) {
 		return <div>ไม่พบข้อมูล</div>;
 	}
 	const approvedForm = await get05ApprovedFormByStdId(formData?.studentID);
@@ -26,7 +26,7 @@ export default async function ThesisProgressFormUpdatePage({ params }: { params:
 	}
 	return (
 		<>
-			<div className="w-full h-max bg-transparent py-12 px-2 lg:px-28">
+			<div className="w-full h-max bg-transparent py-12 px-2 xl:px-28">
 				<div className="h-full w-full flex items-center text-2xl bg-white-500 py-8">
 					<Image src={learning1} width={100} height={100} alt="leaning1" />
 					<span className="ml-5 bg-[#FFF4EF] px-4 text-[#F26522] border-2 border-[#F26522] rounded-lg text-lg">
@@ -35,7 +35,13 @@ export default async function ThesisProgressFormUpdatePage({ params }: { params:
 				</div>
 				<div className="h-full w-full flex items-center bg-[#EEEEEE] p-2 md:p-8 rounded-md">
 					<div className="w-full h-full">
-						<ThesisProgressFormUpdate formData={formData} user={user} approvedForm={approvedForm} headSchool={headSchool} last06Form={last06Form} />
+						<ThesisProgressFormUpdate
+							formData={formData}
+							user={user}
+							approvedForm={approvedForm}
+							headSchool={headSchool}
+							last06Form={last06Form}
+						/>
 					</div>
 				</div>
 			</div>

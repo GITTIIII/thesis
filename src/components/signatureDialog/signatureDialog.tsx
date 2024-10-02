@@ -115,9 +115,9 @@ export default function SignatureDialog(props: DialogProps) {
 										}}
 									/>
 								</div>
-								<div className="flex space-x-2 items-center">
+								<div className="flex items-center">
 									<Checkbox />
-									<Label className="mt-0">ข้าพเจ้ายินยอมให้ใช้ลายเซ็นในการลงนามเอกสารฉบับนี้</Label>
+									<Label className="ml-2 font-normal">ข้าพเจ้ายินยอมให้ใช้ลายเซ็นในการลงนามเอกสารฉบับนี้</Label>
 								</div>
 							</CardContent>
 							<CardFooter>

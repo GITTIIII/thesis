@@ -187,6 +187,7 @@ const QualificationExamCommitteeFormUpdate = ({
 						<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
 							<h1 className="font-bold">ลายเซ็นหัวหน้าสาขาวิชา</h1>
 							<SignatureDialog
+								userSignUrl={user.position == "HEAD_OF_SCHOOL" ? user?.signatureUrl : ""}
 								disable={formData?.headSchoolSignUrl ? true : false}
 								signUrl={formData?.headSchoolSignUrl || form.getValues("headSchoolSignUrl")}
 								onConfirm={handleDrawingSign}
