@@ -10,6 +10,17 @@ import { DataTable } from "@/components/tanStackTable/dataTable";
 import { userColumns } from "./user-columns";
 import { IUser } from "@/interface/user";
 import { IExpert } from "@/interface/expert";
+import * as React from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { SlidersHorizontal } from "lucide-react";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -18,6 +29,19 @@ export default function UserDashboard() {
   const { data: advisorData = [] } = useSWR<IUser[]>("/api/getAdvisor", fetcher);
   const { data: headInstituteData = [] } = useSWR<IUser[]>("/api/getHeadInstitute", fetcher);
   const { data: expertData = [] } = useSWR<IExpert[]>("/api/expert", fetcher);
+
+  const [filtered, setFiltered] = React.useState("none");
+
+  const studentDataWithFilter = React.useMemo(() => {
+    switch (filtered) {
+      case "master":
+        return studentData.filter((student) => student.degree === "Master");
+      case "doctoral":
+        return studentData.filter((student) => student.degree === "Doctoral");
+      default:
+        return studentData;
+    }
+  }, [studentData, filtered]);
 
   return (
     <div className="flex flex-col w-svh h-svh">
@@ -44,11 +68,33 @@ export default function UserDashboard() {
             <TabsContent value="student">
               <Card>
                 <CardHeader>
-                  <CardTitle>รายชื่อบัณฑิตศึกษา</CardTitle>
-                  <CardDescription>สามารถคลิกที่เมนูด้านขวาเพื่อดูข้อมูลเพิ่มเติมได้</CardDescription>
+                  <div className="flex justify-between">
+                    <div>
+                      <CardTitle>รายชื่อบัณฑิตศึกษา</CardTitle>
+                      <CardDescription>สามารถคลิกที่เมนูด้านขวาเพื่อดูข้อมูลเพิ่มเติมได้</CardDescription>
+                    </div>
+                    <div>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button>
+                            <SlidersHorizontal className="h-4 w-4" />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent className="w-56">
+                          <DropdownMenuLabel>ตัวกรอง</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuRadioGroup value={filtered} onValueChange={setFiltered}>
+                            <DropdownMenuRadioItem value="none">ทั้งหมด</DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value="master">ปริญญาโท</DropdownMenuRadioItem>
+                            <DropdownMenuRadioItem value="doctoral">ปริญญาเอก</DropdownMenuRadioItem>
+                          </DropdownMenuRadioGroup>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </div>
+                  </div>
                 </CardHeader>
                 <CardContent>
-                  <DataTable columns={userColumns.studentColumns} data={studentData} />
+                  <DataTable columns={userColumns.studentColumns} data={studentDataWithFilter} />
                 </CardContent>
               </Card>
             </TabsContent>

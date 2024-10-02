@@ -71,7 +71,7 @@ const form01Columns: ColumnDef<IComprehensiveExamCommitteeForm>[] = [
     cell: ({ row }) => {
       const form01 = row.original.id;
       const deleteAPI = `/api/delete01FormById/${form01}`;
-      const updatePath = `/user/form/comprehensiveExamCommitteeForm/superAdmin/update/${form01}`;
+      const updatePath = `/user/form/01-comprehensiveExamCommitteeForm/superAdmin/update/${form01}`;
       const fetchAPI = `/api/01ComprehensiveExamCommitteeForm`;
       return <ActionMenu deleteAPI={deleteAPI} updatePath={updatePath} fetchAPI={fetchAPI} />;
     },
@@ -128,7 +128,7 @@ const form02Columns: ColumnDef<IQualificationExamCommitteeForm>[] = [
     cell: ({ row }) => {
       const form02 = row.original.id;
       const deleteAPI = `/api/delete02FormById/${form02}`;
-      const updatePath = `/user/form/qualificationExamCommitteeForm/superAdmin/update/${form02}`;
+      const updatePath = `/user/form/02-qualificationExamCommitteeForm/superAdmin/update/${form02}`;
       const fetchAPI = `/api/02QualificationExamCommitteeForm`;
       return <ActionMenu deleteAPI={deleteAPI} updatePath={updatePath} fetchAPI={fetchAPI} />;
     },
@@ -185,7 +185,7 @@ const form03Columns: ColumnDef<IOutlineCommitteeForm>[] = [
     cell: ({ row }) => {
       const form03 = row.original.id;
       const deleteAPI = `/api/delete03FormById/${form03}`;
-      const updatePath = `/user/form/thesisOutlineCommitteeForm/superAdmin/update/${form03}`;
+      const updatePath = `/user/form/03-thesisOutlineCommitteeForm/superAdmin/update/${form03}`;
       const fetchAPI = `/api/03ThesisOutlineCommitteeForm`;
       return <ActionMenu deleteAPI={deleteAPI} updatePath={updatePath} fetchAPI={fetchAPI} />;
     },
@@ -242,7 +242,7 @@ const form04Columns: ColumnDef<IExamCommitteeForm>[] = [
     cell: ({ row }) => {
       const form04 = row.original.id;
       const deleteAPI = `/api/delete04FormById/${form04}`;
-      const updatePath = `/user/form/thesisexamCommitteeForm/superAdmin/update/${form04}`;
+      const updatePath = `/user/form/04-thesisexamCommitteeForm/superAdmin/update/${form04}`;
       const fetchAPI = `/api/04ThesisExamCommitteeForm`;
       return <ActionMenu deleteAPI={deleteAPI} updatePath={updatePath} fetchAPI={fetchAPI} />;
     },
@@ -299,7 +299,7 @@ const form05Columns: ColumnDef<IOutlineForm>[] = [
     cell: ({ row }) => {
       const form05 = row.original.id;
       const deleteAPI = `/api/delete05FormById/${form05}`;
-      const updatePath = `/user/form/outlineForm/superAdmin/update/${form05}`;
+      const updatePath = `/user/form/05-outlineForm/update/${form05}`;
       const fetchAPI = `/api/05OutlineForm`;
       return <ActionMenu deleteAPI={deleteAPI} updatePath={updatePath} fetchAPI={fetchAPI} />;
     },
@@ -356,7 +356,7 @@ const form06Columns: ColumnDef<IThesisProgressForm>[] = [
     cell: ({ row }) => {
       const form06 = row.original.id;
       const deleteAPI = `/api/delete06FormById/${form06}`;
-      const updatePath = `/user/form/thesisProgressForm/superAdmin/update/${form06}`;
+      const updatePath = `/user/form/06-thesisProgressForm/superAdmin/update/${form06}`;
       const fetchAPI = `/api/06ThesisProgressForm`;
       return <ActionMenu deleteAPI={deleteAPI} updatePath={updatePath} fetchAPI={fetchAPI} />;
     },
@@ -417,7 +417,7 @@ const form07Columns: ColumnDef<IThesisExamAppointmentForm>[] = [
     cell: ({ row }) => {
       const form07 = row.original.id;
       const deleteAPI = `/api/delete07FormById/${form07}`;
-      const updatePath = `/user/form/thesisExamAppointmentForm/superAdmin/update/${form07}`;
+      const updatePath = `/user/form/07-thesisExamAppointmentForm/superAdmin/update/${form07}`;
       const fetchAPI = `/api/07ThesisExamAppointmentForm`;
       return <ActionMenu deleteAPI={deleteAPI} updatePath={updatePath} fetchAPI={fetchAPI} />;
     },
@@ -473,7 +473,7 @@ const form08Columns: ColumnDef<any>[] = [
     cell: ({ row }) => {
       const form08 = row.original.id;
       const deleteAPI = `/api/delete08FormById/${form08}`;
-      const updatePath = `/user/form/thesisExamForm/superAdmin/update/${form08}`;
+      const updatePath = `/user/form/08-thesisExamForm/superAdmin/update/${form08}`;
       const fetchAPI = `/api/08ThesisExam/Form`;
       return <ActionMenu deleteAPI={deleteAPI} updatePath={updatePath} fetchAPI={fetchAPI} />;
     },

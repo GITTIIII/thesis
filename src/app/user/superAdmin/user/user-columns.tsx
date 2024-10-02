@@ -7,6 +7,7 @@ import { IExpert } from "@/interface/expert";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
 import ActionMenu from "@/components/actionMenu/actionMenu";
+import { SelectPosition } from "@/components/selectPosition/selectPosition";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -27,6 +28,9 @@ const studentColumns: ColumnDef<IUser>[] = [
       );
     },
     accessorKey: "username",
+    meta: {
+      filterVariant: "select",
+    },
   },
   {
     id: "studentName",
@@ -85,6 +89,14 @@ const advisorColumns: ColumnDef<IUser>[] = [
   {
     header: "ระดับการศึกษา",
     accessorFn: (row) => `${row.degree == "Master" ? "ปริญญาโท" : "ปริญญาเอก"}`,
+  },
+  {
+    header: "ตำแหน่ง",
+    cell: (row) => (
+      <div>
+        <SelectPosition id={row.row.original.id} />
+      </div>
+    ),
   },
   {
     id: "actions",
