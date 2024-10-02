@@ -51,7 +51,10 @@ export default function ThesisProcessPlan({
   // หลัง dran and drop เสร็จให้เปลี่ยน index
   function handleOnDragEnd(result: DropResult) {
     if (!result.destination) return;
-    if (fixedindexs.includes(result.source.index) || fixedindexs.includes(result.destination.index)) {
+    if (
+      fixedindexs.includes(result.source.index) ||
+      fixedindexs.includes(result.destination.index)
+    ) {
       return;
     }
     const items = Array.from(data);
@@ -121,7 +124,9 @@ export default function ThesisProcessPlan({
       <div>
         <div className=" w-fit">
           <div className=" flex pb-2  border-b border-t-1 border-[#eeee] ">
-            <p className=" w-[500px] text-[14px] text-center self-center">กิจกรรม / ขั้นตอนการดำเนินงาน</p>
+            <p className=" w-[500px] text-[14px] text-center self-center">
+              กิจกรรม / ขั้นตอนการดำเนินงาน
+            </p>
             <div className=" text-center ">
               <p>เดือนที่</p>
               <div className=" inline-flex ">
@@ -139,7 +144,9 @@ export default function ThesisProcessPlan({
                                 return { ...plan, months: updatedMonths };
                               });
                               setMonths(() => {
-                                return Math.max(...newList.map((plan) => plan.months.length));
+                                return Math.max(
+                                  ...newList.map((plan) => plan.months.length)
+                                );
                               });
                               return newList;
                             });
@@ -149,7 +156,9 @@ export default function ThesisProcessPlan({
                     ) : null}
                     {degree && (
                       <p className="text-center text-[14px] w-20">
-                        {degree.toLowerCase() === "master" ? `${index + 1}` : `${(index + 1) * 3}`}
+                        {degree.toLowerCase() === "master"
+                          ? `${index + 1}`
+                          : `${(index + 1) * 3}`}
                       </p>
                     )}
                   </div>
@@ -162,29 +171,34 @@ export default function ThesisProcessPlan({
               <Droppable droppableId="operationSteps" type="group">
                 {(provided) => (
                   <ul {...provided.droppableProps} ref={provided.innerRef}>
-                    {data && data.map((ProcessPlan, index) => (
-                      <Draggable
-                        key={index}
-                        draggableId={`${index}`}
-                        index={index}
-                        isDragDisabled={canEdit ? fixedindexs.includes(index) : true}
-                      >
-                        {(provided) => (
-                          <li ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps}>
-                            <TemplateList
-                              processPlan={ProcessPlan}
-                              setData={setData}
-                              fixedindexs={fixedindexs}
-                              updateFixedindex={updateFixedindex}
-                              months={months}
-                              degree={degree}
-                              canEdit={canEdit}
-                              index={index}
-                            />
-                          </li>
-                        )}
-                      </Draggable>
-                    ))}
+                    {data &&
+                      data.map((ProcessPlan, index) => (
+                        <Draggable
+                          key={index}
+                          draggableId={`${index}`}
+                          index={index}
+                          isDragDisabled={canEdit ? fixedindexs.includes(index) : true}
+                        >
+                          {(provided) => (
+                            <li
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                            >
+                              <TemplateList
+                                processPlan={ProcessPlan}
+                                setData={setData}
+                                fixedindexs={fixedindexs}
+                                updateFixedindex={updateFixedindex}
+                                months={months}
+                                degree={degree}
+                                canEdit={canEdit}
+                                index={index}
+                              />
+                            </li>
+                          )}
+                        </Draggable>
+                      ))}
                     {provided.placeholder}
                   </ul>
                 )}
@@ -198,7 +212,16 @@ export default function ThesisProcessPlan({
     </div>
   );
 }
-const TemplateList = ({ processPlan, setData, fixedindexs, updateFixedindex, degree, months, index, canEdit }: ITemplateList) => {
+const TemplateList = ({
+  processPlan,
+  setData,
+  fixedindexs,
+  updateFixedindex,
+  degree,
+  months,
+  index,
+  canEdit,
+}: ITemplateList) => {
   const [loading, setLoading] = useState<boolean>(true);
   const handleRect = useCallback((element: HTMLLIElement | null) => {
     if (element === null) return;
@@ -222,7 +245,9 @@ const TemplateList = ({ processPlan, setData, fixedindexs, updateFixedindex, deg
                       value={processPlan.step}
                       onChange={(element) => {
                         setData((prevList) =>
-                          prevList!.map((item, idx) => (idx === index ? { ...item, step: element.target.value } : item))
+                          prevList!.map((item, idx) =>
+                            idx === index ? { ...item, step: element.target.value } : item
+                          )
                         );
                       }}
                     />
@@ -249,7 +274,11 @@ const TemplateList = ({ processPlan, setData, fixedindexs, updateFixedindex, deg
             {Array.from({
               length: months,
             }).map((_, indexChackBox) => (
-              <li ref={handleRect} key={indexChackBox} className="w-20 flex justify-center items-center">
+              <li
+                ref={handleRect}
+                key={indexChackBox}
+                className="w-20 flex justify-center items-center"
+              >
                 {!fixedindexs.filter((item) => item !== 0).includes(index) ? (
                   <Input
                     disabled={canEdit == true ? false : true}
@@ -261,7 +290,9 @@ const TemplateList = ({ processPlan, setData, fixedindexs, updateFixedindex, deg
                       setData((prevList) => {
                         const newList = prevList!.map((item, idx) => {
                           if (idx === index) {
-                            const newMonths = item.months.map((m, monthIdx) => (monthIdx === indexChackBox ? Number(!m) : m));
+                            const newMonths = item.months.map((m, monthIdx) =>
+                              monthIdx === indexChackBox ? Number(!m) : m
+                            );
                             return { ...item, months: newMonths };
                           }
                           return item;
@@ -272,16 +303,30 @@ const TemplateList = ({ processPlan, setData, fixedindexs, updateFixedindex, deg
                   />
                 ) : (
                   <Input
+                    step={0.1}
+                    min={1}
+                    max={100}
                     disabled={canEdit == true ? false : true}
                     type="number"
                     className="w-14 text-center h-10 accent-[#a67436] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                    value={processPlan.months[indexChackBox] == 0 ? "" : processPlan.months[indexChackBox]}
+                    value={
+                      processPlan.months[indexChackBox] === 0
+                        ? ""
+                        : processPlan.months[indexChackBox]
+                    }
                     onChange={(element) => {
+                      let value = parseFloat(element.target.value);
+
+                      if (value < 1) value = 1;
+                      if (value > 100) value = 100;
+
+                      value = parseFloat(value.toFixed(1));
+
                       setData((prevList) => {
                         const newList = prevList!.map((item, idx) => {
                           if (idx === index) {
                             const newMonths = item.months.map((persen, monthIdx) =>
-                              monthIdx === indexChackBox ? Number(element.target.value) : persen
+                              monthIdx === indexChackBox ? value : persen
                             );
                             return { ...item, months: newMonths };
                           }
@@ -295,7 +340,9 @@ const TemplateList = ({ processPlan, setData, fixedindexs, updateFixedindex, deg
               </li>
             ))}
           </ul>
-          {(canEdit ? !fixedindexs.includes(index) : !true) && <GoGrabber className="self-center" size={30} />}
+          {(canEdit ? !fixedindexs.includes(index) : !true) && (
+            <GoGrabber className="self-center" size={30} />
+          )}
         </div>
       </div>
     </>
