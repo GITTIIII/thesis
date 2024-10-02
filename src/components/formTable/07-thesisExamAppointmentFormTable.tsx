@@ -133,7 +133,7 @@ export default function ThesisExamAppointmentFormTable({ formData, user }: { use
 										</Link>
 									</TableCell>
 									<TableCell className="text-center">
-										<Button type="button" variant="outline">
+										<Button type="button" variant="outline" onClick={() => handleDownload(formData)}>
 											<Download className="mr-2" />
 											ดาวน์โหลด
 										</Button>

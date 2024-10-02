@@ -8,12 +8,12 @@ export async function GET(request: NextRequest) {
   const qualificationExamCommitteeFormId = request.nextUrl.searchParams.get("id");
   const session = await getServerSession(authOptions);
 
-  // if (!session) {
-  //   return NextResponse.json(
-  //     { user: null, message: "Session not found" },
-  //     { status: 404 }
-  //   );
-  // }
+  if (!session) {
+    return NextResponse.json(
+      { user: null, message: "Session not found" },
+      { status: 404 }
+    );
+  }
   const qualificationExamCommitteeForm =
     await db.qualificationExamCommitteeForm.findUnique({
       where: {

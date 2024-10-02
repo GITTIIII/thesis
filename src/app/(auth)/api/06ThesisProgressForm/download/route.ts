@@ -65,8 +65,8 @@ export async function GET(request: NextRequest) {
     programName: thesisProgressForm.student.program?.programNameTH || "",
     programYear: thesisProgressForm.student.program?.programYear || "",
     degree: degree,
-    status1: thesisProgressForm.status === "มีการเปลี่ยนแผนที่วางไว้" ? "☑" : "☐",
-    status2: thesisProgressForm.status === "เป็นไปตามแผนที่วางไว้ทุกประการ" ? "☑" : "☐",
+    status1: thesisProgressForm.status === "เป็นไปตามแผนที่วางไว้ทุกประการ" ? "☑" : "☐",
+    status2: thesisProgressForm.status === "มีการเปลี่ยนแผนที่วางไว้" ? "☑" : "☐",
     statusComment:
       thesisProgressForm.status === "มีการเปลี่ยนแผนที่วางไว้"
         ? thesisProgressForm.statusComment
@@ -88,32 +88,32 @@ export async function GET(request: NextRequest) {
   };
   try {
     const doc1 = await genDocx("FM-ENG-GRD-06.docx", data);
-    // var doc2;
-    // if (
-    //   thesisProgressForm.processPlan &&
-    //   typeof thesisProgressForm.processPlan === "object" &&
-    //   Array.isArray(thesisProgressForm.processPlan)
-    // ) {
-    //   const processPlanObject = thesisProgressForm.processPlan as Prisma.JsonArray;
-    //   doc2 = await genDocProcessPlan(
-    //     {
-    //       date: {
-    //         month: "ธันวาคม",
-    //         year: "2564",
-    //       },
-    //       signature: {
-    //         img: data.stdSignUrl,
-    //         name: data.nameStd,
-    //         date: dateShortTH(thesisProgressForm.date),
-    //       },
-    //       processPlan: processPlanObject,
-    //     },
-    //     "FM-ENG-GRD-06"
-    //   );
-    // }
+    var doc2;
+    if (
+      thesisProgressForm.processPlan &&
+      typeof thesisProgressForm.processPlan === "object" &&
+      Array.isArray(thesisProgressForm.processPlan)
+    ) {
+      const processPlanObject = thesisProgressForm.processPlan as Prisma.JsonArray;
+      doc2 = await genDocProcessPlan(
+        {
+          date: {
+            month: "",
+            year: "",
+          },
+          signature: {
+            img: thesisProgressForm.student.signatureUrl,
+            name: data.nameStd,
+            date: dateShortTH(thesisProgressForm.date),
+          },
+          processPlan: processPlanObject,
+        },
+        "FM-ENG-GRD-05-00"
+      );
+    }
     const zip = new JSZip();
     zip.file(`${"FM-ENG-GRD-06_1"}.docx`, doc1);
-    // zip.file(`${"FM-ENG-GRD-06_2"}.docx`, doc2!);
+    zip.file(`${"FM-ENG-GRD-06_2"}.docx`, doc2!);
     const filezip = await zip.generateAsync({ type: "blob" }).then((content) => {
       return content;
     });
