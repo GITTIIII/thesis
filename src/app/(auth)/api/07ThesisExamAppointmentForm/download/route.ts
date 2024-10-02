@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
       `${thesisExamAppointmentForm.student.advisor?.prefix?.prefixTH}${thesisExamAppointmentForm.student.advisor?.firstNameTH} ${thesisExamAppointmentForm.student.advisor?.lastNameTH}` ||
       "",
     nameStd:
-      `${thesisExamAppointmentForm.student.prefix?.prefixTH} ${thesisExamAppointmentForm.student.firstNameTH} ${thesisExamAppointmentForm.student.lastNameTH}` ||
+      `${thesisExamAppointmentForm.student.prefix?.prefixTH}${thesisExamAppointmentForm.student.firstNameTH} ${thesisExamAppointmentForm.student.lastNameTH}` ||
       "",
     stdId: thesisExamAppointmentForm.student.username || "",
     schoolName: thesisExamAppointmentForm.student.school?.schoolNameTH || "",
