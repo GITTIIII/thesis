@@ -23,7 +23,7 @@ npx prisma db seed
 #ใช้เข้า ui ของ prisma
 npx prisma studio
 ```
-
+## ER Diagram
 ```mermaid
 erDiagram
 	Position {
