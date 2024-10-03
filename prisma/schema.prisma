@@ -9,6 +9,11 @@ generator client {
   previewFeatures = ["fullTextIndex", "fullTextSearch"]
 }
 
+generator erd {
+  provider = "prisma-erd-generator-markdown"
+  output   = "./ERD.md"
+}
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
