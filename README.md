@@ -1,4 +1,4 @@
-## Environement File
+## Environment File
 สร้างไฟล์ .env 
 มี url ของ Database เเละ Secret สำหรับการทำ Authentication
 ```bash
