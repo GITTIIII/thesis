@@ -37,7 +37,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { checkPlannedWorkSum, cn } from "@/lib/utils";
+import { checkForZero, checkPlannedWorkSum, cn } from "@/lib/utils";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -147,7 +147,17 @@ export default function SuperAdminForm06Update({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setLoading(true);
+    formData?.processPlan;
+    if (checkForZero(formData?.processPlan)) {
+      toast({
+        title: "เกิดข้อผิดพลาด",
+        description: `กรุณาตรวจสอบและกรอกข้อมูลในช่องผลรวมปริมาณงานที่วางแผนไว้ให้ครบ`,
+        variant: "destructive",
+      });
+      setLoading(false);
 
+      return;
+    }
     const checkSum = checkPlannedWorkSum(formData?.processPlan);
     if (!checkSum[0]) {
       toast({

@@ -1,9 +1,22 @@
 "use client";
 import { useEffect, useState } from "react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import {
+  Command,
+  CommandEmpty,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
 import { Check, ChevronsUpDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
@@ -14,7 +27,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Label } from "../../ui/label";
 import { Input } from "@/components/ui/input";
-import { checkPlannedWorkSum, cn } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { DatePicker } from "@/components/datePicker/datePicker";
 import { IOutlineForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
@@ -115,8 +128,12 @@ const OutlineFormUpdate = ({
       return;
     }
     if (
-      (values.outlineCommitteeStatus != "" && values.outlineCommitteeSignUrl == "" && values.outlineCommitteeID != 0) ||
-      (values.instituteCommitteeStatus != "" && values.instituteCommitteeSignUrl == "" && values.instituteCommitteeID != 0)
+      (values.outlineCommitteeStatus != "" &&
+        values.outlineCommitteeSignUrl == "" &&
+        values.outlineCommitteeID != 0) ||
+      (values.instituteCommitteeStatus != "" &&
+        values.instituteCommitteeSignUrl == "" &&
+        values.instituteCommitteeID != 0)
     ) {
       toast({
         title: "Error",
@@ -127,17 +144,25 @@ const OutlineFormUpdate = ({
       return;
     }
 
-    if (values.outlineCommitteeStatus == "ไม่อนุมัติ" || values.instituteCommitteeStatus == "ไม่อนุมัติ") {
+    if (
+      values.outlineCommitteeStatus == "ไม่อนุมัติ" ||
+      values.instituteCommitteeStatus == "ไม่อนุมัติ"
+    ) {
       values.formStatus = "ไม่อนุมัติ";
     } else if (
-      (formData?.outlineCommitteeStatus == "อนุมัติ" || values?.outlineCommitteeStatus == "อนุมัติ") &&
+      (formData?.outlineCommitteeStatus == "อนุมัติ" ||
+        values?.outlineCommitteeStatus == "อนุมัติ") &&
       values.instituteCommitteeStatus == "อนุมัติ" &&
       user?.role == "SUPER_ADMIN"
     ) {
       values.formStatus = "อนุมัติ";
       values.editComment = "";
       updateStdFormState(formData.studentID);
-    } else if (formData?.outlineCommitteeStatus == "อนุมัติ" && values.editComment != "" && user?.role == "SUPER_ADMIN") {
+    } else if (
+      formData?.outlineCommitteeStatus == "อนุมัติ" &&
+      values.editComment != "" &&
+      user?.role == "SUPER_ADMIN"
+    ) {
       values.formStatus = "เเก้ไข";
       values.instituteCommitteeID = 0;
       values.instituteCommitteeStatus = "";
@@ -219,7 +244,10 @@ const OutlineFormUpdate = ({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4 rounded-xl">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="w-full h-full bg-white p-4 rounded-xl"
+      >
         <div className="w-full flex px-0 lg:px-20 mb-2">
           <Button
             variant="outline"
@@ -257,50 +285,94 @@ const OutlineFormUpdate = ({
           {/* ฝั่งซ้าย */}
           <div className="w-full">
             <h1 className="text-center mb-2 font-bold">ข้อมูลนักศึกษา</h1>
-            <InputForm value={`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`} label="ชื่อ-นามสกุล / Full name" />
-            <InputForm value={`${formData?.student.username} `} label="รหัสนักศึกษา / StudentID" />
+            <InputForm
+              value={`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
+              label="ชื่อ-นามสกุล / Full name"
+            />
+            <InputForm
+              value={`${formData?.student.username} `}
+              label="รหัสนักศึกษา / StudentID"
+            />
 
             <div className="flex flex-col items-center mb-6 justify-center">
-              <FormLabel className="font-normal">ระดับการศึกษา / Education Level</FormLabel>
+              <FormLabel className="font-normal">
+                ระดับการศึกษา / Education Level
+              </FormLabel>
               <RadioGroup disabled className="space-y-1 mt-2">
                 <div>
-                  <RadioGroupItem checked={formData?.student.degree === "Master"} value="Master" />
-                  <FormLabel className="ml-2 font-normal">ปริญญาโท (Master Degree)</FormLabel>
+                  <RadioGroupItem
+                    checked={formData?.student.degree === "Master"}
+                    value="Master"
+                  />
+                  <FormLabel className="ml-2 font-normal">
+                    ปริญญาโท (Master Degree)
+                  </FormLabel>
                 </div>
                 <div>
-                  <RadioGroupItem checked={formData?.student.degree === "Doctoral"} value="Doctoral" />
-                  <FormLabel className="ml-2 font-normal">ปริญญาเอก (Doctoral Degree)</FormLabel>
+                  <RadioGroupItem
+                    checked={formData?.student.degree === "Doctoral"}
+                    value="Doctoral"
+                  />
+                  <FormLabel className="ml-2 font-normal">
+                    ปริญญาเอก (Doctoral Degree)
+                  </FormLabel>
                 </div>
               </RadioGroup>
             </div>
 
-            <InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
-            <InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
-            <InputForm value={`${formData?.student.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />
+            <InputForm
+              value={`${formData?.student?.school?.schoolNameTH}`}
+              label="สาขาวิชา / School"
+            />
+            <InputForm
+              value={`${formData?.student?.program?.programNameTH}`}
+              label="หลักสูตร / Program"
+            />
+            <InputForm
+              value={`${formData?.student.program?.programYear}`}
+              label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)"
+            />
           </div>
 
           {/* ฝั่งขวา */}
           <div className="w-full">
             <h1 className="text-center mb-2 font-bold">ชื่อโครงร่างวิทยานิพนธ์</h1>
-            <InputForm value={`${formData?.thesisNameTH}`} label="ชื่อภาษาไทย / ThesisName(TH)" />
-            <InputForm value={`${formData?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / ThesisName(EN)" />
+            <InputForm
+              value={`${formData?.thesisNameTH}`}
+              label="ชื่อภาษาไทย / ThesisName(TH)"
+            />
+            <InputForm
+              value={`${formData?.thesisNameEN}`}
+              label="ชื่อภาษาอังกฤษ / ThesisName(EN)"
+            />
             <InputForm
               value={`${formData?.student?.advisor?.prefix?.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}
               label="อาจารย์ที่ปรึกษา / Advisor"
             />
             {formData.student.coAdvisedStudents &&
               formData.student.coAdvisedStudents.length > 0 &&
-              formData.student.coAdvisedStudents.map((coAdvisors: ICoAdvisorStudents, index: number) => (
-                <InputForm
-                  key={index}
-                  value={`${coAdvisors.coAdvisor?.prefix?.prefixTH}${coAdvisors.coAdvisor?.firstNameTH} ${coAdvisors.coAdvisor?.lastNameTH}`}
-                  label="อาจารย์ที่ปรึกษาร่วม / CoAdvisor"
-                />
-              ))}
+              formData.student.coAdvisedStudents.map(
+                (coAdvisors: ICoAdvisorStudents, index: number) => (
+                  <InputForm
+                    key={index}
+                    value={`${coAdvisors.coAdvisor?.prefix?.prefixTH}${coAdvisors.coAdvisor?.firstNameTH} ${coAdvisors.coAdvisor?.lastNameTH}`}
+                    label="อาจารย์ที่ปรึกษาร่วม / CoAdvisor"
+                  />
+                )
+              )}
             <div className="flex flex-col items-center mb-6 justify-center">
               <FormLabel>ลายเซ็น / Signature</FormLabel>
-              <SignatureDialog disable={true} signUrl={formData?.student.signatureUrl ? formData?.student.signatureUrl : ""} />
-              <Label>{`วันที่ ${formData?.date ? new Date(formData?.date).toLocaleDateString("th") : "__________"}`}</Label>
+              <SignatureDialog
+                disable={true}
+                signUrl={
+                  formData?.student.signatureUrl ? formData?.student.signatureUrl : ""
+                }
+              />
+              <Label>{`วันที่ ${
+                formData?.date
+                  ? new Date(formData?.date).toLocaleDateString("th")
+                  : "__________"
+              }`}</Label>
             </div>
           </div>
         </div>
@@ -309,12 +381,16 @@ const OutlineFormUpdate = ({
           {/* กรรมการโครงร่าง */}
 
           <div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
-            <h1 className="mb-2 font-bold">ความเห็นของคณะกรรมการพิจารณาโครงร่างวิทยานิพนธ์</h1>
+            <h1 className="mb-2 font-bold">
+              ความเห็นของคณะกรรมการพิจารณาโครงร่างวิทยานิพนธ์
+            </h1>
             <div className="w-max h-max flex mt-2 items-center">
               <Label className="mr-2">วันที่</Label>
               {formData?.outlineCommitteeID ? (
                 <Label>
-                  {formData?.dateOutlineCommitteeSign ? new Date(formData.dateOutlineCommitteeSign).toLocaleDateString("th") : "__________"}
+                  {formData?.dateOutlineCommitteeSign
+                    ? new Date(formData.dateOutlineCommitteeSign).toLocaleDateString("th")
+                    : "__________"}
                 </Label>
               ) : (
                 <FormField
@@ -334,16 +410,31 @@ const OutlineFormUpdate = ({
             {formData?.outlineCommitteeID ? (
               <div className="flex flex-col items-center justify-center">
                 <RadioGroup
-                  disabled={formData?.outlineCommitteeStatus || (user?.role != "SUPER_ADMIN" && user?.role != "ADMIN") ? true : false}
+                  disabled={
+                    formData?.outlineCommitteeStatus ||
+                    (user?.role != "SUPER_ADMIN" && user?.role != "ADMIN")
+                      ? true
+                      : false
+                  }
                   className="flex my-6"
                 >
                   <div className="flex items-center justify-center">
-                    <RadioGroupItem checked={formData?.outlineCommitteeStatus == "ไม่อนุมัติ"} value="ไม่อนุมัติ" />
-                    <div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">ไม่อนุมัติ</div>
+                    <RadioGroupItem
+                      checked={formData?.outlineCommitteeStatus == "ไม่อนุมัติ"}
+                      value="ไม่อนุมัติ"
+                    />
+                    <div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">
+                      ไม่อนุมัติ
+                    </div>
                   </div>
                   <div className="ml-4 mt-0 flex items-center justify-center">
-                    <RadioGroupItem checked={formData?.outlineCommitteeStatus == "อนุมัติ"} value="อนุมัติ" />
-                    <div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">อนุมัติ</div>
+                    <RadioGroupItem
+                      checked={formData?.outlineCommitteeStatus == "อนุมัติ"}
+                      value="อนุมัติ"
+                    />
+                    <div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
+                      อนุมัติ
+                    </div>
                   </div>
                 </RadioGroup>
               </div>
@@ -355,17 +446,26 @@ const OutlineFormUpdate = ({
                   <FormItem>
                     <FormControl>
                       <RadioGroup
-                        disabled={formData?.outlineCommitteeStatus || (user?.role != "SUPER_ADMIN" && user?.role != "ADMIN") ? true : false}
+                        disabled={
+                          formData?.outlineCommitteeStatus ||
+                          (user?.role != "SUPER_ADMIN" && user?.role != "ADMIN")
+                            ? true
+                            : false
+                        }
                         onValueChange={field.onChange}
                         className="flex my-4"
                       >
                         <FormItem className="flex items-center justify-center">
                           <RadioGroupItem className="mt-2" value="ไม่อนุมัติ" />
-                          <div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">ไม่อนุมัติ</div>
+                          <div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">
+                            ไม่อนุมัติ
+                          </div>
                         </FormItem>
                         <FormItem className="ml-4 mt-0 flex items-center justify-center">
                           <RadioGroupItem className="mt-2" value="อนุมัติ" />
-                          <div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">อนุมัติ</div>
+                          <div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
+                            อนุมัติ
+                          </div>
                         </FormItem>
                       </RadioGroup>
                     </FormControl>
@@ -382,10 +482,19 @@ const OutlineFormUpdate = ({
                 <FormItem className="w-60">
                   <FormControl>
                     <Textarea
-                      disabled={formData?.outlineCommitteeComment || (user?.role != "SUPER_ADMIN" && user?.role != "ADMIN") ? true : false}
+                      disabled={
+                        formData?.outlineCommitteeComment ||
+                        (user?.role != "SUPER_ADMIN" && user?.role != "ADMIN")
+                          ? true
+                          : false
+                      }
                       placeholder="ความเห็น..."
                       className="resize-none h-full text-md mb-2"
-                      value={formData?.outlineCommitteeComment ? formData?.outlineCommitteeComment : field.value}
+                      value={
+                        formData?.outlineCommitteeComment
+                          ? formData?.outlineCommitteeComment
+                          : field.value
+                      }
                       onChange={field.onChange}
                     />
                   </FormControl>
@@ -395,7 +504,10 @@ const OutlineFormUpdate = ({
             />
             <SignatureDialog
               disable={formData?.outlineCommitteeSignUrl ? true : false}
-              signUrl={formData?.outlineCommitteeSignUrl || form.getValues("outlineCommitteeSignUrl")}
+              signUrl={
+                formData?.outlineCommitteeSignUrl ||
+                form.getValues("outlineCommitteeSignUrl")
+              }
               onConfirm={handleDrawingSignOutline}
               isOpen={openOutline}
               setIsOpen={setOpenOutline}
@@ -411,17 +523,30 @@ const OutlineFormUpdate = ({
                 render={({ field }) => (
                   <>
                     <Popover>
-                      <PopoverTrigger asChild disabled={user?.role != "SUPER_ADMIN" && user?.role != "ADMIN"}>
+                      <PopoverTrigger
+                        asChild
+                        disabled={user?.role != "SUPER_ADMIN" && user?.role != "ADMIN"}
+                      >
                         <FormControl>
                           <Button
                             variant="outline"
                             role="combobox"
-                            className={cn("w-[300px] justify-between", !field.value && "text-muted-foreground")}
+                            className={cn(
+                              "w-[300px] justify-between",
+                              !field.value && "text-muted-foreground"
+                            )}
                           >
                             {field.value
-                              ? `${expert?.find((expert) => expert.id === field.value)?.prefix}${
-                                  expert?.find((expert) => expert.id === field.value)?.firstName
-                                } ${expert?.find((expert) => expert.id === field.value)?.lastName} `
+                              ? `${
+                                  expert?.find((expert) => expert.id === field.value)
+                                    ?.prefix
+                                }${
+                                  expert?.find((expert) => expert.id === field.value)
+                                    ?.firstName
+                                } ${
+                                  expert?.find((expert) => expert.id === field.value)
+                                    ?.lastName
+                                } `
                               : "เลือกประธานกรรมการ"}
                             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                           </Button>
@@ -440,7 +565,14 @@ const OutlineFormUpdate = ({
                                   form.setValue("outlineCommitteeID", expert.id);
                                 }}
                               >
-                                <Check className={cn("mr-2 h-4 w-4", field.value === expert.id ? "opacity-100" : "opacity-0")} />
+                                <Check
+                                  className={cn(
+                                    "mr-2 h-4 w-4",
+                                    field.value === expert.id
+                                      ? "opacity-100"
+                                      : "opacity-0"
+                                  )}
+                                />
                                 {`${expert.prefix}${expert.firstName} ${expert.lastName}`}
                               </CommandItem>
                             ))}
@@ -459,7 +591,9 @@ const OutlineFormUpdate = ({
           {/* กรรมการสำนักวิชา */}
           {(user?.role == "SUPER_ADMIN" || formData?.instituteCommitteeID) && (
             <div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
-              <h1 className="mb-2 font-bold">มติคณะกรรมการประจำสำนักวิชาวิศวกรรมศาสตร์</h1>
+              <h1 className="mb-2 font-bold">
+                มติคณะกรรมการประจำสำนักวิชาวิศวกรรมศาสตร์
+              </h1>
               <div className="w-max h-max flex flex-col sm:flex-row mt-2 items-center">
                 <Label className="mr-2">ครั้งที่</Label>
                 {formData?.instituteCommitteeID ? (
@@ -483,7 +617,9 @@ const OutlineFormUpdate = ({
                 {formData?.instituteCommitteeID ? (
                   <Label>
                     {formData?.dateInstituteCommitteeSign
-                      ? new Date(formData.dateInstituteCommitteeSign).toLocaleDateString("th")
+                      ? new Date(formData.dateInstituteCommitteeSign).toLocaleDateString(
+                          "th"
+                        )
                       : "__________"}
                   </Label>
                 ) : (
@@ -505,16 +641,30 @@ const OutlineFormUpdate = ({
               {formData?.instituteCommitteeID ? (
                 <div className="flex flex-col items-center justify-center">
                   <RadioGroup
-                    disabled={formData?.instituteCommitteeStatus || user?.role != "SUPER_ADMIN" ? true : false}
+                    disabled={
+                      formData?.instituteCommitteeStatus || user?.role != "SUPER_ADMIN"
+                        ? true
+                        : false
+                    }
                     className="flex my-6"
                   >
                     <div className="flex items-center justify-center">
-                      <RadioGroupItem checked={formData?.instituteCommitteeStatus == "ไม่อนุมัติ"} value="ไม่อนุมัติ" />
-                      <div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">ไม่อนุมัติ</div>
+                      <RadioGroupItem
+                        checked={formData?.instituteCommitteeStatus == "ไม่อนุมัติ"}
+                        value="ไม่อนุมัติ"
+                      />
+                      <div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">
+                        ไม่อนุมัติ
+                      </div>
                     </div>
                     <div className="ml-4 mt-0 flex items-center justify-center">
-                      <RadioGroupItem checked={formData?.instituteCommitteeStatus == "อนุมัติ"} value="อนุมัติ" />
-                      <div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">อนุมัติ</div>
+                      <RadioGroupItem
+                        checked={formData?.instituteCommitteeStatus == "อนุมัติ"}
+                        value="อนุมัติ"
+                      />
+                      <div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
+                        อนุมัติ
+                      </div>
                     </div>
                   </RadioGroup>
                 </div>
@@ -526,17 +676,26 @@ const OutlineFormUpdate = ({
                     <FormItem>
                       <FormControl>
                         <RadioGroup
-                          disabled={formData?.instituteCommitteeStatus || user?.role != "SUPER_ADMIN" ? true : false}
+                          disabled={
+                            formData?.instituteCommitteeStatus ||
+                            user?.role != "SUPER_ADMIN"
+                              ? true
+                              : false
+                          }
                           onValueChange={field.onChange}
                           className="flex my-4"
                         >
                           <FormItem className="flex items-center justify-center">
                             <RadioGroupItem className="mt-2" value="ไม่อนุมัติ" />
-                            <div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">ไม่อนุมัติ</div>
+                            <div className="py-1 px-2 ml-2 border-2 border-[#A67436] rounded-xl text-[#A67436]">
+                              ไม่อนุมัติ
+                            </div>
                           </FormItem>
                           <FormItem className="ml-4 mt-0 flex items-center justify-center">
                             <RadioGroupItem className="mt-2" value="อนุมัติ" />
-                            <div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">อนุมัติ</div>
+                            <div className="py-1 ml-2 px-4 border-2 border-[#A67436] bg-[#A67436] rounded-xl text-white">
+                              อนุมัติ
+                            </div>
                           </FormItem>
                         </RadioGroup>
                       </FormControl>
@@ -553,10 +712,19 @@ const OutlineFormUpdate = ({
                   <FormItem className="w-60">
                     <FormControl>
                       <Textarea
-                        disabled={formData?.instituteCommitteeComment || user?.role != "SUPER_ADMIN" ? true : false}
+                        disabled={
+                          formData?.instituteCommitteeComment ||
+                          user?.role != "SUPER_ADMIN"
+                            ? true
+                            : false
+                        }
                         placeholder="ความเห็น..."
                         className="resize-none h-full text-md mb-2"
-                        value={formData?.instituteCommitteeComment ? formData?.instituteCommitteeComment : field.value}
+                        value={
+                          formData?.instituteCommitteeComment
+                            ? formData?.instituteCommitteeComment
+                            : field.value
+                        }
                         onChange={field.onChange}
                       />
                     </FormControl>
@@ -566,7 +734,10 @@ const OutlineFormUpdate = ({
               />
               <SignatureDialog
                 disable={false}
-                signUrl={formData?.instituteCommitteeSignUrl || form.getValues("instituteCommitteeSignUrl")}
+                signUrl={
+                  formData?.instituteCommitteeSignUrl ||
+                  form.getValues("instituteCommitteeSignUrl")
+                }
                 onConfirm={handleDrawingSignInstitute}
                 isOpen={openInstitute}
                 setIsOpen={setOpenInstitute}
@@ -587,15 +758,28 @@ const OutlineFormUpdate = ({
                             <Button
                               variant="outline"
                               role="combobox"
-                              className={cn("w-[300px] justify-between", !field.value && "text-muted-foreground")}
+                              className={cn(
+                                "w-[300px] justify-between",
+                                !field.value && "text-muted-foreground"
+                              )}
                             >
                               {field.value
                                 ? `${
-                                    instituteCommittee?.find((instituteCommittee) => instituteCommittee.id === field.value)?.prefix
-                                      ?.prefixTH
+                                    instituteCommittee?.find(
+                                      (instituteCommittee) =>
+                                        instituteCommittee.id === field.value
+                                    )?.prefix?.prefixTH
                                   } ${
-                                    instituteCommittee?.find((instituteCommittee) => instituteCommittee.id === field.value)?.firstNameTH
-                                  } ${instituteCommittee?.find((instituteCommittee) => instituteCommittee.id === field.value)?.lastNameTH} `
+                                    instituteCommittee?.find(
+                                      (instituteCommittee) =>
+                                        instituteCommittee.id === field.value
+                                    )?.firstNameTH
+                                  } ${
+                                    instituteCommittee?.find(
+                                      (instituteCommittee) =>
+                                        instituteCommittee.id === field.value
+                                    )?.lastNameTH
+                                  } `
                                 : "เลือกประธานกรรมการ"}
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
@@ -611,11 +795,19 @@ const OutlineFormUpdate = ({
                                   value={`${instituteCommittee?.prefix?.prefixTH}${instituteCommittee.firstNameTH} ${instituteCommittee.lastNameTH}`}
                                   key={instituteCommittee.id}
                                   onSelect={() => {
-                                    form.setValue("instituteCommitteeID", instituteCommittee.id);
+                                    form.setValue(
+                                      "instituteCommitteeID",
+                                      instituteCommittee.id
+                                    );
                                   }}
                                 >
                                   <Check
-                                    className={cn("mr-2 h-4 w-4", field.value === instituteCommittee.id ? "opacity-100" : "opacity-0")}
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      field.value === instituteCommittee.id
+                                        ? "opacity-100"
+                                        : "opacity-0"
+                                    )}
                                   />
                                   {`${instituteCommittee?.prefix?.prefixTH}${instituteCommittee?.firstNameTH} ${instituteCommittee.lastNameTH}`}
                                 </CommandItem>
@@ -655,7 +847,8 @@ const OutlineFormUpdate = ({
               isOpen={isOpen}
               setIsOpen={setIsOpen}
             >
-              กรุณาตรวจสอบข้อมูลอย่างละเอียดอีกครั้ง หลังจากการยืนยัน จะไม่สามารถแก้ไขข้อมูลนี้ได้
+              กรุณาตรวจสอบข้อมูลอย่างละเอียดอีกครั้ง หลังจากการยืนยัน
+              จะไม่สามารถแก้ไขข้อมูลนี้ได้
             </ConfirmDialog>
           </div>
         ) : null}
@@ -681,12 +874,22 @@ const OutlineFormUpdate = ({
         <h1 className="mb-2 font-bold text-center">เเผนการดำเนินการจัดทำวิทยานิพนธ์</h1>
         <div className="w-full flex justify-center items-center mb-2 ">
           <Label className="font-bold">เริ่มทำวิทธายานิพนธ์ เดือน</Label>
-          <Input disabled className="w-max mx-4" value={`${formData?.thesisStartMonth}`} />
+          <Input
+            disabled
+            className="w-max mx-4"
+            value={`${formData?.thesisStartMonth}`}
+          />
           <Label className="mx-4 font-bold"> ปี พ.ศ.</Label>
           <Input disabled className="w-max" value={`${formData?.thesisStartYear}`} />
         </div>
         <div className="w-full h-max overflow-auto flex justify-center">
-          {formData && <ThesisProcessPlan canEdit={false} degree={formData?.student.degree} processPlans={formData?.processPlan} />}
+          {formData && (
+            <ThesisProcessPlan
+              canEdit={false}
+              degree={formData?.student.degree}
+              processPlans={formData?.processPlan}
+            />
+          )}
         </div>
       </div>
     </Form>

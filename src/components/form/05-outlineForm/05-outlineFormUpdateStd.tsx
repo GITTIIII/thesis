@@ -28,7 +28,7 @@ import ThesisProcessPlan from "../thesisProcessPlan";
 import axios from "axios";
 import qs from "query-string";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
-import { checkPlannedWorkSum } from "@/lib/utils";
+import { checkForZero, checkPlannedWorkSum } from "@/lib/utils";
 
 const formSchema = z.object({
   id: z.number(),
@@ -63,6 +63,16 @@ const OutlineFormUpdateStd = ({
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     setLoading(true);
+    if (checkForZero(formData?.processPlan)) {
+      toast({
+        title: "เกิดข้อผิดพลาด",
+        description: `กรุณาตรวจสอบและกรอกข้อมูลในช่องผลรวมปริมาณงานที่วางแผนไว้ให้ครบ`,
+        variant: "destructive",
+      });
+      setLoading(false);
+
+      return;
+    }
     const checkSum = checkPlannedWorkSum(formData?.processPlan);
     if (!checkSum[0]) {
       toast({
