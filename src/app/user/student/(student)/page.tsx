@@ -43,7 +43,7 @@ export default function StudentPage() {
                 และอัปโหลดเข้าฐานข้อมูลของมหาวิทยาลัย
               </p>
               <Link href="/user/table" className="text-[#F26522] hover:underline">
-                <p data-aos-duration="650">เริ่มการส่งวิทยานิพนธ์</p>
+                <p data-aos-duration="650">ดำเนินการตามขั้นตอนบัณฑิตศึกษา</p>
               </Link>
             </div>
             <Image

@@ -8,19 +8,24 @@ import { IUser } from "@/interface/user";
 import { useSelectForm } from "@/hook/selectFormHook";
 import { FormPath } from "../formPath/formPath";
 import saveAs from "file-saver";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search } from "./search";
 import { FilterTable } from "./filter";
 import { HoverCardTable } from "./hoverCard";
 export default function ThesisExamAppointmentFormTable({ formData, user }: { user: IUser; formData?: IThesisExamAppointmentForm[] }) {
 	const { selectedForm } = useSelectForm();
 	const [studentID, setStudentID] = useState("");
+	const [myStudent, setMyStudent] = useState(false);
 	const [advisor, setAdvisor] = useState(false);
 	const [headSchool, setHeadSchool] = useState(false);
 	const [status, setStatus] = useState("");
 
 	const filteredData = formData?.filter((formData) => {
 		const matchesStudentID = studentID === "" || formData.student.username.includes(studentID);
+		const matchesMyStudent =
+			myStudent &&
+			((user.role == "ADMIN" && user.position == "ADVISOR" && formData.student.advisorID == user.id) ||
+				(status === "นักศึกษาในที่ปรึกษา" && formData.student.advisorID == user.id));
 		const matchesAdvisor =
 			advisor &&
 			((status === "มีการเซ็นเรียบร้อยแล้ว" && formData.advisorSignUrl) || (status === "กำลังรอการเซ็น" && !formData.advisorSignUrl));
@@ -28,7 +33,7 @@ export default function ThesisExamAppointmentFormTable({ formData, user }: { use
 			headSchool &&
 			((status === "มีการเซ็นเรียบร้อยแล้ว" && formData.headSchoolID) || (status === "กำลังรอการเซ็น" && !formData.headSchoolID));
 
-		return matchesStudentID && (!advisor || matchesAdvisor) && (!headSchool || matchesHeadSchool);
+		return matchesStudentID && (!myStudent || matchesMyStudent) && (!advisor || matchesAdvisor) && (!headSchool || matchesHeadSchool);
 	});
 	const handleDownload = async (formData: IThesisExamAppointmentForm) => {
 		if (formData.headSchoolID) {
@@ -46,14 +51,21 @@ export default function ThesisExamAppointmentFormTable({ formData, user }: { use
 		}
 	};
 
+	useEffect(() => {
+		if (user.role == "ADMIN" && user.position == "ADVISOR") {
+			setMyStudent(true);
+		}
+	}, [myStudent]);
+
 	return (
 		<>
 			<div className="w-full h-full bg-white shadow-2xl rounded-md p-2 overflow-auto ">
 				<div className="w-max flex px-2 mb-2">
 					<FilterTable
+						filterMyStudent={user.role != "STUDENT"}
 						filterAdvisor={true}
 						filterHeadSchool={true}
-						filterFormStatus={false}
+						setMyStudent={setMyStudent}
 						setAdvisor={setAdvisor}
 						setHeadSchool={setHeadSchool}
 						setStatus={setStatus}

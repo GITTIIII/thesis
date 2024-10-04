@@ -71,8 +71,12 @@ export default function SelectAndCreate({
 	}, []);
 
 	useEffect(() => {
-		setSelectedForm(searchParams.form || "form01");
-	}, [searchParams]);
+		if (user && user.role == "STUDENT" && user.degree == "Doctoral") {
+			setSelectedForm(searchParams.form || "form02");
+		} else {
+			setSelectedForm(searchParams.form || "form01");
+		}
+	}, [searchParams, user]);
 
 	return (
 		<div className="w-full flex">

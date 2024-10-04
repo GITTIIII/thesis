@@ -26,7 +26,6 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
       ];
     } else if (session?.user.role === "ADMIN" || session?.user.role === "COMMITTEE") {
       return [
-        { menuItem: "หน้าหลัก", path: "/user/admin" },
         { menuItem: "คำขออนุมัติฟอร์ม", path: "/user/table" },
         { menuItem: "โปรไฟล์", path: "/user/profile" },
       ];

@@ -1,13 +1,13 @@
 import Image from "next/image";
 import learning1 from "@/../../public/asset/learning1.png";
-import SuperAdminForm08Update from "@/components/form/08-thesisExamAssessmentForm/08-thesisExamAssessmentFormRead";
 import { get08FormById } from "@/app/action/getFormById";
 import { currentUser } from "@/app/action/current-user";
+import ThesisExamAssessmentFormRead from "@/components/form/08-thesisExamAssessmentForm/08-thesisExamAssessmentFormRead";
 
-export default async function SuperAdminForm08UpdatePage({ params }: { params: { formId: number } }) {
+export default async function ThesisExamAssessmentFormReadPage({ params }: { params: { formId: number } }) {
 	const formId = params.formId;
 	const formData = await get08FormById(formId);
-  const user = await currentUser();
+	const user = await currentUser();
 
 	if (!formData || !user) {
 		return <div>ไม่พบข้อมูล</div>;
@@ -24,7 +24,7 @@ export default async function SuperAdminForm08UpdatePage({ params }: { params: {
 				</div>
 				<div className="h-full w-full flex items-center bg-[#EEEEEE] p-2 md:p-8 rounded-md">
 					<div className="w-full h-full">
-						<SuperAdminForm08Update formData={formData} user={user} />
+						<ThesisExamAssessmentFormRead formData={formData} user={user} />
 					</div>
 				</div>
 			</div>

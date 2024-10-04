@@ -11,11 +11,6 @@ erDiagram
 		value ADMIN
 		value SUPER_ADMIN
 	}
-	resultExam {
-		value excellent
-		value pass
-		value fail
-	}
 	Institute {
 		Int id PK  "autoincrement()"
 		String instituteNameTH
@@ -247,28 +242,30 @@ erDiagram
 		DateTime createdAt  "now()"
 		DateTime updatedAt
 	}
-	ThesisExamForm {
+	ThesisExamAssessmentForm {
 		Int id PK  "autoincrement()"
 		DateTime date
-		DateTime examinationDate
-		String thesisNameTH
-		String thesisNameEN
+		DateTime examDate
 		Boolean disClosed
-		Boolean reviseTitle
-		String newNameTH  "nullable"
-		String newNameEN  "nullable"
-		Json committeeSignUrl  "nullable"
-		resultExam resultExam
-		Boolean approve  "nullable"
-		String headOfCommitteeSignUrl  "nullable"
-		DateTime dateOfDecision  "nullable"
-		Int meetingNo  "nullable"
-		DateTime meetingDate  "nullable"
-		String headOfCommitteeName  "nullable"
+		Int studentID FK
+		String result  "nullable"
 		String presentationComment  "nullable"
 		String explanationComment  "nullable"
-		String answerQuestionsCooment  "nullable"
-		Int studentID FK
+		String answerQuestionComment  "nullable"
+		Boolean reviseTitle  "nullable"
+		String newThesisNameTH  "nullable"
+		String newThesisNameEN  "nullable"
+		Int headOfCommitteeID FK  "nullable"
+		String headOfCommitteeSignUrl  "nullable"
+		String advisorSignUrl  "nullable"
+		String coAdvisorSignUrl  "nullable"
+		Json committees  "nullable"
+		String times  "nullable"
+		DateTime dateInstituteCommitteeSign  "nullable"
+		String instituteCommitteeStatus  "nullable"
+		String instituteCommitteeComment  "nullable"
+		String instituteCommitteeSignUrl  "nullable"
+		Int instituteCommitteeID FK  "nullable"
 		DateTime createdAt  "now()"
 		DateTime updatedAt
 	}
@@ -319,8 +316,9 @@ erDiagram
 	ThesisProgressForm }o--|| User : headSchool
 	ThesisExamAppointmentForm }o--|| User : student
 	ThesisExamAppointmentForm }o--|| User : headSchool
-	ThesisExamForm }o--|| User : student
-	ThesisExamForm }o--|| resultExam : "enum:resultExam"
+	ThesisExamAssessmentForm }o--|| User : student
+	ThesisExamAssessmentForm }o--|| Expert : headOfCommittee
+	ThesisExamAssessmentForm }o--|| User : instituteCommittee
 	DelayThesisForm }o--|| User : institute
 	DelayThesisForm }o--|| User : student
 

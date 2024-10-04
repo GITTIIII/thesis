@@ -1,5 +1,4 @@
-import { Building, Check, Clock, Edit, Edit3, FileText, SlidersHorizontal, User, X } from "lucide-react";
-
+import { Building, Check, Clock, Edit, Edit3, FileText, SlidersHorizontal, User, Users, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -14,19 +13,30 @@ import {
 	DropdownMenuSubTrigger,
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { set } from "date-fns";
 
 interface FilterProps {
+	filterMyStudent?: boolean;
 	filterAdvisor?: boolean;
 	filterHeadSchool?: boolean;
 	filterFormStatus?: boolean;
+	setMyStudent?: (value: boolean) => void;
 	setAdvisor?: (value: boolean) => void;
 	setHeadSchool?: (value: boolean) => void;
 	setStatus?: (value: string) => void;
 }
 
-export function FilterTable({ filterAdvisor, filterHeadSchool, filterFormStatus, setAdvisor, setHeadSchool, setStatus }: FilterProps) {
+export function FilterTable({
+	filterMyStudent,
+	filterAdvisor,
+	filterHeadSchool,
+	filterFormStatus,
+	setMyStudent,
+	setAdvisor,
+	setHeadSchool,
+	setStatus,
+}: FilterProps) {
 	const clearFilters = () => {
+		setMyStudent?.(false);
 		setAdvisor?.(false);
 		setHeadSchool?.(false);
 		setStatus?.("");
@@ -39,9 +49,22 @@ export function FilterTable({ filterAdvisor, filterHeadSchool, filterFormStatus,
 				</Button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className="w-max">
-				<DropdownMenuLabel>การกรอง</DropdownMenuLabel>
+				<DropdownMenuLabel>ตัวกรอง</DropdownMenuLabel>
 				<DropdownMenuSeparator />
 				<DropdownMenuGroup>
+					{filterMyStudent && (
+						<DropdownMenuItem
+							onClick={() => {
+								setMyStudent?.(true);
+								setHeadSchool?.(false);
+								setAdvisor?.(false);
+								setStatus?.("นักศึกษาในที่ปรึกษา");
+							}}
+						>
+							<Users className="mr-2 h-4 w-4" />
+							<span>นักศึกษาในที่ปรึกษา</span>
+						</DropdownMenuItem>
+					)}
 					{filterAdvisor && (
 						<DropdownMenuSub>
 							<DropdownMenuSubTrigger>
@@ -53,6 +76,7 @@ export function FilterTable({ filterAdvisor, filterHeadSchool, filterFormStatus,
 								<DropdownMenuSubContent>
 									<DropdownMenuItem
 										onClick={() => {
+											setMyStudent?.(false);
 											setHeadSchool?.(false);
 											setAdvisor?.(true);
 											setStatus?.("มีการเซ็นเรียบร้อยแล้ว");
@@ -63,6 +87,7 @@ export function FilterTable({ filterAdvisor, filterHeadSchool, filterFormStatus,
 									</DropdownMenuItem>
 									<DropdownMenuItem
 										onClick={() => {
+											setMyStudent?.(false);
 											setHeadSchool?.(false);
 											setAdvisor?.(true);
 											setStatus?.("กำลังรอการเซ็น");
@@ -86,6 +111,7 @@ export function FilterTable({ filterAdvisor, filterHeadSchool, filterFormStatus,
 								<DropdownMenuSubContent>
 									<DropdownMenuItem
 										onClick={() => {
+											setMyStudent?.(false);
 											setAdvisor?.(false);
 											setHeadSchool?.(true);
 											setStatus?.("มีการเซ็นเรียบร้อยแล้ว");
@@ -96,6 +122,7 @@ export function FilterTable({ filterAdvisor, filterHeadSchool, filterFormStatus,
 									</DropdownMenuItem>
 									<DropdownMenuItem
 										onClick={() => {
+											setMyStudent?.(false);
 											setAdvisor?.(false);
 											setHeadSchool?.(true);
 											setStatus?.("กำลังรอการเซ็น");
@@ -118,6 +145,7 @@ export function FilterTable({ filterAdvisor, filterHeadSchool, filterFormStatus,
 								<DropdownMenuSubContent>
 									<DropdownMenuItem
 										onClick={() => {
+											setMyStudent?.(false);
 											setHeadSchool?.(false);
 											setAdvisor?.(false);
 											setStatus?.("อนุมัติ");
@@ -128,6 +156,7 @@ export function FilterTable({ filterAdvisor, filterHeadSchool, filterFormStatus,
 									</DropdownMenuItem>
 									<DropdownMenuItem
 										onClick={() => {
+											setMyStudent?.(false);
 											setHeadSchool?.(false);
 											setAdvisor?.(false);
 											setStatus?.("รอดำเนินการ");
@@ -138,6 +167,7 @@ export function FilterTable({ filterAdvisor, filterHeadSchool, filterFormStatus,
 									</DropdownMenuItem>
 									<DropdownMenuItem
 										onClick={() => {
+											setMyStudent?.(false);
 											setHeadSchool?.(false);
 											setAdvisor?.(false);
 											setStatus?.("เเก้ไข");
@@ -148,6 +178,7 @@ export function FilterTable({ filterAdvisor, filterHeadSchool, filterFormStatus,
 									</DropdownMenuItem>
 									<DropdownMenuItem
 										onClick={() => {
+											setMyStudent?.(false);
 											setHeadSchool?.(false);
 											setAdvisor?.(false);
 											setStatus?.("เเก้ไขเเล้ว");
@@ -158,6 +189,7 @@ export function FilterTable({ filterAdvisor, filterHeadSchool, filterFormStatus,
 									</DropdownMenuItem>
 									<DropdownMenuItem
 										onClick={() => {
+											setMyStudent?.(false);
 											setHeadSchool?.(false);
 											setAdvisor?.(false);
 											setStatus?.("ไม่อนุมัติ");
@@ -173,7 +205,7 @@ export function FilterTable({ filterAdvisor, filterHeadSchool, filterFormStatus,
 				</DropdownMenuGroup>
 				<DropdownMenuSeparator />
 				<DropdownMenuItem onClick={clearFilters}>
-					<span className="text-red-500">เคลียร์การกรอง</span>
+					<span className="text-red-500">เคลียร์ตัวกรอง</span>
 				</DropdownMenuItem>
 			</DropdownMenuContent>
 		</DropdownMenu>
