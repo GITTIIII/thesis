@@ -37,7 +37,7 @@ export default function ThesisProcessPlan({
     setMonths(() => {
       return Math.max(...processPlans.map((plan) => plan.months.length));
     });
-    setProcessPlans?.(processPlans)
+    setProcessPlans?.(processPlans);
   }, [processPlans]);
   useEffect(() => {
     if (setProcessPlans !== undefined) {
@@ -311,6 +311,7 @@ const TemplateList = ({
                     type="number"
                     className="w-14 text-center h-10 accent-[#a67436] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                     value={
+                      isNaN(processPlan.months[indexChackBox]) ||
                       processPlan.months[indexChackBox] === 0
                         ? ""
                         : processPlan.months[indexChackBox]
@@ -318,7 +319,11 @@ const TemplateList = ({
                     onChange={(element) => {
                       let value = parseFloat(element.target.value);
 
-                      if (value < 1) value = 1;
+                      if (isNaN(value) || element.target.value === "") {
+                        value = 0;
+                      }
+
+                      if (value < 0) value = 0;
                       if (value > 100) value = 100;
 
                       value = parseFloat(value.toFixed(1));
