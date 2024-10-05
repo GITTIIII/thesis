@@ -468,6 +468,7 @@ model DelayThesisForm {
   instituteID      Int?
   institute        User?     @relation(fields: [instituteID], references: [id], name: "institute")
   approve          String?
+  disapproveComment       String?
   dayApprove       DateTime?
   timeApprove      Int?
   studentID        Int
