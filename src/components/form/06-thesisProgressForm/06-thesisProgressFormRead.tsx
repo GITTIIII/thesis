@@ -62,7 +62,7 @@ const ThesisProgressFormRead = ({
 						<InputForm value={`${user?.username}`} label="รหัสนักศึกษา / Student ID" />
 						<InputForm
 							value={`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
-							label="ชื่อ-นามสกุล / Fullname"
+							label="ชื่อ-นามสกุล / Full name"
 						/>
 						<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
 						<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
@@ -84,8 +84,8 @@ const ThesisProgressFormRead = ({
 
 						<div className="w-full sm:w-max mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
 							<div className="text-center font-semibold mb-2">ชื่อโครงร่างวิทยานิพนธ์</div>
-							<InputForm value={`${approvedForm?.thesisNameTH}`} label="ชื่อภาษาไทย / ThesisName(TH)" />
-							<InputForm value={`${approvedForm?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / ThesisName(EN)" />
+							<InputForm value={`${approvedForm?.thesisNameTH}`} label="ชื่อภาษาไทย / Thesis name (TH)" />
+							<InputForm value={`${approvedForm?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / Thesis name (EN)" />
 						</div>
 					</div>
 					<div className="border-l border-[#eeee]"></div>

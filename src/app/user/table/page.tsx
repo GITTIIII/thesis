@@ -7,14 +7,13 @@ import ThesisExamCommitteeFormTable from "@/components/formTable/04-thesisExamCo
 import OutlineFormTable from "@/components/formTable/05-outlineFormTable";
 import ThesisProgressFormTable from "@/components/formTable/06-thesisProgressFormTable";
 import ExamAppointmentFormTable from "@/components/formTable/07-thesisExamAppointmentFormTable";
-import ThesisExamFormTable from "@/components/formTable/08-thesisExamAssessmentFormTable";
+import ThesisExamAssessmentFormTable from "@/components/formTable/08-thesisExamAssessmentFormTable";
 import DelayDisseminationThesisFormTable from "@/components/formTable/09-delayDisseminationThesisFormTable";
 import studentFormPage from "@/../../public/asset/studentFormPage.png";
 import SelectAndCreate from "@/components/formTable/selectAndCreate";
 import fetchFormData from "./fetchForm";
 import { currentUser } from "@/app/action/current-user";
 import { get05ApprovedFormByStdId } from "@/app/action/get05ApprovedFormByStdId";
-
 
 const labels: { [key: string]: string } = {
 	form01: "แบบคำขออนุมัติแต่งตั้งกรรมการสอบประมวลความรู้",
@@ -34,8 +33,13 @@ export default async function StudentTablePage({ searchParams }: { searchParams:
 		return <div>ไม่พบข้อมูล</div>;
 	}
 
-	const selectedForm = searchParams.form || "form01";
-	
+	let selectedForm: string;
+
+	if (user && user.role == "STUDENT" && user.degree == "Doctoral") {
+		selectedForm = searchParams.form || "form02";
+	} else {
+		selectedForm = searchParams.form || "form01";
+	}
 	const approvedForm = await get05ApprovedFormByStdId(user.id);
 
 	const formData: any = await fetchFormData(selectedForm, user);
@@ -57,7 +61,7 @@ export default async function StudentTablePage({ searchParams }: { searchParams:
 			case "form07":
 				return <ExamAppointmentFormTable user={user} formData={formData} />;
 			case "form08":
-				return <ThesisExamFormTable user={user} formData={formData} />;
+				return <ThesisExamAssessmentFormTable user={user} formData={formData} />;
 			case "form09":
 				return <DelayDisseminationThesisFormTable user={user} formData={formData} />;
 			default:

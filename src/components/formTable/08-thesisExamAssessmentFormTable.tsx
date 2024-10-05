@@ -3,91 +3,142 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { Download } from "lucide-react";
-import { IExamForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
 import { useSelectForm } from "@/hook/selectFormHook";
 import { FormPath } from "../formPath/formPath";
 import { useState } from "react";
 import { Search } from "./search";
 import { FilterTable } from "./filter";
-async function get08FormByStdId(stdId: number | undefined) {
-	if (stdId) {
-		const res = await fetch(`/api/get08FormByStdId/${stdId}`, {
-			next: { revalidate: 10 },
-		});
-		return res.json();
-	}
-}
+import { IOutlineForm, IThesisExamAssessmentForm } from "@/interface/form";
+import saveAs from "file-saver";
+import { HoverCardTable } from "./hoverCard";
 
-async function get08FormData() {
-	const res = await fetch(`/api/08ThesisExamForm`, {
-		next: { revalidate: 10 },
-	});
-	return res.json();
-}
-
-export default function ThesisExamFormTable({ formData, user }: { user: IUser; formData?: IExamForm[] }) {
+export default function ThesisExamAssessmentFormTable({
+	formData,
+	user,
+	approvedForm,
+}: {
+	user: IUser;
+	formData?: IThesisExamAssessmentForm[];
+	approvedForm?: IOutlineForm;
+}) {
 	const { selectedForm } = useSelectForm();
 	const [studentID, setStudentID] = useState("");
+	const [myStudent, setMyStudent] = useState(false);
+	const [status, setStatus] = useState("");
+
+	const filteredData = formData?.filter((formData) => {
+		const matchesStudentID = studentID === "" || formData.student.username.includes(studentID);
+		const matchesMyStudent =
+			myStudent &&
+			((user.role == "ADMIN" && user.position == "ADVISOR" && formData.student.advisorID == user.id) ||
+				(status === "นักศึกษาในที่ปรึกษา" && formData.student.advisorID == user.id));
+
+		const matchesFormStatus =
+			status &&
+			((status === "อนุมัติ" && formData.instituteCommitteeStatus == "อนุมัติ") ||
+				(status === "ไม่อนุมัติ" && formData.instituteCommitteeStatus == "ไม่อนุมัติ"));
+
+		return matchesStudentID && (!myStudent || matchesMyStudent) && (!status || matchesFormStatus);
+	});
+
+	const handleDownload = async (formData: IThesisExamAssessmentForm) => {
+		if (formData.instituteCommitteeID) {
+			try {
+				const response = await fetch(`/api/08ThesisExamAssessmentForm/download?id=${formData.id}`);
+				if (response.ok) {
+					const blob = await response.blob();
+					saveAs(blob, "FM-ENG-GRD-08.docx"); // Change the file name if needed
+				} else {
+					console.error("Failed to download file", response.statusText);
+				}
+			} catch (error) {
+				console.error("Error downloading the file", error);
+			}
+		}
+	};
+
 	return (
 		<>
 			<div className="w-full h-full bg-white shadow-2xl rounded-md p-2 overflow-auto ">
 				<div className="w-max flex px-2 mb-2">
-					<FilterTable />
+					<FilterTable
+						filterMyStudent={user.role != "STUDENT"}
+						filterAdvisor={false}
+						filterHeadSchool={false}
+						setMyStudent={setMyStudent}
+						setStatus={setStatus}
+					/>
 					<Search studentID={studentID} setStudentID={setStudentID} />
 				</div>
 				<Table>
 					<TableHeader>
 						<TableRow>
 							<TableHead className="text-center">ลำดับ</TableHead>
-							<TableHead className="text-center">วันที่สร้าง</TableHead>
-							<TableHead className="text-center">ภาคการศึกษา</TableHead>
-							<TableHead className="text-center">ปีการศึกษา</TableHead>
+							<TableHead className="text-center">วันที่สอบ</TableHead>
+							<TableHead className="text-center">ผลการพิจารณาการสอบวิทยานิพนธ์</TableHead>
+							<TableHead className="text-center">ชื่อวิทยานิพนธ์ (ไทย)</TableHead>
+							<TableHead className="text-center">ชื่อวิทยานิพนธ์ (อังกฤษ)</TableHead>
 							<TableHead className="text-center">รหัสนักศึกษา</TableHead>
 							<TableHead className="text-center">ชื่อ นศ.</TableHead>
-							<TableHead className="text-center">สอบครั้งที่</TableHead>
-							<TableHead className="text-center">วันที่สอบ</TableHead>
+							<TableHead className="text-center">ผลการพิจารณาของคณะกรรมการประจำสำนักวิชา</TableHead>
 							<TableHead className="text-center">รายละเอียด</TableHead>
 							<TableHead className="text-center">ดาวน์โหลดฟอร์ม</TableHead>
 						</TableRow>
 					</TableHeader>
 					<TableBody>
 						{formData &&
-							formData
-								.filter((formData) => studentID === "" || formData.student.username.includes(studentID))
-								.map((formData, index) => (
-									<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
-										<TableCell className="text-center">{index + 1}</TableCell>
-										<TableCell className="text-center">{new Date(formData.date).toLocaleDateString("th")}</TableCell>
-										<TableCell className="text-center">-</TableCell>
-										<TableCell className="text-center">-</TableCell>
-										<TableCell className="text-center">{formData?.student.username}</TableCell>
-										<TableCell className="text-center">
-											{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
-										</TableCell>
-										<TableCell className="text-center">-</TableCell>
-										<TableCell className="text-center">
-											{new Date(formData.examinationDate).toLocaleDateString("th")}
-										</TableCell>
-										<TableCell className="text-[#F26522] text-center">
-											<Link
-												href={
-													user?.role == "SUPER_ADMIN" || user?.role == "STUDENT"
-														? `/user/form/${FormPath[selectedForm]}/${formData.id}`
-														: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
-												}
-											>
-												คลิกเพื่อดูเพิ่มเติม
-											</Link>
-										</TableCell>
-										<TableCell className="text-center">
-											<Button disabled={user?.role !== "SUPER_ADMIN"} type="button" variant="outline">
-												<Download className="mr-2" />
-												ดาวน์โหลด
-											</Button>
-										</TableCell>
-									</TableRow>
-								))}
+							filteredData?.map((formData, index) => (
+								<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d] h-[52px]` : "" + `h-[52px]`}>
+									<TableCell className="text-center">{index + 1}</TableCell>
+									<TableCell className="text-center">
+										<HoverCardTable
+											data={
+												formData.examDate ? new Date(formData.examDate).toLocaleDateString("th") : "ยังไม่ทำการสอบ"
+											}
+										/>
+									</TableCell>
+									<TableCell className="text-center truncate">
+										{formData.result ? formData.result : <span className="text-orange-600">รอผลการประเมิน</span>}
+									</TableCell>
+									<TableCell className="text-center truncate">
+										<HoverCardTable data={approvedForm ? approvedForm.thesisNameTH : "ไม่พบข้อมูล"} />
+									</TableCell>
+									<TableCell className="text-center truncate">
+										<HoverCardTable data={approvedForm ? approvedForm.thesisNameEN : "ไม่พบข้อมูล"} />
+									</TableCell>
+									<TableCell className="text-center truncate">
+										<HoverCardTable data={formData?.student.username} />
+									</TableCell>
+									<TableCell className="text-center truncate">
+										<HoverCardTable data={`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`} />
+									</TableCell>
+									<TableCell className="text-center truncate">
+										{formData.instituteCommitteeStatus ? (
+											formData.instituteCommitteeStatus
+										) : (
+											<span className="text-orange-600">รอผลการประเมิน</span>
+										)}
+									</TableCell>
+									<TableCell className="text-[#F26522] text-center truncate">
+										<Link
+											href={
+												formData.instituteCommitteeID || user?.role == "STUDENT"
+													? `/user/form/${FormPath[selectedForm]}/${formData.id}`
+													: `/user/form/${FormPath[selectedForm]}/update/${formData.id}`
+											}
+										>
+											คลิกเพื่อดูเพิ่มเติม
+										</Link>
+									</TableCell>
+									<TableCell className="text-center">
+										<Button onClick={() => handleDownload(formData)} type="button" variant="outline">
+											<Download className="mr-2" />
+											ดาวน์โหลด
+										</Button>
+									</TableCell>
+								</TableRow>
+							))}
 					</TableBody>
 				</Table>
 			</div>

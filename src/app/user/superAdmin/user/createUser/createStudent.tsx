@@ -252,7 +252,7 @@ export default function CreateStudent() {
 						name="phone"
 						render={({ field }) => (
 							<div className="space-y-1 mb-2">
-								<FormLabel htmlFor="phone">เบอร์โทร / Phone number</FormLabel>
+								<FormLabel htmlFor="phone">เบอร์โทร / Telephone</FormLabel>
 								<Input {...field} />
 								<FormMessage />
 							</div>
@@ -317,16 +317,12 @@ export default function CreateStudent() {
 											<Button
 												variant="outline"
 												role="combobox"
-												className={cn(
-													"w-full justify-between ",
-													!field.value && "text-muted-foreground"
-												)}
+												className={cn("w-full justify-between ", !field.value && "text-muted-foreground")}
 											>
 												{field.value
 													? `${
-															instituteData?.find(
-																(instituteData) => instituteData.id === field.value
-															)?.instituteNameTH
+															instituteData?.find((instituteData) => instituteData.id === field.value)
+																?.instituteNameTH
 													  } `
 													: "เลือกสำนักวิชา"}
 												<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -349,9 +345,7 @@ export default function CreateStudent() {
 														<Check
 															className={cn(
 																"mr-2 h-4 w-4",
-																field.value === instituteData.id
-																	? "opacity-100"
-																	: "opacity-0"
+																field.value === instituteData.id ? "opacity-100" : "opacity-0"
 															)}
 														/>
 														{instituteData.instituteNameTH}
@@ -379,17 +373,10 @@ export default function CreateStudent() {
 											<Button
 												variant="outline"
 												role="combobox"
-												className={cn(
-													"w-full justify-between",
-													!field.value && "text-muted-foreground"
-												)}
+												className={cn("w-full justify-between", !field.value && "text-muted-foreground")}
 											>
 												{field.value
-													? `${
-															schoolData?.find(
-																(schoolData) => schoolData.id === field.value
-															)?.schoolNameTH
-													  } `
+													? `${schoolData?.find((schoolData) => schoolData.id === field.value)?.schoolNameTH} `
 													: "เลือกสาขาวิชา"}
 												<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
 											</Button>
@@ -401,10 +388,7 @@ export default function CreateStudent() {
 											<CommandList>
 												<CommandEmpty>ไม่พบสาขาวิชา</CommandEmpty>
 												{schoolData
-													?.filter(
-														(schoolData) =>
-															schoolData.instituteID == form.watch("instituteID")
-													)
+													?.filter((schoolData) => schoolData.instituteID == form.watch("instituteID"))
 													.map((schoolData) => (
 														<CommandItem
 															value={`${schoolData.schoolNameTH}`}
@@ -416,9 +400,7 @@ export default function CreateStudent() {
 															<Check
 																className={cn(
 																	"mr-2 h-4 w-4",
-																	field.value === schoolData.id
-																		? "opacity-100"
-																		: "opacity-0"
+																	field.value === schoolData.id ? "opacity-100" : "opacity-0"
 																)}
 															/>
 															{schoolData.schoolNameTH}
@@ -446,16 +428,12 @@ export default function CreateStudent() {
 											<Button
 												variant="outline"
 												role="combobox"
-												className={cn(
-													"w-full justify-between",
-													!field.value && "text-muted-foreground"
-												)}
+												className={cn("w-full justify-between", !field.value && "text-muted-foreground")}
 											>
 												{field.value
 													? `${
-															programData?.find(
-																(programData) => programData.id === field.value
-															)?.programNameTH
+															programData?.find((programData) => programData.id === field.value)
+																?.programNameTH
 													  } `
 													: "เลือกหลักสูตร"}
 												<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -478,9 +456,7 @@ export default function CreateStudent() {
 														<Check
 															className={cn(
 																"mr-2 h-4 w-4",
-																field.value === programData.id
-																	? "opacity-100"
-																	: "opacity-0"
+																field.value === programData.id ? "opacity-100" : "opacity-0"
 															)}
 														/>
 														{programData.programNameTH}
@@ -508,18 +484,11 @@ export default function CreateStudent() {
 											<Button
 												variant="outline"
 												role="combobox"
-												className={cn(
-													"w-full justify-between",
-													!field.value && "text-muted-foreground"
-												)}
+												className={cn("w-full justify-between", !field.value && "text-muted-foreground")}
 											>
 												{field.value
-													? `${
-															allAdvisor?.find((advisor) => advisor.id === field.value)
-																?.firstNameTH
-													  } ${
-															allAdvisor?.find((advisor) => advisor.id === field.value)
-																?.lastNameTH
+													? `${allAdvisor?.find((advisor) => advisor.id === field.value)?.firstNameTH} ${
+															allAdvisor?.find((advisor) => advisor.id === field.value)?.lastNameTH
 													  }`
 													: "เลือกอาจารย์ที่ปรึกษา"}
 												<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -532,9 +501,7 @@ export default function CreateStudent() {
 											<CommandList>
 												<CommandEmpty>ไม่พบอาจารย์ที่ปรึกษา</CommandEmpty>
 												{allAdvisor
-													?.filter(
-														(allAdvisor) => allAdvisor.schoolID == form.watch("schoolID")
-													)
+													?.filter((allAdvisor) => allAdvisor.schoolID == form.watch("schoolID"))
 													.map((advisor) => (
 														<CommandItem
 															value={`${advisor.firstNameTH} ${advisor.lastNameTH}`}
@@ -546,9 +513,7 @@ export default function CreateStudent() {
 															<Check
 																className={cn(
 																	"mr-2 h-4 w-4",
-																	field.value === advisor.id
-																		? "opacity-100"
-																		: "opacity-0"
+																	field.value === advisor.id ? "opacity-100" : "opacity-0"
 																)}
 															/>
 															{`${advisor.firstNameTH} ${advisor.lastNameTH}`}

@@ -6,8 +6,8 @@ import {
 	IOutlineForm,
 	IThesisProgressForm,
 	IThesisExamAppointmentForm,
-	IExamForm,
 	IDelayThesisForm,
+	IThesisExamAssessmentForm,
 } from "@/interface/form";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -338,13 +338,12 @@ export const get07FormByStdId = async (stdId: number) => {
 	return form07 as IThesisExamAppointmentForm[];
 };
 
-
 export const get08FormByStdId = async (stdId: number) => {
 	const session = await getServerSession(authOptions);
 
 	if (!session) return;
 
-	const form08 = await db.thesisExamForm.findMany({
+	const form08 = await db.thesisExamAssessmentForm.findMany({
 		where: {
 			studentID: Number(stdId),
 		},
@@ -367,8 +366,8 @@ export const get08FormByStdId = async (stdId: number) => {
 
 	if (!form08) return;
 
-	return form08 as IExamForm[];
-}
+	return form08 as IThesisExamAssessmentForm[];
+};
 
 export const get09FormByStdId = async (stdId: number) => {
 	const session = await getServerSession(authOptions);
@@ -390,8 +389,6 @@ export const get09FormByStdId = async (stdId: number) => {
 	});
 
 	if (!form09) return;
-
-	
 
 	return form09 as unknown as IDelayThesisForm[];
 };

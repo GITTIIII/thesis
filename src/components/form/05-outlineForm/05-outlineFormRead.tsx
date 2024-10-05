@@ -33,7 +33,7 @@ const OutlineFormRead = ({ formData }: { formData: IOutlineForm }) => {
 
 						<InputForm
 							value={`${formData?.student.firstNameTH} ${formData?.student.lastNameTH}`}
-							label="ชื่อ-นามสกุล / Fullname"
+							label="ชื่อ-นามสกุล / Full name"
 						/>
 						<InputForm value={`${formData?.student?.username}`} label="รหัสนักศึกษา / StudentID" />
 						<div className="flex flex-col items-center mb-6 justify-center">
@@ -58,8 +58,8 @@ const OutlineFormRead = ({ formData }: { formData: IOutlineForm }) => {
 					{/* ฝั่งขวา */}
 					<div className="w-full">
 						<div className="text-center font-semibold mb-2">ชื่อโครงร่างวิทยานิพนธ์</div>
-						<InputForm value={`${formData?.thesisNameTH}`} label="ชื่อภาษาไทย / ThesisName(TH)" />
-						<InputForm value={`${formData?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / ThesisName(EN)" />
+						<InputForm value={`${formData?.thesisNameTH}`} label="ชื่อภาษาไทย / Thesis name (TH)" />
+						<InputForm value={`${formData?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / Thesis name (EN)" />
 						<InputForm
 							value={`${formData?.student?.advisor?.prefix?.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}
 							label="อาจารย์ที่ปรึกษา / Advisor"
@@ -172,7 +172,7 @@ const OutlineFormRead = ({ formData }: { formData: IOutlineForm }) => {
 								? `${formData?.instituteCommittee.prefix?.prefixTH}${formData?.instituteCommittee.firstNameTH} ${formData?.instituteCommittee.lastNameTH}`
 								: ""}
 						</Label>
-						<Label className="mb-2">{`(ประธานคณะกรรมการ)`}</Label>
+						<Label className="mb-2">{`(คณบดี)`}</Label>
 					</div>
 				</div>
 			</div>

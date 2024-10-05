@@ -228,7 +228,7 @@ const ThesisExamAppointmentFormCreate = ({ user, approvedForm }: { user: IUser; 
 
 						<h1 className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</h1>
 						<InputForm value={`${user?.username}`} label="รหัสนักศึกษา / Student ID" />
-						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Fullname" />
+						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Full name" />
 						<InputForm value={`${user?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
 						<InputForm value={`${user?.program?.programNameTH}`} label="หลักสูตร / Program" />
 						<InputForm value={`${user?.program?.programYear}`} label="ปีหลักสูตร (พ.ศ.) / Program year (B.E.)" />
@@ -253,7 +253,7 @@ const ThesisExamAppointmentFormCreate = ({ user, approvedForm }: { user: IUser; 
 					<div className="w-full">
 						<div className="w-full sm:w-3/4 mx-auto flex flex-col item-center justify-center rounded-lg mb-2">
 							<InputForm
-								value={`${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`}
+								value={`${user?.advisor?.prefix?.prefixTH}${user?.advisor?.firstNameTH} ${user?.advisor?.lastNameTH}`}
 								label="อาจารย์ที่ปรึกษา / Advisor"
 							/>
 							<div className="text-center font-semibold mb-2">โครงร่างวิทยานิพนธ์</div>
