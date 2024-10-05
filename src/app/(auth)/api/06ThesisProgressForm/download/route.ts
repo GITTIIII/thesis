@@ -108,7 +108,7 @@ export async function GET(request: NextRequest) {
           },
           processPlan: processPlanObject,
         },
-        "FM-ENG-GRD-05-00"
+        "FM-ENG-GRD-06-00"
       );
     }
     const zip = new JSZip();
