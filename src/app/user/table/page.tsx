@@ -8,6 +8,7 @@ import OutlineFormTable from "@/components/formTable/05-outlineFormTable";
 import ThesisProgressFormTable from "@/components/formTable/06-thesisProgressFormTable";
 import ExamAppointmentFormTable from "@/components/formTable/07-thesisExamAppointmentFormTable";
 import ThesisExamFormTable from "@/components/formTable/08-thesisExamAssessmentFormTable";
+import DelayDisseminationThesisFormTable from "@/components/formTable/09-delayDisseminationThesisFormTable";
 import studentFormPage from "@/../../public/asset/studentFormPage.png";
 import SelectAndCreate from "@/components/formTable/selectAndCreate";
 import fetchFormData from "./fetchForm";
@@ -24,6 +25,7 @@ const labels: { [key: string]: string } = {
 	form06: "เเบบรายงานความคืบหน้าของการทำวิทยานิพนธ์",
 	form07: "คำขอนัดสอบวิทยานิพนธ์",
 	form08: "แบบประเมินการสอบวิทยานิพนธ์",
+	form09: "แบบคำขอขะลอการเผยแพร่วิทยานิพนธ์"
 };
 
 export default async function StudentTablePage({ searchParams }: { searchParams: { [key: string]: string } }) {
@@ -56,6 +58,8 @@ export default async function StudentTablePage({ searchParams }: { searchParams:
 				return <ExamAppointmentFormTable user={user} formData={formData} />;
 			case "form08":
 				return <ThesisExamFormTable user={user} formData={formData} />;
+			case "form09":
+				return <DelayDisseminationThesisFormTable user={user} formData={formData} />;
 			default:
 				return <div>ไม่มีตาราง</div>;
 		}

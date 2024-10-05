@@ -22,6 +22,7 @@ const labels: { [key: string]: string } = {
 	form06: "เเบบรายงานความคืบหน้าของการทำวิทยานิพนธ์",
 	form07: "คำขอนัดสอบวิทยานิพนธ์",
 	form08: "แบบประเมินการสอบวิทยานิพนธ์",
+	form09: "แบบคำขอชะลอการเผยแพร่วิทยานิพนธ์"
 };
 
 const numbers: { [key: string]: number } = {
@@ -33,6 +34,7 @@ const numbers: { [key: string]: number } = {
 	form06: 5,
 	form07: 6,
 	form08: 7,
+	form09: 8,
 };
 
 export default function SelectAndCreate({
@@ -119,6 +121,9 @@ export default function SelectAndCreate({
 							</SelectItem>
 							<SelectItem disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 7} value="form08">
 								แบบประเมินการสอบวิทยานิพนธ์
+							</SelectItem>
+							<SelectItem disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 6} value="form09">
+								แบบคำขอชะลอการเผยแพร่วิทยานิพนธ์
 							</SelectItem>
 						</SelectContent>
 					</Select>

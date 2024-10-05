@@ -273,6 +273,7 @@ model ThesisOutlineCommitteeForm {
   instituteComSignUrl String?   @db.LongText
   
   addNotes            Json?
+  OROG                Boolean
   
   createdAt           DateTime  @default(now())
   updatedAt           DateTime  @updatedAt
@@ -425,6 +426,10 @@ model ThesisExamForm {
   thesisNameEN         String
   disClosed            Boolean
   reviseTitle          Boolean
+
+  trimester                   Int
+  academicYear                String
+
   newNameTH            String?
   newNameEN            String?
   committeeSignUrl     Json?
