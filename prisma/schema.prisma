@@ -273,7 +273,6 @@ model ThesisOutlineCommitteeForm {
   advisorSignUrl String? @db.LongText
 
   headSchoolID        Int?
-<<<<<<< HEAD
   headSchool          User?     @relation(fields: [headSchoolID], references: [id], name: "headSchool")
   headSchoolSignUrl   String?   @db.LongText
   
@@ -281,16 +280,6 @@ model ThesisOutlineCommitteeForm {
   
   addNotes            Json?
   OROG                Boolean
-  
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
-=======
-  headSchool          User?   @relation(fields: [headSchoolID], references: [id], name: "headSchool")
-  headSchoolSignUrl   String? @db.LongText
-  instituteComSignUrl String? @db.LongText
->>>>>>> f428829584b278aa3c757ff4fee1c98325c8d66b
-
-  addNotes Json?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -425,37 +414,6 @@ model ThesisExamAppointmentForm {
   updatedAt DateTime @updatedAt
 }
 
-<<<<<<< HEAD
-enum resultExam {
-  excellent
-  pass
-  fail
-}
-
-model ThesisExamForm {
-  id                   Int      @id @default(autoincrement())
-  date                 DateTime
-  examinationDate      DateTime
-  thesisNameTH         String
-  thesisNameEN         String
-  disClosed            Boolean
-  reviseTitle          Boolean
-
-  trimester                   Int
-  academicYear                String
-
-  newNameTH            String?
-  newNameEN            String?
-  committeeSignUrl     Json?
-  resultExam           resultExam?
-//institute
-  approve              Boolean?
-  headOfCommitteeSignUrl  String?   @db.LongText
-  dateOfDecision       DateTime?
-  meetingNo            Int?
-  meetingDate          DateTime?
-  headOfCommitteeName  String?
-=======
 model ThesisExamAssessmentForm {
   id                         Int       @id @default(autoincrement())
   date                       DateTime
@@ -463,7 +421,6 @@ model ThesisExamAssessmentForm {
   disClosed                  Boolean
   studentID                  Int
   student                    User      @relation(fields: [studentID], references: [id], name: "thesisExamAssessmentFormOwner")
->>>>>>> f428829584b278aa3c757ff4fee1c98325c8d66b
   
   // ผลสอบ
   result                     String?
@@ -512,6 +469,7 @@ model DelayThesisForm {
   instituteID      Int?
   institute        User?     @relation(fields: [instituteID], references: [id], name: "institute")
   approve          String?
+  disapproveComment       String?
   dayApprove       DateTime?
   timeApprove      Int?
   studentID        Int

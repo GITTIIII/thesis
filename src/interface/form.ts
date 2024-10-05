@@ -254,4 +254,5 @@ export type IDelayThesisForm = {
 	studentID: number;
 	student: IUser;
 	institute: IUser;
+	disapproveComment?: string;
 };

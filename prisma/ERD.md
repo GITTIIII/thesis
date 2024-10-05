@@ -146,6 +146,7 @@ erDiagram
 		String headSchoolSignUrl  "nullable"
 		String instituteComSignUrl  "nullable"
 		Json addNotes  "nullable"
+		Boolean OROG
 		DateTime createdAt  "now()"
 		DateTime updatedAt
 	}
@@ -282,6 +283,7 @@ erDiagram
 		String instituteSignUrl  "nullable"
 		Int instituteID FK  "nullable"
 		String approve  "nullable"
+		String disapproveComment  "nullable"
 		DateTime dayApprove  "nullable"
 		Int timeApprove  "nullable"
 		Int studentID FK

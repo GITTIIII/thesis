@@ -72,11 +72,11 @@ export async function GET() {
 // PATCH: อัปเดตข้อมูลที่ต้องการ
 export async function PATCH(req: Request) {
     try {
-        // const session = await getServerSession(authOptions);
+        const session = await getServerSession(authOptions);
 
-        // if (!session) {
-        //     return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
-        // }
+        if (!session) {
+            return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
+        }
 
         const body = await req.json();
         const {
@@ -86,6 +86,7 @@ export async function PATCH(req: Request) {
             approve,
             dayApprove,
             timeApprove,
+            disapproveComment,
         } = body;
 
         if (!id) {
@@ -109,6 +110,7 @@ export async function PATCH(req: Request) {
                 approve: approve ?? existingDelayThesisForm.approve,
                 dayApprove: dayApprove !== undefined ? dayApprove : existingDelayThesisForm.dayApprove,
                 timeApprove: timeApprove ?? existingDelayThesisForm.timeApprove,
+                disapproveComment: disapproveComment ?? existingDelayThesisForm.disapproveComment,
             },
         });
 
