@@ -51,7 +51,7 @@ const ThesisExamAssessmentFormCreate = ({ user, approvedForm }: { user: IUser; a
 			return;
 		}
 		const url = qs.stringifyUrl({
-			url: `/api/08ThesisExamForm`,
+			url: `/api/08ThesisExamAssessmentForm`,
 		});
 		const res = await axios.post(url, values);
 		if (res.status === 200) {
@@ -112,8 +112,8 @@ const ThesisExamAssessmentFormCreate = ({ user, approvedForm }: { user: IUser; a
 					<div className="w-full ">
 						<div className="w-full sm:w-3/4 mx-auto flex flex-col item-center justify-center rounded-lg mb-2">
 							<div className="text-center font-semibold mb-2">โครงร่างวิทยานิพนธ์</div>
-							<InputForm value={`${approvedForm?.thesisNameTH}`} label="ชื่อภาษาไทย / Thesis Topic (TH)" />
-							<InputForm value={`${approvedForm?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / Thesis Topic (EN)" />
+							<InputForm value={`${approvedForm?.thesisNameTH}`} label="ชื่อภาษาไทย / Thesis name (TH)" />
+							<InputForm value={`${approvedForm?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / Thesis name (EN)" />
 
 							<FormField
 								control={form.control}
@@ -166,20 +166,6 @@ const ThesisExamAssessmentFormCreate = ({ user, approvedForm }: { user: IUser; a
 									</div>
 								)}
 							/>
-							<div className="w-[300px] mx-auto px-4 m-0 text-xs text-justify">
-								<span className="font-bold">หมายเหตุ:</span>&nbsp;กรณีนักศึกษามีส่วนที่ต้องปรับปรุงต้องดำเนินการให้แล้วเสร็จ
-								<span className="font-bold underline">ภายในระยะเวลา 30 วัน</span>
-								และไม่เกินวันสุดท้ายของภาคการศึกษาที่ขอสอบวิทยานิพนธ์ หากดำเนินการไม่ทันภาคการศึกษาดังกล่าว
-								นักศึกษาต้องลงทะเบียนรักษาสภาพในภาคการศึกษาถัดไปและกำหนดให้วันที่นักศึกษาส่งเล่มวิทยานิพนธ์เป็นวันที่สำเร็จการศึกษา
-							</div>
-							<div className="w-[300px] mx-auto px-4 m-0 text-xs text-justify">
-								<span className="font-bold">Remask:</span>&nbsp;In the event thesis amendments are required, the
-								student&nbsp;
-								<span className="font-bold underline">must complete all amendments within 30 days</span>&nbsp; and no later
-								than the last day of the term in which the thesis examination took place. Failure to do so will result in
-								the student maintaining student status in the following term. The thesis submission date shall be deemed the
-								students graduation date.
-							</div>
 						</div>
 					</div>
 				</div>

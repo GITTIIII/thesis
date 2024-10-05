@@ -1,15 +1,28 @@
 import Image from "next/image";
 import learning1 from "@/../../public/asset/learning1.png";
-import SuperAdminForm08Update from "@/components/form/08-thesisExamAssessmentForm/08-thesisExamAssessmentFormUpdate";
+import ThesisExamAssessmentFormUpdate from "@/components/form/08-thesisExamAssessmentForm/08-thesisExamAssessmentFormUpdate";
 import { get08FormById } from "@/app/action/getFormById";
 import { currentUser } from "@/app/action/current-user";
+import { get05ApprovedFormByStdId } from "@/app/action/get05ApprovedFormByStdId";
+import { getAllExpert } from "@/app/action/getExpert";
+import { getInstituteCommittee } from "@/app/action/getInstituteCommittee";
+import { getAdminNotNone } from "@/app/action/getAdminNotNone";
 
-export default async function SuperAdminForm08UpdatePage({ params }: { params: { formId: number } }) {
+export default async function ThesisExamAssessmentFormUpdatePage({ params }: { params: { formId: number } }) {
 	const formId = params.formId;
 	const formData = await get08FormById(formId);
-  const user = await currentUser();
+	const user = await currentUser();
+	const expert = await getAllExpert();
+	const instituteCommittee = await getInstituteCommittee();
+	const adminNotNone = await getAdminNotNone()
 
-	if (!formData || !user) {
+	if (!formData || !user || !expert || !instituteCommittee || !adminNotNone) {
+		return <div>ไม่พบข้อมูล</div>;
+	}
+	
+	const approvedForm = await get05ApprovedFormByStdId(formData.student.id);
+
+	if (!approvedForm) {
 		return <div>ไม่พบข้อมูล</div>;
 	}
 
@@ -24,7 +37,7 @@ export default async function SuperAdminForm08UpdatePage({ params }: { params: {
 				</div>
 				<div className="h-full w-full flex items-center bg-[#EEEEEE] p-2 md:p-8 rounded-md">
 					<div className="w-full h-full">
-						<SuperAdminForm08Update formData={formData} user={user} />
+						<ThesisExamAssessmentFormUpdate formData={formData} user={user} approvedForm={approvedForm} expert={expert} instituteCommittee={instituteCommittee} adminNotNone={adminNotNone}/>
 					</div>
 				</div>
 			</div>

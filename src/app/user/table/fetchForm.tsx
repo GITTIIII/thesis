@@ -7,6 +7,7 @@ import {
 	get06FormByStdId,
 	get07FormByStdId,
 	get08FormByStdId,
+	get09FormByStdId,
 } from "@/app/action/getFormByStdId";
 import {
 	get01FormBySchoolId,
@@ -27,6 +28,7 @@ import {
 	getAll06Form,
 	getAll07Form,
     getAll08Form,
+	getAll09Form,
 } from "@/app/action/getAllForm";
 import { IUser } from "@/interface/user";
 
@@ -49,6 +51,8 @@ const fetchFormData = async (formSelect: string, user: IUser) => {
 				return await get07FormByStdId(user.id);
 			case "form08":
 				return await get08FormByStdId(user.id);
+			case "form09":
+				return await get09FormByStdId(user.id);
 			default:
 				return;
 		}
@@ -91,6 +95,8 @@ const fetchFormData = async (formSelect: string, user: IUser) => {
 				return await getAll07Form();
 			case "form08":
 				return await getAll08Form();
+			case "form09":
+				return await getAll09Form();
 			default:
 				return;
 		}

@@ -275,8 +275,8 @@ const ThesisExamAppointmentFormCreate = ({ user, approvedForm }: { user: IUser; 
 								</FormItem>
 							</div>
 
-							<InputForm value={`${approvedForm?.thesisNameTH}`} label="ชื่อภาษาไทย / Thesis Topic (TH)" />
-							<InputForm value={`${approvedForm?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / Thesis Topic (EN)" />
+							<InputForm value={`${approvedForm?.thesisNameTH}`} label="ชื่อภาษาไทย / Thesis name (TH)" />
+							<InputForm value={`${approvedForm?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / Thesis name (EN)" />
 						</div>
 
 						<div className="flex flex-col items-center justify-center">
