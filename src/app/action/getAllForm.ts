@@ -7,6 +7,7 @@ import {
 	IThesisProgressForm,
 	IThesisExamAppointmentForm,
 	IThesisExamAssessmentForm,
+	IDelayThesisForm,
 } from "@/interface/form";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -342,4 +343,37 @@ export const getAll08Form = async () => {
 	if (!form08) return;
 
 	return form08 as IThesisExamAssessmentForm[];
+};
+
+export const getAll09Form = async () => {
+	const session = await getServerSession(authOptions);
+
+	if (!session) return;
+
+	const form09 = await db.delayThesisForm.findMany({
+		include: {
+			student: {
+				include: {
+					prefix: true,
+					institute: true,
+					school: true,
+					program: true,
+					advisor: {
+						include: {
+							prefix: true,
+						},
+					},
+				},
+			},
+			institute:{
+				include:{
+					prefix: true,
+				}
+			}
+		},
+	});
+
+	if (!form09) return;
+
+	return form09 as unknown as IDelayThesisForm[];
 };

@@ -10,21 +10,6 @@ import { FormPath } from "../formPath/formPath";
 import { useState } from "react";
 import { Search } from "./search";
 import { FilterTable } from "./filter";
-async function get08FormByStdId(stdId: number | undefined) {
-	if (stdId) {
-		const res = await fetch(`/api/get08FormByStdId/${stdId}`, {
-			next: { revalidate: 10 },
-		});
-		return res.json();
-	}
-}
-
-async function get08FormData() {
-	const res = await fetch(`/api/08ThesisExamForm`, {
-		next: { revalidate: 10 },
-	});
-	return res.json();
-}
 
 export default function DelayDisseminationThesisFormTable({ formData, user }: { user: IUser; formData?: IDelayThesisForm[] }) {
 	const { selectedForm } = useSelectForm();
@@ -41,12 +26,14 @@ export default function DelayDisseminationThesisFormTable({ formData, user }: { 
 						<TableRow>
 							<TableHead className="text-center">ลำดับ</TableHead>
 							<TableHead className="text-center">วันที่สร้าง</TableHead>
-							<TableHead className="text-center">ภาคการศึกษา</TableHead>
-							<TableHead className="text-center">ปีการศึกษา</TableHead>
+							<TableHead className="text-center">ชื่อวิทยานิพนธ์</TableHead>
+							<TableHead className="text-center">Thesis name</TableHead>
 							<TableHead className="text-center">รหัสนักศึกษา</TableHead>
 							<TableHead className="text-center">ชื่อ นศ.</TableHead>
-							<TableHead className="text-center">สอบครั้งที่</TableHead>
-							<TableHead className="text-center">วันที่สอบ</TableHead>
+							<TableHead className="text-center">วารสาร</TableHead>
+							<TableHead className="text-center">ตั้งแต่วันที่</TableHead>
+							<TableHead className="text-center">จนถึงวันที่</TableHead>
+							<TableHead className="text-center">อนุมัติ</TableHead>
 							<TableHead className="text-center">รายละเอียด</TableHead>
 							<TableHead className="text-center">ดาวน์โหลดฟอร์ม</TableHead>
 						</TableRow>
@@ -59,16 +46,22 @@ export default function DelayDisseminationThesisFormTable({ formData, user }: { 
 									<TableRow key={formData.id} className={(index + 1) % 2 == 0 ? `bg-[#f0c38d3d]` : ""}>
 										<TableCell className="text-center">{index + 1}</TableCell>
 										<TableCell className="text-center">{new Date(formData.date).toLocaleDateString("th")}</TableCell>
-										<TableCell className="text-center">-</TableCell>
-										<TableCell className="text-center">-</TableCell>
+										<TableCell className="text-center">{formData?.thesisNameTH}</TableCell>
+										<TableCell className="text-center">{formData?.thesisNameEN}</TableCell>
 										<TableCell className="text-center">{formData?.student.username}</TableCell>
 										<TableCell className="text-center">
 											{`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 										</TableCell>
-										<TableCell className="text-center">-</TableCell>
-										{/* <TableCell className="text-center">
-											{new Date(formData.examinationDate).toLocaleDateString("th")}
-										</TableCell> */}
+										<TableCell className="text-center">{formData?.publishmentName}</TableCell>
+										<TableCell className="text-center">
+											{new Date(formData.startDate).toLocaleDateString("th")}
+										</TableCell>
+										<TableCell className="text-center">
+											{new Date(formData.endDate).toLocaleDateString("th")}
+										</TableCell>
+										<TableCell className="text-center">
+											{formData?.approve ? (formData.approve ==="approve" ? "อนุมัติ" : "ไม่อนุมัติ" ): "รอการอนุมัติ"}
+										</TableCell>
 										<TableCell className="text-[#F26522] text-center">
 											<Link
 												href={

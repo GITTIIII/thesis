@@ -67,7 +67,7 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 						/>
 
 						<InputForm value={`${formData?.startDate.toLocaleDateString("th")}`} label="ตั้งแต่วันที่ / Starting Date" />
-						<InputForm value={`${formData?.endDate.toLocaleDateString("th")}`} label="ตั้งแต่วันที่ / Starting Date" />
+						<InputForm value={`${formData?.endDate.toLocaleDateString("th")}`} label="จนถึงวันที่ / End Date" />
 					</div>
 					<div className="flex item-center justify-center ">
 						<div className="w-3/4 flex flex-col item-center justify-center border-2 rounded-lg py-5 my-5 border-[#eeee] ">

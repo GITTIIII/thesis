@@ -385,6 +385,11 @@ export const get09FormByStdId = async (stdId: number) => {
 					institute: true, // รวมข้อมูล institute ด้วย
 				},
 			},
+			institute:{
+				include: {
+					prefix: true,
+				},
+			}
 		},
 	});
 
