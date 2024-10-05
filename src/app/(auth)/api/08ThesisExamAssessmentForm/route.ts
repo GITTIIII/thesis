@@ -96,6 +96,7 @@ export async function PATCH(req: Request) {
 			presentationComment,
 			explanationComment,
 			answerQuestionComment,
+			failComment,
 
 			// การเปลี่ยนชื่อ
 			reviseTitle,
@@ -106,7 +107,7 @@ export async function PATCH(req: Request) {
 			headOfCommitteeID,
 			headOfCommitteeSignUrl,
 			advisorSignUrl,
-			coAdvisorSignUrl,
+			coAdvisors,
 			committees,
 
 			// กรรมการสำนัก
@@ -142,6 +143,7 @@ export async function PATCH(req: Request) {
 				presentationComment: presentationComment || existingThesisExamAssessmentForm.presentationComment,
 				explanationComment: explanationComment || existingThesisExamAssessmentForm.explanationComment,
 				answerQuestionComment: answerQuestionComment || existingThesisExamAssessmentForm.answerQuestionComment,
+				failComment: failComment || existingThesisExamAssessmentForm.failComment,
 
 				reviseTitle: reviseTitle || existingThesisExamAssessmentForm.reviseTitle,
 				newThesisNameTH: newThesisNameTH || existingThesisExamAssessmentForm.newThesisNameTH,
@@ -150,7 +152,7 @@ export async function PATCH(req: Request) {
 				headOfCommitteeID: headOfCommitteeID === 0 ? existingThesisExamAssessmentForm.headOfCommitteeID : headOfCommitteeID,
 				headOfCommitteeSignUrl: headOfCommitteeSignUrl || existingThesisExamAssessmentForm.headOfCommitteeSignUrl,
 				advisorSignUrl: advisorSignUrl || existingThesisExamAssessmentForm.advisorSignUrl,
-				coAdvisorSignUrl: coAdvisorSignUrl || existingThesisExamAssessmentForm.coAdvisorSignUrl,
+				coAdvisors: coAdvisors || existingThesisExamAssessmentForm.coAdvisors,
 				committees: committees || existingThesisExamAssessmentForm.committees,
 
 				times: times || existingThesisExamAssessmentForm.times,

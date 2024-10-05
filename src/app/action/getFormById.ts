@@ -370,6 +370,12 @@ export const get08FormById = async (formId: number) => {
 					},
 				},
 			},
+			headOfCommittee: true,
+			instituteCommittee: {
+				include: {
+					prefix: true,
+				},
+			},
 		},
 	});
 

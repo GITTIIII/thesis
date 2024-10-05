@@ -107,8 +107,8 @@ model Expert {
   //เป็นกรรมการในฟอมประเมินการสอบ
   examCommittee    ThesisExamAssessmentForm[] @relation("examCommittee")
 
-  createdAt                DateTime                   @default(now())
-  updatedAt                DateTime                   @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Certificate {
@@ -273,22 +273,9 @@ model ThesisOutlineCommitteeForm {
   advisorSignUrl String? @db.LongText
 
   headSchoolID        Int?
-<<<<<<< HEAD
-  headSchool          User?     @relation(fields: [headSchoolID], references: [id], name: "headSchool")
-  headSchoolSignUrl   String?   @db.LongText
-  
-  instituteComSignUrl String?   @db.LongText
-  
-  addNotes            Json?
-  OROG                Boolean
-  
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
-=======
   headSchool          User?   @relation(fields: [headSchoolID], references: [id], name: "headSchool")
   headSchoolSignUrl   String? @db.LongText
   instituteComSignUrl String? @db.LongText
->>>>>>> f428829584b278aa3c757ff4fee1c98325c8d66b
 
   addNotes Json?
 
@@ -425,65 +412,34 @@ model ThesisExamAppointmentForm {
   updatedAt DateTime @updatedAt
 }
 
-<<<<<<< HEAD
-enum resultExam {
-  excellent
-  pass
-  fail
-}
-
-model ThesisExamForm {
-  id                   Int      @id @default(autoincrement())
-  date                 DateTime
-  examinationDate      DateTime
-  thesisNameTH         String
-  thesisNameEN         String
-  disClosed            Boolean
-  reviseTitle          Boolean
-
-  trimester                   Int
-  academicYear                String
-
-  newNameTH            String?
-  newNameEN            String?
-  committeeSignUrl     Json?
-  resultExam           resultExam?
-//institute
-  approve              Boolean?
-  headOfCommitteeSignUrl  String?   @db.LongText
-  dateOfDecision       DateTime?
-  meetingNo            Int?
-  meetingDate          DateTime?
-  headOfCommitteeName  String?
-=======
 model ThesisExamAssessmentForm {
-  id                         Int       @id @default(autoincrement())
-  date                       DateTime
-  examDate                   DateTime
-  disClosed                  Boolean
-  studentID                  Int
-  student                    User      @relation(fields: [studentID], references: [id], name: "thesisExamAssessmentFormOwner")
->>>>>>> f428829584b278aa3c757ff4fee1c98325c8d66b
-  
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  examDate  DateTime
+  disClosed Boolean
+  studentID Int
+  student   User     @relation(fields: [studentID], references: [id], name: "thesisExamAssessmentFormOwner")
+
   // ผลสอบ
-  result                     String?
-  presentationComment        String?
-  explanationComment         String?
-  answerQuestionComment      String?
-  
+  result                String?
+  presentationComment   String?
+  explanationComment    String?
+  answerQuestionComment String?
+  failComment           String?
+
   // การเปลี่ยนชื่อ
-  reviseTitle                Boolean?
-  newThesisNameTH            String?
-  newThesisNameEN            String?
-  
+  reviseTitle     Boolean?
+  newThesisNameTH String?
+  newThesisNameEN String?
+
   // ลายเซ็นกรรมการ
-  headOfCommitteeID          Int?
-  headOfCommittee            Expert?   @relation(fields: [headOfCommitteeID], references: [id], name: "examCommittee")
-  headOfCommitteeSignUrl     String?   @db.LongText
-  advisorSignUrl             String?   @db.LongText
-  coAdvisorSignUrl           String?   @db.LongText
-  committees                 Json?
-  
+  headOfCommitteeID      Int?
+  headOfCommittee        Expert? @relation(fields: [headOfCommitteeID], references: [id], name: "examCommittee")
+  headOfCommitteeSignUrl String? @db.LongText
+  advisorSignUrl         String? @db.LongText
+  coAdvisors             Json?
+  committees             Json?
+
   // กรรมการสำนัก
   times                      String?
   dateInstituteCommitteeSign DateTime?
@@ -492,9 +448,9 @@ model ThesisExamAssessmentForm {
   instituteCommitteeSignUrl  String?   @db.LongText
   instituteCommitteeID       Int?
   instituteCommittee         User?     @relation(fields: [instituteCommitteeID], references: [id], name: "instituteCommittee")
-  
-  createdAt                  DateTime  @default(now())
-  updatedAt                  DateTime  @updatedAt
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model DelayThesisForm {

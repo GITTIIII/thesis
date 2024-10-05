@@ -203,7 +203,7 @@ export type IThesisExamAssessmentForm = {
 	id: number;
 	date: Date;
 	examDate: Date;
-	disClosed: Boolean;
+	disClosed: boolean;
 	studentID: number;
 	student: IUser;
 
@@ -212,9 +212,10 @@ export type IThesisExamAssessmentForm = {
 	presentationComment?: string;
 	explanationComment?: string;
 	answerQuestionComment?: string;
+	failComment?: string;
 
 	// การเปลี่ยนชื่อ
-	reviseTitle?: Boolean;
+	reviseTitle?: boolean;
 	newThesisNameTH?: string;
 	newThesisNameEN?: string;
 
@@ -223,7 +224,7 @@ export type IThesisExamAssessmentForm = {
 	headOfCommittee?: IExpert;
 	headOfCommitteeSignUrl?: string;
 	advisorSignUrl?: string;
-	coAdvisorSignUrl?: string;
+	coAdvisors?: Array<any>;
 	committees?: Array<any>;
 
 	// กรรมการสำนัก
@@ -233,6 +234,7 @@ export type IThesisExamAssessmentForm = {
 	instituteCommitteeComment?: string;
 	instituteCommitteeSignUrl?: string;
 	instituteCommitteeID?: number;
+	instituteCommittee?: IUser;
 };
 
 export type IDelayThesisForm = {

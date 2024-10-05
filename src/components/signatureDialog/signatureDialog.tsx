@@ -15,13 +15,14 @@ interface DialogProps {
 	userSignUrl?: string;
 	signUrl?: string;
 	onConfirm?: Function;
+	index?: number;
 	isOpen?: boolean;
 	setIsOpen?: (open: boolean) => void;
 	disable: boolean;
 }
 
 export default function SignatureDialog(props: DialogProps) {
-	const { signUrl, onConfirm, isOpen, setIsOpen, disable, userSignUrl } = props;
+	const { signUrl, onConfirm, isOpen, setIsOpen, disable, userSignUrl, index } = props;
 	const { toast } = useToast();
 
 	const sigCanvas = useRef<SignatureCanvas>(null);
@@ -41,10 +42,18 @@ export default function SignatureDialog(props: DialogProps) {
 			return;
 		} else if (sigCanvas.current && !sigCanvas.current.isEmpty()) {
 			if (isOpen && onConfirm) {
-				onConfirm(sigCanvas.current.getTrimmedCanvas().toDataURL("image/png"));
+				console.log(index);
+				if (typeof index !== "undefined") {
+					// Pass index when it is defined (including 0)
+					onConfirm(sigCanvas.current.getTrimmedCanvas().toDataURL("image/png"), index);
+				} else {
+					// If index is not provided, call onConfirm without index
+					onConfirm(sigCanvas.current.getTrimmedCanvas().toDataURL("image/png"));
+				}
 			}
 		}
 	};
+
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
 			<DialogTrigger onClick={() => setIsOpen?.(!isOpen)} disabled={disable}>
@@ -91,7 +100,10 @@ export default function SignatureDialog(props: DialogProps) {
 								</div>
 							</CardContent>
 							<CardFooter>
-								<Button onClick={() => onConfirm?.(userSignUrl)} className="ml-auto">
+								<Button
+									onClick={() => (index ? onConfirm?.(userSignUrl, index) : onConfirm?.(userSignUrl))}
+									className="ml-auto"
+								>
 									ยืนยัน
 								</Button>
 							</CardFooter>

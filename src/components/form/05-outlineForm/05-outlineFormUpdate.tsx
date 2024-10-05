@@ -313,7 +313,6 @@ const OutlineFormUpdate = ({
 
 				<div className="w-full flex flex-col md:flex-row justify-center mt-4">
 					{/* กรรมการโครงร่าง */}
-
 					<div className="h-max flex flex-col justify-center mt-4 sm:mt-0 items-center p-4 lg:px-20">
 						<h1 className="mb-2 font-bold">ความเห็นของคณะกรรมการพิจารณาโครงร่างวิทยานิพนธ์</h1>
 						<div className="w-max h-max flex mt-2 items-center">
@@ -443,7 +442,10 @@ const OutlineFormUpdate = ({
 													<Button
 														variant="outline"
 														role="combobox"
-														className={cn("w-[300px] justify-between", !field.value && "text-muted-foreground")}
+														className={cn(
+															"w-full sm:w-[300px] justify-between",
+															!field.value && "text-muted-foreground"
+														)}
 													>
 														{field.value
 															? `${expert?.find((expert) => expert.id === field.value)?.prefix}${

@@ -12,6 +12,9 @@ import { FilterTable } from "./filter";
 import { IOutlineForm, IThesisExamAssessmentForm } from "@/interface/form";
 import saveAs from "file-saver";
 import { HoverCardTable } from "./hoverCard";
+import useSWR from "swr";
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function ThesisExamAssessmentFormTable({
 	formData,
@@ -76,11 +79,11 @@ export default function ThesisExamAssessmentFormTable({
 						<TableRow>
 							<TableHead className="text-center">ลำดับ</TableHead>
 							<TableHead className="text-center">วันที่สอบ</TableHead>
-							<TableHead className="text-center">ผลการพิจารณาการสอบวิทยานิพนธ์</TableHead>
 							<TableHead className="text-center">ชื่อวิทยานิพนธ์ (ไทย)</TableHead>
 							<TableHead className="text-center">ชื่อวิทยานิพนธ์ (อังกฤษ)</TableHead>
 							<TableHead className="text-center">รหัสนักศึกษา</TableHead>
 							<TableHead className="text-center">ชื่อ นศ.</TableHead>
+							<TableHead className="text-center">ผลการพิจารณาการสอบวิทยานิพนธ์</TableHead>
 							<TableHead className="text-center">ผลการพิจารณาของคณะกรรมการประจำสำนักวิชา</TableHead>
 							<TableHead className="text-center">รายละเอียด</TableHead>
 							<TableHead className="text-center">ดาวน์โหลดฟอร์ม</TableHead>
@@ -99,9 +102,6 @@ export default function ThesisExamAssessmentFormTable({
 										/>
 									</TableCell>
 									<TableCell className="text-center truncate">
-										{formData.result ? formData.result : <span className="text-orange-600">รอผลการประเมิน</span>}
-									</TableCell>
-									<TableCell className="text-center truncate">
 										<HoverCardTable data={approvedForm ? approvedForm.thesisNameTH : "ไม่พบข้อมูล"} />
 									</TableCell>
 									<TableCell className="text-center truncate">
@@ -112,6 +112,9 @@ export default function ThesisExamAssessmentFormTable({
 									</TableCell>
 									<TableCell className="text-center truncate">
 										<HoverCardTable data={`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`} />
+									</TableCell>
+									<TableCell className="text-center truncate">
+										{formData.result ? formData.result : <span className="text-orange-600">รอผลการประเมิน</span>}
 									</TableCell>
 									<TableCell className="text-center truncate">
 										{formData.instituteCommitteeStatus ? (
