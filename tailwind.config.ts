@@ -113,6 +113,7 @@ const config = {
         ping2500: "ping_ 2.5s ease-in-out infinite alternate",
         ping3500: "ping_ 3.5s ease-in-out infinite alternate",
         ping1000: "ping_ 1s ease-in-out infinite alternate",
+        ping1500: "ping_ 1.5s ease-in-out infinite alternate",
         ping500: "ping_ 0.5s ease-in-out infinite alternate",
       },
     },

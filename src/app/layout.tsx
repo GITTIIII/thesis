@@ -19,8 +19,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <Background />
-        <main className="w-full h-full absolute top-0 overflow-auto">{children}</main>
+        <Background>
+          <main className="w-full h-full overflow-auto">{children}</main>
+        </Background>
         <Toaster />
       </body>
     </html>
