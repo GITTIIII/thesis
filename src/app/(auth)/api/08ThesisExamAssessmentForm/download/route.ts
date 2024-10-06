@@ -43,10 +43,33 @@ export async function GET(request: NextRequest) {
       },
     },
   });
+
   if (!thesisExamAssessmentForm) {
     return NextResponse.json({ error: "Form not found" }, { status: 404 });
   }
-
+  const outlineForm = await db.outlineForm.findFirst({
+    where: {
+      studentID: thesisExamAssessmentForm?.student.id,
+      formStatus: "อนุมัติ",
+    },
+  });
+  const committees = thesisExamAssessmentForm.committees as any[];
+  const expert = await db.expert.findMany({
+    where: {
+      id: {
+        in: [
+          committees[0].committee.committeeID,
+          committees[1].committee.committeeID,
+          committees[2].committee.committeeID,
+        ],
+      },
+    },
+  });
+  const sortedExperts = [
+    committees[0].committee.committeeID,
+    committees[1].committee.committeeID,
+    committees[2].committee.committeeID,
+  ].map((id) => expert.find((expert) => expert.id === id));
   const data = {
     studentName: `${thesisExamAssessmentForm.student.prefix?.prefixTH}${thesisExamAssessmentForm.student.firstNameTH} ${thesisExamAssessmentForm.student.lastNameTH}`,
     studentId: thesisExamAssessmentForm.student.username || "",
@@ -54,8 +77,8 @@ export async function GET(request: NextRequest) {
     studentTelephone: thesisExamAssessmentForm.student.phone || "",
     studentSchool: thesisExamAssessmentForm.student.school?.schoolNameTH || "",
     studentInstitute: thesisExamAssessmentForm.student.institute?.instituteNameTH || "",
-    thesisTH: "1111111111111111asdadada",
-    thesisEN: "1111111111111111asdadada",
+    thesisTH: outlineForm?.thesisNameTH || "",
+    thesisEN: outlineForm?.thesisNameEN || "",
     disclosed: thesisExamAssessmentForm.disClosed ? "☑" : "☐",
     nondisclosure: !thesisExamAssessmentForm.disClosed ? "☑" : "☐",
     examinationDate: dateLongTH(thesisExamAssessmentForm.examDate),
@@ -74,9 +97,24 @@ export async function GET(request: NextRequest) {
     advisorSignUrl: thesisExamAssessmentForm.advisorSignUrl,
     advisorName: `${thesisExamAssessmentForm.student.advisor?.prefix?.prefixTH}${thesisExamAssessmentForm.student.advisor?.firstNameTH} ${thesisExamAssessmentForm.student.advisor?.lastNameTH}`,
     Committee: [
-      { signUrl: "", name: "123" },
-      { signUrl: "", name: "1234" },
-      { signUrl: "", name: "12345" },
+      {
+        signUrl: committees[0].committee.signatureUrl || "",
+        name: `${sortedExperts[0]!.prefix}${sortedExperts[0]!.firstName} ${
+          sortedExperts[0]!.lastName
+        }`,
+      },
+      {
+        signUrl: committees[1].committee.signatureUrl || "",
+        name: `${sortedExperts[1]!.prefix}${sortedExperts[1]!.firstName} ${
+          sortedExperts[1]!.lastName
+        }`,
+      },
+      {
+        signUrl: committees[2].committee.signatureUrl || "",
+        name: `${sortedExperts[2]!.prefix}${sortedExperts[2]!.firstName} ${
+          sortedExperts[2]!.lastName
+        }`,
+      },
     ],
     meetingNo: thesisExamAssessmentForm.times || "",
     date: dateLongTH(thesisExamAssessmentForm.date),
