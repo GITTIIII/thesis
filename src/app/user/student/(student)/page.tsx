@@ -203,9 +203,9 @@ export default async function StudentPage() {
             ข้อความสักอย่าง
           </span>
         </div>
-        <CustomGrid rows={2} />
 
         <div className=" border-x border-mineshaft-100">
+          <CustomGrid rows={2} />
           <div className="flex w-full bg-white px-6 sm:px-16 pt-8 flex-col gap-y-6 sm:gap-y-8">
             <div className="relative flex  w-full pb-4 lg:pb-32 pt-4 sm:pt-8 lg:pt-28 bg-white px-6 sm:px-16">
               <div className="w-[40%]  justify-center items-center xl:flex hidden">
