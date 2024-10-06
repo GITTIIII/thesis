@@ -6,7 +6,6 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
-  console.log(123);
   const thesisExamAssessmentFormId = request.nextUrl.searchParams.get("id");
   const session = await getServerSession(authOptions);
 
@@ -43,10 +42,31 @@ export async function GET(request: NextRequest) {
       },
     },
   });
+
   if (!thesisExamAssessmentForm) {
     return NextResponse.json({ error: "Form not found" }, { status: 404 });
   }
+  const outlineForm = await db.outlineForm.findFirst({
+    where: {
+      studentID: thesisExamAssessmentForm?.student.id,
+      formStatus: "อนุมัติ",
+    },
+  });
+  const committees = thesisExamAssessmentForm.committees as {
+    committee: { committeeID: number; signatureUrl: string };
+  }[];
+  const committeeIDs = committees.map((committee) => committee.committee.committeeID);
 
+  const expert = await db.expert.findMany({
+    where: {
+      id: {
+        in: committeeIDs,
+      },
+    },
+  });
+  const sortedExperts = committeeIDs.map((id) =>
+    expert.find((expert) => expert.id === id)
+  );
   const data = {
     studentName: `${thesisExamAssessmentForm.student.prefix?.prefixTH}${thesisExamAssessmentForm.student.firstNameTH} ${thesisExamAssessmentForm.student.lastNameTH}`,
     studentId: thesisExamAssessmentForm.student.username || "",
@@ -54,8 +74,8 @@ export async function GET(request: NextRequest) {
     studentTelephone: thesisExamAssessmentForm.student.phone || "",
     studentSchool: thesisExamAssessmentForm.student.school?.schoolNameTH || "",
     studentInstitute: thesisExamAssessmentForm.student.institute?.instituteNameTH || "",
-    thesisTH: "1111111111111111asdadada",
-    thesisEN: "1111111111111111asdadada",
+    thesisTH: outlineForm?.thesisNameTH || "",
+    thesisEN: outlineForm?.thesisNameEN || "",
     disclosed: thesisExamAssessmentForm.disClosed ? "☑" : "☐",
     nondisclosure: !thesisExamAssessmentForm.disClosed ? "☑" : "☐",
     examinationDate: dateLongTH(thesisExamAssessmentForm.examDate),
@@ -73,11 +93,17 @@ export async function GET(request: NextRequest) {
     headComName: `${thesisExamAssessmentForm.headOfCommittee?.prefix}${thesisExamAssessmentForm.headOfCommittee?.firstName} ${thesisExamAssessmentForm.headOfCommittee?.lastName}`,
     advisorSignUrl: thesisExamAssessmentForm.advisorSignUrl,
     advisorName: `${thesisExamAssessmentForm.student.advisor?.prefix?.prefixTH}${thesisExamAssessmentForm.student.advisor?.firstNameTH} ${thesisExamAssessmentForm.student.advisor?.lastNameTH}`,
-    Committee: [
-      { signUrl: "", name: "123" },
-      { signUrl: "", name: "1234" },
-      { signUrl: "", name: "12345" },
-    ],
+    Committee: Array.from({ length: 3 }, (_, index) => {
+      const committee = committees[index];
+      const sortedExpert = sortedExperts[index];
+
+      return {
+        signUrl: committee ? committee.committee.signatureUrl : "",
+        name: sortedExpert
+          ? `${sortedExpert.prefix}${sortedExpert.firstName} ${sortedExpert.lastName}`
+          : "",
+      };
+    }),
     meetingNo: thesisExamAssessmentForm.times || "",
     date: dateLongTH(thesisExamAssessmentForm.date),
     instituteCommitteeComment: thesisExamAssessmentForm.instituteCommitteeComment || "",
