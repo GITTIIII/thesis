@@ -66,10 +66,10 @@ export type IOutlineCommitteeForm = {
 	committeeMembers: Array<any>;
 	times: number;
 	examDate: Date;
-	
+
 	studentID: number;
 	student: IUser;
-	
+
 	advisorSignUrl?: string;
 
 	headSchoolID?: number;
@@ -90,20 +90,20 @@ export type IExamCommitteeForm = {
 	committeeMembers: Array<any>;
 	times: number;
 	examDate: Date;
-	
+
 	studentID: number;
 	student: IUser;
-	
+
 	advisorID?: number;
 	advisor?: IUser;
 	advisorSignUrl?: string;
-	
+
 	headSchoolID?: number;
 	headSchoolSignUrl?: string;
 	headSchool?: IUser;
-	
+
 	instituteComSignUrl?: string;
-	
+
 	addNotes?: Array<addNotes>;
 };
 
@@ -199,48 +199,62 @@ export type IThesisExamAppointmentForm = {
 	headSchool?: IUser;
 };
 
-export type IExamForm = {
+export type IThesisExamAssessmentForm = {
 	id: number;
 	date: Date;
+	examDate: Date;
+	disClosed: boolean;
 	studentID: number;
 	student: IUser;
-	thesisNameTH: string;
-	thesisNameEN: string;
-	examinationDate: Date;
-	disClosed: boolean;
-	newNameTH?: string;
-	newNameEN?: string;
-	reviseTitle?: Boolean;
-	committeeSignUrl?:     Array<any>;
-	resultExam?	:string;
-	presentationComment?:		string;
-	explanationComment?:	string;
-	answerQuestionsComment?: string;
-	headOfCommitteeSignUrl?:	string;
-	meetingNo?: number;
-	dateOfDecision?: Date;
-	meetingDate?:Date;
-	headOfCommitteeName?:string;
-	approve?:	Boolean;
+
+	// ผลสอบ
+	result?: string;
+	presentationComment?: string;
+	explanationComment?: string;
+	answerQuestionComment?: string;
+	failComment?: string;
+
+	// การเปลี่ยนชื่อ
+	reviseTitle?: boolean;
+	newThesisNameTH?: string;
+	newThesisNameEN?: string;
+
+	// ลายเซ็นกรรมการ
+	headOfCommitteeID?: number;
+	headOfCommittee?: IExpert;
+	headOfCommitteeSignUrl?: string;
+	advisorSignUrl?: string;
+	coAdvisors?: Array<any>;
+	committees?: Array<any>;
+
+	// กรรมการสำนัก
+	times?: string;
+	dateInstituteCommitteeSign?: Date;
+	instituteCommitteeStatus?: string;
+	instituteCommitteeComment?: string;
+	instituteCommitteeSignUrl?: string;
+	instituteCommitteeID?: number;
+	instituteCommittee?: IUser;
 };
 
 export type IDelayThesisForm = {
-  	id:                   number;
-	headCommitteeName:    string;
-	startDate:            Date;
-	endDate:              Date;
-	studentSignUrl:       string; 
-	thesisNameTH:         string;
-	thesisNameEN:         string;
-	date:                 Date;
-	publishmentName:      string;
+	id: number;
+	headCommitteeName: string;
+	startDate: Date;
+	endDate: Date;
+	studentSignUrl: string;
+	thesisNameTH: string;
+	thesisNameEN: string;
+	date: Date;
+	publishmentName: string;
 
-	instituteSignUrl?:    string;
-	instituteID?:         number;
-	approve?:             string;
-	timeApprove:		  number;
-	dayApprove?:          Date;
-	studentID:            number;
-	student:			  IUser;
-	institute:			  IUser;
-}
+	instituteSignUrl?: string;
+	instituteID?: number;
+	approve?: string;
+	timeApprove: number;
+	dayApprove?: Date;
+	studentID: number;
+	student: IUser;
+	institute: IUser;
+	disapproveComment?: string;
+};

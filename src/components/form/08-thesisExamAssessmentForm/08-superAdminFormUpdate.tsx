@@ -171,11 +171,11 @@ const ThesisExamAssessmentFormSuperAdmin = ({ user, formData }: { user: IUser; f
 					<div className="w-full  mt-5">
 						<InputForm
 							value={`${formData?.student.firstNameTH} ${formData?.student.lastNameTH}`}
-							label="ชื่อ-นามสกุล / Fullname"
+							label="ชื่อ-นามสกุล / Full name"
 						/>
 						<InputForm value={`${formData?.student.username} `} label="รหัสนักศึกษา / StudentID" />
 						<InputForm value={`${formData?.student.email} `} label="อีเมล์ / Email" />
-						<InputForm value={`${formData?.student.phone} `} label="เบอร์โทรศัพท์ / Phone Number" />
+						<InputForm value={`${formData?.student.phone} `} label="เบอร์โทรศัพท์ / Telephone" />
 
 						<div className="w-[300px] flex flex-col items-left mb-6 justify-left mx-auto">
 							<FormLabel className="text-sm">ระดับการศึกษา / Education Level</FormLabel>
@@ -202,8 +202,8 @@ const ThesisExamAssessmentFormSuperAdmin = ({ user, formData }: { user: IUser; f
 					<div className="w-full ">
 						<div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
 							<div className="text-center mb-5">ชื่อวิทยานิพนธ์</div>
-							<InputForm value={`${formData?.thesisNameTH}`} label="ชื่อภาษาไทย / ThesisName(TH)" />
-							<InputForm value={`${formData?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / ThesisName(EN)" />
+							<InputForm value={`${formData?.thesisNameTH}`} label="ชื่อภาษาไทย / Thesis name (TH)" />
+							<InputForm value={`${formData?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / Thesis name (EN)" />
 							<RadioGroup disabled className="w-[300px] flex flex-col items-left mb-6 justify-left mx-auto">
 								<div>
 									<RadioGroupItem checked={formData?.disClosed} value="disclosed" />

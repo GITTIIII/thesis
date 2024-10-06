@@ -6,7 +6,7 @@ import {
 	IOutlineForm,
 	IThesisProgressForm,
 	IThesisExamAppointmentForm,
-	IExamForm,
+	IThesisExamAssessmentForm,
 } from "@/interface/form";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -356,7 +356,7 @@ export const get08FormBySchoolId = async (schoolId: number) => {
 
 	if (!session) return;
 
-	const form08 = await db.thesisExamForm.findMany({
+	const form08 = await db.thesisExamAssessmentForm.findMany({
 		where: {
 			student: {
 				schoolID: Number(schoolId),
@@ -381,5 +381,5 @@ export const get08FormBySchoolId = async (schoolId: number) => {
 
 	if (!form08) return;
 
-	return form08 as IExamForm[];
+	return form08 as IThesisExamAssessmentForm[];
 };

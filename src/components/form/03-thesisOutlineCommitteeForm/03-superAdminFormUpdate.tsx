@@ -235,7 +235,7 @@ export default function SuperAdminForm03Update({
 						<InputForm value={`${formData?.student.username}`} label="รหัสนักศึกษา / Student ID" />
 						<InputForm
 							value={`${formData?.student.firstNameTH} ${formData?.student.lastNameTH}`}
-							label="ชื่อ-นามสกุล / Fullname"
+							label="ชื่อ-นามสกุล / Full name"
 						/>
 						<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
 						<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />

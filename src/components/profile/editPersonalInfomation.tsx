@@ -332,7 +332,7 @@ const EditPersonalInformation = ({ user }: { user: IUser }) => {
 								<FormItem>
 									<FormLabel>เบอร์โทรศัพท์</FormLabel>
 									<FormControl>
-										<Input placeholder="Phone number" {...field} />
+										<Input placeholder="Telephone" {...field} />
 									</FormControl>
 									<FormMessage />
 								</FormItem>

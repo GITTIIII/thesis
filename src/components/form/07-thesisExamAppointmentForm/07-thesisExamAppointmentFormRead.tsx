@@ -64,7 +64,7 @@ const ThesisProgressFormRead = ({
 					<InputForm value={`${user?.username}`} label="รหัสนักศึกษา / Student ID" />
 					<InputForm
 						value={`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
-						label="ชื่อ-นามสกุล / Fullname"
+						label="ชื่อ-นามสกุล / Full name"
 					/>
 					<InputForm value={`${formData?.student?.school?.schoolNameTH}`} label="สาขาวิชา / School" />
 					<InputForm value={`${formData?.student?.program?.programNameTH}`} label="หลักสูตร / Program" />
@@ -111,8 +111,8 @@ const ThesisProgressFormRead = ({
 							</div>
 						</div>
 
-						<InputForm value={`${approvedForm?.thesisNameTH}`} label="ชื่อภาษาไทย / Thesis Topic (TH)" />
-						<InputForm value={`${approvedForm?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / Thesis Topic (EN)" />
+						<InputForm value={`${approvedForm?.thesisNameTH}`} label="ชื่อภาษาไทย / Thesis name (TH)" />
+						<InputForm value={`${approvedForm?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / Thesis name (EN)" />
 						<InputForm
 							value={`${formData?.dateExam ? new Date(formData?.dateExam).toLocaleDateString("th") : ""}`}
 							label="วันที่นัดสอบ / Date of the examination"

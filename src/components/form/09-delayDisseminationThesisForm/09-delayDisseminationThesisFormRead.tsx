@@ -6,7 +6,6 @@ import InputForm from "../../inputForm/inputForm";
 import { IUser } from "@/interface/user";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 import { IDelayThesisForm } from "@/interface/form";
-import { FormLabel } from "@/components/ui/form";
 import { Label } from "@/components/ui/label";
 
 const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; formData: IDelayThesisForm }) => {
@@ -28,10 +27,10 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 				{/* ฝั่งซ้าย */}
 
 				<div className="w-full  mt-5">
-					<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Fullname" />
+					<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Full name" />
 					<InputForm value={`${user?.username} `} label="รหัสนักศึกษา / StudentID" />
 					<InputForm value={`${user?.email} `} label="อีเมล์ / Email" />
-					<InputForm value={`${user?.phone} `} label="เบอร์โทรศัพท์ / Phone Number" />
+					<InputForm value={`${user?.phone} `} label="เบอร์โทรศัพท์ / Telephone" />
 					<div className="flex flex-col items-center mb-6 justify-center">
 						<Label className="font-normal">ระดับการศึกษา / Education Level</Label>
 						<RadioGroup disabled className="space-y-1 mt-2">
@@ -60,15 +59,15 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 					</div>
 					<div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
 						<div className="text-center mb-5">ชื่อวิทยานิพนธ์</div>
-						<InputForm value={`${formData?.thesisNameTH}`} label="ชื่อภาษาไทย / ThesisName(TH)" />
-						<InputForm value={`${formData?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / ThesisName(EN)" />
+						<InputForm value={`${formData?.thesisNameTH}`} label="ชื่อภาษาไทย / Thesis name (TH)" />
+						<InputForm value={`${formData?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / Thesis name (EN)" />
 						<InputForm
 							value={`${formData?.publishmentName}`}
 							label="ชื่อวารสารที่ต้องการนำวิทยานิพนธ์ไปตีพิมพ์ / scientific journal name"
 						/>
 
 						<InputForm value={`${formData?.startDate.toLocaleDateString("th")}`} label="ตั้งแต่วันที่ / Starting Date" />
-						<InputForm value={`${formData?.endDate.toLocaleDateString("th")}`} label="ตั้งแต่วันที่ / Starting Date" />
+						<InputForm value={`${formData?.endDate.toLocaleDateString("th")}`} label="จนถึงวันที่ / End Date" />
 					</div>
 					<div className="flex item-center justify-center ">
 						<div className="w-3/4 flex flex-col item-center justify-center border-2 rounded-lg py-5 my-5 border-[#eeee] ">
@@ -89,26 +88,46 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 									</div>
 								)}
 							</div>
-							<div>
-								{(user.role == "STUDENT" ||
-									(user.role == "SUPER_ADMIN" && user.position == "HEAD_OF_INSTITUTE" && formData)) && (
-									<div className="w-full sm:1/3 flex flex-col items-center mb-6 justify-center">
-										{/* ลายเซ็นต์นักศึกษา */}
-										<div className="text-center mb-2">
-											ลายเซ็นต์ประธานคณะกรรมการ / <br />
-											Head of Committee
-										</div>
-										<SignatureDialog
-											signUrl={formData?.instituteSignUrl ? formData?.instituteSignUrl : ""}
-											disable={true}
-										/>
-										{/* <Label className="mb-2">{`${formData?.student?.advisor?.prefix?.prefixTH}${formData?.student?.advisor?.firstNameTH} ${formData?.student?.advisor?.lastNameTH}`}</Label> */}
-									</div>
-								)}
-							</div>
 						</div>
 					</div>
 				</div>
+			</div>
+			<hr className="justify-center mx-auto w-[88%] my-5 border-t-2 border-[#eeee]" />
+			<div className="flex flex-col item-center justify-center my-5">
+			<div className="px-5 mx-auto">
+				<InputForm value={`${formData?.timeApprove} `} label="ครั้งที่. / No." />
+				<InputForm value={`${formData?.dayApprove?.toLocaleDateString("th")}`} label="วันที่ / Date" />
+			</div>
+				<div className="flex flex-col items-center mb-6 justify-center">
+				<RadioGroup disabled className="space-y-1 mt-1">
+					<div>
+						<RadioGroupItem checked={formData?.approve === "approve"} value="approve" />
+						<Label className="ml-2 font-normal">อนุมัติ / approve</Label>
+					</div>
+					<div>
+						<RadioGroupItem checked={formData?.approve === "disApprove"} value="disApprove" />
+						<Label className="ml-2 font-normal">ไม่อนุมัติ / disApprove</Label>
+					</div>
+				</RadioGroup>
+				<div>
+					{formData?.approve==="disApprove" && (
+						<InputForm value={`${formData?.disapproveComment}`} label="เหตุผล / Reason" />
+					)}
+				</div>
+			</div>
+				{(user.role == "STUDENT" ||
+					(user.role == "SUPER_ADMIN" && user.position == "HEAD_OF_INSTITUTE" && formData)) && (
+						<div className="w-full sm:1/3 flex flex-col items-center mb-6 justify-center">
+							<div className="text-center mb-2">
+								ลายเซ็นต์ประธานคณะกรรมการ / 
+								Head of Committee
+							</div>
+							<SignatureDialog
+								signUrl={formData?.instituteSignUrl ? formData?.instituteSignUrl : ""}
+								disable={true}
+							/>							
+						</div>
+				)}
 			</div>
 		</div>
 	);

@@ -1,0 +1,8 @@
+.aspect-w-1 {
+  position: relative;
+  padding-bottom: calc(var(--tw-aspect-h) / var(--tw-aspect-w) * 100%);
+  --tw-aspect-w: 1;
+}
+.aspect-h-1 {
+  --tw-aspect-h: 1;
+}

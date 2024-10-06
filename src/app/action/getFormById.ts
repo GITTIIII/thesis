@@ -6,8 +6,8 @@ import {
 	IOutlineForm,
 	IThesisProgressForm,
 	IThesisExamAppointmentForm,
+	IThesisExamAssessmentForm,
 	IDelayThesisForm,
-	IExamForm,
 } from "@/interface/form";
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
@@ -128,15 +128,15 @@ export const get03FormById = async (formId: number) => {
 							prefix: true,
 						},
 					},
-					coAdvisedStudents:{
-						include:{
-							coAdvisor:{
-								include:{
-									prefix:true
-								}
-							}
-						}
-					}
+					coAdvisedStudents: {
+						include: {
+							coAdvisor: {
+								include: {
+									prefix: true,
+								},
+							},
+						},
+					},
 				},
 			},
 			headSchool: {
@@ -175,15 +175,15 @@ export const get04FormById = async (formId: number) => {
 							prefix: true,
 						},
 					},
-					coAdvisedStudents:{
-						include:{
-							coAdvisor:{
-								include:{
-									prefix:true
-								}
-							}
-						}
-					}
+					coAdvisedStudents: {
+						include: {
+							coAdvisor: {
+								include: {
+									prefix: true,
+								},
+							},
+						},
+					},
 				},
 			},
 			headSchool: {
@@ -222,15 +222,15 @@ export const get05FormById = async (formId: number) => {
 							prefix: true,
 						},
 					},
-					coAdvisedStudents:{
-						include:{
-							coAdvisor:{
-								include:{
-									prefix:true
-								}
-							}
-						}
-					}
+					coAdvisedStudents: {
+						include: {
+							coAdvisor: {
+								include: {
+									prefix: true,
+								},
+							},
+						},
+					},
 				},
 			},
 			outlineCommittee: true,
@@ -268,15 +268,15 @@ export const get06FormById = async (formId: number) => {
 							prefix: true,
 						},
 					},
-					coAdvisedStudents:{
-						include:{
-							coAdvisor:{
-								include:{
-									prefix:true
-								}
-							}
-						}
-					}
+					coAdvisedStudents: {
+						include: {
+							coAdvisor: {
+								include: {
+									prefix: true,
+								},
+							},
+						},
+					},
 				},
 			},
 			headSchool: {
@@ -313,14 +313,14 @@ export const get07FormById = async (formId: number) => {
 							prefix: true,
 						},
 					},
-					coAdvisedStudents:{
-						include:{
-							coAdvisor:{
-								include:{
-									prefix:true
-								}
-							}
-						}
+					coAdvisedStudents: {
+						include: {
+							coAdvisor: {
+								include: {
+									prefix: true,
+								},
+							},
+						},
 					},
 					certificate: true,
 				},
@@ -343,7 +343,7 @@ export const get08FormById = async (formId: number) => {
 
 	if (!session) return;
 
-	const form08 = await db.thesisExamForm.findUnique({
+	const form08 = await db.thesisExamAssessmentForm.findUnique({
 		where: {
 			id: Number(formId),
 		},
@@ -359,23 +359,29 @@ export const get08FormById = async (formId: number) => {
 							prefix: true,
 						},
 					},
-					coAdvisedStudents:{
-						include:{
-							coAdvisor:{
-								include:{
-									prefix:true
-								}
-							}
-						}
-					}
+					coAdvisedStudents: {
+						include: {
+							coAdvisor: {
+								include: {
+									prefix: true,
+								},
+							},
+						},
+					},
+				},
 			},
+			headOfCommittee: true,
+			instituteCommittee: {
+				include: {
+					prefix: true,
+				},
 			},
 		},
 	});
 
 	if (!form08) return;
 
-	return form08 as IExamForm;
+	return form08 as IThesisExamAssessmentForm;
 };
 
 export const get09FormById = async (formId: number) => {
@@ -399,15 +405,15 @@ export const get09FormById = async (formId: number) => {
 							prefix: true,
 						},
 					},
-					coAdvisedStudents:{
-						include:{
-							coAdvisor:{
-								include:{
-									prefix:true
-								}
-							}
-						}
-					}
+					coAdvisedStudents: {
+						include: {
+							coAdvisor: {
+								include: {
+									prefix: true,
+								},
+							},
+						},
+					},
 				},
 			},
 			institute: {

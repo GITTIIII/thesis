@@ -26,12 +26,15 @@ const formSchema = z.object({
 	approve: z.string(),
 	dayApprove: z.date(),
 	timeApprove: z.number(),
+	disapproveComment: z.string().optional(),
 });
 const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; formData: IDelayThesisForm }) => {
 	const router = useRouter();
 	const { toast } = useToast();
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
+	const [isDisApproved, setIsDisApproved] = useState(false);
+	const [openDialog, setOpenDialog] = useState(false);
 	const form = useForm({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
@@ -41,9 +44,9 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 			instituteSignUrl: "",
 			approve: "",
 			id: 0,
+			disapproveComment:""
 		},
 	});
-	const [openDialog, setOpenDialog] = useState(false);
 	const handleSign = (signUrl: string) => {
 		reset({
 			...form.getValues(),
@@ -131,10 +134,10 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 					{/* ฝั่งซ้าย */}
 
 					<div className="w-full  mt-5">
-						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Fullname" />
+						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Full name" />
 						<InputForm value={`${user?.username} `} label="รหัสนักศึกษา / StudentID" />
 						<InputForm value={`${user?.email} `} label="อีเมล์ / Email" />
-						<InputForm value={`${user?.phone} `} label="เบอร์โทรศัพท์ / Phone Number" />
+						<InputForm value={`${user?.phone} `} label="เบอร์โทรศัพท์ / Telephone" />
 						<div className="flex flex-col items-center mb-6 justify-center">
 							<Label className="font-normal">ระดับการศึกษา / Education Level</Label>
 							<RadioGroup disabled className="space-y-1 mt-2">
@@ -163,8 +166,8 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 						</div>
 						<div className="w-3/4 mx-auto p-5 flex flex-col item-center justify-center border-2 rounded-lg mb-5 border-[#eeee]">
 							<div className="text-center mb-5">ชื่อวิทยานิพนธ์</div>
-							<InputForm value={`${formData?.thesisNameTH}`} label="ชื่อภาษาไทย / ThesisName(TH)" />
-							<InputForm value={`${formData?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / ThesisName(EN)" />
+							<InputForm value={`${formData?.thesisNameTH}`} label="ชื่อภาษาไทย / Thesis name (TH)" />
+							<InputForm value={`${formData?.thesisNameEN}`} label="ชื่อภาษาอังกฤษ / Thesis name (EN)" />
 							<InputForm
 								value={`${formData?.publishmentName}`}
 								label="ชื่อวารสารที่ต้องการนำวิทยานิพนธ์ไปตีพิมพ์ / scientific journal name"
@@ -211,10 +214,11 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 
 									{formData.instituteSignUrl ? (
 										<div>
+											<div className="px-5 mx-auto">
 											<InputForm value={`${formData?.timeApprove} `} label="ครั้งที่. / No." />
-											<InputForm value={`${formData?.dayApprove}..toLocaleDateString("th") `} label="วันที่ / Date" />
+											<InputForm value={`${formData?.dayApprove?.toLocaleDateString("th")}`} label="วันที่ / Date" /></div>
 											<div className="flex flex-col items-center mb-6 justify-center">
-												<RadioGroup disabled className="space-y-1 mt-2">
+												<RadioGroup disabled className="space-y-1 mt-1">
 													<div>
 														<RadioGroupItem checked={formData?.approve === "approve"} value="approve" />
 														<Label className="ml-2 font-normal">อนุมัติ / approve</Label>
@@ -224,6 +228,11 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 														<Label className="ml-2 font-normal">ไม่อนุมัติ / disApprove</Label>
 													</div>
 												</RadioGroup>
+												<div>
+													{formData?.approve==="disApprove" && (
+														<InputForm value={`${formData?.disapproveComment}`} label="เหตุผล / Reason" />
+													)}
+												</div>
 											</div>
 											<div className="text-center mb-2">
 												ลายเซ็นต์ประธานคณะกรรมการ / <br />
@@ -238,12 +247,13 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 										</div>
 									) : (
 										<div>
+											<div className="flex flex-row justify-center item-center my-5">
 											<FormField
 												control={form.control}
 												name="timeApprove"
 												render={({ field }) => (
-													<div className="flex flex-row items-center my-5 justify-center">
-														<FormItem className="w-[300px]">
+													<div className="flex flex-row items-center mr-2 justify-center">
+														<FormItem className="w-[130px]">
 															<FormLabel>
 																ครั้งที่. / No. <span className="text-red-500">*</span>
 															</FormLabel>
@@ -260,8 +270,8 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 												control={form.control}
 												name="dayApprove"
 												render={({ field }) => (
-													<div className="flex flex-row items-center justify-center mb-5">
-														<FormItem className="w-[300px]">
+													<div className="flex flex-row items-center ml-2 justify-center">
+														<FormItem className="">
 															<FormLabel>วันที่ / Date </FormLabel>
 															<div>
 																<DatePicker value={field.value} onDateChange={field.onChange} />
@@ -271,6 +281,7 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 													</div>
 												)}
 											/>
+											</div>
 											<FormField
 												control={form.control}
 												name="approve"
@@ -278,7 +289,10 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 													<FormItem className="w-[300px] mx-auto my-5 space-y-3">
 														<FormControl>
 															<RadioGroup
-																onValueChange={field.onChange}
+																onValueChange={(value) => {
+																	field.onChange(value);
+																	setIsDisApproved(value === "disApprove"); // ตรวจสอบว่าเลือก disApprove หรือไม่
+																  }}
 																defaultValue={field.value}
 																className="flex flex-row space-y-1"
 															>
@@ -300,6 +314,23 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 													</FormItem>
 												)}
 											/>
+											{isDisApproved &&(
+												<FormField
+												control={form.control}
+												name="disapproveComment"
+												render={({ field }) => (
+												<div className="flex flex-row items-center my-5 justify-center">
+												  <FormItem className="w-[300px]">
+													<FormLabel>เหตุผลที่ไม่อนุมัติ</FormLabel>
+													<FormControl>
+													  <Input {...field} placeholder="กรอกเหตุผลที่ไม่อนุมัติ" />
+													</FormControl>
+													<FormMessage />
+												  </FormItem>
+												  </div>
+												)}
+											  />
+											)}
 											<div className="text-center mb-2">ลายเซ็นต์ประธานคณะกรรมการ / Head of Committee</div>
 											<div className="flex justify-center item-center">
 												<SignatureDialog

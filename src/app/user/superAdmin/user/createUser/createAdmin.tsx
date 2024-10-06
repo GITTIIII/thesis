@@ -212,7 +212,7 @@ export default function CreateAdmin() {
 						name="phone"
 						render={({ field }) => (
 							<div className="space-y-1 mb-2">
-								<FormLabel htmlFor="phone">เบอร์โทร / Phone number</FormLabel>
+								<FormLabel htmlFor="phone">เบอร์โทร / Telephone</FormLabel>
 								<Input {...field} />
 								<FormMessage />
 							</div>

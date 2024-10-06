@@ -116,10 +116,10 @@ const DelayDisseminationThesisFormCreate = () => {
 					{/* ฝั่งซ้าย */}
 
 					<div className="w-full  mt-5">
-						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Fullname" />
+						<InputForm value={`${user?.firstNameTH} ${user?.lastNameTH}`} label="ชื่อ-นามสกุล / Full name" />
 						<InputForm value={`${user?.username} `} label="รหัสนักศึกษา / StudentID" />
 						<InputForm value={`${user?.email} `} label="อีเมล์ / Email" />
-						<InputForm value={`${user?.phone} `} label="เบอร์โทรศัพท์ / Phone Number" />
+						<InputForm value={`${user?.phone} `} label="เบอร์โทรศัพท์ / Telephone" />
 
 						<div className="w-[300px] flex flex-col items-left mb-6 justify-left mx-auto">
 							<FormLabel className="text-sm">ระดับการศึกษา / Education Level</FormLabel>
@@ -170,7 +170,7 @@ const DelayDisseminationThesisFormCreate = () => {
 								render={({ field }) => (
 									<div className="flex flex-row items-center mb-6 justify-center">
 										<FormItem className="w-auto">
-											<FormLabel>ชื่อภาษาไทย / ThesisName(TH)</FormLabel>
+											<FormLabel>ชื่อภาษาไทย / Thesis name (TH)</FormLabel>
 											<FormControl>
 												<Input className="text-sm p-2 w-[300px] m-auto  rounded-lg" {...field} />
 											</FormControl>
@@ -185,7 +185,7 @@ const DelayDisseminationThesisFormCreate = () => {
 								render={({ field }) => (
 									<div className="flex flex-row items-center mb-6 justify-center">
 										<FormItem className="w-auto">
-											<FormLabel>ชื่อภาษาอังกฤษ / ThesisName(EN)</FormLabel>
+											<FormLabel>ชื่อภาษาอังกฤษ / Thesis name (EN)</FormLabel>
 											<FormControl>
 												<Input className="text-sm p-2 w-[300px] m-auto  rounded-lg" {...field} />
 											</FormControl>
