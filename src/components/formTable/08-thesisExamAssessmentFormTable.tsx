@@ -6,10 +6,10 @@ import { Download } from "lucide-react";
 import { IUser } from "@/interface/user";
 import { useSelectForm } from "@/hook/selectFormHook";
 import { FormPath } from "../formPath/formPath";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search } from "./search";
 import { FilterTable } from "./filter";
-import { IOutlineForm, IThesisExamAssessmentForm } from "@/interface/form";
+import { IOutlineCommitteeForm, IOutlineForm, IThesisExamAssessmentForm } from "@/interface/form";
 import saveAs from "file-saver";
 import { HoverCardTable } from "./hoverCard";
 import useSWR from "swr";
@@ -29,6 +29,7 @@ export default function ThesisExamAssessmentFormTable({
 	const [studentID, setStudentID] = useState("");
 	const [myStudent, setMyStudent] = useState(false);
 	const [status, setStatus] = useState("");
+	const [approveForms, setApproveForms] = useState<{ [studentID: number]: IOutlineForm }>({});
 
 	const filteredData = formData?.filter((formData) => {
 		const matchesStudentID = studentID === "" || formData.student.username.includes(studentID);
@@ -44,6 +45,21 @@ export default function ThesisExamAssessmentFormTable({
 
 		return matchesStudentID && (!myStudent || matchesMyStudent) && (!status || matchesFormStatus);
 	});
+
+	const fetchApproveForm = async (studentID: number) => {
+		const res = await fetch(`/api/get05ApprovedFormByStdId/${studentID}`);
+		const data = await res.json();
+		// Store the data in the state, mapping it by studentID
+		setApproveForms((prev) => ({ ...prev, [studentID]: data }));
+	};
+
+	useEffect(() => {
+		if (filteredData) {
+			filteredData.forEach((formData) => {
+				fetchApproveForm(formData.studentID);
+			});
+		}
+	}, []);
 
 	const handleDownload = async (formData: IThesisExamAssessmentForm) => {
 		if (formData.instituteCommitteeID) {
@@ -102,10 +118,10 @@ export default function ThesisExamAssessmentFormTable({
 										/>
 									</TableCell>
 									<TableCell className="text-center truncate">
-										<HoverCardTable data={approvedForm ? approvedForm.thesisNameTH : "ไม่พบข้อมูล"} />
+										<HoverCardTable data={approveForms[formData.studentID]?.thesisNameTH || "กำลังโหลด..."} />
 									</TableCell>
 									<TableCell className="text-center truncate">
-										<HoverCardTable data={approvedForm ? approvedForm.thesisNameEN : "ไม่พบข้อมูล"} />
+										<HoverCardTable data={approveForms[formData.studentID]?.thesisNameEN || "กำลังโหลด..."} />
 									</TableCell>
 									<TableCell className="text-center truncate">
 										<HoverCardTable data={formData?.student.username} />

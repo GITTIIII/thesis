@@ -20,6 +20,8 @@ export default function ThesisExamAppointmentFormTable({ formData, user }: { use
 	const [headSchool, setHeadSchool] = useState(false);
 	const [status, setStatus] = useState("");
 
+	
+
 	const filteredData = formData?.filter((formData) => {
 		const matchesStudentID = studentID === "" || formData.student.username.includes(studentID);
 		const matchesMyStudent =

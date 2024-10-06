@@ -725,12 +725,15 @@ const ThesisExamAssessmentFormUpdate = ({
 											<div className="flex flex-col items-center space-y-2">
 												<SignatureDialog
 													userSignUrl={user.role === "ADMIN" && user.position !== "NONE" ? user.signatureUrl : ""}
-													disable={!!formData.headOfCommitteeID}
+													disable={
+														formData?.coAdvisors && formData?.coAdvisors[index]?.coAdvisor?.signatureUrl
+															? true
+															: false
+													}
 													signUrl={
-														formData.headOfCommitteeID && formData?.coAdvisors
+														formData?.coAdvisors
 															? formData?.coAdvisors[index]?.coAdvisor?.signatureUrl
-															: coAdvisorStudent?.coAdvisor?.signatureUrl ||
-															  (form.getValues(`coAdvisors.${index}.coAdvisor.signatureUrl`) as string)
+															: (form.getValues(`coAdvisors.${index}.coAdvisor.signatureUrl`) as string)
 													}
 													onConfirm={(signUrl: string) => {
 														console.log("Confirming signature for index:", index);

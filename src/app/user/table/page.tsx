@@ -38,9 +38,9 @@ export default async function StudentTablePage({ searchParams }: { searchParams:
 	} else {
 		selectedForm = searchParams.form || "form01";
 	}
-	const approvedForm = await get05ApprovedFormByStdId(user.id);
-
+	
 	const formData: any = await fetchFormData(selectedForm, user);
+	const approvedForm = await get05ApprovedFormByStdId(user.id);
 
 	const renderFormTable = () => {
 		switch (selectedForm) {
@@ -59,7 +59,7 @@ export default async function StudentTablePage({ searchParams }: { searchParams:
 			case "form07":
 				return <ExamAppointmentFormTable user={user} formData={formData} />;
 			case "form08":
-				return <ThesisExamAssessmentFormTable user={user} formData={formData} approvedForm={approvedForm} />;
+				return <ThesisExamAssessmentFormTable user={user} formData={formData} />;
 			default:
 				return <div>ไม่มีตาราง</div>;
 		}

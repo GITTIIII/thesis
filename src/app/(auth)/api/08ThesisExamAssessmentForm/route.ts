@@ -131,6 +131,22 @@ export async function PATCH(req: Request) {
 			return NextResponse.json({ message: "Form not found" }, { status: 404 });
 		}
 
+		const hasValidSignatures = (array: any[], key: string) => {
+			return array.every((item) => item[key] && item[key].signatureUrl);
+		};
+
+		// Only update coAdvisors if every coAdvisor has a valid signatureUrl
+		const validCoAdvisors =
+			coAdvisors && coAdvisors.length > 0 && hasValidSignatures(coAdvisors, "coAdvisor")
+				? coAdvisors
+				: existingThesisExamAssessmentForm.coAdvisors;
+
+		// Only update committees if every committee has a valid signatureUrl
+		const validCommittees =
+			committees && committees.length > 0 && hasValidSignatures(committees, "committee")
+				? committees
+				: existingThesisExamAssessmentForm.committees;
+
 		const updatedForm = await db.thesisExamAssessmentForm.update({
 			where: { id },
 			data: {
@@ -152,8 +168,8 @@ export async function PATCH(req: Request) {
 				headOfCommitteeID: headOfCommitteeID === 0 ? existingThesisExamAssessmentForm.headOfCommitteeID : headOfCommitteeID,
 				headOfCommitteeSignUrl: headOfCommitteeSignUrl || existingThesisExamAssessmentForm.headOfCommitteeSignUrl,
 				advisorSignUrl: advisorSignUrl || existingThesisExamAssessmentForm.advisorSignUrl,
-				coAdvisors: coAdvisors || existingThesisExamAssessmentForm.coAdvisors,
-				committees: committees || existingThesisExamAssessmentForm.committees,
+				coAdvisors: validCoAdvisors,
+				committees: validCommittees,
 
 				times: times || existingThesisExamAssessmentForm.times,
 				dateInstituteCommitteeSign: dateInstituteCommitteeSign || existingThesisExamAssessmentForm.dateInstituteCommitteeSign,

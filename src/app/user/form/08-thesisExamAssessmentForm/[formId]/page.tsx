@@ -2,14 +2,27 @@ import Image from "next/image";
 import learning1 from "@/../../public/asset/learning1.png";
 import { get08FormById } from "@/app/action/getFormById";
 import { currentUser } from "@/app/action/current-user";
+import { get05ApprovedFormByStdId } from "@/app/action/get05ApprovedFormByStdId";
+import { getAllExpert } from "@/app/action/getExpert";
+import { getInstituteCommittee } from "@/app/action/getInstituteCommittee";
+import { getAdminNotNone } from "@/app/action/getAdminNotNone";
 import ThesisExamAssessmentFormRead from "@/components/form/08-thesisExamAssessmentForm/08-thesisExamAssessmentFormRead";
 
 export default async function ThesisExamAssessmentFormReadPage({ params }: { params: { formId: number } }) {
 	const formId = params.formId;
 	const formData = await get08FormById(formId);
 	const user = await currentUser();
+	const expert = await getAllExpert();
+	const instituteCommittee = await getInstituteCommittee();
+	const adminNotNone = await getAdminNotNone();
 
-	if (!formData || !user) {
+	if (!formData || !user || !expert || !instituteCommittee || !adminNotNone) {
+		return <div>ไม่พบข้อมูล</div>;
+	}
+
+	const approvedForm = await get05ApprovedFormByStdId(formData.student.id);
+
+	if (!approvedForm) {
 		return <div>ไม่พบข้อมูล</div>;
 	}
 
@@ -24,7 +37,14 @@ export default async function ThesisExamAssessmentFormReadPage({ params }: { par
 				</div>
 				<div className="h-full w-full flex items-center bg-[#EEEEEE] p-2 md:p-8 rounded-md">
 					<div className="w-full h-full">
-						<ThesisExamAssessmentFormRead formData={formData} user={user} />
+						<ThesisExamAssessmentFormRead
+							formData={formData}
+							user={user}
+							approvedForm={approvedForm}
+							expert={expert}
+							instituteCommittee={instituteCommittee}
+							adminNotNone={adminNotNone}
+						/>
 					</div>
 				</div>
 			</div>

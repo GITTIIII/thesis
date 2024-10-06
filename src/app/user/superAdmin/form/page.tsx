@@ -46,7 +46,7 @@ export default function FormDashborad() {
   const { data: form05Data = [] } = useSWR<IOutlineForm[]>("/api/05OutlineForm", fetcher);
   const { data: form06Data = [] } = useSWR<IThesisProgressForm[]>("/api/06ThesisProgressForm", fetcher);
   const { data: form07Data = [] } = useSWR<IThesisExamAppointmentForm[]>("/api/07ThesisExamAppointmentForm", fetcher);
-  const { data: form08Data = [] } = useSWR<IThesisExamAssessmentForm[]>("/api/08ThesisExamForm", fetcher);
+  const { data: form08Data = [] } = useSWR<IThesisExamAssessmentForm[]>("/api/08ThesisExamAssessmentForm", fetcher);
 
   const [filtered, setFiltered] = React.useState("none");
 
