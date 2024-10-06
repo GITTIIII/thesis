@@ -81,7 +81,7 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
           </DropdownMenuContent>
         </DropdownMenu> */}
       </div>
-      <div className="h-[65vh] rounded-md border">
+      <div className="h-[65vh] overflow-y-auto rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

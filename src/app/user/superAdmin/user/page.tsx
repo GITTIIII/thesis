@@ -100,9 +100,8 @@ export default function UserDashboard() {
             </TabsContent>
             <TabsContent value="advisor">
               <Card>
-                <CardHeader>
-                  <CardTitle>รายชื่ออาจารย์ที่ปรึกษา</CardTitle>
-                  <CardDescription>สามารถคลิกที่เมนูด้านขวาเพื่อดูข้อมูลเพิ่มเติมได้</CardDescription>
+                <CardHeader className="p-4 ml-2">
+                  <CardTitle className="text-xl">รายชื่ออาจารย์ที่ปรึกษา</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <DataTable columns={userColumns.advisorColumns} data={advisorData} />
@@ -111,9 +110,8 @@ export default function UserDashboard() {
             </TabsContent>
             <TabsContent value="committee">
               <Card>
-                <CardHeader>
-                  <CardTitle>รายชื่อผู้บริหาร</CardTitle>
-                  <CardDescription>สามารถคลิกที่เมนูด้านขวาเพื่อดูข้อมูลเพิ่มเติมได้</CardDescription>
+                <CardHeader className="p-4 ml-2">
+                  <CardTitle className="text-xl">รายชื่อผู้บริหาร</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <DataTable columns={userColumns.headInstituteColumns} data={headInstituteData} />
@@ -122,9 +120,8 @@ export default function UserDashboard() {
             </TabsContent>
             <TabsContent value="expert">
               <Card>
-                <CardHeader>
-                  <CardTitle>รายชื่อผู้เชี่ยวชาญ</CardTitle>
-                  <CardDescription>สามารถคลิกที่เมนูด้านขวาเพื่อดูข้อมูลเพิ่มเติมได้</CardDescription>
+                <CardHeader className="p-4 ml-2">
+                  <CardTitle className="text-xl">รายชื่อผู้เชี่ยวชาญ</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <DataTable columns={userColumns.expertColumns} data={expertData} />

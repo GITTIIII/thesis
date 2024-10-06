@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import axios from "axios";
 import { useState } from "react";
 import { IUser } from "@/interface/user";
+import { mutate } from "swr";
 
 const FormSchema = z.object({
   position: z.string(),
@@ -27,6 +28,7 @@ export function SelectPosition({ user }: { user: IUser }) {
     };
     const res = await axios.patch("/api/position", payload);
     if (res.status === 200) {
+      mutate("/api/getAdvisor");
       toast({
         title:
           `${user.prefix?.prefixTH}${user.firstNameTH} ${user.lastNameTH} เปลี่ยนตำแหน่งเป็น : ` +

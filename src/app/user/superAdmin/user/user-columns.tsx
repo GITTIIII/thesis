@@ -5,10 +5,10 @@ import { IUser } from "@/interface/user";
 import { IExpert } from "@/interface/expert";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
-import { UserActionMenu } from "@/components/actionMenu/actionMenu";
+import { StudentActionMenu, AdvisorActionMenu, HeadInstituteActionMenu, ExpertActionMenu } from "@/components/actionMenu/actionMenu";
 import { SelectPosition } from "@/components/selectPosition/selectPosition";
 import { Eye } from "lucide-react";
-import { StudentDialog, AdvisorDialog } from "@/components/user-dialog/user-dialog";
+import { StudentDialog, AdvisorDialog, HeadInstituteDialog, ExpertDialog } from "@/components/user-dialog/user-dialog";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -60,7 +60,7 @@ const studentColumns: ColumnDef<IUser>[] = [
           <StudentDialog user={row.row.original}>
             <Eye className="h-4 w-4 hover:cursor-pointer" />
           </StudentDialog>
-          <UserActionMenu user={row.row.original} deleteAPI={deleteAPI} fetchAPI={fetchAPI} />
+          <StudentActionMenu user={row.row.original} deleteAPI={deleteAPI} fetchAPI={fetchAPI} />
         </div>
       );
     },
@@ -107,7 +107,7 @@ const advisorColumns: ColumnDef<IUser>[] = [
           <AdvisorDialog user={row.row.original}>
             <Eye className="h-4 w-4 hover:cursor-pointer" />
           </AdvisorDialog>
-          <UserActionMenu user={row.row.original} deleteAPI={deleteAPI} fetchAPI={fetchAPI} />
+          <AdvisorActionMenu user={row.row.original} deleteAPI={deleteAPI} fetchAPI={fetchAPI} />
         </div>
       );
     },
@@ -138,8 +138,11 @@ const headInstituteColumns: ColumnDef<IUser>[] = [
       const deleteAPI = `/api/user/${row.row.original.id}`;
       const fetchAPI = "/api/getHeadInstitute";
       return (
-        <div>
-          <UserActionMenu user={row.row.original} deleteAPI={deleteAPI} fetchAPI={fetchAPI} />
+        <div className="flex items-center gap-2">
+          <HeadInstituteDialog user={row.row.original}>
+            <Eye className="h-4 w-4 hover:cursor-pointer" />
+          </HeadInstituteDialog>
+          <HeadInstituteActionMenu user={row.row.original} deleteAPI={deleteAPI} fetchAPI={fetchAPI} />
         </div>
       );
     },
@@ -161,7 +164,16 @@ const expertColumns: ColumnDef<IExpert>[] = [
     cell: (row) => {
       const deleteAPI = `/api/expert/${row.row.original.id}`;
       const fetchAPI = "/api/expert";
-      return <div></div>;
+      return (
+        <div className="flex justify-end">
+          <div className="flex items-center content-end gap-2">
+            <ExpertDialog user={row.row.original}>
+              <Eye className="h-4 w-4 hover:cursor-pointer" />
+            </ExpertDialog>
+            <ExpertActionMenu user={row.row.original} deleteAPI={deleteAPI} fetchAPI={fetchAPI} />
+          </div>
+        </div>
+      );
     },
   },
 ];
