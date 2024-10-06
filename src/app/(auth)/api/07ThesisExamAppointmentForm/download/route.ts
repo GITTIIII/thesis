@@ -6,7 +6,6 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
-  console.log(123);
   const thesisExamAppointmentFormId = request.nextUrl.searchParams.get("id");
   const session = await getServerSession(authOptions);
 
@@ -16,11 +15,7 @@ export async function GET(request: NextRequest) {
       { status: 404 }
     );
   }
-  const outlineForm = await db.outlineForm.findFirst({
-    where: {
-      id: Number(thesisExamAppointmentFormId),
-    },
-  });
+
   const thesisExamAppointmentForm = await db.thesisExamAppointmentForm.findFirst({
     where: {
       id: Number(thesisExamAppointmentFormId),
@@ -43,6 +38,12 @@ export async function GET(request: NextRequest) {
           prefix: true,
         },
       },
+    },
+  });
+  const outlineForm = await db.outlineForm.findFirst({
+    where: {
+      studentID: thesisExamAppointmentForm?.student.id,
+      formStatus: "อนุมัติ",
     },
   });
   if (!thesisExamAppointmentForm) {
