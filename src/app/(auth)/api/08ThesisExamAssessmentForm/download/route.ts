@@ -6,7 +6,6 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
-  console.log(123);
   const thesisExamAssessmentFormId = request.nextUrl.searchParams.get("id");
   const session = await getServerSession(authOptions);
 
@@ -53,23 +52,21 @@ export async function GET(request: NextRequest) {
       formStatus: "อนุมัติ",
     },
   });
-  const committees = thesisExamAssessmentForm.committees as any[];
+  const committees = thesisExamAssessmentForm.committees as {
+    committee: { committeeID: number; signatureUrl: string };
+  }[];
+  const committeeIDs = committees.map((committee) => committee.committee.committeeID);
+
   const expert = await db.expert.findMany({
     where: {
       id: {
-        in: [
-          committees[0].committee.committeeID,
-          committees[1].committee.committeeID,
-          committees[2].committee.committeeID,
-        ],
+        in: committeeIDs,
       },
     },
   });
-  const sortedExperts = [
-    committees[0].committee.committeeID,
-    committees[1].committee.committeeID,
-    committees[2].committee.committeeID,
-  ].map((id) => expert.find((expert) => expert.id === id));
+  const sortedExperts = committeeIDs.map((id) =>
+    expert.find((expert) => expert.id === id)
+  );
   const data = {
     studentName: `${thesisExamAssessmentForm.student.prefix?.prefixTH}${thesisExamAssessmentForm.student.firstNameTH} ${thesisExamAssessmentForm.student.lastNameTH}`,
     studentId: thesisExamAssessmentForm.student.username || "",
@@ -96,26 +93,17 @@ export async function GET(request: NextRequest) {
     headComName: `${thesisExamAssessmentForm.headOfCommittee?.prefix}${thesisExamAssessmentForm.headOfCommittee?.firstName} ${thesisExamAssessmentForm.headOfCommittee?.lastName}`,
     advisorSignUrl: thesisExamAssessmentForm.advisorSignUrl,
     advisorName: `${thesisExamAssessmentForm.student.advisor?.prefix?.prefixTH}${thesisExamAssessmentForm.student.advisor?.firstNameTH} ${thesisExamAssessmentForm.student.advisor?.lastNameTH}`,
-    Committee: [
-      {
-        signUrl: committees[0].committee.signatureUrl || "",
-        name: `${sortedExperts[0]!.prefix}${sortedExperts[0]!.firstName} ${
-          sortedExperts[0]!.lastName
-        }`,
-      },
-      {
-        signUrl: committees[1].committee.signatureUrl || "",
-        name: `${sortedExperts[1]!.prefix}${sortedExperts[1]!.firstName} ${
-          sortedExperts[1]!.lastName
-        }`,
-      },
-      {
-        signUrl: committees[2].committee.signatureUrl || "",
-        name: `${sortedExperts[2]!.prefix}${sortedExperts[2]!.firstName} ${
-          sortedExperts[2]!.lastName
-        }`,
-      },
-    ],
+    Committee: Array.from({ length: 3 }, (_, index) => {
+      const committee = committees[index];
+      const sortedExpert = sortedExperts[index];
+
+      return {
+        signUrl: committee ? committee.committee.signatureUrl : "",
+        name: sortedExpert
+          ? `${sortedExpert.prefix}${sortedExpert.firstName} ${sortedExpert.lastName}`
+          : "",
+      };
+    }),
     meetingNo: thesisExamAssessmentForm.times || "",
     date: dateLongTH(thesisExamAssessmentForm.date),
     instituteCommitteeComment: thesisExamAssessmentForm.instituteCommitteeComment || "",
