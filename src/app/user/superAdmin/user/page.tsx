@@ -49,17 +49,17 @@ export default function UserDashboard() {
         <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6"></header>
         <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
           <Tabs defaultValue="student">
-            <div className="flex items-center">
+            <div className="flex justify-between items-center">
               <TabsList>
                 <TabsTrigger value="student">บัณฑิตศึกษา</TabsTrigger>
-                <TabsTrigger value="advisor">อาจารย์ที่ปรึกษา</TabsTrigger>
-                <TabsTrigger value="committee">ผู้บริหาร</TabsTrigger>
+                <TabsTrigger value="advisor">อาจารย์</TabsTrigger>
+                <TabsTrigger value="committee">คณบดี</TabsTrigger>
                 <TabsTrigger value="expert">ผู้เชี่ยวชาญ</TabsTrigger>
               </TabsList>
-              <div className="ml-auto flex items-center gap-2">
+              <div className="mr-4">
                 <Link href="/user/superAdmin/user/createUser">
-                  <Button size="sm" className="h-7 gap-1 bg-[#F26522]">
-                    <PlusCircle className="h-3.5 w-3.5" />
+                  <Button className="h-8 gap-1">
+                    <PlusCircle className="h-4 w-4" />
                     <span className="sr-only sm:not-sr-only sm:whitespace-nowrap">เพิ่มรายชื่อ</span>
                   </Button>
                 </Link>
@@ -67,17 +67,17 @@ export default function UserDashboard() {
             </div>
             <TabsContent value="student">
               <Card>
-                <CardHeader>
+                <CardHeader className="p-4">
                   <div className="flex justify-between">
-                    <div>
-                      <CardTitle>รายชื่อบัณฑิตศึกษา</CardTitle>
-                      <CardDescription>สามารถคลิกที่เมนูด้านขวาเพื่อดูข้อมูลเพิ่มเติมได้</CardDescription>
+                    <div className="ml-2">
+                      <CardTitle className="text-xl">รายชื่อบัณฑิตศึกษา</CardTitle>
                     </div>
                     <div>
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button>
+                          <Button className="h-8 gap-1">
                             <SlidersHorizontal className="h-4 w-4" />
+                            <div>ตัวกรอง</div>
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent className="w-56">

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -8,12 +7,13 @@ import { toast } from "../ui/use-toast";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import axios from "axios";
 import { useState } from "react";
+import { IUser } from "@/interface/user";
 
 const FormSchema = z.object({
   position: z.string(),
 });
 
-export function SelectPosition({ id }: { id: number }) {
+export function SelectPosition({ user }: { user: IUser }) {
   const [position, setPosition] = useState("");
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -22,13 +22,15 @@ export function SelectPosition({ id }: { id: number }) {
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
     const payload = {
-      id,
+      id: user.id,
       position: data.position,
     };
     const res = await axios.patch("/api/position", payload);
     if (res.status === 200) {
       toast({
-        title: "คุณได้ทำการเปลี่นนตำแหน่ง:" + data.position,
+        title:
+          `${user.prefix?.prefixTH}${user.firstNameTH} ${user.lastNameTH} เปลี่ยนตำแหน่งเป็น : ` +
+          (data.position === "HEAD_OF_SCHOOL" ? "หัวหน้าสาขาวิชา / รักษาการ" : "อาจารย์ที่ปรึกษา"),
       });
     }
   }
@@ -40,14 +42,13 @@ export function SelectPosition({ id }: { id: number }) {
   };
 
   return (
-    <div className="w-32">
-      <Select onValueChange={handlePositionChange} defaultValue={"HEAD_OF_SCHOOL"}>
+    <div className="w-36">
+      <Select onValueChange={handlePositionChange} defaultValue={user.position.toString()}>
         <SelectTrigger>
           <SelectValue placeholder="เลือกตำแหน่ง" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="HEAD_OF_SCHOOL">หัวหน้าสาขาวิชา</SelectItem>
-          {/* <SelectItem value="HEAD_OF_SCHOOL">รักษาการ</SelectItem> */}
+          <SelectItem value="HEAD_OF_SCHOOL">หัวหน้าสาขาวิชา / รักษาการ</SelectItem>
           <SelectItem value="ADVISOR">อาจารย์ที่ปรึกษา</SelectItem>
         </SelectContent>
       </Select>

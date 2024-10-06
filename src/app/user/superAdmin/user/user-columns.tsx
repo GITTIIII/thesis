@@ -1,13 +1,14 @@
 "use client";
 
-import Link from "next/link";
 import { ColumnDef } from "@tanstack/react-table";
 import { IUser } from "@/interface/user";
 import { IExpert } from "@/interface/expert";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown } from "lucide-react";
-import ActionMenu from "@/components/actionMenu/actionMenu";
+import { UserActionMenu } from "@/components/actionMenu/actionMenu";
 import { SelectPosition } from "@/components/selectPosition/selectPosition";
+import { Eye } from "lucide-react";
+import { StudentDialog, AdvisorDialog } from "@/components/user-dialog/user-dialog";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -38,28 +39,30 @@ const studentColumns: ColumnDef<IUser>[] = [
     accessorFn: (row) => `${row.firstNameTH} ${row.lastNameTH}` || `${row.firstNameEN} ${row.lastNameEN}`,
   },
   {
+    header: "สาขา",
+    cell: (row) => row.row.original.school?.schoolNameTH,
+  },
+  {
+    header: "หลักสูตร",
+    cell: (row) => row.row.original.program?.programNameTH,
+  },
+  {
     header: "อีเมล",
     accessorKey: "email",
   },
   {
-    header: "เบอร์ติดต่อ",
-    accessorKey: "phone",
-  },
-  {
-    header: "สาขา",
-    accessorKey: "school.schoolNameTH",
-  },
-  {
-    header: "ระดับการศึกษา",
-    accessorFn: (row) => `${row.degree == "Master" ? "ปริญญาโท" : "ปริญญาเอก"}`,
-  },
-  {
     id: "actions",
-    cell: () => {
-      const deleteAPI = "";
-      const updatePath = "";
-      const fetchAPI = "";
-      return <ActionMenu deleteAPI={deleteAPI} updatePath={updatePath} fetchAPI={fetchAPI} />;
+    cell: (row) => {
+      const deleteAPI = `/api/user/${row.row.original.id}`;
+      const fetchAPI = "/api/getStudent";
+      return (
+        <div className="flex items-center gap-2">
+          <StudentDialog user={row.row.original}>
+            <Eye className="h-4 w-4 hover:cursor-pointer" />
+          </StudentDialog>
+          <UserActionMenu user={row.row.original} deleteAPI={deleteAPI} fetchAPI={fetchAPI} />
+        </div>
+      );
     },
   },
 ];
@@ -75,6 +78,10 @@ const advisorColumns: ColumnDef<IUser>[] = [
     accessorFn: (row) => `${row.firstNameTH} ${row.lastNameTH}` || `${row.firstNameEN} ${row.lastNameEN}`,
   },
   {
+    header: "สาขา",
+    accessorKey: "school.schoolNameTH",
+  },
+  {
     header: "อีเมล",
     accessorKey: "email",
   },
@@ -83,28 +90,26 @@ const advisorColumns: ColumnDef<IUser>[] = [
     accessorKey: "phone",
   },
   {
-    header: "สาขา",
-    accessorKey: "school.schoolNameTH",
-  },
-  {
-    header: "ระดับการศึกษา",
-    accessorFn: (row) => `${row.degree == "Master" ? "ปริญญาโท" : "ปริญญาเอก"}`,
-  },
-  {
     header: "ตำแหน่ง",
     cell: (row) => (
       <div>
-        <SelectPosition id={row.row.original.id} />
+        <SelectPosition user={row.row.original} />
       </div>
     ),
   },
   {
     id: "actions",
-    cell: () => {
-      const deleteAPI = "";
-      const updatePath = "";
-      const fetchAPI = "";
-      return <ActionMenu deleteAPI={deleteAPI} updatePath={updatePath} fetchAPI={fetchAPI} />;
+    cell: (row) => {
+      const deleteAPI = `/api/user/${row.row.original.id}`;
+      const fetchAPI = "/api/getAdvisor";
+      return (
+        <div className="flex items-center gap-2">
+          <AdvisorDialog user={row.row.original}>
+            <Eye className="h-4 w-4 hover:cursor-pointer" />
+          </AdvisorDialog>
+          <UserActionMenu user={row.row.original} deleteAPI={deleteAPI} fetchAPI={fetchAPI} />
+        </div>
+      );
     },
   },
 ];
@@ -127,14 +132,16 @@ const headInstituteColumns: ColumnDef<IUser>[] = [
     header: "สำนักวิชา",
     accessorKey: "institute.instituteNameTH",
   },
-
   {
     id: "actions",
-    cell: () => {
-      const deleteAPI = "";
-      const updatePath = "";
-      const fetchAPI = "";
-      return <ActionMenu deleteAPI={deleteAPI} updatePath={updatePath} fetchAPI={fetchAPI} />;
+    cell: (row) => {
+      const deleteAPI = `/api/user/${row.row.original.id}`;
+      const fetchAPI = "/api/getHeadInstitute";
+      return (
+        <div>
+          <UserActionMenu user={row.row.original} deleteAPI={deleteAPI} fetchAPI={fetchAPI} />
+        </div>
+      );
     },
   },
 ];
@@ -151,11 +158,10 @@ const expertColumns: ColumnDef<IExpert>[] = [
   },
   {
     id: "actions",
-    cell: () => {
-      const deleteAPI = "";
-      const updatePath = "";
-      const fetchAPI = "";
-      return <ActionMenu deleteAPI={deleteAPI} updatePath={updatePath} fetchAPI={fetchAPI} />;
+    cell: (row) => {
+      const deleteAPI = `/api/expert/${row.row.original.id}`;
+      const fetchAPI = "/api/expert";
+      return <div></div>;
     },
   },
 ];
