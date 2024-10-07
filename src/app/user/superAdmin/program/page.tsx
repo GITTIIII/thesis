@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Pencil, Trash2 } from "lucide-react";
 import { db } from "@/lib/db";
+import { ConfirmDeleteDialog } from "@/components/alertDialog/ConfirmDeleteDialog";
 
 export default async function ProgramDashboard() {
   const programData = await db.program.findMany({ include: { schools: { include: { school: true } } } });
@@ -27,8 +28,15 @@ export default async function ProgramDashboard() {
               <CardTitle className="flex justify-between">
                 <div className="truncate hover:text-clip">{program.programNameTH}</div>
                 <div className="h-0 p-0 items-start flex gap-2 hover:cursor-pointer">
-                  <Pencil className="h-4 w-4" />
-                  <Trash2 className="h-4 w-4" color="red" />
+                  {/* <Pencil className="h-4 w-4" /> */}
+                  <ConfirmDeleteDialog
+                    title="คุณแน่ใจที่จะลบหลักสูตรนี้?"
+                    description="ต้องการลบหลักสูตรนี้หรือไม่"
+                    deleteAPI={`/api/program/${program.id}`}
+                    fetchAPI="/api/program"
+                  >
+                    <Trash2 className="h-4 w-4" color="red" />
+                  </ConfirmDeleteDialog>
                 </div>
               </CardTitle>
               <CardDescription>หลักสูตรปี พ.ศ. {program.programYear}</CardDescription>

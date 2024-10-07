@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import { ISchool } from "@/interface/school";
 
 const formSchema = z.object({
@@ -48,16 +48,19 @@ export default function CreateProgram() {
 
     try {
       const res = await axios.post(url, values);
-      toast({
-        title: "Success",
-        description: "บันทึกสำเร็จแล้ว",
-        variant: "default",
-      });
-      setTimeout(() => {
-        form.reset();
-        router.refresh();
-        router.push("/user/superAdmin/program");
-      }, 1000);
+      if (res.status === 200) {
+        mutate("/api/schoolProgram");
+        toast({
+          title: "Success",
+          description: "บันทึกสำเร็จแล้ว",
+          variant: "default",
+        });
+        setTimeout(() => {
+          form.reset();
+          router.refresh();
+          router.push("/user/superAdmin/program");
+        }, 1000);
+      }
     } catch (err) {
       if (axios.isAxiosError(err)) {
         toast({

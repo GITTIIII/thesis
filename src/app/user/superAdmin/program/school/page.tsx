@@ -1,40 +1,19 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { ISchool } from "@/interface/school";
-import ConfirmationModal from "@/components/confirmDialog/confirmModal";
-import { useState } from "react";
 import useSWR from "swr";
-import axios from "axios";
+import { ISchool } from "@/interface/school";
+import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
+import { ConfirmDeleteDialog } from "@/components/alertDialog/ConfirmDeleteDialog";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function School() {
   const { data: schoolData } = useSWR<ISchool[]>("/api/school", fetcher);
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [schoolToDelete, setSchoolToDelete] = useState<number | null>(null);
-
-  const handleDelete = async (id: number) => {
-    const response = await axios.delete(`/api/school/${id}`);
-    setModalOpen(false);
-    if (response.status === 200) {
-      window.location.reload();
-    }
-  };
 
   return (
     <div className="flex flex-col mx-36">
-      <ConfirmationModal
-        isOpen={isModalOpen}
-        onClose={() => setModalOpen(false)}
-        onConfirm={() => {
-          if (schoolToDelete) {
-            handleDelete(schoolToDelete);
-          }
-        }}
-      />
       <div className="flex justify-between py-4">
         <h1 className="text-3xl font-meduim">สาขา</h1>
         <Button>
@@ -46,14 +25,15 @@ export default function School() {
           <div key={school.id} className="bg-white shadow-md rounded-xl p-4">
             <div className="flex justify-between items-center">
               <p className="text-lg font-bold">{school.schoolNameTH}</p>
-              <div
-                className="hover:cursor-pointer"
-                onClick={() => {
-                  setSchoolToDelete(school.id);
-                  setModalOpen(true);
-                }}
-              >
-                <Trash2 className="h-4 w-4" color="red" />
+              <div className="hover:cursor-pointer">
+                <ConfirmDeleteDialog
+                  title="คุณแน่ใจที่จะลบสาขานี้?"
+                  description="ต้องการลบสาขานี้หรือไม่"
+                  deleteAPI={`/api/school/${school.id}`}
+                  fetchAPI="/api/school"
+                >
+                  <Trash2 className="h-4 w-4" color="red" />
+                </ConfirmDeleteDialog>
               </div>
             </div>
             <p>{school.schoolNameEN}</p>
