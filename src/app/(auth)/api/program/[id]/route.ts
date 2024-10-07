@@ -16,11 +16,22 @@ export async function DELETE(req: NextApiRequest, context: { params: Params }) {
     return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
   }
 
-  const program = await db.program.delete({
-    where: {
-      id: Number(id),
-    },
-  });
+  try {
+    await db.schoolsOnPrograms.deleteMany({
+      where: {
+        programID: Number(id),
+      },
+    });
 
-  return NextResponse.json(program);
+    const deletedProgram = await db.program.delete({
+      where: {
+        id: Number(id),
+      },
+    });
+
+    return NextResponse.json(deletedProgram);
+  } catch (error) {
+    console.error("Error deleting program:", error);
+    return NextResponse.json({ message: "Error deleting program", error }, { status: 500 });
+  }
 }
