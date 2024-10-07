@@ -395,5 +395,5 @@ export const get09FormByStdId = async (stdId: number) => {
 
 	if (!form09) return;
 
-	return form09 as unknown as IDelayThesisForm[];
+	return form09 as IDelayThesisForm[];
 };

@@ -236,20 +236,39 @@ const OutlineCommitteeFormUpdate = ({
 
 					{/* ฝั่งขวา */}
 					<div className="w-full ">
-						<h1 className="text-center font-semibold mb-2">ขอเสนอเเต่งตั้งคณะกรรมการสอบประมวลความรู้</h1>
-						<div className="flex items-center justify-center text-sm">
+					<h1 className="text-center font-semibold mb-2">ขอเสนอเเต่งตั้งคณะกรรมการสอบประมวลความรู้</h1>
+					<div className="flex flex-col items-center justify-center text-sm border-2 rounded-lg py-5 my-5 border-[#eeee]">
+						<div className="flex items-center justify-center text-sm mb-2">
 							<CircleAlert className="mr-1" />
 							สามารถดูรายชื่อกรรมการที่ได้รับการรับรองเเล้ว
-							<Button type="button" variant="link" className="p-1 text-[#A67436]">
-								<Link target="_blank" href="/user/expertTable">
-									คลิกที่นี่
-								</Link>
+							<Button variant="link" className="p-1 text-[#A67436]">
+								<Link href="/user/expertTable">คลิกที่นี่</Link>
 							</Button>
 						</div>
-						{formData?.committeeMembers.map((member, index) => (
+						{formData?.committeeMembers.map((member, index: number) => (
 							<InputForm key={index} value={`${member.name}`} label="กรรมการ / Committee" />
 						))}
 					</div>
+					<div className="flex flex-col items-center justify-center text-sm border-2 rounded-lg py-5 my-5 border-[#eeee]">
+						<h1 className="text-center font-semibold mb-2">หมายเหตุ / Note</h1>
+						<div className="m-auto w-[400px] mb-6">
+							<RadioGroup disabled className="mt-2 flex flex-col justify-center ">
+								<div className="flex items-center space-x-3 space-y-0">
+									<RadioGroupItem checked={formData.OROG === false} value="No" />
+									<Label className="ml-2 font-normal leading-5">
+										นักศึกษาบัณฑิตศึกษาไม่ได้รับทุน OROG / <br />Graduate students do not receive OROG scholarships.
+									</Label>
+								</div>
+								<div className="flex items-center space-x-3 space-y-0">
+									<RadioGroupItem checked={formData.OROG === true} value="Yes" />
+									<Label className="ml-2 font-normal leading-5">
+										นักศึกษาบัณฑิตศึกษาเป็นผู้ได้รับทุน OROG / <br />Graduate students are OROG scholarship recipients.
+									</Label>
+								</div>
+							</RadioGroup>
+						</div>
+					</div>
+				</div>
 				</div>
 				<div className="flex item-center justify-center ">
 					<div className="w-full flex flex-col item-center justify-center md:flex-row rounded-lg py-5 my-5">

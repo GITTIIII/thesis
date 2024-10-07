@@ -375,5 +375,5 @@ export const getAll09Form = async () => {
 
 	if (!form09) return;
 
-	return form09 as unknown as IDelayThesisForm[];
+	return form09 as  IDelayThesisForm[];
 };

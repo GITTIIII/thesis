@@ -126,7 +126,7 @@ export default function SelectAndCreate({
 							<SelectItem disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 7} value="form08">
 								แบบประเมินการสอบวิทยานิพนธ์
 							</SelectItem>
-							<SelectItem disabled={user?.role == "STUDENT" && (user?.formState ?? 0) < 6} value="form09">
+							<SelectItem disabled={user?.role == "STUDENT"} value="form09">
 								แบบคำขอชะลอการเผยแพร่วิทยานิพนธ์
 							</SelectItem>
 						</SelectContent>

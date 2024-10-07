@@ -1,7 +1,8 @@
-"use client";
-import { z } from "zod";
+"use client"
+import { boolean, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { use, useEffect, useState } from "react";
+import { GetCertificate01 } from "@/app/action/checkUserHasOROG";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,6 +19,9 @@ import { CircleAlert } from "lucide-react";
 import Link from "next/link";
 import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { ICertificate } from "@/interface/certificate";
+import UserCertificate from "@/components/profile/userCertificate";
+
 const formSchema = z.object({
 	date: z.date(),
 	studentID: z.number(),
@@ -37,6 +41,7 @@ const formSchema = z.object({
 			message: "กรุณาเพิ่มกรรมการอย่างน้อย 5 คน / At least 5 committee members required",
 		}),
 	examDate: z.date(),
+	OROG: z.boolean(),
 });
 
 const ThesisOutlineCommitteeFormCreate = ({ user }: { user: IUser }) => {
@@ -44,6 +49,7 @@ const ThesisOutlineCommitteeFormCreate = ({ user }: { user: IUser }) => {
 	const { toast } = useToast();
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
+	const [hasOROG, setHasOROG] = useState(false);
 
 	const form = useForm({
 		resolver: zodResolver(formSchema),
@@ -55,6 +61,7 @@ const ThesisOutlineCommitteeFormCreate = ({ user }: { user: IUser }) => {
 			committeeMembers: [{ name: "" }, { name: "" }, { name: "" }, { name: "" }, { name: "" }],
 			examDate: undefined as unknown as Date,
 			studentID: 0,
+			OROG:false
 		},
 		mode: "onSubmit",
 	});
@@ -136,6 +143,22 @@ const ThesisOutlineCommitteeFormCreate = ({ user }: { user: IUser }) => {
 		}
 	}, [errors]);
 
+	useEffect(() => {
+        const fetchCertificates = async () => {
+            const response = await axios.get(`/api/checkCertificate01ByStdId`);
+            if(response.data === "found"){
+				setHasOROG(true)
+				reset({
+					...form.getValues(),
+					OROG: true,
+				});
+			}else{
+				null
+			}
+			console.log("certificate:",response.data)
+        };
+        fetchCertificates();
+    }, []);
 	return (
 		<Form {...form}>
 			<form onSubmit={handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">
@@ -301,6 +324,58 @@ const ThesisOutlineCommitteeFormCreate = ({ user }: { user: IUser }) => {
 									>
 										เพิ่มกรรมการ
 									</Button>
+								</div>
+							</div>
+						</div>
+						<div className="w-full flex justify-center item-center flex-col h-auto border-2 rounded-lg py-5 my-5 border-[#eeee]">
+							<div>
+								{hasOROG && (
+									<div>
+									<FormLabel className="font-bold">{`ทุน OROG ${
+										user?.degree == "Master"
+											? `(ป.โท วารสารระดับชาติ หรือ ประชุมวิชาการระดับนานาชาติ)`
+											: `(ป.เอก วารสารระดับนานาชาติ)`
+									}`}</FormLabel>
+			
+									<UserCertificate canUpload={false} user={user} certificateType="1" />
+								</div>
+								)}
+								<div>
+									<FormField
+										control={form.control}
+										name="OROG"
+										render={({ field }) => (
+											<div className="flex flex-col mb-6 justify-center items-center">
+												<h1 className="text-center font-semibold mb-2">หมายเหตุ / Note</h1>
+												<FormItem className="w-[400px]">
+													{/*  */}
+													<RadioGroup
+														onValueChange={(value) => field.onChange((value === "Yes"))}
+														className="flex flex-col space-y-1"
+													>
+														<FormItem className="flex items-center space-x-3 space-y-1">
+															<FormControl>
+																<RadioGroupItem value="No" />
+															</FormControl>
+															<FormLabel className="font-normal leading-5 text-red-500">
+																นักศึกษาบัณฑิตศึกษาไม่ได้รับทุน OROG / <br />Graduate students do not receive OROG scholarships.
+															</FormLabel>
+														</FormItem>
+														<FormItem className="flex items-center space-x-3 space-y-1">
+															<FormControl>
+																<RadioGroupItem value="Yes" />
+															</FormControl>
+															<FormLabel className="font-normal leading-5 text-red-500">
+																นักศึกษาบัณฑิตศึกษาเป็นผู้ได้รับทุน OROG (ทั้งนี้ อาจารย์ที่ปรึกษาวิทยานิพนธ์หลักต้องเป็นอาจารย์ผู้ขอใช้สิทธิ์รับทุนการศึกษาให้กับ นักศึกษาเท่านั้น หากชื่อไม่ตรงกัน นักศึกษาต้องสิ้นสุดสภาพการรับทุนตามประกาศทุน OROG ตามข้อ 11.8) <br />
+																Graduate students are OROG scholarship recipients. (However, the main thesis advisor must be a teacher who only applies for the scholarship for students. If the names don't match The student must terminate the condition of receiving the scholarship according to the OROG scholarship announcement under item 11.8.)
+															</FormLabel>
+														</FormItem>
+													</RadioGroup>
+													<FormMessage />
+												</FormItem>
+											</div>
+										)}
+									/>
 								</div>
 							</div>
 						</div>

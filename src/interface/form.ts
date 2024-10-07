@@ -78,6 +78,8 @@ export type IOutlineCommitteeForm = {
 
 	instituteComSignUrl?: string;
 
+	OROG: Boolean;
+
 	addNotes?: Array<addNotes>;
 };
 

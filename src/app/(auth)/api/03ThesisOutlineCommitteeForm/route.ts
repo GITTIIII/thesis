@@ -13,7 +13,7 @@ export async function POST(req: Request) {
 		}
 
 		const body = await req.json();
-		const { date, trimester, academicYear, committeeMembers, examDate, times, studentID } = body;
+		const { date, trimester, academicYear, committeeMembers, examDate, times, studentID,OROG } = body;
 
 		const newForm = await db.thesisOutlineCommitteeForm.create({
 			data: {
@@ -24,6 +24,7 @@ export async function POST(req: Request) {
 				committeeMembers,
 				examDate,
 				studentID: studentID === 0 ? null : studentID,
+				OROG,
 			},
 		});
 
