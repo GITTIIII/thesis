@@ -157,7 +157,7 @@ export default function CreateProgram() {
           />
         </div>
         <div className="flex justify-end gap-4 p-4">
-          <Button variant="outline" type="reset" onClick={() => router.push("/user/superAdmin")} className="">
+          <Button variant="outline" type="reset" onClick={() => router.push("/user/superAdmin/program")} className="">
             ยกเลิก
           </Button>
           <Button disabled={loading} type="submit" className="">

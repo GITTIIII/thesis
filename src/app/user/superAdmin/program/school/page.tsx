@@ -6,6 +6,7 @@ import { ISchool } from "@/interface/school";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { ConfirmDeleteDialog } from "@/components/alertDialog/ConfirmDeleteDialog";
+import { CircleArrowLeft } from "lucide-react";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -15,7 +16,12 @@ export default function School() {
   return (
     <div className="flex flex-col mx-36">
       <div className="flex justify-between py-4">
-        <h1 className="text-3xl font-meduim">สาขา</h1>
+        <div className="flex items-center gap-4 text-3xl font-meduim">
+          <Link href="/user/superAdmin/program">
+            <CircleArrowLeft className="h-8 w-8" color="#F97316" />
+          </Link>
+          สาขา
+        </div>
         <Button>
           <Link href="/user/superAdmin/program/school/createSchool">เพิ่มสาขา</Link>
         </Button>
