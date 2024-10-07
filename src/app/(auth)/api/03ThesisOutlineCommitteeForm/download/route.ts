@@ -75,8 +75,9 @@ export async function GET(request: NextRequest) {
     headLastName: thesisOutlineCommitteeForm.headSchool?.lastNameTH || "",
     headSchool: thesisOutlineCommitteeForm.headSchool?.school?.schoolNameEN || "",
     headSignUrl: thesisOutlineCommitteeForm.headSchoolSignUrl || "",
+    nOROGScholar: !thesisOutlineCommitteeForm.OROG ? "☑" : "☐",
+    yOROGScholar: thesisOutlineCommitteeForm.OROG ? "☑" : "☐",
   };
-
   try {
     const file = await genDocx("FM-ENG-GRD-03.docx", data);
     return new NextResponse(file, {
