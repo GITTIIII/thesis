@@ -15,13 +15,12 @@ export async function GET(){
         throw new Error("User ID not found in session");
     }
     
-    const GetCertificate01 = await db.certificate.findMany({
+    const delayThesisForm = await db.delayThesisForm.findMany({
         where: {
-            userID: Number(userID),
-            certificateType: "01",
+            studentID: Number(userID),
         },
         include: {
-            user: {
+            student: {
                 include: {
                     prefix: true,
                 },
@@ -29,8 +28,8 @@ export async function GET(){
         },
     });
 
-    if (!GetCertificate01 || GetCertificate01.length === 0) {
-        return NextResponse.json("not found"); 
+    if (!delayThesisForm || delayThesisForm.length === 0) {
+        return NextResponse.json(null); 
     }
 
     return NextResponse.json("found");

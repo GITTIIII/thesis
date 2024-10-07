@@ -14,6 +14,7 @@ import InputForm from "../../inputForm/inputForm";
 import { IUser } from "@/interface/user";
 import { DatePicker } from "@/components/datePicker/datePicker";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
+import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
 
 const formSchema = z.object({
 	thesisNameTH: z.string(),
@@ -38,6 +39,8 @@ const DelayDisseminationThesisFormCreate = () => {
 	const router = useRouter();
 	const user: IUser = use(userPromise);
 	const [openSign, setOpenSign] = useState(false);
+	const [loading, setLoading] = useState(false);
+	const [isOpen, setIsOpen] = useState(false);
 	const { toast } = useToast();
 
 	const handleDrawingSign = (signUrl: string) => {
@@ -108,6 +111,10 @@ const DelayDisseminationThesisFormCreate = () => {
 			});
 		}
 	}, [user, reset]);
+	const handleCancel = () => {
+		setLoading(false);
+		setIsOpen(false);
+	};
 
 	return (
 		<Form {...form}>
@@ -152,7 +159,7 @@ const DelayDisseminationThesisFormCreate = () => {
 								render={({ field }) => (
 									<div className="flex flex-row items-center mb-6 justify-center">
 										<FormItem className="w-auto">
-											<FormLabel>ชื่อประธารคณะกรรมการ / Head of Committee name</FormLabel>
+											<FormLabel>ชื่อประธานคณะกรรมการ / Head of Committee name</FormLabel>
 											<FormControl>
 												<Input className="text-sm p-2 w-[300px] m-auto  rounded-lg" {...field} />
 											</FormControl>
@@ -277,22 +284,26 @@ const DelayDisseminationThesisFormCreate = () => {
 				</div>
 				<hr className="่่justify-center mx-auto w-3/4 my-5 border-t-2 border-[#eeee]" />
 
-				<div className="w-full flex px-20 lg:flex justify-center">
+				<div className="w-full flex mt-4 px-20 lg:flex justify-center">
 					<Button
 						variant="outline"
 						type="reset"
-						onClick={() => router.push(`/user/student/table`)}
+						onClick={() => router.back()}
 						className="bg-[#FFFFFF] w-auto text-lg text-[#A67436] rounded-xl border-[#A67436] md:ml-auto"
 					>
 						ยกเลิก
 					</Button>
-					<Button
-						variant="outline"
-						type="submit"
-						className="bg-[#A67436] w-auto text-lg text-white rounded-xl ml-4 border-[#A67436] mr-4"
+					<ConfirmDialog
+						lebel="ยืนยัน"
+						title="ยืนยัน"
+						loading={loading}
+						onConfirm={form.handleSubmit(onSubmit)}
+						onCancel={handleCancel}
+						isOpen={isOpen}
+						setIsOpen={setIsOpen}
 					>
-						ยืนยัน
-					</Button>
+						กรุณาตรวจสอบข้อมูลอย่างละเอียดอีกครั้ง หลังจากการยืนยัน จะไม่สามารถแก้ไขข้อมูลนี้ได้
+					</ConfirmDialog>
 				</div>
 			</form>
 		</Form>

@@ -16,6 +16,7 @@ import axios from "axios";
 import qs from "query-string";
 import InputForm from "../../inputForm/inputForm";
 
+
 const formSchema = z.object({
 	date: z.date(),
 	examDate: z.date(),
@@ -45,6 +46,17 @@ const ThesisExamAssessmentFormCreate = ({ user, approvedForm }: { user: IUser; a
 			toast({
 				title: "Error",
 				description: "กรุณาเลือกวันที่สอบ",
+				variant: "destructive",
+			});
+			setLoading(false);
+			return;
+		}
+		const check09 = await axios.post(`/api/checkForm09ByStdId`)
+		if(values.disClosed===false && !check09){
+			console.log("ไม่มี09")
+			toast({
+				title: "Error",
+				description: "กรุณาบันทึกข้อมูลลงแบบคำขอชะลอการเผยแพร่วิทยานิพนธ์",
 				variant: "destructive",
 			});
 			setLoading(false);

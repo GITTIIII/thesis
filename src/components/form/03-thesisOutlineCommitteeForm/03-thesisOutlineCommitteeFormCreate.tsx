@@ -2,7 +2,6 @@
 import { boolean, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { use, useEffect, useState } from "react";
-import { GetCertificate01 } from "@/app/action/checkUserHasOROG";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -152,8 +151,10 @@ const ThesisOutlineCommitteeFormCreate = ({ user }: { user: IUser }) => {
 					...form.getValues(),
 					OROG: true,
 				});
+				console.log("f")
 			}else{
 				null
+				console.log("n")
 			}
 			console.log("certificate:",response.data)
         };
