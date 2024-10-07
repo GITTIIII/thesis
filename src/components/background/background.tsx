@@ -21,7 +21,7 @@ async function background({
     // <div className="w-full h-full bg-amber-500/60"></div>
     <div className="   flex relative h-full min-h-fit  w-full  flex-col items-center justify-start overflow-hidden lg:min-h-screen ">
       <div className="-z-10 to-[hsla(202, 36%, 96%, 1)] absolute -top-0 inset-0  h-[400px] w-full  bg-gradient-to-b from-[#f7eae4] lg:h-[550px] " />
-      {/* <FlickeringGrid
+      <FlickeringGrid
         className="-z-10 w-screen h-48 absolute inset-x-0 bottom-0  [mask-image:linear-gradient(to_top,white,transparent,transparent)] "
         squareSize={4}
         gridGap={6}
@@ -29,7 +29,7 @@ async function background({
         maxOpacity={0.5}
         flickerChance={0.1}
         height={300}
-      /> */}
+      />
       {children}
     </div>
   );
