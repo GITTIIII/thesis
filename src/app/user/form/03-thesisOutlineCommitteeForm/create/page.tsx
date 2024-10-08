@@ -2,11 +2,11 @@ import learning1 from "@/../../public/asset/learning1.png";
 import { currentUser } from "@/app/action/current-user";
 import ThesisOutlineCommiteeFormCreate from "@/components/form/03-thesisOutlineCommitteeForm/03-thesisOutlineCommitteeFormCreate";
 import Image from "next/image";
-import { GetCertificate01 } from "@/app/action/checkUserHasOROG";
+// import { GetCertificate01 } from "@/app/action/checkUserHasOROG";
 
 export default async function ThesisOutlineCommiteeFormCreatePage(){
 	const user = await currentUser();
-	const OROG = await GetCertificate01()
+	// const OROG = await GetCertificate01()
 	if (!user) {
 		return <div>ไม่พบข้อมูล</div>;
 	}

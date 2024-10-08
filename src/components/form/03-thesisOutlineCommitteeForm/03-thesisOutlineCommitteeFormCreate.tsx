@@ -368,7 +368,7 @@ const ThesisOutlineCommitteeFormCreate = ({ user }: { user: IUser }) => {
 															</FormControl>
 															<FormLabel className="font-normal leading-5 text-red-500">
 																นักศึกษาบัณฑิตศึกษาเป็นผู้ได้รับทุน OROG (ทั้งนี้ อาจารย์ที่ปรึกษาวิทยานิพนธ์หลักต้องเป็นอาจารย์ผู้ขอใช้สิทธิ์รับทุนการศึกษาให้กับ นักศึกษาเท่านั้น หากชื่อไม่ตรงกัน นักศึกษาต้องสิ้นสุดสภาพการรับทุนตามประกาศทุน OROG ตามข้อ 11.8) <br />
-																Graduate students are OROG scholarship recipients. (However, the main thesis advisor must be a teacher who only applies for the scholarship for students. If the names don't match The student must terminate the condition of receiving the scholarship according to the OROG scholarship announcement under item 11.8.)
+																Graduate students are OROG scholarship recipients. (However, the main thesis advisor must be a teacher who only applies for the scholarship for students. If the names dont match The student must terminate the condition of receiving the scholarship according to the OROG scholarship announcement under item 11.8.)
 															</FormLabel>
 														</FormItem>
 													</RadioGroup>
