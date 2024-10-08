@@ -212,7 +212,7 @@ const ThesisProgressFormUpdate = ({
 						</div>
 
 						<h1 className="text-center font-semibold mb-2">ข้อมูลนักศึกษา</h1>
-						<InputForm value={`${user?.username}`} label="รหัสนักศึกษา / Student ID" />
+						<InputForm value={`${formData?.student?.username}`} label="รหัสนักศึกษา / Student ID" />
 						<InputForm
 							value={`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 							label="ชื่อ-นามสกุล / Full name"
