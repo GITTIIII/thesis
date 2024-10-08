@@ -21,7 +21,7 @@ import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@
 
 import { IInstitute } from "@/interface/institute";
 import { ISchool } from "@/interface/school";
-
+import useSWR from "swr";
 const formSchema = z.object({
 	prefixTH: z.string().min(1, { message: "กรุณาเลือกคำนำหน้า / Please select prefix" }),
 	firstNameTH: z.string().min(1, { message: "กรุณากรอกชื่อ / First name requierd" }),
@@ -36,23 +36,12 @@ const formSchema = z.object({
 	position: z.string().min(1, { message: "กรุณาเลือกตำเเหน่ง / Please select position" }),
 	role: z.string(),
 });
-
-async function getAllInstitute() {
-	const res = await fetch(process.env.NEXT_PUBLIC_URL + "/api/institute");
-	return res.json();
-}
-
-async function getAllSchool() {
-	const res = await fetch(process.env.NEXT_PUBLIC_URL + "/api/school");
-	return res.json();
-}
-
-const institutePromise = getAllInstitute();
-const schoolPromise = getAllSchool();
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function CreateAdmin() {
-	const instituteData: IInstitute[] = use(institutePromise);
-	const schoolData: ISchool[] = use(schoolPromise);
+	const { data: instituteData = [] } = useSWR<IInstitute[]>(process.env.NEXT_PUBLIC_URL + "/api/institute", fetcher);
+	const { data: schoolData = [] } = useSWR<ISchool[]>(process.env.NEXT_PUBLIC_URL + "/api/school", fetcher);
+
 	const [loading, setLoading] = useState(false);
 	const { toast } = useToast();
 	const router = useRouter();

@@ -15,7 +15,7 @@ import { IUser } from "@/interface/user";
 import { DatePicker } from "@/components/datePicker/datePicker";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
-
+import useSWR from "swr";
 const formSchema = z.object({
 	thesisNameTH: z.string(),
 	thesisNameEN: z.string().toUpperCase(),
@@ -28,16 +28,12 @@ const formSchema = z.object({
 	headCommitteeName: z.string(),
 });
 
-async function getUser() {
-	const res = await fetch(process.env.NEXT_PUBLIC_URL + "/api/getCurrentUser");
-	return res.json();
-}
-
-const userPromise = getUser();
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const DelayDisseminationThesisFormCreate = () => {
 	const router = useRouter();
-	const user: IUser = use(userPromise);
+
+	const { data: user } = useSWR<IUser>(process.env.NEXT_PUBLIC_URL + "/api/getCurrentUser", fetcher);
 	const [openSign, setOpenSign] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
@@ -261,7 +257,7 @@ const DelayDisseminationThesisFormCreate = () => {
 						</div>
 						<div className="flex item-center justify-center ">
 							<div className="w-3/4 flex flex-col item-center justify-center md:flex-row border-2 rounded-lg py-5 my-5 border-[#eeee] ">
-								{user.role == "STUDENT" && (
+								{user?.role == "STUDENT" && (
 									<div className="w-full sm:1/3 flex flex-col items-center mb-6 justify-center">
 										{/* อาจารย์ที่ปรึกษา */}
 										<div className="text-center mb-2">

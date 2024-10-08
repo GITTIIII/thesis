@@ -28,7 +28,7 @@ import { IInstitute } from "@/interface/institute";
 import { IProgram } from "@/interface/program";
 import { ISchool } from "@/interface/school";
 import { IUser } from "@/interface/user";
-
+import useSWR from "swr";
 const formSchema = z.object({
 	prefixTH: z.string().min(1, { message: "กรุณาเลือกคำนำหน้า / Please select prefix" }),
 	firstNameTH: z.string().min(1, { message: "กรุณากรอกชื่อ / First name requierd" }),
@@ -47,37 +47,14 @@ const formSchema = z.object({
 	formState: z.number(),
 	advisorID: z.number().min(1, { message: "กรุณาเลือกอาจารย์ที่ปรึกษา / Please select advisor" }),
 });
-
-async function getAllInstitute() {
-	const res = await fetch(process.env.NEXT_PUBLIC_URL + "/api/institute");
-	return res.json();
-}
-
-async function getAllSchool() {
-	const res = await fetch(process.env.NEXT_PUBLIC_URL + "/api/school");
-	return res.json();
-}
-
-async function getAllProgram() {
-	const res = await fetch(process.env.NEXT_PUBLIC_URL + "/api/program");
-	return res.json();
-}
-
-async function getAllAdvisor() {
-	const res = await fetch(process.env.NEXT_PUBLIC_URL + "/api/getAdvisor");
-	return res.json();
-}
-
-const institutePromise = getAllInstitute();
-const schoolPromise = getAllSchool();
-const programPromise = getAllProgram();
-const allAdvisorPromise = getAllAdvisor();
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function CreateStudent() {
-	const instituteData: IInstitute[] = use(institutePromise);
-	const schoolData: ISchool[] = use(schoolPromise);
-	const programData: IProgram[] = use(programPromise);
-	const allAdvisor: IUser[] = use(allAdvisorPromise);
+
+  const { data: instituteData = [] } = useSWR<IInstitute[]>(process.env.NEXT_PUBLIC_URL + "/api/institute", fetcher);
+  const { data: schoolData = [] } = useSWR<ISchool[]>(process.env.NEXT_PUBLIC_URL + "/api/school", fetcher);
+  const { data: programData = [] } = useSWR<IProgram[]>(process.env.NEXT_PUBLIC_URL + "/api/program", fetcher);
+  const { data: allAdvisor = [] } = useSWR<IUser[]>(process.env.NEXT_PUBLIC_URL + "/api/getAdvisor", fetcher);
 
 	const [loading, setLoading] = useState(false);
 	const { toast } = useToast();

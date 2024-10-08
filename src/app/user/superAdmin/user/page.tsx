@@ -25,10 +25,10 @@ import { SlidersHorizontal } from "lucide-react";
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function UserDashboard() {
-	const { data: studentData = [] } = useSWR<IUser[]>(`${process.env.NEXT_PUBLIC_URL}/api/getStudent`, fetcher);
-	const { data: advisorData = [] } = useSWR<IUser[]>(`${process.env.NEXT_PUBLIC_URL}/api/getAdvisor`, fetcher);
-	const { data: headInstituteData = [] } = useSWR<IUser[]>(`${process.env.NEXT_PUBLIC_URL}/api/getHeadInstitute`, fetcher);
-	const { data: expertData = [] } = useSWR<IExpert[]>(`${process.env.NEXT_PUBLIC_URL}/api/expert`, fetcher);
+	const { data: studentData = [] } = useSWR<IUser[]>(process.env.NEXT_PUBLIC_URL + "/api/getStudent", fetcher);
+	const { data: advisorData = [] } = useSWR<IUser[]>(process.env.NEXT_PUBLIC_URL + "/api/getAdvisor", fetcher);
+	const { data: headInstituteData = [] } = useSWR<IUser[]>(process.env.NEXT_PUBLIC_URL + "/api/getHeadInstitute", fetcher);
+	const { data: expertData = [] } = useSWR<IExpert[]>(process.env.NEXT_PUBLIC_URL + "/api/expert", fetcher);
 
 	const [filtered, setFiltered] = React.useState("none");
 
