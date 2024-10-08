@@ -142,24 +142,24 @@ const ThesisOutlineCommitteeFormCreate = ({ user }: { user: IUser }) => {
 		}
 	}, [errors]);
 
-	useEffect(() => {
-        const fetchCertificates = async () => {
-            const response = await axios.get(`/api/checkCertificate01ByStdId`);
-            if(response.data === "found"){
-				setHasOROG(true)
-				reset({
-					...form.getValues(),
-					OROG: true,
-				});
-				console.log("f")
-			}else{
-				null
-				console.log("n")
-			}
-			console.log("certificate:",response.data)
-        };
-        fetchCertificates();
-    }, []);
+	// useEffect(() => {
+    //     const fetchCertificates = async () => {
+    //         const response = await axios.get(`/api/checkCertificate01ByStdId`);
+    //         if(response.data === "found"){
+	// 			setHasOROG(true)
+	// 			reset({
+	// 				...form.getValues(),
+	// 				OROG: true,
+	// 			});
+	// 			console.log("f")
+	// 		}else{
+	// 			null
+	// 			console.log("n")
+	// 		}
+	// 		console.log("certificate:",response.data)
+    //     };
+    //     fetchCertificates();
+    // }, []);
 	return (
 		<Form {...form}>
 			<form onSubmit={handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">
