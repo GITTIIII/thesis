@@ -156,16 +156,16 @@ export const POST = async (req: Request) => {
         });
       } else {
         dataError.push({
+          username: user.username,
+          prefix: user.prefix,
           firstName: user.firstName,
           lastName: user.lastName,
-          username: user.username,
           password: user.rawPassword,
           email: user.email,
           degree: degree,
-          prefix: user.prefix,
+          institute: user.institute,
           school: user.school,
           program: user.program,
-          institute: user.institute,
           advisor: user.advisor,
           phone: user.phone,
           sex: user.sex,

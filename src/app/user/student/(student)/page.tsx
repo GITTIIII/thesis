@@ -187,7 +187,7 @@ export default async function StudentPage() {
         </div>
       </div>
       <div className="text-black/90 max-w-[100rem] flex flex-col w-full">
-        <div className=" relative border-b border-x flex flex-col items-start bg-white">
+        {/* <div className=" relative border-b border-x flex flex-col items-start bg-white">
           <span className="text-center w-full text-3xl sm:text-3xl md:text-4xl lg:text-5xl font-semibold leading-none pt-14 md:pt-28">
             ข้อความสักอย่าง
           </span>
@@ -202,7 +202,7 @@ export default async function StudentPage() {
             </div>
             ข้อความสักอย่าง
           </span>
-        </div>
+        </div> */}
 
         <div className=" border-x border-mineshaft-100">
           <CustomGrid rows={2} />
