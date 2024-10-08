@@ -224,7 +224,7 @@ const ThesisProgressFormUpdate = ({
 						<InputForm value={`${formData?.gpa}`} label="คะเเนนสะสมเฉลี่ย / GPA" />
 						<InputForm value={`${formData?.credits}`} label="หน่วยกิต / Credits" />
 
-						<InputForm value={`${user?.username}`} label="รหัสนักศึกษา / Student ID" />
+						<InputForm value={`${formData?.student?.username}`} label="รหัสนักศึกษา / Student ID" />
 						<InputForm
 							value={`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`}
 							label="ชื่อ-นามสกุล / Full name"
