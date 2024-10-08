@@ -4,9 +4,13 @@ import fs from "fs";
 export const genDocx = async (docName: string, data: any, width = 5, height = 2) => {
   const path = `src/lib/formToDocx/docTemplate/${docName}`;
   try {
-    const template = fs.readFileSync(path);
+    const templateBuffer = fs.readFileSync(path);
 
-    // Function to process image data
+    const template = new Uint8Array(
+      templateBuffer.buffer,
+      templateBuffer.byteOffset,
+      templateBuffer.length
+    );
 
     const buffer = await createReport({
       template,
