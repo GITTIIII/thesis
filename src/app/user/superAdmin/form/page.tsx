@@ -127,6 +127,17 @@ export default function FormDashborad() {
     }
   }, [form07Data, filtered]);
 
+  const form08DataWithFilter = React.useMemo(() => {
+    switch (filtered) {
+      case "08approved":
+        return form08Data.filter((form08) => form08.instituteCommitteeSignUrl !== null);
+      case "08wait":
+        return form08Data.filter((form08) => form08.instituteCommitteeSignUrl === null);
+      default:
+        return form08Data;
+    }
+  }, [form08Data, filtered]);
+
   return (
     <div className="py-6 mx-6">
       <Card>
@@ -318,7 +329,7 @@ export default function FormDashborad() {
                   </DropdownMenuContent>
                 </DropdownMenu>
               </div>
-              <DataTable columns={formColumns.form08Columns} data={form08Data} />
+              <DataTable columns={formColumns.form08Columns} data={form08DataWithFilter} />
             </TabsContent>
           </Tabs>
         </CardContent>

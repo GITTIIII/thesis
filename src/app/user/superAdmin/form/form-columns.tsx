@@ -478,21 +478,21 @@ const form08Columns: ColumnDef<any>[] = [
     accessorFn: (row) => `${row.student.firstNameTH} ${row.student.lastNameTH}` || `${row.student.firstNameEN} ${row.student.lastNameEN}`,
   },
   {
-    header: "ชื่อวิทยานิพนธ์ (ไทย)",
+    header: "ชื่อวิทยานิพนธ์ใหม่ (ไทย)",
     cell: ({ row }) => {
       return (
         <div className="w-[150px] truncate">
-          <HoverCardTable data={row.original.thesisNameTH} />
+          <HoverCardTable data={row.original.newThesisNameTH} />
         </div>
       );
     },
   },
   {
-    header: "ชื่อวิทยานิพนธ์ (อังกฤษ)",
+    header: "ชื่อวิทยานิพนธ์ใหม่ (อังกฤษ)",
     cell: ({ row }) => {
       return (
         <div className="w-[150px] truncate">
-          <HoverCardTable data={row.original.thesisNameEN} />
+          <HoverCardTable data={row.original.newThesisNameEN} />
         </div>
       );
     },
