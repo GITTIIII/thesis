@@ -97,7 +97,7 @@ export default function OutlineFormTable({ formData, user }: { user: IUser; form
 									>
 										<HoverCardTable data={`${formData?.student?.firstNameTH} ${formData?.student?.lastNameTH}`} />
 									</TableCell>
-									<TableCell className="text-center">
+									<TableCell className="flex items-center justify-center">
 										<FormStatus formStatus={formData.formStatus} />
 									</TableCell>
 									<TableCell className="text-[#F26522] text-center truncate">

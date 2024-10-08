@@ -140,7 +140,12 @@ export default function ThesisProgressFormTable({ formData, user }: { user: IUse
 										</Link>
 									</TableCell>
 									<TableCell className="text-center">
-										<Button onClick={() => handleDownload(formData)} type="button" variant="outline">
+										<Button
+											onClick={() => handleDownload(formData)}
+											disabled={!formData.headSchoolID}
+											type="button"
+											variant="outline"
+										>
 											<Download className="mr-2" />
 											ดาวน์โหลด
 										</Button>
