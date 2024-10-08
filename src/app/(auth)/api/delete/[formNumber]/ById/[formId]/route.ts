@@ -1,7 +1,0 @@
-
-
-
-
-
-
-"delete/${formNumber}/ById/${formId}"
