@@ -9,22 +9,11 @@ import { FormPath } from "../formPath/formPath";
 import { useEffect, useState } from "react";
 import { Search } from "./search";
 import { FilterTable } from "./filter";
-import { IOutlineCommitteeForm, IOutlineForm, IThesisExamAssessmentForm } from "@/interface/form";
+import { IOutlineForm, IThesisExamAssessmentForm } from "@/interface/form";
 import saveAs from "file-saver";
 import { HoverCardTable } from "./hoverCard";
-import useSWR from "swr";
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
-
-export default function ThesisExamAssessmentFormTable({
-	formData,
-	user,
-	approvedForm,
-}: {
-	user: IUser;
-	formData?: IThesisExamAssessmentForm[];
-	approvedForm?: IOutlineForm;
-}) {
+export default function ThesisExamAssessmentFormTable({ formData, user }: { user: IUser; formData?: IThesisExamAssessmentForm[] }) {
 	const { selectedForm } = useSelectForm();
 	const [studentID, setStudentID] = useState("");
 	const [myStudent, setMyStudent] = useState(false);
