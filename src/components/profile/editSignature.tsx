@@ -67,7 +67,7 @@ const EditSignature = ({ user }: { user: IUser }) => {
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		const url = qs.stringifyUrl({
-			url: `/api/user`,
+			url: process.env.NEXT_PUBLIC_URL + `/api/user`,
 		});
 		const res = await axios.patch(url, values);
 		if (res.status === 200) {

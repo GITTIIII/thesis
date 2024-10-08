@@ -39,7 +39,7 @@ export default function ThesisExamCommitteeFormTable({ formData, user }: { user:
 	const handleDownload = async (formData: IOutlineCommitteeForm) => {
 		if (formData.headSchoolID) {
 			try {
-				const response = await fetch(`/api/04ThesisExamCommitteeForm/download?id=${formData.id}`);
+				const response = await fetch(process.env.NEXT_PUBLIC_URL + `/api/04ThesisExamCommitteeForm/download?id=${formData.id}`);
 				if (response.ok) {
 					const blob = await response.blob();
 					saveAs(blob, "FM-ENG-GRD-04.docx"); // Change the file name if needed

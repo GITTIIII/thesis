@@ -134,7 +134,7 @@ const ThesisProgressFormUpdate = ({
 			values.processPlan = processPlans;
 		}
 		const url = qs.stringifyUrl({
-			url: `/api/06ThesisProgressForm`,
+			url: process.env.NEXT_PUBLIC_URL + `/api/06ThesisProgressForm`,
 		});
 		const res = await axios.patch(url, values);
 		if (res.status === 200) {

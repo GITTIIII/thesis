@@ -34,7 +34,7 @@ export default function OutlineFormTable({ formData, user }: { user: IUser; form
 	const handleDownload = async (formData: IOutlineForm) => {
 		if (formData.formStatus === "อนุมัติ") {
 			try {
-				const response = await fetch(`/api/05OutlineForm/download?id=${formData.id}`);
+				const response = await fetch(process.env.NEXT_PUBLIC_URL + `/api/05OutlineForm/download?id=${formData.id}`);
 				if (response.ok) {
 					const blob = await response.blob();
 					saveAs(blob, "FM-ENG-GRD-05.zip"); // Change the file name if needed

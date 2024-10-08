@@ -75,7 +75,7 @@ const ThesisExamAppointmentFormCreate = ({ user, approvedForm }: { user: IUser; 
 			return;
 		}
 		const url = qs.stringifyUrl({
-			url: `/api/07ThesisExamAppointmentForm`,
+			url: process.env.NEXT_PUBLIC_URL + `/api/07ThesisExamAppointmentForm`,
 		});
 		const res = await axios.post(url, values);
 		if (res.status === 200) {

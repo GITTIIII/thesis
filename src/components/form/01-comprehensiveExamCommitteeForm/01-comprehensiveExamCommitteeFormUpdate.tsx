@@ -75,7 +75,7 @@ const ComprehensiveExamCommitteeFormUpdate = ({
 			return;
 		}
 		const url = qs.stringifyUrl({
-			url: `/api/01ComprehensiveExamCommitteeForm`,
+			url: process.env.NEXT_PUBLIC_URL + `/api/01ComprehensiveExamCommitteeForm`,
 		});
 		const res = await axios.patch(url, values);
 		if (res.status === 200) {

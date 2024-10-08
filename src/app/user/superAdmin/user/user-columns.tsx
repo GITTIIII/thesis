@@ -53,8 +53,8 @@ const studentColumns: ColumnDef<IUser>[] = [
 	{
 		id: "actions",
 		cell: (row) => {
-			const deleteAPI = `/api/user/${row.row.original.id}`;
-			const fetchAPI = "/api/getStudent";
+			const deleteAPI = process.env.NEXT_PUBLIC_URL + `/api/user/${row.row.original.id}`;
+			const fetchAPI = process.env.NEXT_PUBLIC_URL + "/api/getStudent";
 			return (
 				<div className="flex items-center gap-2">
 					<StudentDialog user={row.row.original}>
@@ -100,8 +100,8 @@ const advisorColumns: ColumnDef<IUser>[] = [
 	{
 		id: "actions",
 		cell: (row) => {
-			const deleteAPI = `/api/user/${row.row.original.id}`;
-			const fetchAPI = "/api/getAdvisor";
+			const deleteAPI = process.env.NEXT_PUBLIC_URL + `/api/user/${row.row.original.id}`;
+			const fetchAPI = process.env.NEXT_PUBLIC_URL + "/api/getAdvisor";
 			return (
 				<div className="flex items-center gap-2">
 					<AdvisorDialog user={row.row.original}>
@@ -135,8 +135,8 @@ const headInstituteColumns: ColumnDef<IUser>[] = [
 	{
 		id: "actions",
 		cell: (row) => {
-			const deleteAPI = `/api/user/${row.row.original.id}`;
-			const fetchAPI = "/api/getHeadInstitute";
+			const deleteAPI = process.env.NEXT_PUBLIC_URL + `/api/user/${row.row.original.id}`;
+			const fetchAPI = process.env.NEXT_PUBLIC_URL + "/api/getHeadInstitute";
 			return (
 				<div className="flex items-center gap-2">
 					<HeadInstituteDialog user={row.row.original}>
@@ -162,8 +162,8 @@ const expertColumns: ColumnDef<IExpert>[] = [
 	{
 		id: "actions",
 		cell: (row) => {
-			const deleteAPI = `/api/expert/${row.row.original.id}`;
-			const fetchAPI = "/api/expert";
+			const deleteAPI = process.env.NEXT_PUBLIC_URL + `/api/expert/${row.row.original.id}`;
+			const fetchAPI = process.env.NEXT_PUBLIC_URL + "/api/expert";
 			return (
 				<div className="flex justify-end">
 					<div className="flex items-center content-end gap-2">

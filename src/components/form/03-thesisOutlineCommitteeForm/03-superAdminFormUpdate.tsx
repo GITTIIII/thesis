@@ -135,7 +135,7 @@ export default function SuperAdminForm03Update({
 		}
 
 		const url = qs.stringifyUrl({
-			url: `/api/03ThesisOutlineCommitteeForm`,
+			url: process.env.NEXT_PUBLIC_URL + `/api/03ThesisOutlineCommitteeForm`,
 		});
 
 		const res = await axios.patch(url, values);

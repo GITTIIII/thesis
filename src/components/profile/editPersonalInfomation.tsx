@@ -27,7 +27,7 @@ const EditPersonalInformation = ({ user }: { user: IUser }) => {
 	const { toast } = useToast();
 	const router = useRouter();
 	const [open, setOpen] = useState(false);
-	const { data: prefix, isLoading } = useSWR("/api/prefix", fetcher);
+	const { data: prefix, isLoading } = useSWR(process.env.NEXT_PUBLIC_URL + "/api/prefix", fetcher);
 
 	const formSchema = z.object({
 		id: z.number(),
@@ -64,7 +64,7 @@ const EditPersonalInformation = ({ user }: { user: IUser }) => {
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		console.log(values);
 		const url = qs.stringifyUrl({
-			url: `/api/user`,
+			url: process.env.NEXT_PUBLIC_URL + `/api/user`,
 		});
 		const res = await axios.patch(url, values);
 		if (res.status === 200) {

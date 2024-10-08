@@ -73,9 +73,9 @@ const form01Columns: ColumnDef<IComprehensiveExamCommitteeForm>[] = [
 		cell: ({ row }) => {
 			const form01 = row.original.id;
 			const downloadPath = "";
-			const updatePath = `/user/form/01-comprehensiveExamCommitteeForm/superAdmin/update/${form01}`;
-			const deleteAPI = `/api/delete01FormById/${form01}`;
-			const fetchAPI = `/api/01ComprehensiveExamCommitteeForm`;
+			const updatePath = process.env.NEXT_PUBLIC_URL + `/api/user/form/01-comprehensiveExamCommitteeForm/superAdmin/update/${form01}`;
+			const deleteAPI = process.env.NEXT_PUBLIC_URL + `/api/delete01FormById/${form01}`;
+			const fetchAPI = process.env.NEXT_PUBLIC_URL + `/api/01ComprehensiveExamCommitteeForm`;
 			return <FormActionMenu downloadPath={downloadPath} updatePath={updatePath} deleteAPI={deleteAPI} fetchAPI={fetchAPI} />;
 		},
 	},
@@ -133,8 +133,8 @@ const form02Columns: ColumnDef<IQualificationExamCommitteeForm>[] = [
 			const form02 = row.original.id;
 			const downloadPath = "";
 			const updatePath = `/user/form/02-qualificationExamCommitteeForm/superAdmin/update/${form02}`;
-			const deleteAPI = `/api/delete02FormById/${form02}`;
-			const fetchAPI = `/api/02QualificationExamCommitteeForm`;
+			const deleteAPI = process.env.NEXT_PUBLIC_URL + `/api/delete02FormById/${form02}`;
+			const fetchAPI = process.env.NEXT_PUBLIC_URL + `/api/02QualificationExamCommitteeForm`;
 			return <FormActionMenu downloadPath={downloadPath} updatePath={updatePath} deleteAPI={deleteAPI} fetchAPI={fetchAPI} />;
 		},
 	},
@@ -192,8 +192,8 @@ const form03Columns: ColumnDef<IOutlineCommitteeForm>[] = [
 			const form03 = row.original.id;
 			const downloadPath = "";
 			const updatePath = `/user/form/03-thesisOutlineCommitteeForm/superAdmin/update/${form03}`;
-			const deleteAPI = `/api/delete03FormById/${form03}`;
-			const fetchAPI = `/api/03ThesisOutlineCommitteeForm`;
+			const deleteAPI = process.env.NEXT_PUBLIC_URL + `/api/delete03FormById/${form03}`;
+			const fetchAPI = process.env.NEXT_PUBLIC_URL + `/api/03ThesisOutlineCommitteeForm`;
 			return <FormActionMenu downloadPath={downloadPath} updatePath={updatePath} deleteAPI={deleteAPI} fetchAPI={fetchAPI} />;
 		},
 	},
@@ -251,8 +251,8 @@ const form04Columns: ColumnDef<IExamCommitteeForm>[] = [
 			const form04 = row.original.id;
 			const downloadPath = "";
 			const updatePath = `/user/form/04-thesisexamCommitteeForm/superAdmin/update/${form04}`;
-			const deleteAPI = `/api/delete04FormById/${form04}`;
-			const fetchAPI = `/api/04ThesisExamCommitteeForm`;
+			const deleteAPI = process.env.NEXT_PUBLIC_URL + `/api/delete04FormById/${form04}`;
+			const fetchAPI = process.env.NEXT_PUBLIC_URL + `/api/04ThesisExamCommitteeForm`;
 			return <FormActionMenu downloadPath={downloadPath} updatePath={updatePath} deleteAPI={deleteAPI} fetchAPI={fetchAPI} />;
 		},
 	},
@@ -334,8 +334,8 @@ const form05Columns: ColumnDef<IOutlineForm>[] = [
 			const form05 = row.original.id;
 			const downloadPath = "";
 			const updatePath = `/user/form/05-outlineForm/update/${form05}`;
-			const deleteAPI = `/api/delete05FormById/${form05}`;
-			const fetchAPI = `/api/05OutlineForm`;
+			const deleteAPI = process.env.NEXT_PUBLIC_URL + `/api/delete05FormById/${form05}`;
+			const fetchAPI = process.env.NEXT_PUBLIC_URL + `/api/05OutlineForm`;
 			return <FormActionMenu downloadPath={downloadPath} updatePath={updatePath} deleteAPI={deleteAPI} fetchAPI={fetchAPI} />;
 		},
 	},
@@ -393,8 +393,8 @@ const form06Columns: ColumnDef<IThesisProgressForm>[] = [
 			const form06 = row.original.id;
 			const downloadPath = "";
 			const updatePath = `/user/form/06-thesisProgressForm/superAdmin/update/${form06}`;
-			const deleteAPI = `/api/delete06FormById/${form06}`;
-			const fetchAPI = `/api/06ThesisProgressForm`;
+			const deleteAPI = process.env.NEXT_PUBLIC_URL + `/api/delete06FormById/${form06}`;
+			const fetchAPI = process.env.NEXT_PUBLIC_URL + `/api/06ThesisProgressForm`;
 			return <FormActionMenu downloadPath={downloadPath} updatePath={updatePath} deleteAPI={deleteAPI} fetchAPI={fetchAPI} />;
 		},
 	},
@@ -456,8 +456,8 @@ const form07Columns: ColumnDef<IThesisExamAppointmentForm>[] = [
 			const form07 = row.original.id;
 			const downloadPath = "";
 			const updatePath = `/user/form/07-thesisExamAppointmentForm/superAdmin/update/${form07}`;
-			const deleteAPI = `/api/delete07FormById/${form07}`;
-			const fetchAPI = `/api/07ThesisExamAppointmentForm`;
+			const deleteAPI = process.env.NEXT_PUBLIC_URL + `/api/delete07FormById/${form07}`;
+			const fetchAPI = process.env.NEXT_PUBLIC_URL + `/api/07ThesisExamAppointmentForm`;
 			return <FormActionMenu downloadPath={downloadPath} updatePath={updatePath} deleteAPI={deleteAPI} fetchAPI={fetchAPI} />;
 		},
 	},
@@ -541,8 +541,8 @@ const form08Columns: ColumnDef<any>[] = [
 			const form08 = row.original.id;
 			const downloadPath = "";
 			const updatePath = `/user/form/08-thesisExamAssessmentForm/superAdmin/update/${form08}`;
-			const deleteAPI = `/api/delete08FormById/${form08}`;
-			const fetchAPI = `/api/08ThesisExam/Form`;
+			const deleteAPI = process.env.NEXT_PUBLIC_URL + `/api/delete08FormById/${form08}`;
+			const fetchAPI = process.env.NEXT_PUBLIC_URL + `/api/08ThesisExam/Form`;
 			return <FormActionMenu downloadPath={downloadPath} updatePath={updatePath} deleteAPI={deleteAPI} fetchAPI={fetchAPI} />;
 		},
 	},

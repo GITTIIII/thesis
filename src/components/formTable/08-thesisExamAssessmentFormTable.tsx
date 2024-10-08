@@ -36,7 +36,7 @@ export default function ThesisExamAssessmentFormTable({ formData, user }: { user
 	});
 
 	const fetchApproveForm = async (studentID: number) => {
-		const res = await fetch(`/api/get05ApprovedFormByStdId/${studentID}`);
+		const res = await fetch(process.env.NEXT_PUBLIC_URL + `/api/get05ApprovedFormByStdId/${studentID}`);
 		const data = await res.json();
 		// Store the data in the state, mapping it by studentID
 		setApproveForms((prev) => ({ ...prev, [studentID]: data }));
@@ -53,7 +53,7 @@ export default function ThesisExamAssessmentFormTable({ formData, user }: { user
 	const handleDownload = async (formData: IThesisExamAssessmentForm) => {
 		if (formData.instituteCommitteeID) {
 			try {
-				const response = await fetch(`/api/08ThesisExamAssessmentForm/download?id=${formData.id}`);
+				const response = await fetch(process.env.NEXT_PUBLIC_URL + `/api/08ThesisExamAssessmentForm/download?id=${formData.id}`);
 				if (response.ok) {
 					const blob = await response.blob();
 					saveAs(blob, "FM-ENG-GRD-08.docx"); // Change the file name if needed

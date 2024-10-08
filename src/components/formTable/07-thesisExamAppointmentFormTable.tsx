@@ -20,8 +20,6 @@ export default function ThesisExamAppointmentFormTable({ formData, user }: { use
 	const [headSchool, setHeadSchool] = useState(false);
 	const [status, setStatus] = useState("");
 
-	
-
 	const filteredData = formData?.filter((formData) => {
 		const matchesStudentID = studentID === "" || formData.student.username.includes(studentID);
 		const matchesMyStudent =
@@ -40,7 +38,7 @@ export default function ThesisExamAppointmentFormTable({ formData, user }: { use
 	const handleDownload = async (formData: IThesisExamAppointmentForm) => {
 		if (formData.headSchoolID) {
 			try {
-				const response = await fetch(`/api/07ThesisExamAppointmentForm/download?id=${formData.id}`);
+				const response = await fetch(process.env.NEXT_PUBLIC_URL + `/api/07ThesisExamAppointmentForm/download?id=${formData.id}`);
 				if (response.ok) {
 					const blob = await response.blob();
 					saveAs(blob, "FM-ENG-GRD-07.docx"); // Change the file name if needed

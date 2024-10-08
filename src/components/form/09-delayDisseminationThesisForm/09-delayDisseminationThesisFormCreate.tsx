@@ -29,7 +29,7 @@ const formSchema = z.object({
 });
 
 async function getUser() {
-	const res = await fetch("/api/getCurrentUser");
+	const res = await fetch(process.env.NEXT_PUBLIC_URL + "/api/getCurrentUser");
 	return res.json();
 }
 
@@ -68,7 +68,7 @@ const DelayDisseminationThesisFormCreate = () => {
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		console.log("values:", values);
 		const url = qs.stringifyUrl({
-			url: `/api/09DelayDisseminationThesisForm`,
+			url: process.env.NEXT_PUBLIC_URL + `/api/09DelayDisseminationThesisForm`,
 		});
 		const res = await axios.post(url, values);
 		if (res.status === 200) {

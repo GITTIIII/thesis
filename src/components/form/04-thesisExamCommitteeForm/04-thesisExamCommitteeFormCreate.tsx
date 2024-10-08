@@ -61,7 +61,7 @@ const ThesisOutlineCommitteeFormCreate = ({ user }: { user: IUser }) => {
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
-		const url = qs.stringifyUrl({ url: `/api/04ThesisExamCommitteeForm` });
+		const url = qs.stringifyUrl({ url: process.env.NEXT_PUBLIC_URL + `/api/04ThesisExamCommitteeForm` });
 		const res = await axios.post(url, values);
 		if (res.status === 200) {
 			toast({

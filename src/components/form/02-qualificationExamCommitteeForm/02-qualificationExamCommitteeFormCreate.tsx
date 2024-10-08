@@ -63,7 +63,7 @@ const QualificationExamCommitteeFormCreate = ({ user }: { user: IUser }) => {
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
 		const url = qs.stringifyUrl({
-			url: `/api/02QualificationExamCommitteeForm`,
+			url: process.env.NEXT_PUBLIC_URL + `/api/02QualificationExamCommitteeForm`,
 		});
 		const res = await axios.post(url, values);
 		if (res.status === 200) {

@@ -36,7 +36,7 @@ export default function CreateExpert() {
 		setLoading(true);
 		console.log(values);
 		const url = qs.stringifyUrl({
-			url: `/api/expert`,
+			url: process.env.NEXT_PUBLIC_URL + `/api/expert`,
 		});
 
 		try {

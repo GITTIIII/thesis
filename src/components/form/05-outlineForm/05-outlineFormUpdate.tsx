@@ -147,7 +147,7 @@ const OutlineFormUpdate = ({
 		}
 
 		const url = qs.stringifyUrl({
-			url: `/api/05OutlineForm`,
+			url: process.env.NEXT_PUBLIC_URL + `/api/05OutlineForm`,
 		});
 		const res = await axios.patch(url, values);
 		if (res.status === 200) {

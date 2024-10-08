@@ -115,7 +115,7 @@ const ExameCommitteeFormUpdate = ({ formData, user, headSchool }: { formData: IE
 		}
 
 		const url = qs.stringifyUrl({
-			url: `/api/04ThesisExamCommitteeForm`,
+			url: process.env.NEXT_PUBLIC_URL + `/api/04ThesisExamCommitteeForm`,
 		});
 
 		const res = await axios.patch(url, values);

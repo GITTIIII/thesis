@@ -124,7 +124,7 @@ export default function SuperAdminForm02Update({
 		}
 
 		const url = qs.stringifyUrl({
-			url: `/api/02QualificationExamCommitteeForm`,
+			url: process.env.NEXT_PUBLIC_URL + `/api/02QualificationExamCommitteeForm`,
 		});
 
 		const res = await axios.patch(url, values);

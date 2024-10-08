@@ -39,7 +39,7 @@ export default function ThesisProgressFormTable({ formData, user }: { user: IUse
 	const handleDownload = async (formData: IThesisProgressForm) => {
 		if (formData.headSchoolID) {
 			try {
-				const response = await fetch(`/api/06ThesisProgressForm/download?id=${formData.id}`);
+				const response = await fetch(process.env.NEXT_PUBLIC_URL + `/api/06ThesisProgressForm/download?id=${formData.id}`);
 				if (response.ok) {
 					const blob = await response.blob();
 					saveAs(blob, "FM-ENG-GRD-06.zip"); // Change the file name if needed

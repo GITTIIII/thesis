@@ -64,7 +64,7 @@ const ComprehensiveExamCommitteeFormCreate = ({ user }: { user: IUser }) => {
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
 		const url = qs.stringifyUrl({
-			url: `/api/01ComprehensiveExamCommitteeForm`,
+			url: process.env.NEXT_PUBLIC_URL + `/api/01ComprehensiveExamCommitteeForm`,
 		});
 		const res = await axios.post(url, values);
 		if (res.status === 200) {

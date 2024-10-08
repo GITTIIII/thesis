@@ -44,7 +44,7 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 			instituteSignUrl: "",
 			approve: "",
 			id: 0,
-			disapproveComment:""
+			disapproveComment: "",
 		},
 	});
 	const handleSign = (signUrl: string) => {
@@ -77,7 +77,7 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 			return;
 		}
 		const url = qs.stringifyUrl({
-			url: `/api/09DelayDisseminationThesisForm`,
+			url: process.env.NEXT_PUBLIC_URL + `/api/09DelayDisseminationThesisForm`,
 		});
 		const res = await axios.patch(url, values);
 		if (res.status === 200) {
@@ -215,8 +215,12 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 									{formData.instituteSignUrl ? (
 										<div>
 											<div className="px-5 mx-auto">
-											<InputForm value={`${formData?.timeApprove} `} label="ครั้งที่. / No." />
-											<InputForm value={`${formData?.dayApprove?.toLocaleDateString("th")}`} label="วันที่ / Date" /></div>
+												<InputForm value={`${formData?.timeApprove} `} label="ครั้งที่. / No." />
+												<InputForm
+													value={`${formData?.dayApprove?.toLocaleDateString("th")}`}
+													label="วันที่ / Date"
+												/>
+											</div>
 											<div className="flex flex-col items-center mb-6 justify-center">
 												<RadioGroup disabled className="space-y-1 mt-1">
 													<div>
@@ -229,7 +233,7 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 													</div>
 												</RadioGroup>
 												<div>
-													{formData?.approve==="disApprove" && (
+													{formData?.approve === "disApprove" && (
 														<InputForm value={`${formData?.disapproveComment}`} label="เหตุผล / Reason" />
 													)}
 												</div>
@@ -248,39 +252,39 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 									) : (
 										<div>
 											<div className="flex flex-row justify-center item-center my-5">
-											<FormField
-												control={form.control}
-												name="timeApprove"
-												render={({ field }) => (
-													<div className="flex flex-row items-center mr-2 justify-center">
-														<FormItem className="w-[130px]">
-															<FormLabel>
-																ครั้งที่. / No. <span className="text-red-500">*</span>
-															</FormLabel>
-															<Input
-																value={field.value ? field.value : ""}
-																onChange={(e) => field.onChange(Number(e.target.value))}
-															/>
-															<FormMessage />
-														</FormItem>
-													</div>
-												)}
-											/>
-											<FormField
-												control={form.control}
-												name="dayApprove"
-												render={({ field }) => (
-													<div className="flex flex-row items-center ml-2 justify-center">
-														<FormItem className="">
-															<FormLabel>วันที่ / Date </FormLabel>
-															<div>
-																<DatePicker value={field.value} onDateChange={field.onChange} />
-															</div>
-															<FormMessage />
-														</FormItem>
-													</div>
-												)}
-											/>
+												<FormField
+													control={form.control}
+													name="timeApprove"
+													render={({ field }) => (
+														<div className="flex flex-row items-center mr-2 justify-center">
+															<FormItem className="w-[130px]">
+																<FormLabel>
+																	ครั้งที่. / No. <span className="text-red-500">*</span>
+																</FormLabel>
+																<Input
+																	value={field.value ? field.value : ""}
+																	onChange={(e) => field.onChange(Number(e.target.value))}
+																/>
+																<FormMessage />
+															</FormItem>
+														</div>
+													)}
+												/>
+												<FormField
+													control={form.control}
+													name="dayApprove"
+													render={({ field }) => (
+														<div className="flex flex-row items-center ml-2 justify-center">
+															<FormItem className="">
+																<FormLabel>วันที่ / Date </FormLabel>
+																<div>
+																	<DatePicker value={field.value} onDateChange={field.onChange} />
+																</div>
+																<FormMessage />
+															</FormItem>
+														</div>
+													)}
+												/>
 											</div>
 											<FormField
 												control={form.control}
@@ -292,7 +296,7 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 																onValueChange={(value) => {
 																	field.onChange(value);
 																	setIsDisApproved(value === "disApprove"); // ตรวจสอบว่าเลือก disApprove หรือไม่
-																  }}
+																}}
 																defaultValue={field.value}
 																className="flex flex-row space-y-1"
 															>
@@ -314,22 +318,22 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 													</FormItem>
 												)}
 											/>
-											{isDisApproved &&(
+											{isDisApproved && (
 												<FormField
-												control={form.control}
-												name="disapproveComment"
-												render={({ field }) => (
-												<div className="flex flex-row items-center my-5 justify-center">
-												  <FormItem className="w-[300px]">
-													<FormLabel>เหตุผลที่ไม่อนุมัติ</FormLabel>
-													<FormControl>
-													  <Input {...field} placeholder="กรอกเหตุผลที่ไม่อนุมัติ" />
-													</FormControl>
-													<FormMessage />
-												  </FormItem>
-												  </div>
-												)}
-											  />
+													control={form.control}
+													name="disapproveComment"
+													render={({ field }) => (
+														<div className="flex flex-row items-center my-5 justify-center">
+															<FormItem className="w-[300px]">
+																<FormLabel>เหตุผลที่ไม่อนุมัติ</FormLabel>
+																<FormControl>
+																	<Input {...field} placeholder="กรอกเหตุผลที่ไม่อนุมัติ" />
+																</FormControl>
+																<FormMessage />
+															</FormItem>
+														</div>
+													)}
+												/>
 											)}
 											<div className="text-center mb-2">ลายเซ็นต์ประธานคณะกรรมการ / Head of Committee</div>
 											<div className="flex justify-center item-center">

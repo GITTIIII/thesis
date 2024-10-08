@@ -38,12 +38,12 @@ const formSchema = z.object({
 });
 
 async function getAllInstitute() {
-	const res = await fetch("/api/institute");
+	const res = await fetch(process.env.NEXT_PUBLIC_URL + "/api/institute");
 	return res.json();
 }
 
 async function getAllSchool() {
-	const res = await fetch("/api/school");
+	const res = await fetch(process.env.NEXT_PUBLIC_URL + "/api/school");
 	return res.json();
 }
 
@@ -78,7 +78,7 @@ export default function CreateAdmin() {
 		setLoading(true);
 		console.log(values);
 		const url = qs.stringifyUrl({
-			url: `/api/user`,
+			url: process.env.NEXT_PUBLIC_URL + `/api/user`,
 		});
 
 		try {

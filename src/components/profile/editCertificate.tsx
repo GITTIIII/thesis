@@ -77,7 +77,7 @@ const EditCertificate = ({ user, certificateType }: { user: IUser | undefined; c
 		formData.append("id", values.id.toString());
 
 		const url = qs.stringifyUrl({
-			url: `/api/certificate`,
+			url: process.env.NEXT_PUBLIC_URL + `/api/certificate`,
 		});
 		const res = await axios.post(url, formData);
 		if (res.status === 200) {
@@ -89,7 +89,7 @@ const EditCertificate = ({ user, certificateType }: { user: IUser | undefined; c
 			router.refresh();
 			form.reset();
 			setFileName("No selected File");
-			mutate("/api/getCurrentUser");
+			mutate(process.env.NEXT_PUBLIC_URL + "/api/getCurrentUser");
 			setOpen(false);
 			setLoading(false);
 		} else {

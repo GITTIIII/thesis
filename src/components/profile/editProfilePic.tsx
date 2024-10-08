@@ -81,9 +81,9 @@ const EditProfilePic = ({ user }: { user: IUser }) => {
 		}
 		values.profileUrl = cropImage;
 		const url = qs.stringifyUrl({
-			url: `/api/user`,
+			url: process.env.NEXT_PUBLIC_URL + `/api/user`,
 		});
-		
+
 		const res = await axios.patch(url, values);
 		if (res.status === 200) {
 			toast({

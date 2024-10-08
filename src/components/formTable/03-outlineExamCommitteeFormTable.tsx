@@ -42,7 +42,7 @@ export default function OutlineCommitteeFormTable({ formData, user }: { user: IU
 	const handleDownload = async (formData: IOutlineCommitteeForm) => {
 		if (formData.headSchoolID) {
 			try {
-				const response = await fetch(`/api/03ThesisOutlineCommitteeForm/download?id=${formData.id}`);
+				const response = await fetch(process.env.NEXT_PUBLIC_URL + `/api/03ThesisOutlineCommitteeForm/download?id=${formData.id}`);
 				if (response.ok) {
 					const blob = await response.blob();
 					saveAs(blob, "FM-ENG-GRD-03.docx"); // Change the file name if needed

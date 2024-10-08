@@ -16,7 +16,7 @@ import { HoverCardTable } from "./hoverCard";
 const handleDownload = async (formData: IComprehensiveExamCommitteeForm) => {
 	if (formData.headSchoolID) {
 		try {
-			const response = await fetch(`/api/01ComprehensiveExamCommitteeForm/download?id=${formData.id}`);
+			const response = await fetch(process.env.NEXT_PUBLIC_URL + `/api/01ComprehensiveExamCommitteeForm/download?id=${formData.id}`);
 			if (response.ok) {
 				const blob = await response.blob();
 				saveAs(blob, "FM-ENG-GRD-01.docx"); // Change the file name if needed

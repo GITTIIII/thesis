@@ -218,7 +218,7 @@ const ThesisExamAssessmentFormUpdate = ({
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
 		const url = qs.stringifyUrl({
-			url: `/api/08ThesisExamAssessmentForm`,
+			url: process.env.NEXT_PUBLIC_URL + `/api/08ThesisExamAssessmentForm`,
 		});
 		const res = await axios.patch(url, values);
 		if (res.status === 200) {

@@ -114,7 +114,7 @@ const ThesisExamAssessmentFormSuperAdmin = ({ user, formData }: { user: IUser; f
 	// 	console.log("formid:", values.id);
 
 	// 	const url = qs.stringifyUrl({
-	// 		url: `/api/08ThesisExamForm`,
+	// 		url: process.env.NEXT_PUBLIC_URL + `/api/08ThesisExamForm`,
 	// 	});
 	// 	const res = await axios.patch(url, values);
 	// 	if (res.status === 200) {
