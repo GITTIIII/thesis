@@ -1,7 +1,7 @@
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: Request) {
 	try {
@@ -62,15 +62,15 @@ export async function GET() {
 	const comprehensiveExamCommitteeForm = await db.comprehensiveExamCommitteeForm.findMany({
 		include: {
 			student: {
-				include:{
-					prefix:true,
-				}
+				include: {
+					prefix: true,
+				},
 			},
-			headSchool:{
-				include:{
-					prefix:true,
-				}
-			}
+			headSchool: {
+				include: {
+					prefix: true,
+				},
+			},
 		},
 	});
 
@@ -136,7 +136,7 @@ export async function PATCH(req: Request) {
 				examDay: examDay || existingComprehensiveExamCommitteeForm.examDay,
 				studentID: studentID == 0 ? existingComprehensiveExamCommitteeForm.studentID : studentID,
 				headSchoolID: headSchoolID == 0 ? existingComprehensiveExamCommitteeForm.headSchoolID : headSchoolID,
-				headSchoolSignUrl: headSchoolSignUrl || existingComprehensiveExamCommitteeForm.headSchoolSignUrl
+				headSchoolSignUrl: headSchoolSignUrl || existingComprehensiveExamCommitteeForm.headSchoolSignUrl,
 			},
 		});
 

@@ -1,7 +1,7 @@
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: Request) {
 	try {
@@ -12,18 +12,7 @@ export async function POST(req: Request) {
 		}
 
 		const body = await req.json();
-		const {
-			times,
-			trimester,
-			status,
-			statusComment,
-			percentage,
-			percentageComment,
-			issues,
-			date,
-			processPlan,
-			studentID,
-		} = body;
+		const { times, trimester, status, statusComment, percentage, percentageComment, issues, date, processPlan, studentID } = body;
 
 		const newForm = await db.thesisProgressForm.create({
 			data: {
@@ -45,7 +34,7 @@ export async function POST(req: Request) {
 		return NextResponse.json({ form: rest, message: "Form Created" }, { status: 200 });
 	} catch (error) {
 		const err = error as Error;
-		console.log(err)
+		console.log(err);
 		return NextResponse.json({ message: error }, { status: 500 });
 	}
 }
@@ -66,18 +55,18 @@ export async function GET() {
 					school: true,
 					program: true,
 					advisor: {
-						include:{
+						include: {
 							prefix: true,
-						}
+						},
 					},
-					coAdvisedStudents:{
-						include:{
-							coAdvisor:{
-								include:{
+					coAdvisedStudents: {
+						include: {
+							coAdvisor: {
+								include: {
 									prefix: true,
-								}
-							}
-						}
+								},
+							},
+						},
 					},
 				},
 			},
@@ -108,14 +97,14 @@ export async function PATCH(req: Request) {
 			date,
 			processPlan,
 			studentID,
-			
+
 			assessmentResult,
 			advisorSignUrl,
 			dateAdvisor,
 			headSchoolComment,
 			headSchoolSignUrl,
 			dateHeadSchool,
-			headSchoolID
+			headSchoolID,
 		} = body;
 
 		if (!id) {
@@ -143,11 +132,11 @@ export async function PATCH(req: Request) {
 				date: date || existingThesisProgressForm.date,
 				processPlan: processPlan || existingThesisProgressForm.processPlan,
 				studentID: studentID === 0 ? existingThesisProgressForm.studentID : studentID,
-				
+
 				assessmentResult: assessmentResult || existingThesisProgressForm.assessmentResult,
 				advisorSignUrl: advisorSignUrl || existingThesisProgressForm.advisorSignUrl,
 				dateAdvisor: dateAdvisor || existingThesisProgressForm.dateAdvisor,
-				
+
 				headSchoolComment: headSchoolComment || existingThesisProgressForm.headSchoolComment,
 				headSchoolSignUrl: headSchoolSignUrl || existingThesisProgressForm.headSchoolSignUrl,
 				dateHeadSchool: dateHeadSchool || existingThesisProgressForm.dateHeadSchool,

@@ -1,5 +1,5 @@
 import { getFileUrl } from "@/lib/file";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { streamImageFromUrl } from "../../streams";
 
 export const GET = async (req: Request, { params }: { params: { fileName: string } }) => {

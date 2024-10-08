@@ -1,7 +1,7 @@
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: Request) {
 	try {
@@ -38,9 +38,9 @@ export async function GET() {
 	}
 
 	const program = await db.program.findMany({
-		include:{
+		include: {
 			schools: true,
-		}
+		},
 	});
 
 	return NextResponse.json(program);

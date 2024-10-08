@@ -1,7 +1,7 @@
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: Request) {
 	try {
@@ -67,8 +67,8 @@ export async function PATCH(req: Request) {
 		const prefix = await db.prefix.update({
 			where: { id: id },
 			data: {
-				prefixTH:  existingPrefix.prefixTH || prefixTH,
-				prefixEN:  existingPrefix.prefixEN || prefixEN,
+				prefixTH: existingPrefix.prefixTH || prefixTH,
+				prefixEN: existingPrefix.prefixEN || prefixEN,
 			},
 		});
 

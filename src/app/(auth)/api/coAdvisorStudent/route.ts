@@ -1,7 +1,7 @@
 import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: Request) {
 	try {
@@ -65,15 +65,15 @@ export async function PATCH(req: Request) {
 		}
 
 		const existingCoAdvisorStudent = await db.coAdvisorStudent.findUnique({
-			where: { 
+			where: {
 				studentID_coAdvisorID: {
 					studentID: Number(studentID),
 					coAdvisorID: Number(coAdvisorID),
 				},
-			}
+			},
 		});
 
-		if (action === 'add') {
+		if (action === "add") {
 			if (existingCoAdvisorStudent) {
 				return NextResponse.json({ message: "CoAdvisorStudent relationship already exists" }, { status: 409 });
 			}
@@ -87,8 +87,7 @@ export async function PATCH(req: Request) {
 			});
 
 			return NextResponse.json({ message: "CoAdvisorStudent relationship added" }, { status: 201 });
-
-		} else if (action === 'remove') {
+		} else if (action === "remove") {
 			if (!existingCoAdvisorStudent) {
 				return NextResponse.json({ message: "CoAdvisorStudent relationship not found" }, { status: 404 });
 			}
@@ -104,13 +103,10 @@ export async function PATCH(req: Request) {
 			});
 
 			return NextResponse.json({ message: "CoAdvisorStudent relationship removed" }, { status: 200 });
-
 		} else {
 			return NextResponse.json({ message: "Invalid action" }, { status: 400 });
 		}
-
 	} catch (error) {
 		return NextResponse.json({ message: error instanceof Error ? error.message : "An unknown error occurred" }, { status: 500 });
 	}
 }
-

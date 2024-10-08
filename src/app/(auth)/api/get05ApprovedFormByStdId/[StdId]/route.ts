@@ -2,13 +2,13 @@ import { authOptions } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { NextApiRequest } from "next";
 import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
 type Params = {
 	StdId: number;
 };
 
-export async function GET(req: NextApiRequest, context: { params: Params }) {
+export async function GET(req: NextRequest, context: { params: Params }) {
 	const StdId = context.params.StdId;
 	const session = await getServerSession(authOptions);
 

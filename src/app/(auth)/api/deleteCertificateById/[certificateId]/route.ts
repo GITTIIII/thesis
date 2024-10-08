@@ -1,6 +1,6 @@
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { deleteFileFromBucket } from "@/lib/file";
 
@@ -12,7 +12,7 @@ export async function DELETE(req: Request, { params }: { params: { certificateId
 			return NextResponse.json({ user: null, message: "Session not found" }, { status: 404 });
 		}
 
-		const id = parseInt(params.certificateId) 
+		const id = parseInt(params.certificateId);
 
 		if (!id) {
 			return NextResponse.json({ message: "Certificate ID is required for update" }, { status: 400 });

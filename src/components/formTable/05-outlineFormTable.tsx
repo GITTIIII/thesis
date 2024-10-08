@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Download } from "lucide-react";
 import { IOutlineForm } from "@/interface/form";
 import { IUser } from "@/interface/user";
-import FormStatus from "../formStatus/formStatus";
+import FormStatus from "../formStatus/FormStatus";
 import { useSelectForm } from "@/hook/selectFormHook";
 import { FormPath } from "../formPath/formPath";
 import saveAs from "file-saver";
