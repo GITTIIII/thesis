@@ -370,7 +370,6 @@ export default function SuperAdminForm06Update({
 									src={formData?.student.signatureUrl ? formData?.student.signatureUrl : signature}
 									width={200}
 									height={100}
-									style={{ width: "auto", height: "auto" }}
 									alt="signature"
 								/>
 							</Button>
@@ -429,7 +428,6 @@ export default function SuperAdminForm06Update({
 									}
 									width={100}
 									height={100}
-									style={{ width: "auto", height: "auto" }}
 									alt="signature"
 								/>
 							</div>
@@ -535,7 +533,6 @@ export default function SuperAdminForm06Update({
 									}
 									width={100}
 									height={100}
-									style={{ width: "auto", height: "auto" }}
 									alt="signature"
 								/>
 							</div>

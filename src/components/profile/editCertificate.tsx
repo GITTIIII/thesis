@@ -111,10 +111,7 @@ const EditCertificate = ({ user, certificateType }: { user: IUser | undefined; c
 							src={uploadBlack}
 							width={24}
 							height={24}
-							style={{
-								width: "auto",
-								height: "auto",
-							}}
+							
 							alt="jpeg"
 						/>
 						<label className="ml-2">คลิกเพื่ออัปโหลดไฟล์</label>
@@ -134,16 +131,7 @@ const EditCertificate = ({ user, certificateType }: { user: IUser | undefined; c
 										onClick={() => document.querySelector<HTMLInputElement>(".input-field")?.click()}
 										className="h-[300px] w-full flex flex-col justify-center items-center border-2 border-dashed border-[#F26522] cursor-pointer rounded-xl hover:bg-accent"
 									>
-										<Image
-											src={uploadOrange}
-											width={64}
-											height={64}
-											style={{
-												width: "auto",
-												height: "auto",
-											}}
-											alt="jpeg"
-										/>
+										<Image src={uploadOrange} width={64} height={64} alt="jpeg" />
 										<label>เลือกไฟล์ / Browse File</label>
 										<FormControl>
 											<Input
@@ -170,10 +158,7 @@ const EditCertificate = ({ user, certificateType }: { user: IUser | undefined; c
 												src={jpgIcon}
 												width={32}
 												height={32}
-												style={{
-													width: "auto",
-													height: "auto",
-												}}
+												
 												alt="jpeg"
 											/>
 										)}
@@ -182,10 +167,7 @@ const EditCertificate = ({ user, certificateType }: { user: IUser | undefined; c
 												src={pdfIcon}
 												width={32}
 												height={32}
-												style={{
-													width: "auto",
-													height: "auto",
-												}}
+												
 												alt="pdf"
 											/>
 										)}
@@ -194,10 +176,7 @@ const EditCertificate = ({ user, certificateType }: { user: IUser | undefined; c
 												src={pngIcon}
 												width={32}
 												height={32}
-												style={{
-													width: "auto",
-													height: "auto",
-												}}
+												
 												alt="png"
 											/>
 										)}

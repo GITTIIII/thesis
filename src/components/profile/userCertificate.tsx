@@ -71,10 +71,7 @@ const UserCertificate = ({
 												src={jpgIcon}
 												width={28}
 												height={28}
-												style={{
-													width: "auto",
-													height: "auto",
-												}}
+											
 												alt="jpeg"
 											/>
 										)}
@@ -83,10 +80,7 @@ const UserCertificate = ({
 												src={pdfIcon}
 												width={28}
 												height={28}
-												style={{
-													width: "auto",
-													height: "auto",
-												}}
+												
 												alt="pdf"
 											/>
 										)}
@@ -95,10 +89,7 @@ const UserCertificate = ({
 												src={pngIcon}
 												width={28}
 												height={28}
-												style={{
-													width: "auto",
-													height: "auto",
-												}}
+												
 												alt="png"
 											/>
 										)}

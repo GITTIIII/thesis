@@ -289,7 +289,6 @@ const ThesisProgressFormUpdate = ({
 									src={formData?.student.signatureUrl ? formData?.student.signatureUrl : signature}
 									width={200}
 									height={100}
-									style={{ width: "auto", height: "auto" }}
 									alt="signature"
 								/>
 							</Button>

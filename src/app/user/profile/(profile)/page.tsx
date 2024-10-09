@@ -93,10 +93,7 @@ export default async function Profile() {
 									src={user?.signatureUrl ? user?.signatureUrl : signature}
 									width={100}
 									height={100}
-									style={{
-										width: "auto",
-										height: "auto",
-									}}
+								
 									alt="Profile"
 								/>
 							</div>

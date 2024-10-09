@@ -394,10 +394,6 @@ export default function SuperAdminForm01Update({
 											src={form.getValues().headSchoolSignUrl ? form.getValues().headSchoolSignUrl : signature}
 											width={100}
 											height={100}
-											style={{
-												width: "auto",
-												height: "auto",
-											}}
 											alt="signature"
 										/>
 									</div>

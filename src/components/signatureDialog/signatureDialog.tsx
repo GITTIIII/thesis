@@ -62,10 +62,7 @@ export default function SignatureDialog(props: DialogProps) {
 						src={signUrl ? signUrl : signature}
 						width={100}
 						height={100}
-						style={{
-							width: "auto",
-							height: "auto",
-						}}
+						
 						alt="signature"
 					/>
 				</div>
@@ -91,10 +88,7 @@ export default function SignatureDialog(props: DialogProps) {
 										src={userSignUrl ? userSignUrl : signature}
 										width={100}
 										height={100}
-										style={{
-											width: "auto",
-											height: "auto",
-										}}
+										
 										alt="signature"
 									/>
 								</div>

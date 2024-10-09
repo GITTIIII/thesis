@@ -174,10 +174,6 @@ const EditSignature = ({ user }: { user: IUser }) => {
 											src={user?.signatureUrl ? user?.signatureUrl : signature}
 											width={100}
 											height={100}
-											style={{
-												width: "auto",
-												height: "auto",
-											}}
 											alt="signature"
 										/>
 									</div>
