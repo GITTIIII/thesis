@@ -276,7 +276,7 @@ const ThesisOutlineCommitteeFormCreate = ({ user }: { user: IUser }) => {
 
 					<div className="w-full ">
 						<div className="w-full flex justify-center item-center flex-col h-auto border-2 rounded-lg py-5 border-[#eeee]">
-							<h1 className="text-center font-semibold mb-2">แบบคำขออนุมัติแต่งตั้งกรรมการสอบโครงร่างวิทบยานิพนธ์</h1>
+							<h1 className="text-center font-semibold mb-2">แบบคำขออนุมัติแต่งตั้งกรรมการสอบโครงร่างวิทยานิพนธ์</h1>
 							<div className="flex items-center justify-center text-sm">
 								<CircleAlert className="mr-1" />
 								สามารถดูรายชื่อกรรมการที่ได้รับการรับรองเเล้ว

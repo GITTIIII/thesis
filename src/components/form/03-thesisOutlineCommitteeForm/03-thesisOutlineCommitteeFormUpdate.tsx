@@ -236,7 +236,7 @@ const OutlineCommitteeFormUpdate = ({
 
 					{/* ฝั่งขวา */}
 					<div className="w-full ">
-						<h1 className="text-center font-semibold mb-2">ขอเสนอเเต่งตั้งคณะกรรมการสอบประมวลความรู้</h1>
+						<h1 className="text-center font-semibold mb-2">ขอเสนอเเต่งตั้งคณะกรรมการสอบโครงร่างวิทยานิพนธ์</h1>
 						<div className="flex flex-col items-center justify-center text-sm border-2 rounded-lg py-5 my-5 border-[#eeee]">
 							<div className="flex items-center justify-center text-sm mb-2">
 								<CircleAlert className="mr-1" />
