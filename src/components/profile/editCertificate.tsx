@@ -37,7 +37,7 @@ const EditCertificate = ({ user, certificateType }: { user: IUser | undefined; c
 				message: "ไฟล์ต้องมีขนาดไม่เกิน 5MB.",
 			})
 			.refine((file) => ["image/png", "image/jpeg", "application/pdf"].includes(file.type), {
-				message: "ประเภทไฟล์ต้องเป็น PNG, JPEG, เเละ PDF",
+				message: "ประเภทไฟล์ต้องเป็น PNG, JPEG, เเละ PDF เท่านั้น",
 			}),
 		certificateType: z.string(),
 		description: z.string(),

@@ -93,6 +93,22 @@ const ThesisExamAssessmentFormUpdate = ({
 	const [openCoAdvisorDialog, setOpenCoAdvisorDialog] = useState<{ [key: number]: boolean }>({});
 	const [openCommitteeDialog, setOpenCommitteeDialog] = useState<{ [key: number]: boolean }>({});
 	const [openinstituteComDialog, setOpeninstituteComDialog] = useState(false);
+	const [part1, setPart1] = useState<string>("");
+	const [part2, setPart2] = useState<string>("");
+	const [error, setError] = useState<string>("");
+
+	const handlePart2Change = (e: React.ChangeEvent<HTMLInputElement>) => {
+		const value = e.target.value;
+		setPart2(value);
+
+		if (!/^\d{4}$/.test(value)) {
+			setError("ปีต้องเป็นตัวเลข 4 หลัก");
+		} else if (parseInt(value, 10) < 2500) {
+			setError("ปีต้องเป็น พ.ศ. (ตั้งแต่ 2500 ขึ้นไป)");
+		} else {
+			setError("");
+		}
+	};
 	const { toast } = useToast();
 
 	const form = useForm({
@@ -217,6 +233,18 @@ const ThesisExamAssessmentFormUpdate = ({
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
+		if (!error) {
+			const fullTimes = `${part1}/${part2}`;
+			formData.times = fullTimes;
+		} else {
+			toast({
+				title: "เกิดข้อผิดพลาด",
+				description: error,
+				variant: "destructive",
+			});
+			setLoading(false);
+			return;
+		}
 		const url = qs.stringifyUrl({
 			url: process.env.NEXT_PUBLIC_URL + `/api/08ThesisExamAssessmentForm`,
 		});
@@ -234,7 +262,7 @@ const ThesisExamAssessmentFormUpdate = ({
 			}, 1000);
 		} else {
 			toast({
-				title: "Error",
+				title: "เกิดข้อผิดพลาด",
 				description: res.statusText,
 				variant: "destructive",
 			});
@@ -893,9 +921,16 @@ const ThesisExamAssessmentFormUpdate = ({
 								control={form.control}
 								name="times"
 								render={({ field }) => (
-									<div className="w-[75px] flex flex-row items-center justify-center">
+									<div className="mr-2 flex flex-row items-center justify-center">
 										<FormItem>
-											<Input disabled={user.role != "SUPER_ADMIN"} {...field} />
+											<Input value={part1} onChange={(e) => setPart1(e.target.value)} className="w-[50px]" />
+											<FormMessage />
+										</FormItem>
+
+										<span className="mx-1">/</span>
+
+										<FormItem>
+											<Input value={part2} onChange={handlePart2Change} className="w-[75px]" />
 											<FormMessage />
 										</FormItem>
 									</div>

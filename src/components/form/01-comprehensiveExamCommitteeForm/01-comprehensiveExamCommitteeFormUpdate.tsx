@@ -74,28 +74,49 @@ const ComprehensiveExamCommitteeFormUpdate = ({
 			setLoading(false);
 			return;
 		}
-		const url = qs.stringifyUrl({
-			url: process.env.NEXT_PUBLIC_URL + `/api/01ComprehensiveExamCommitteeForm`,
-		});
-		const res = await axios.patch(url, values);
-		if (res.status === 200) {
-			toast({
-				title: "Success",
-				description: "บันทึกสำเร็จแล้ว",
-				variant: "default",
+		try {
+			const url = qs.stringifyUrl({
+				url: process.env.NEXT_PUBLIC_URL + `/api/01ComprehensiveExamCommitteeForm`,
 			});
-			await updateStdFormState(formData.studentID);
-			setTimeout(() => {
-				form.reset();
-				router.refresh();
-				router.back();
-			}, 1000);
-		} else {
-			toast({
-				title: "Error",
-				description: res.statusText,
-				variant: "destructive",
-			});
+
+			const res = await axios.patch(url, values);
+
+			if (res.status === 200) {
+				toast({
+					title: "Success",
+					description: "บันทึกสำเร็จแล้ว",
+					variant: "default",
+				});
+
+				await updateStdFormState(formData.studentID);
+
+				setTimeout(() => {
+					form.reset();
+					router.refresh();
+					router.back();
+				}, 1000);
+			} else {
+				toast({
+					title: "Error",
+					description: res.statusText || "Something went wrong",
+					variant: "destructive",
+				});
+			}
+		} catch (error) {
+			if (axios.isAxiosError(error)) {
+				toast({
+					title: "Error",
+					description: error.response?.data?.message || "Server error",
+					variant: "destructive",
+				});
+			} else {
+				// Handle any other errors
+				toast({
+					title: "Error",
+					description: "An unexpected error occurred",
+					variant: "destructive",
+				});
+			}
 		}
 	};
 

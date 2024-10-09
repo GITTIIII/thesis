@@ -88,12 +88,12 @@ export default async function Profile() {
 									<EditSignature user={user} />
 								</div>
 							</div>
-							<div className="w-full h-52 flex justify-center items-center">
+							<div className="relative w-full h-52 flex justify-center items-center">
 								<Image
 									src={user?.signatureUrl ? user?.signatureUrl : signature}
 									width={100}
 									height={100}
-								
+									className={user?.signatureUrl ? "w-[412px] h-auto" : ""}
 									alt="Profile"
 								/>
 							</div>

@@ -175,6 +175,7 @@ const EditSignature = ({ user }: { user: IUser }) => {
 											width={100}
 											height={100}
 											alt="signature"
+											className={user?.signatureUrl ? "w-[300px] h-auto" : ""}
 										/>
 									</div>
 								</div>

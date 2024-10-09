@@ -395,6 +395,7 @@ export default function SuperAdminForm01Update({
 											width={100}
 											height={100}
 											alt="signature"
+											className={form.getValues().headSchoolSignUrl ? "w-[300px] h-auto" : ""}
 										/>
 									</div>
 								</DialogTrigger>

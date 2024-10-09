@@ -371,6 +371,7 @@ export default function SuperAdminForm06Update({
 									width={200}
 									height={100}
 									alt="signature"
+									className={formData?.student.signatureUrl ? "w-[300px] h-auto" : ""}
 								/>
 							</Button>
 							<Label className="mt-4">{`วันที่ ${formData?.date ? formData?.date : "__________"}`}</Label>
@@ -426,6 +427,7 @@ export default function SuperAdminForm06Update({
 											? form.getValues().advisorSignUrl
 											: signature
 									}
+									className={formData?.advisorSignUrl || form.getValues().advisorSignUrl ? "w-[300px] h-auto" : ""}
 									width={100}
 									height={100}
 									alt="signature"
@@ -531,6 +533,7 @@ export default function SuperAdminForm06Update({
 											? form.getValues().headSchoolSignUrl
 											: signature
 									}
+									className={formData?.headSchoolSignUrl || form.getValues().headSchoolSignUrl ? "w-[300px] h-auto" : ""}
 									width={100}
 									height={100}
 									alt="signature"

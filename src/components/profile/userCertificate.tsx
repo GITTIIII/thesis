@@ -71,7 +71,6 @@ const UserCertificate = ({
 												src={jpgIcon}
 												width={28}
 												height={28}
-											
 												alt="jpeg"
 											/>
 										)}
@@ -89,7 +88,6 @@ const UserCertificate = ({
 												src={pngIcon}
 												width={28}
 												height={28}
-												
 												alt="png"
 											/>
 										)}

@@ -18,6 +18,7 @@ import { Menu, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { useRouter } from "next/navigation";
 import { IUser } from "@/interface/user";
+import { Button } from "../ui/button";
 
 interface Message {
 	topic: string;
@@ -105,7 +106,7 @@ export default function Navbar({ menu, notification = false, user }: Props) {
 									onClick={() =>
 										signOut({
 											redirect: true,
-											callbackUrl: `${window.location.origin}`,
+											callbackUrl: `${process.env.NEXT_PUBLIC_URL}`,
 										})
 									}
 								>
@@ -143,18 +144,18 @@ export default function Navbar({ menu, notification = false, user }: Props) {
 							? `${user?.username} ${user?.firstNameTH} ${user?.lastNameTH}`
 							: `${user?.prefix ? user?.prefix.prefixTH : ""}${user?.firstNameTH} ${user?.lastNameTH}`}
 					</Link>
-					<Link
-						href={process.env.NEXT_PUBLIC_URL + "/"}
+					<Button
+						variant="link"
 						onClick={() =>
 							signOut({
 								redirect: true,
-								callbackUrl: `${window.location.origin}`,
+								callbackUrl: `${process.env.NEXT_PUBLIC_URL}`,
 							})
 						}
-						className="block px-4 py-2  hover:bg-gray-100 border-b-2 text-center transition-colors duration-200"
+						className="w-full block px-4 py-2  hover:bg-gray-100 border-b-2 text-center transition-colors duration-200"
 					>
 						ออกจากระบบ
-					</Link>
+					</Button>
 				</div>
 			)}
 		</div>

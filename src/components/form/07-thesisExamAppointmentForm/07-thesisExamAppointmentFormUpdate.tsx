@@ -290,6 +290,7 @@ const ThesisProgressFormUpdate = ({
 									width={200}
 									height={100}
 									alt="signature"
+									className={formData?.student.signatureUrl ? "w-[300px] h-auto" : ""}
 								/>
 							</Button>
 							<Label className="mt-4">{`วันที่ ${

@@ -57,22 +57,22 @@ export default function SignatureDialog(props: DialogProps) {
 	return (
 		<Dialog open={isOpen} onOpenChange={setIsOpen}>
 			<DialogTrigger onClick={() => setIsOpen?.(!isOpen)} disabled={disable}>
-				<div className="w-60 my-4 h-36 flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
+				<div className="w-[250px] sm:w-[300px] my-4 h-36 flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
 					<Image
 						src={signUrl ? signUrl : signature}
 						width={100}
 						height={100}
-						
 						alt="signature"
+						className={signUrl ? "w-[300px] h-auto" : ""}
 					/>
 				</div>
 			</DialogTrigger>
-			<DialogContent className="w-max">
+			<DialogContent className="w-full sm:w-max overflow-x-auto">
 				<DialogHeader>
 					<DialogTitle>ลายเซ็น</DialogTitle>
 					<DialogDescription>ลายเซ็นนี้จะถูกใช้เฉพาะในการลงนามเอกสารภายในเว็บไซต์นี้เท่านั้น</DialogDescription>
 				</DialogHeader>
-				<Tabs defaultValue="userSign" className="w-full md:w-[460px]">
+				<Tabs defaultValue="userSign" className="w-[460px]">
 					<TabsList className="grid w-full grid-cols-2">
 						<TabsTrigger value="userSign">ลายเซ็นของคุณที่มีในระบบ</TabsTrigger>
 						<TabsTrigger value="drawSign">วาดลายเซ็นด้วยตัวเอง</TabsTrigger>
@@ -83,13 +83,13 @@ export default function SignatureDialog(props: DialogProps) {
 								<CardDescription>ลายเซ็นของคุณที่มีในระบบ</CardDescription>
 							</CardHeader>
 							<CardContent className="space-y-2">
-								<div className="w-full my-4 h-36 flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
+								<div className="w-full my-4 h-38 flex justify-center rounded-lg p-4 border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground">
 									<Image
 										src={userSignUrl ? userSignUrl : signature}
 										width={100}
 										height={100}
-										
 										alt="signature"
+										className={userSignUrl ? "w-[300px] h-auto" : ""}
 									/>
 								</div>
 							</CardContent>
