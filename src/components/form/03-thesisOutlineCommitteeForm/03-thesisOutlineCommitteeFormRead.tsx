@@ -119,9 +119,9 @@ const ThesisOutlineCommitteeFormRead = ({ formData }: { formData: IOutlineCommit
 					}`}</Label>
 				</div>
 
-				<div className="w-full h-64 flex flex-col items-center">
+				{/* <div className="w-full h-64 flex flex-col items-center">
 					<h1 className="font-bold">ลายเซ็นหัวหน้าสำนักวิชา</h1>
-					<SignatureDialog signUrl={formData?.instituteComSignUrl ? formData?.instituteComSignUrl : ""} disable={true} />
+					<SignatureDialog signUrl={formData?.instituteComSignUrl ? formData?.instituteComSignUrl : ""} disable={true} /> */}
 					{/* <Label className="">
 						{formData?.headSchool
 							? `${formData?.headSchool?.prefix?.prefixTH}${formData?.headSchool?.firstNameTH} ${formData?.headSchool?.lastNameTH}`
@@ -130,7 +130,7 @@ const ThesisOutlineCommitteeFormRead = ({ formData }: { formData: IOutlineCommit
 					{/* <Label className="">{`หัวหน้าสำนักวิชา ${
 						formData?.headSchool ? formData?.headSchool?.school?.schoolNameTH : ""
 					}`}</Label> */}
-				</div>
+				{/* </div> */}
 			</div>
 		</div>
 	);
