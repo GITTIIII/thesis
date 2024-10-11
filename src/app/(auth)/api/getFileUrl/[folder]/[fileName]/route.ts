@@ -1,12 +1,12 @@
 import { getFileUrl } from "@/lib/file";
 import { NextRequest, NextResponse } from "next/server";
-import { streamImageFromUrl } from "../../streams";
+import { streamImageFromUrl } from "../../../streams";
 
-export const GET = async (req: Request, { params }: { params: { fileName: string } }) => {
+export const GET = async (req: Request, { params }: { params: { folder: string; fileName: string } }) => {
 	try {
-		const fileName = params.fileName;
+		const { folder, fileName } = params;
 
-		const url = await getFileUrl(fileName);
+		const url = await getFileUrl(fileName, folder);
 
 		return streamImageFromUrl(url);
 	} catch (error) {

@@ -9,21 +9,24 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useForm } from "react-hook-form";
 import { useToast } from "@/components/ui/use-toast";
 import { IUser } from "@/interface/user";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { Textarea } from "../../ui/textarea";
-import { CircleAlert } from "lucide-react";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { IProcessPlan } from "@/interface/form";
 import { Select } from "@radix-ui/react-select";
 import { SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
+import { ICoAdvisorStudents } from "@/interface/coAdvisorStudents";
+import { checkForZero, checkPlannedWorkSum } from "@/lib/utils";
+import { X } from "lucide-react";
 import ThesisProcessPlan from "../thesisProcessPlan";
 import axios from "axios";
 import qs from "query-string";
 import InputForm from "../../inputForm/inputForm";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
-import { ICoAdvisorStudents } from "@/interface/coAdvisorStudents";
-import { checkForZero, checkPlannedWorkSum } from "@/lib/utils";
+import pdfIcon from "@/../../public/asset/pdf.png";
+import Image from "next/image";
+import uploadOrange from "@../../../public/asset/uploadOrange.png";
+import { Document, Page, pdfjs } from "react-pdf";
 
 const defaultProcessPlans: IProcessPlan[] = [
 	{
@@ -99,11 +102,23 @@ const formSchema = z.object({
 	date: z.date(),
 	thesisNameTH: z.string().min(1, { message: "กรุณากรอกชื่อวิทยานิพนธ์ / Thesis name requierd" }),
 	thesisNameEN: z.string().toUpperCase().min(1, { message: "กรุณากรอกชื่อวิทยานิพนธ์ / Thesis name requierd" }),
-	abstract: z.string().min(1, { message: "กรุณากรอกบทคัดย่อ / Abstract requierd" }),
+	abstractFile: z
+		.instanceof(File)
+		.refine((file) => file.size <= 5 * 1024 * 1024, {
+			message: "ไฟล์ต้องมีขนาดไม่เกิน 5MB.",
+		})
+		.refine((file) => ["application/pdf"].includes(file.type), {
+			message: "ประเภทไฟล์ต้องเป็น PDF เท่านั้น",
+		}),
 	processPlan: z.array(z.any()),
 	times: z.number(),
 	thesisStartMonth: z.string().min(1, { message: "กรุณาเลือกเดือน / Please select month" }),
-	thesisStartYear: z.string().min(1, { message: "กรุณากรอกปี พ.ศ. / Year (B.E.) requierd" }),
+	thesisStartYear: z
+		.string()
+		.min(1, { message: "กรุณากรอกปี พ.ศ. / Year (B.E.) required" })
+		.regex(/^25\d{2}$/, {
+			message: "กรุณากรอกปี พ.ศ. ที่ถูกต้อง (เช่น 2566) / Please enter a valid year (e.g., 2566)",
+		}),
 	formStatus: z.string(),
 	studentID: z.number(),
 });
@@ -113,15 +128,16 @@ const OutlineFormCreate = ({ user }: { user: IUser }) => {
 	const [processPlans, setProcessPlans] = useState<IProcessPlan[]>();
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
-
+	const [fileName, setFileName] = useState("No selected File");
 	const { toast } = useToast();
+
 	const form = useForm({
 		resolver: zodResolver(formSchema),
 		defaultValues: {
 			date: undefined as unknown as Date,
 			thesisNameTH: "",
 			thesisNameEN: "",
-			abstract: "",
+			abstractFile: undefined as unknown as File,
 			processPlan: [],
 			times: 0,
 			thesisStartMonth: "",
@@ -133,13 +149,23 @@ const OutlineFormCreate = ({ user }: { user: IUser }) => {
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
+		if (!values.abstractFile) {
+			toast({
+				title: "เกิดข้อผิดพลาด",
+				description: "ไม่พบไฟล์บทคัดย่อ / No abstract file",
+				variant: "destructive",
+			});
+			handleCancel();
+
+			return;
+		}
 		if (checkForZero(processPlans!)) {
 			toast({
 				title: "เกิดข้อผิดพลาด",
 				description: `กรุณาตรวจสอบและกรอกข้อมูลในช่องผลรวมปริมาณงานที่วางแผนไว้ให้ครบ`,
 				variant: "destructive",
 			});
-			setLoading(false);
+			handleCancel();
 
 			return;
 		}
@@ -150,7 +176,7 @@ const OutlineFormCreate = ({ user }: { user: IUser }) => {
 				description: `ผลรวมปริมาณงานที่วางแผนไว้ไม่เท่ากับ 100%, ผลรวมที่ได้คือ: ${Number(checkSum[1] || 0)}%`,
 				variant: "destructive",
 			});
-			setLoading(false);
+			handleCancel();
 
 			return;
 		}
@@ -160,29 +186,59 @@ const OutlineFormCreate = ({ user }: { user: IUser }) => {
 				description: "ไม่พบลายเซ็น",
 				variant: "destructive",
 			});
-			setLoading(false);
+			handleCancel();
 			return;
 		}
 		if (processPlans) {
 			values.processPlan = processPlans;
 		}
+
+		const formData = new FormData();
+		if (values.date) {
+			formData.append("date", values.date.toISOString());
+		} else {
+			formData.append("date", "");
+		}
+		formData.append("thesisNameTH", values.thesisNameTH);
+		formData.append("thesisNameEN", values.thesisNameEN);
+		if (values.abstractFile) {
+			formData.append("abstractFile", values.abstractFile);
+		} else {
+			formData.append("abstractFile", "");
+		}
+		formData.append("processPlan", JSON.stringify(values.processPlan));
+		formData.append("thesisStartMonth", values.thesisStartMonth);
+		formData.append("thesisStartYear", values.thesisStartYear);
+		formData.append("formStatus", values.formStatus);
+		formData.append("studentID", values.studentID.toString());
+
 		const url = qs.stringifyUrl({
 			url: process.env.NEXT_PUBLIC_URL + `/api/05OutlineForm`,
 		});
-		const res = await axios.post(url, values);
-		if (res.status === 200) {
-			toast({
-				title: "Success",
-				description: "บันทึกสำเร็จแล้ว",
-				variant: "default",
-			});
-			setTimeout(() => {
-				setIsOpen(false);
-				form.reset();
-				router.refresh();
-				router.back();
-			}, 1000);
-		} else {
+		const res = await axios.post(url, formData);
+		try {
+			if (res.status === 200) {
+				toast({
+					title: "Success",
+					description: "บันทึกสำเร็จแล้ว",
+					variant: "default",
+				});
+				setTimeout(() => {
+					setFileName("No selected File");
+					setIsOpen(false);
+					form.reset();
+					router.refresh();
+					router.back();
+				}, 1000);
+			} else {
+				toast({
+					title: "Error",
+					description: res.statusText,
+					variant: "destructive",
+				});
+				handleCancel();
+			}
+		} catch (err) {
 			toast({
 				title: "Error",
 				description: res.statusText,
@@ -213,10 +269,12 @@ const OutlineFormCreate = ({ user }: { user: IUser }) => {
 		setIsOpen(false);
 	};
 
+	pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+
 	useEffect(() => {
 		const errorKeys = Object.keys(errors);
 		if (errorKeys.length > 0) {
-			setIsOpen(false);
+			handleCancel();
 			const firstErrorField = errorKeys[0] as keyof typeof errors;
 			const firstErrorMessage = errors[firstErrorField]?.message;
 			toast({
@@ -317,39 +375,63 @@ const OutlineFormCreate = ({ user }: { user: IUser }) => {
 						</div>
 					</div>
 				</div>
-				<div className="w-full h-max mb-6">
+				<div className="w-full h-max my-6 flex flex-col justify-center items-center">
+					<FormLabel className="my-2">
+						บทคัดย่อ / Abstract <span className="text-red-500">*</span>
+					</FormLabel>
 					<FormField
 						control={form.control}
-						name="abstract"
+						name="abstractFile"
 						render={({ field }) => (
-							<FormItem className="w-full h-auto flex flex-col items-center">
-								<FormLabel>
-									บทคัดย่อ / Abstract <span className="text-red-500">*</span>
-								</FormLabel>
+							<FormItem
+								onClick={() => document.querySelector<HTMLInputElement>(".input-field")?.click()}
+								className="h-[300px] w-full sm:w-1/2 flex flex-col justify-center items-center border-2 border-dashed border-[#F26522] cursor-pointer rounded-xl hover:bg-accent"
+							>
+								<Image src={uploadOrange} width={64} height={64} alt="jpeg" />
+								<label>เลือกไฟล์ / Browse File</label>
 								<FormControl>
-									<Textarea
-										placeholder="บทคัดย่อ..."
-										className="text-[16px] resize-none 
-											w-full md:w-[595px] lg:w-[794px] 
-											h-[842px] lg:h-[1123px] 
-											p-[16px] 
-											md:pt-[108px] lg:pt-[144px] 
-											md:pl-[108px] lg:pl-[144px] 
-											md:pr-[72px]  lg:pr-[96px] 
-											md:pb-[72px]  lg:pb-[96px]"
-										value={field.value}
-										onChange={field.onChange}
+									<Input
+										type="file"
+										className="hidden input-field"
+										onChange={(e) => {
+											const files = e.target.files;
+											if (files && files.length > 0) {
+												field.onChange(files[0]);
+												setFileName(files[0].name);
+											}
+										}}
 									/>
 								</FormControl>
-								<FormDescription className="flex items-center">
-									{" "}
-									<CircleAlert className="mr-1" />
-									บทคัดย่อต้องมีความยาวไม่เกิน 1 หน้ากระดาษ
-								</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
 					/>
+					<div className="w-full sm:w-1/2 flex mt-2 justify-center items-center">
+						{form.getValues("abstractFile") && (
+							<div>
+								{form.getValues("abstractFile").type === "application/pdf" && (
+									<Image className="w-[32px] h-auto" src={pdfIcon} width={100} height={100} alt="pdf" />
+								)}
+							</div>
+						)}
+						<label className="ml-2 text-sm">{fileName}</label>
+						{form.getValues("abstractFile") && (
+							<X
+								className="ml-auto hover:cursor-pointer hover:text-[#F26522]"
+								onClick={() => {
+									setFileName("No selected File");
+									form.setValue("abstractFile", undefined as unknown as File);
+								}}
+							/>
+						)}
+					</div>
+					{form.getValues("abstractFile") && form.getValues("abstractFile").type === "application/pdf" && (
+						<div className="my-2 rounded-lg border overflow-auto w-full md:w-max  h-[842px] lg:h-max ">
+							<Document file={form.getValues("abstractFile")}>
+								<Page pageNumber={1} width={794} height={1123} renderAnnotationLayer={false} renderTextLayer={false} />
+							</Document>
+						</div>
+					)}
 				</div>
 
 				<h1 className="mb-2 font-bold text-center">เเผนการดำเนินการจัดทำวิทยานิพนธ์</h1>

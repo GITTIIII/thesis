@@ -179,7 +179,7 @@ export default function SuperAdminForm03Update({
 	useEffect(() => {
 		const errorKeys = Object.keys(errors);
 		if (errorKeys.length > 0) {
-			setIsOpen(false);
+			handleCancel()
 			const firstErrorField = errorKeys[0] as keyof typeof errors;
 			const firstErrorMessage = errors[firstErrorField]?.message;
 			toast({

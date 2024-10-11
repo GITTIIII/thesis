@@ -781,7 +781,7 @@ const ThesisExamAssessmentFormUpdate = ({
 										)}
 									</div>
 								))}
-							<hr className="่่mx-auto w-full border-t-2 border-[#eeee]" />
+							{formData?.student?.coAdvisedStudents && <hr className="่่mx-auto w-full border-t-2 border-[#eeee]" />}
 							{committeeFields.map((committeeField, index) => (
 								<div key={committeeField.id} className="h-max flex flex-col justify-center items-center lg:px-20">
 									<SignatureDialog
@@ -894,7 +894,7 @@ const ThesisExamAssessmentFormUpdate = ({
 								</div>
 							))}
 
-							{!formData.headOfCommitteeID && (
+							{(!formData.headOfCommitteeID || committeeFields.length >= 5) && (
 								<Button
 									type="button"
 									onClick={() => committeeAppend({ committee: { committeeID: 0, signatureUrl: "" } })}

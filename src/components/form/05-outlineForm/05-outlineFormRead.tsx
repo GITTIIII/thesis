@@ -9,10 +9,11 @@ import { Input } from "@/components/ui/input";
 import InputForm from "@/components/inputForm/inputForm";
 import ThesisProcessPlan from "../thesisProcessPlan";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
+import { Document, Page, pdfjs } from "react-pdf";
 
 const OutlineFormRead = ({ formData }: { formData: IOutlineForm }) => {
 	const router = useRouter();
-
+	pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 	return (
 		<>
 			<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg">
@@ -178,19 +179,12 @@ const OutlineFormRead = ({ formData }: { formData: IOutlineForm }) => {
 			</div>
 			<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg mt-4">
 				<div className="w-full h-max flex flex-col items-center">
-					<h1 className="mb-2 font-bold text-center">บทคัดย่อ / Abstract</h1>
-					<Textarea
-						className="text-[16px] resize-none 
-						w-full md:w-[595px] lg:w-[794px] 
-						h-[842px] lg:h-[1123px] 
-						p-[16px] 
-						md:pt-[108px] lg:pt-[144px] 
-						md:pl-[108px] lg:pl-[144px] 
-						md:pr-[72px]  lg:pr-[96px] 
-						md:pb-[72px]  lg:pb-[96px]"
-						defaultValue={formData?.abstract}
-						disabled
-					/>
+					<h1 className="mb-2 font-bold text-center">บทคัดย่อ / abstract</h1>
+					<div className="my-2 rounded-lg border overflow-auto w-full md:w-max  h-[842px] lg:h-max ">
+						<Document file={process.env.NEXT_PUBLIC_URL + `/api/getFileUrl/abstract/${formData.abstractFileName}`}>
+							<Page pageNumber={1} width={794} height={1123} renderAnnotationLayer={false} renderTextLayer={false} />
+						</Document>
+					</div>
 				</div>
 			</div>
 			<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg mt-4">

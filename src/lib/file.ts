@@ -12,13 +12,14 @@ const r2 = new S3Client({
 	},
 });
 
-export async function uploadFileToBucket(file: File) {
+export async function uploadFileToBucket(file: File, folder: string) {
 	try {
+		const key = `${folder}/${file.name}`;
 		const upload = new Upload({
 			client: r2,
 			params: {
 				Bucket: process.env.R2_BUCKET_NAME!,
-				Key: `${file.name}`,
+				Key: key,
 				Body: file.stream(),
 				ACL: "public-read",
 				ContentType: file.type,
@@ -32,11 +33,12 @@ export async function uploadFileToBucket(file: File) {
 	}
 }
 
-export async function deleteFileFromBucket(filename: string) {
+export async function deleteFileFromBucket(fileName: string, folder: string) {
 	try {
+		const key = `${folder}/${fileName}`;
 		const deleteCommand = new DeleteObjectCommand({
 			Bucket: process.env.R2_BUCKET_NAME!,
-			Key: `${filename}`,
+			Key: key,
 		});
 		const res = await r2.send(deleteCommand);
 		return res;
@@ -46,8 +48,9 @@ export async function deleteFileFromBucket(filename: string) {
 	}
 }
 
-export async function getFileUrl(key: string) {
+export async function getFileUrl(fileName: string, folder: string) {
 	try {
+		const key = `${folder}/${fileName}`;
 		const url = await getSignedUrl(
 			r2,
 			new GetObjectCommand({

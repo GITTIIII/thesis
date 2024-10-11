@@ -98,7 +98,10 @@ const QualificationExamCommitteeFormUpdate = ({
 		}
 	};
 
-	const { reset } = form;
+	const {
+		reset,
+		formState: { errors },
+	} = form;
 
 	useEffect(() => {
 		reset({
@@ -117,6 +120,21 @@ const QualificationExamCommitteeFormUpdate = ({
 		setLoading(false);
 		setIsOpen(false);
 	};
+
+	useEffect(() => {
+		const errorKeys = Object.keys(errors);
+		if (errorKeys.length > 0) {
+			handleCancel();
+			const firstErrorField = errorKeys[0] as keyof typeof errors;
+			const firstErrorMessage = errors[firstErrorField]?.message;
+			console.log(errors);
+			toast({
+				title: "เกิดข้อผิดพลาด",
+				description: firstErrorMessage,
+				variant: "destructive",
+			});
+		}
+	}, [errors]);
 
 	return (
 		<Form {...form}>

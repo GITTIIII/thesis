@@ -73,7 +73,7 @@ const form01Columns: ColumnDef<IComprehensiveExamCommitteeForm>[] = [
 		cell: ({ row }) => {
 			const form01 = row.original.id;
 			const downloadPath = "";
-			const updatePath = process.env.NEXT_PUBLIC_URL + `/api/user/form/01-comprehensiveExamCommitteeForm/superAdmin/update/${form01}`;
+			const updatePath = process.env.NEXT_PUBLIC_URL + `/user/form/01-comprehensiveExamCommitteeForm/superAdmin/update/${form01}`;
 			const deleteAPI = process.env.NEXT_PUBLIC_URL + `/api/delete01FormById/${form01}`;
 			const fetchAPI = process.env.NEXT_PUBLIC_URL + `/api/01ComprehensiveExamCommitteeForm`;
 			return <FormActionMenu downloadPath={downloadPath} updatePath={updatePath} deleteAPI={deleteAPI} fetchAPI={fetchAPI} />;

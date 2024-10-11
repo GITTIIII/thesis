@@ -92,7 +92,7 @@ const UserCertificate = ({
 											/>
 										)}
 										<Link
-											href={process.env.NEXT_PUBLIC_URL + `/api/getFileUrl/${certificate.fileName}`}
+											href={process.env.NEXT_PUBLIC_URL + `/api/getFileUrl/certificate/${certificate.fileName}`}
 											target="_blank"
 											rel="noopener noreferrer"
 											className="text-sm overflow-hidden hover:text-[#F26522] hover:cursor-pointer hover:underline ml-2"

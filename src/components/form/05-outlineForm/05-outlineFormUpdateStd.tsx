@@ -11,22 +11,34 @@ import { useEffect, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { ConfirmDialog } from "@/components/confirmDialog/confirmDialog";
 import { IUser } from "@/interface/user";
-import { CircleAlert } from "lucide-react";
+import { X } from "lucide-react";
 import InputForm from "@/components/inputForm/inputForm";
 import ThesisProcessPlan from "../thesisProcessPlan";
 import axios from "axios";
 import qs from "query-string";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 import { checkForZero, checkPlannedWorkSum } from "@/lib/utils";
+import { Document, Page, pdfjs } from "react-pdf";
+import pdfIcon from "@/../../public/asset/pdf.png";
+import Image from "next/image";
+import uploadOrange from "@../../../public/asset/uploadOrange.png";
 
 const formSchema = z.object({
 	id: z.number(),
 	thesisNameTH: z.string(),
 	thesisNameEN: z.string().toUpperCase(),
-	abstract: z.string(),
+	abstractFile: z
+		.instanceof(File)
+		.refine((file) => file.size <= 5 * 1024 * 1024, {
+			message: "ไฟล์ต้องมีขนาดไม่เกิน 5MB.",
+		})
+		.refine((file) => ["application/pdf"].includes(file.type), {
+			message: "ประเภทไฟล์ต้องเป็น PDF เท่านั้น",
+		})
+		.optional(),
 	formStatus: z.string(),
 });
 
@@ -34,7 +46,7 @@ const OutlineFormUpdateStd = ({ formData, user }: { formData: IOutlineForm; user
 	const router = useRouter();
 	const [loading, setLoading] = useState(false);
 	const [isOpen, setIsOpen] = useState(false);
-
+	const [fileName, setFileName] = useState("No selected File");
 	const { toast } = useToast();
 	const form = useForm({
 		resolver: zodResolver(formSchema),
@@ -42,7 +54,7 @@ const OutlineFormUpdateStd = ({ formData, user }: { formData: IOutlineForm; user
 			id: 0,
 			thesisNameTH: "",
 			thesisNameEN: "",
-			abstract: "",
+			abstractFile: undefined as unknown as File,
 			formStatus: "",
 		},
 	});
@@ -55,7 +67,7 @@ const OutlineFormUpdateStd = ({ formData, user }: { formData: IOutlineForm; user
 				description: `กรุณาตรวจสอบและกรอกข้อมูลในช่องผลรวมปริมาณงานที่วางแผนไว้ให้ครบ`,
 				variant: "destructive",
 			});
-			setLoading(false);
+			handleCancel();
 
 			return;
 		}
@@ -66,15 +78,26 @@ const OutlineFormUpdateStd = ({ formData, user }: { formData: IOutlineForm; user
 				description: `ผลรวมปริมาณงานที่วางแผนไว้ไม่เท่ากับ 100%, ผลรวมที่ได้คือ: ${Number(checkSum[1] || 0)}%`,
 				variant: "destructive",
 			});
-			setLoading(false);
+			handleCancel();
 
 			return;
 		}
 		values.formStatus = "เเก้ไขเเล้ว";
+		const formDataUpdate = new FormData();
+		formDataUpdate.append("id", values.id.toString() || "0");
+		formDataUpdate.append("thesisNameTH", values.thesisNameTH || "");
+		formDataUpdate.append("thesisNameEN", values.thesisNameEN || "");
+		if (values.abstractFile) {
+			formDataUpdate.append("abstractFile", values.abstractFile);
+		} else {
+			formDataUpdate.append("abstractFile", "");
+		}
+		formDataUpdate.append("formStatus", values.formStatus || "");
+
 		const url = qs.stringifyUrl({
 			url: process.env.NEXT_PUBLIC_URL + `/api/05OutlineForm`,
 		});
-		const res = await axios.patch(url, values);
+		const res = await axios.patch(url, formDataUpdate);
 		if (res.status === 200) {
 			toast({
 				title: "Success",
@@ -93,10 +116,14 @@ const OutlineFormUpdateStd = ({ formData, user }: { formData: IOutlineForm; user
 				description: res.statusText,
 				variant: "destructive",
 			});
+			handleCancel();
 		}
 	};
 
-	const { reset } = form;
+	const {
+		reset,
+		formState: { errors },
+	} = form;
 
 	useEffect(() => {
 		reset({
@@ -104,7 +131,6 @@ const OutlineFormUpdateStd = ({ formData, user }: { formData: IOutlineForm; user
 			id: formData.id,
 			thesisNameTH: formData?.thesisNameTH,
 			thesisNameEN: formData?.thesisNameEN,
-			abstract: formData?.abstract,
 		});
 	}, [formData]);
 
@@ -113,6 +139,25 @@ const OutlineFormUpdateStd = ({ formData, user }: { formData: IOutlineForm; user
 		setIsOpen(false);
 	};
 
+	useEffect(() => {
+		const errorKeys = Object.keys(errors);
+		if (errorKeys.length > 0) {
+			handleCancel();
+			const firstErrorField = errorKeys[0] as keyof typeof errors;
+			const firstErrorMessage = errors[firstErrorField]?.message;
+			console.log(errors);
+			toast({
+				title: "เกิดข้อผิดพลาด",
+				description: firstErrorMessage,
+				variant: "destructive",
+			});
+		}
+	}, [errors]);
+
+	pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+
+	console.log(process.env.NEXT_PUBLIC_URL + `/api/getFileUrl/abstract/${formData.abstractFileName}`);
+	console.log(formData.abstractFileName);
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">
@@ -337,39 +382,70 @@ const OutlineFormUpdateStd = ({ formData, user }: { formData: IOutlineForm; user
 					</ConfirmDialog>
 				</div>
 
-				<div className="w-full h-max mb-6">
+				<div className="w-full h-max my-6 flex flex-col justify-center items-center">
+					<FormLabel className="my-2">
+						บทคัดย่อ / Abstract <span className="text-red-500">*</span>
+					</FormLabel>
 					<FormField
 						control={form.control}
-						name="abstract"
+						name="abstractFile"
 						render={({ field }) => (
-							<FormItem className="w-full h-auto flex flex-col items-center">
-								<FormLabel>
-									บทคัดย่อ / Abstract <span className="text-red-500">*</span>
-								</FormLabel>
+							<FormItem
+								onClick={() => document.querySelector<HTMLInputElement>(".input-field")?.click()}
+								className="h-[300px] w-full sm:w-1/2 flex flex-col justify-center items-center border-2 border-dashed border-[#F26522] cursor-pointer rounded-xl hover:bg-accent"
+							>
+								<Image src={uploadOrange} width={64} height={64} alt="jpeg" />
+								<label>เลือกไฟล์ / Browse File</label>
 								<FormControl>
-									<Textarea
-										placeholder="บทคัดย่อ..."
-										className="text-[16px] resize-none 
-											w-full md:w-[595px] lg:w-[794px] 
-											h-[842px] lg:h-[1123px] 
-											p-[16px] 
-											md:pt-[108px] lg:pt-[144px] 
-											md:pl-[108px] lg:pl-[144px] 
-											md:pr-[72px]  lg:pr-[96px] 
-											md:pb-[72px]  lg:pb-[96px]"
-										value={field.value}
-										onChange={field.onChange}
+									<Input
+										type="file"
+										className="hidden input-field"
+										onChange={(e) => {
+											const files = e.target.files;
+											if (files && files.length > 0) {
+												field.onChange(files[0]);
+												setFileName(files[0].name);
+											}
+										}}
 									/>
 								</FormControl>
-								<FormDescription className="flex items-center">
-									{" "}
-									<CircleAlert className="mr-1" />
-									บทคัดย่อต้องมีความยาวไม่เกิน 1 หน้ากระดาษ
-								</FormDescription>
 								<FormMessage />
 							</FormItem>
 						)}
 					/>
+					<div className="w-full sm:w-1/2 flex mt-2 justify-center items-center">
+						{form.getValues("abstractFile") && (
+							<div>
+								{form.getValues("abstractFile").type === "application/pdf" && (
+									<Image className="w-[32px] h-auto" src={pdfIcon} width={100} height={100} alt="pdf" />
+								)}
+							</div>
+						)}
+						<label className="ml-2 text-sm">{fileName}</label>
+						{form.getValues("abstractFile") && (
+							<X
+								className="ml-auto hover:cursor-pointer hover:text-[#F26522]"
+								onClick={() => {
+									setFileName("No selected File");
+									form.setValue("abstractFile", undefined as unknown as File);
+								}}
+							/>
+						)}
+					</div>
+					{(formData.abstractFileName ||
+						(form.getValues("abstractFile") && form.getValues("abstractFile").type === "application/pdf")) && (
+						<div className="my-2 rounded-lg border overflow-auto w-full md:w-max  h-[842px] lg:h-max ">
+							<Document
+								file={
+									form.getValues("abstractFile") && form.getValues("abstractFile").type === "application/pdf"
+										? form.getValues("abstractFile")
+										: process.env.NEXT_PUBLIC_URL + `/api/getFileUrl/abstract/${formData.abstractFileName}`
+								}
+							>
+								<Page pageNumber={1} width={794} height={1123} renderAnnotationLayer={false} renderTextLayer={false} />
+							</Document>
+						</div>
+					)}
 				</div>
 				<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg mt-4">
 					<h1 className="mb-2 font-bold text-center">เเผนการดำเนินการจัดทำวิทยานิพนธ์</h1>

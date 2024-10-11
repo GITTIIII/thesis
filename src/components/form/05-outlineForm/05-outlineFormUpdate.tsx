@@ -27,6 +27,7 @@ import qs from "query-string";
 import SignatureDialog from "@/components/signatureDialog/signatureDialog";
 import { updateStdFormState } from "@/app/action/updateStdFormState";
 import { ICoAdvisorStudents } from "@/interface/coAdvisorStudents";
+import { Document, Page, pdfjs } from "react-pdf";
 
 const formSchema = z.object({
 	id: z.number(),
@@ -70,7 +71,7 @@ const OutlineFormUpdate = ({
 		const value = e.target.value;
 		setPart2(value);
 
-		if (!/^\d{4}$/.test(value)) {
+		if (value != "" && !/^\d{4}$/.test(value)) {
 			setError("ปีต้องเป็นตัวเลข 4 หลัก");
 		} else if (parseInt(value, 10) < 2500) {
 			setError("ปีต้องเป็น พ.ศ. (ตั้งแต่ 2500 ขึ้นไป)");
@@ -173,10 +174,33 @@ const OutlineFormUpdate = ({
 			values.dateInstituteCommitteeSign = undefined as unknown as Date;
 		}
 
+		const formDataUpdate = new FormData();
+		formDataUpdate.append("id", values.id.toString() || "0");
+		formDataUpdate.append("formStatus", values.formStatus || "");
+		formDataUpdate.append("editComment", values.editComment || "");
+		formDataUpdate.append("times", values.times || "");
+		formDataUpdate.append("outlineCommitteeID", values.outlineCommitteeID.toString() || "0");
+		formDataUpdate.append("outlineCommitteeStatus", values.outlineCommitteeStatus || "");
+		formDataUpdate.append("outlineCommitteeComment", values.outlineCommitteeComment || "");
+		formDataUpdate.append("outlineCommitteeSignUrl", values.outlineCommitteeSignUrl || "");
+		formDataUpdate.append(
+			"dateOutlineCommitteeSign",
+			values.dateOutlineCommitteeSign ? values.dateOutlineCommitteeSign.toISOString() : ""
+		);
+
+		formDataUpdate.append("instituteCommitteeID", values.instituteCommitteeID.toString() || "0");
+		formDataUpdate.append("instituteCommitteeStatus", values.instituteCommitteeStatus || "");
+		formDataUpdate.append("instituteCommitteeComment", values.instituteCommitteeComment || "");
+		formDataUpdate.append("instituteCommitteeSignUrl", values.instituteCommitteeSignUrl || "");
+		formDataUpdate.append(
+			"dateInstituteCommitteeSign",
+			values.dateInstituteCommitteeSign ? values.dateInstituteCommitteeSign.toISOString() : ""
+		);
+
 		const url = qs.stringifyUrl({
 			url: process.env.NEXT_PUBLIC_URL + `/api/05OutlineForm`,
 		});
-		const res = await axios.patch(url, values);
+		const res = await axios.patch(url, formDataUpdate);
 		if (res.status === 200) {
 			toast({
 				title: "Success",
@@ -195,6 +219,7 @@ const OutlineFormUpdate = ({
 				description: res.statusText,
 				variant: "destructive",
 			});
+			handleCancel();
 		}
 	};
 
@@ -232,7 +257,7 @@ const OutlineFormUpdate = ({
 	useEffect(() => {
 		const errorKeys = Object.keys(errors);
 		if (errorKeys.length > 0) {
-			setIsOpen(false);
+			handleCancel();
 			const firstErrorField = errorKeys[0] as keyof typeof errors;
 			const firstErrorMessage = errors[firstErrorField]?.message;
 			toast({
@@ -243,6 +268,8 @@ const OutlineFormUpdate = ({
 			console.log(errors);
 		}
 	}, [errors]);
+
+	pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 	return (
 		<Form {...form}>
@@ -761,18 +788,11 @@ const OutlineFormUpdate = ({
 			<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg mt-4">
 				<div className="w-full h-max flex flex-col items-center">
 					<h1 className="mb-2 font-bold text-center">บทคัดย่อ / Abstract</h1>
-					<Textarea
-						className="text-[16px] resize-none 
-						w-full md:w-[595px] lg:w-[794px] 
-						h-[842px] lg:h-[1123px] 
-						p-[16px] 
-						md:pt-[108px] lg:pt-[144px] 
-						md:pl-[108px] lg:pl-[144px] 
-						md:pr-[72px]  lg:pr-[96px] 
-						md:pb-[72px]  lg:pb-[96px]"
-						defaultValue={formData?.abstract}
-						disabled
-					/>
+					<div className="my-2 rounded-lg border overflow-auto w-full md:w-max  h-[842px] lg:h-max ">
+						<Document file={process.env.NEXT_PUBLIC_URL + `/api/getFileUrl/abstract/${formData.abstractFileName}`}>
+							<Page pageNumber={1} width={794} height={1123} renderAnnotationLayer={false} renderTextLayer={false} />
+						</Document>
+					</div>
 				</div>
 			</div>
 			<div className="w-full h-full bg-white p-4 lg:p-12 rounded-lg mt-4">

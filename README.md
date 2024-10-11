@@ -1,17 +1,24 @@
 ## Environment File
-สร้างไฟล์ .env 
+
+สร้างไฟล์ .env
 มี url ของ Database เเละ Secret สำหรับการทำ Authentication
+
 ```bash
 DATABASE_URL=
 NEXTAUTH_SECRET=
 ```
+
 cd thesis
+
 ## Getting Started
+
 ```bash
-npm install next 
+npm install next
 npm run dev
 ```
+
 ## Prisma Command
+
 ```bash
 #ใช้ตอนเเก้ใข Schema ต้อง run สองคำสั่ง
 npx prisma generate
@@ -23,7 +30,9 @@ npx prisma db seed
 #ใช้เข้า ui ของ prisma
 npx prisma studio
 ```
+
 ## ER Diagram
+
 ```mermaid
 erDiagram
 	Position {
@@ -36,11 +45,6 @@ erDiagram
 		value STUDENT
 		value ADMIN
 		value SUPER_ADMIN
-	}
-	resultExam {
-		value excellent
-		value pass
-		value fail
 	}
 	Institute {
 		Int id PK  "autoincrement()"
@@ -177,6 +181,7 @@ erDiagram
 		String headSchoolSignUrl  "nullable"
 		String instituteComSignUrl  "nullable"
 		Json addNotes  "nullable"
+		Boolean OROG
 		DateTime createdAt  "now()"
 		DateTime updatedAt
 	}
@@ -202,7 +207,7 @@ erDiagram
 		DateTime date
 		String thesisNameTH
 		String thesisNameEN
-		String abstract
+		String abstractFileName
 		Json processPlan
 		String thesisStartMonth
 		String thesisStartYear
@@ -273,28 +278,31 @@ erDiagram
 		DateTime createdAt  "now()"
 		DateTime updatedAt
 	}
-	ThesisExamForm {
+	ThesisExamAssessmentForm {
 		Int id PK  "autoincrement()"
 		DateTime date
-		DateTime examinationDate
-		String thesisNameTH
-		String thesisNameEN
+		DateTime examDate
 		Boolean disClosed
-		Boolean reviseTitle
-		String newNameTH  "nullable"
-		String newNameEN  "nullable"
-		Json committeeSignUrl  "nullable"
-		resultExam resultExam
-		Boolean approve  "nullable"
-		String headOfCommitteeSignUrl  "nullable"
-		DateTime dateOfDecision  "nullable"
-		Int meetingNo  "nullable"
-		DateTime meetingDate  "nullable"
-		String headOfCommitteeName  "nullable"
+		Int studentID FK
+		String result  "nullable"
 		String presentationComment  "nullable"
 		String explanationComment  "nullable"
-		String answerQuestionsCooment  "nullable"
-		Int studentID FK
+		String answerQuestionComment  "nullable"
+		String failComment  "nullable"
+		Boolean reviseTitle  "nullable"
+		String newThesisNameTH  "nullable"
+		String newThesisNameEN  "nullable"
+		Int headOfCommitteeID FK  "nullable"
+		String headOfCommitteeSignUrl  "nullable"
+		String advisorSignUrl  "nullable"
+		Json coAdvisors  "nullable"
+		Json committees  "nullable"
+		String times  "nullable"
+		DateTime dateInstituteCommitteeSign  "nullable"
+		String instituteCommitteeStatus  "nullable"
+		String instituteCommitteeComment  "nullable"
+		String instituteCommitteeSignUrl  "nullable"
+		Int instituteCommitteeID FK  "nullable"
 		DateTime createdAt  "now()"
 		DateTime updatedAt
 	}
@@ -311,6 +319,7 @@ erDiagram
 		String instituteSignUrl  "nullable"
 		Int instituteID FK  "nullable"
 		String approve  "nullable"
+		String disapproveComment  "nullable"
 		DateTime dayApprove  "nullable"
 		Int timeApprove  "nullable"
 		Int studentID FK
@@ -345,10 +354,10 @@ erDiagram
 	ThesisProgressForm }o--|| User : headSchool
 	ThesisExamAppointmentForm }o--|| User : student
 	ThesisExamAppointmentForm }o--|| User : headSchool
-	ThesisExamForm }o--|| User : student
-	ThesisExamForm }o--|| resultExam : "enum:resultExam"
+	ThesisExamAssessmentForm }o--|| User : student
+	ThesisExamAssessmentForm }o--|| Expert : headOfCommittee
+	ThesisExamAssessmentForm }o--|| User : instituteCommittee
 	DelayThesisForm }o--|| User : institute
 	DelayThesisForm }o--|| User : student
 
 ```
-

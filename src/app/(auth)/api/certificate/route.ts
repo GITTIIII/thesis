@@ -32,7 +32,7 @@ export async function POST(req: Request) {
 			throw new Error("File size should be less than 5MB.");
 		}
 
-		await uploadFileToBucket(file);
+		await uploadFileToBucket(file, "certificate");
 
 		const certificate = await db.certificate.create({
 			data: {

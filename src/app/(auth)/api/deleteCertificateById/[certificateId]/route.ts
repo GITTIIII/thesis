@@ -26,7 +26,7 @@ export async function DELETE(req: Request, { params }: { params: { certificateId
 			return NextResponse.json({ user: null, message: "Certificate not found" }, { status: 404 });
 		}
 
-		await deleteFileFromBucket(existingCertificate.fileName);
+		await deleteFileFromBucket(existingCertificate.fileName, "certificate");
 
 		const certificate = await db.certificate.delete({
 			where: { id: id },

@@ -115,7 +115,7 @@ export type IOutlineForm = {
 	date: Date;
 	thesisNameTH: string;
 	thesisNameEN: string;
-	abstract: string;
+	abstractFileName: string;
 	processPlan: Array<any>;
 	times: string;
 	thesisStartMonth: string;

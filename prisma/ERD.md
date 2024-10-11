@@ -172,7 +172,7 @@ erDiagram
 		DateTime date
 		String thesisNameTH
 		String thesisNameEN
-		String abstract
+		String abstractFileName
 		Json processPlan
 		String thesisStartMonth
 		String thesisStartYear

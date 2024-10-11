@@ -32,7 +32,12 @@ const formSchema = z.object({
 		.number()
 		.min(1, { message: "กรุณาระบุภาคเรียน / Trimester requierd" })
 		.max(3, { message: "กรุณาระบุเลขเทอมระหว่าง 1-3 / Trimester must be between 1-3" }),
-	academicYear: z.string().min(1, { message: "กรุณากรอกปีการศึกษา (พ.ศ.) / Academic year (B.E.) requierd" }),
+	academicYear: z
+		.string()
+		.min(1, { message: "กรุณากรอกปีการศึกษา (พ.ศ.) / Academic year (B.E.) required" })
+		.regex(/^25\d{2}$/, {
+			message: "กรุณากรอกปีการศึกษา (พ.ศ.) ที่ถูกต้อง (เช่น 2566) / Please enter a valid academic year (e.g., 2566)",
+		}),
 	committeeName1: z.string().min(1, { message: "กรุณากรอก คำนำหน้า ชื่อ-นามสกุล กรรมการ / Please fill prefix & full name of committee" }),
 	committeeName2: z.string().min(1, { message: "กรุณากรอก คำนำหน้า ชื่อ-นามสกุล กรรมการ / Please fill prefix & full name of committee" }),
 	committeeName3: z.string().min(1, { message: "กรุณากรอก คำนำหน้า ชื่อ-นามสกุล กรรมการ / Please fill prefix & full name of committee" }),
