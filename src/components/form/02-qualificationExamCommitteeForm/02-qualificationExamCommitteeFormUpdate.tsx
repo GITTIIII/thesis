@@ -50,7 +50,6 @@ const QualificationExamCommitteeFormUpdate = ({
 			headSchoolSignUrl: signUrl,
 		});
 		setOpenSign(false);
-		console.log(signUrl);
 	};
 
 	const form = useForm<z.infer<typeof formSchema>>({
@@ -114,7 +113,7 @@ const QualificationExamCommitteeFormUpdate = ({
 				headSchoolID: user.id,
 			});
 		}
-	}, [formData, user]);
+	}, [form, formData, reset, user]);
 
 	const handleCancel = () => {
 		setLoading(false);
@@ -127,14 +126,14 @@ const QualificationExamCommitteeFormUpdate = ({
 			handleCancel();
 			const firstErrorField = errorKeys[0] as keyof typeof errors;
 			const firstErrorMessage = errors[firstErrorField]?.message;
-			console.log(errors);
+		
 			toast({
 				title: "เกิดข้อผิดพลาด",
 				description: firstErrorMessage,
 				variant: "destructive",
 			});
 		}
-	}, [errors]);
+	}, [errors, toast]);
 
 	return (
 		<Form {...form}>

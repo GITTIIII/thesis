@@ -56,7 +56,7 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 	};
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		console.log(values);
+	
 		setLoading(true);
 		if (formData.instituteSignUrl) {
 			toast({
@@ -110,8 +110,8 @@ const DelayDisseminationThesisFormRead = ({ user, formData }: { user: IUser; for
 					? user.id
 					: 0,
 		});
-		console.log(formData);
-	}, [formData]);
+		
+	}, [form, formData, reset, user.id, user.position]);
 	const handleCancel = () => {
 		setLoading(false);
 		setIsOpen(false);

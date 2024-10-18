@@ -64,7 +64,7 @@ const EditCertificate = ({ user, certificateType }: { user: IUser | undefined; c
 				certificateType: certificateType,
 			});
 		}
-	}, [user, reset, certificateType]);
+	}, [user, reset, certificateType, form]);
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		if (!values.file) return;

@@ -26,7 +26,7 @@ export function DatePicker({ onDateChange, value, disabled }: DatePickerProps) {
 		if (value !== date) {
 			setDate(value);
 		}
-	}, [value]);
+	}, [date, value]);
 
 	const today = startOfDay(new Date());
 	const isDisabled = (date: Date) => isBefore(date, today);

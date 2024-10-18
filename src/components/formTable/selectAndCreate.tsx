@@ -22,7 +22,7 @@ const labels: { [key: string]: string } = {
 	form06: "เเบบรายงานความคืบหน้าของการทำวิทยานิพนธ์",
 	form07: "คำขอนัดสอบวิทยานิพนธ์",
 	form08: "แบบประเมินการสอบวิทยานิพนธ์",
-	form09: "แบบคำขอชะลอการเผยแพร่วิทยานิพนธ์"
+	form09: "แบบคำขอชะลอการเผยแพร่วิทยานิพนธ์",
 };
 
 const numbers: { [key: string]: number } = {
@@ -50,6 +50,7 @@ export default function SelectAndCreate({
 	const [isDisabled, setIsDisabled] = useState(false);
 	const router = useRouter();
 
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const handleSelectChange = (value: string) => {
 		setSelectedForm(value);
 		router.push(`/user/table?form=${value}`);
@@ -70,7 +71,7 @@ export default function SelectAndCreate({
 		if (user?.position == "ADVISOR" && selectedForm == "form01") {
 			handleSelectChange("form03");
 		}
-	}, []);
+	}, [handleSelectChange, selectedForm, user?.position]);
 
 	useEffect(() => {
 		if (user && user.role == "STUDENT" && user.degree == "Doctoral") {
@@ -78,7 +79,7 @@ export default function SelectAndCreate({
 		} else {
 			setSelectedForm(searchParams.form || "form01");
 		}
-	}, [searchParams, user]);
+	}, [searchParams, setSelectedForm, user]);
 
 	return (
 		<div className="w-full flex">

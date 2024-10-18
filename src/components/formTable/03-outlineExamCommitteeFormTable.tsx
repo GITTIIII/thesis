@@ -21,7 +21,7 @@ export default function OutlineCommitteeFormTable({ formData, user }: { user: IU
 	const [status, setStatus] = useState("");
 
 	const filteredData = formData?.filter((formData) => {
-		console.log(status);
+		
 		const matchesStudentID = studentID === "" || formData.student.username.includes(studentID);
 
 		const matchesMyStudent =
@@ -59,7 +59,7 @@ export default function OutlineCommitteeFormTable({ formData, user }: { user: IU
 		if (user.role == "ADMIN" && user.position == "ADVISOR") {
 			setMyStudent(true);
 		}
-	}, [myStudent]);
+	}, [myStudent, user.position, user.role]);
 
 	return (
 		<>

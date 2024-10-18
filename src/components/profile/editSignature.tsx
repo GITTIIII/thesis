@@ -97,12 +97,12 @@ const EditSignature = ({ user }: { user: IUser }) => {
 				id: user.id,
 			});
 		}
-	}, [user, reset]);
+	}, [user, reset, form]);
 
 	const onCropComplete = async (croppedArea: Area, croppedAreaPixels: Area) => {
 		try {
 			const croppedImage = await getCroppedImg(image, croppedAreaPixels, rotation);
-			console.log("donee", { croppedImage });
+			
 			reset({
 				...form.getValues(),
 				signatureUrl: croppedImage!,

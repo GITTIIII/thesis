@@ -38,12 +38,12 @@ export default function ThesisProcessPlan({
       return Math.max(...processPlans.map((plan) => plan.months.length));
     });
     setProcessPlans?.(processPlans);
-  }, [processPlans]);
+  }, [data, processPlans, setProcessPlans]);
   useEffect(() => {
     if (setProcessPlans !== undefined) {
       setProcessPlans(data);
     }
-  }, [data]);
+  }, [data, setProcessPlans]);
   // อัพเดท index สำหรับ อันแรก และ 4 อันสุดท้าย เอาไว้ไม่ให้สามารถ drag and drop
   const updateFixedindex = (processPlan: IProcessPlan[]) => {
     const length = processPlan?.length;

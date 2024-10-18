@@ -117,7 +117,7 @@ export default function SuperAdminForm03Update({
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		console.log("Submitting form with values:", values);
+		
 		setLoading(true);
 
 		if (
@@ -164,7 +164,7 @@ export default function SuperAdminForm03Update({
 			id: formData.id,
 			headSchoolID: user.position === "HEAD_OF_SCHOOL" ? user.id : 0,
 		});
-	}, [formData, user]);
+	}, [formData, reset, user]);
 
 	const handleAddNote = () => {
 		setShowFields(true);
@@ -187,9 +187,9 @@ export default function SuperAdminForm03Update({
 				description: firstErrorMessage,
 				variant: "destructive",
 			});
-			console.log(errors);
+			
 		}
-	}, [errors]);
+	}, [errors, toast]);
 
 	return (
 		<Form {...form}>

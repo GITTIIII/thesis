@@ -42,7 +42,7 @@ export default function SignatureDialog(props: DialogProps) {
 			return;
 		} else if (sigCanvas.current && !sigCanvas.current.isEmpty()) {
 			if (isOpen && onConfirm) {
-				console.log(index);
+				
 				if (typeof index !== "undefined") {
 					// Pass index when it is defined (including 0)
 					onConfirm(sigCanvas.current.getTrimmedCanvas().toDataURL("image/png"), index);

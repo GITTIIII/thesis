@@ -191,7 +191,7 @@ const ThesisExamAssessmentFormUpdate = ({
 
 	const handleDrawingCommitteeSign = (signUrl: string, index: number) => {
 		const committees = form.getValues().committees.map((committee, i) => {
-			console.log(index);
+			
 			if (i === index) {
 				return {
 					...committee,
@@ -298,7 +298,7 @@ const ThesisExamAssessmentFormUpdate = ({
 			...form.getValues(),
 			id: formData.id,
 		});
-	}, [formData]);
+	}, [form, formData, reset]);
 
 	const handleCancel = () => {
 		setLoading(false);
@@ -316,13 +316,10 @@ const ThesisExamAssessmentFormUpdate = ({
 				description: firstErrorMessage,
 				variant: "destructive",
 			});
-			console.log(errors);
+		
 		}
-	}, [errors]);
+	}, [errors, toast]);
 
-	useEffect(() => {
-		console.log(form.getValues());
-	}, [form.watch()]);
 
 	useEffect(() => {
 		if (form.getValues("result") !== "ดีมาก") {
@@ -346,7 +343,7 @@ const ThesisExamAssessmentFormUpdate = ({
 				newThesisNameEN: "",
 			});
 		}
-	}, [form.watch("result"), form.watch("reviseTitle")]);
+	}, [form, reset]);
 
 	useEffect(() => {
 		if (Array.isArray(formData?.student?.coAdvisedStudents)) {
@@ -764,7 +761,7 @@ const ThesisExamAssessmentFormUpdate = ({
 															: (form.getValues(`coAdvisors.${index}.coAdvisor.signatureUrl`) as string)
 													}
 													onConfirm={(signUrl: string) => {
-														console.log("Confirming signature for index:", index);
+														
 														handleDrawingCoAdvisorSign(signUrl, index);
 													}}
 													index={index}

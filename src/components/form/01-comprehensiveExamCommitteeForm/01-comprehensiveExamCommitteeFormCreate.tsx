@@ -107,7 +107,7 @@ const ComprehensiveExamCommitteeFormCreate = ({ user }: { user: IUser }) => {
 				numberStudent: 1,
 			});
 		}
-	}, [user, reset]);
+	}, [user, reset, form]);
 
 	const handleCancel = () => {
 		setLoading(false);
@@ -120,14 +120,14 @@ const ComprehensiveExamCommitteeFormCreate = ({ user }: { user: IUser }) => {
 			handleCancel();
 			const firstErrorField = errorKeys[0] as keyof typeof errors;
 			const firstErrorMessage = errors[firstErrorField]?.message;
-			console.log(errors);
+			
 			toast({
 				title: "เกิดข้อผิดพลาด",
 				description: firstErrorMessage,
 				variant: "destructive",
 			});
 		}
-	}, [errors]);
+	}, [errors, toast]);
 
 	return (
 		<Form {...form}>

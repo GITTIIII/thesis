@@ -34,7 +34,7 @@ export default function CreateExpert() {
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
-		console.log(values);
+	
 		const url = qs.stringifyUrl({
 			url: process.env.NEXT_PUBLIC_URL + `/api/expert`,
 		});

@@ -62,7 +62,7 @@ const EditPersonalInformation = ({ user }: { user: IUser }) => {
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		console.log(values);
+	
 		const url = qs.stringifyUrl({
 			url: process.env.NEXT_PUBLIC_URL + `/api/user`,
 		});

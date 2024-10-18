@@ -55,7 +55,7 @@ export default function ThesisExamAppointmentFormTable({ formData, user }: { use
 		if (user.role == "ADMIN" && user.position == "ADVISOR") {
 			setMyStudent(true);
 		}
-	}, [myStudent]);
+	}, [myStudent, user.position, user.role]);
 
 	return (
 		<>

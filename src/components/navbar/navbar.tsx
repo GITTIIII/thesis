@@ -52,6 +52,7 @@ export default function Navbar({ menu, notification = false, user }: Props) {
 		},
 	];
 
+
 	return (
 		<div>
 			<nav className="w-full h-16 flex justify-between items-center px-6 bg-white shadow top-0 z-40">
@@ -106,7 +107,7 @@ export default function Navbar({ menu, notification = false, user }: Props) {
 									onClick={() =>
 										signOut({
 											redirect: true,
-											callbackUrl: `${process.env.NEXT_PUBLIC_URL}`,
+											callbackUrl: "/",
 										})
 									}
 								>
@@ -149,7 +150,7 @@ export default function Navbar({ menu, notification = false, user }: Props) {
 						onClick={() =>
 							signOut({
 								redirect: true,
-								callbackUrl: `${process.env.NEXT_PUBLIC_URL}`,
+								callbackUrl: "/",
 							})
 						}
 						className="w-full block px-4 py-2  hover:bg-gray-100 border-b-2 text-center transition-colors duration-200"

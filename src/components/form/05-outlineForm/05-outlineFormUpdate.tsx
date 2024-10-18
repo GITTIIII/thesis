@@ -234,7 +234,7 @@ const OutlineFormUpdate = ({
 			id: formData.id,
 			editComment: formData?.editComment ? formData?.editComment : "",
 		});
-	}, [formData]);
+	}, [form, formData, reset]);
 
 	useEffect(() => {
 		reset({
@@ -247,6 +247,7 @@ const OutlineFormUpdate = ({
 			instituteCommitteeSignUrl: "",
 			dateInstituteCommitteeSign: undefined,
 		});
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [form.watch("editComment")]);
 
 	const handleCancel = () => {
@@ -265,9 +266,9 @@ const OutlineFormUpdate = ({
 				description: firstErrorMessage,
 				variant: "destructive",
 			});
-			console.log(errors);
+		
 		}
-	}, [errors]);
+	}, [errors, toast]);
 
 	pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 

@@ -103,7 +103,7 @@ const OutlineCommitteeFormUpdate = ({
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		console.log("Submitting form with values:", values);
+	
 		setLoading(true);
 		if (values.addNotes[0].committeeNumber == 0 && values.addNotes[0].meetingNumber == 0) {
 			values.addNotes = [];
@@ -155,7 +155,7 @@ const OutlineCommitteeFormUpdate = ({
 			id: formData.id,
 			headSchoolID: user.position === "HEAD_OF_SCHOOL" ? user.id : 0,
 		});
-	}, [formData, user]);
+	}, [formData, reset, user]);
 
 	const handleAddNote = () => {
 		setShowFields(true);
@@ -178,9 +178,9 @@ const OutlineCommitteeFormUpdate = ({
 				description: firstErrorMessage,
 				variant: "destructive",
 			});
-			console.log(errors);
+		
 		}
-	}, [errors]);
+	}, [errors, toast]);
 
 	return (
 		<Form {...form}>

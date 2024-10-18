@@ -262,7 +262,7 @@ const OutlineFormCreate = ({ user }: { user: IUser }) => {
 				date: today,
 			});
 		}
-	}, [user, reset]);
+	}, [user, reset, form]);
 
 	const handleCancel = () => {
 		setLoading(false);
@@ -283,7 +283,7 @@ const OutlineFormCreate = ({ user }: { user: IUser }) => {
 				variant: "destructive",
 			});
 		}
-	}, [errors]);
+	}, [errors, toast]);
 
 	return (
 		<Form {...form}>

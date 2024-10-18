@@ -132,7 +132,7 @@ const OutlineFormUpdateStd = ({ formData, user }: { formData: IOutlineForm; user
 			thesisNameTH: formData?.thesisNameTH,
 			thesisNameEN: formData?.thesisNameEN,
 		});
-	}, [formData]);
+	}, [form, formData, reset]);
 
 	const handleCancel = () => {
 		setLoading(false);
@@ -145,19 +145,17 @@ const OutlineFormUpdateStd = ({ formData, user }: { formData: IOutlineForm; user
 			handleCancel();
 			const firstErrorField = errorKeys[0] as keyof typeof errors;
 			const firstErrorMessage = errors[firstErrorField]?.message;
-			console.log(errors);
+		
 			toast({
 				title: "เกิดข้อผิดพลาด",
 				description: firstErrorMessage,
 				variant: "destructive",
 			});
 		}
-	}, [errors]);
+	}, [errors, toast]);
 
 	pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
-	console.log(process.env.NEXT_PUBLIC_URL + `/api/getFileUrl/abstract/${formData.abstractFileName}`);
-	console.log(formData.abstractFileName);
 	return (
 		<Form {...form}>
 			<form onSubmit={form.handleSubmit(onSubmit)} className="w-full h-full bg-white p-4">

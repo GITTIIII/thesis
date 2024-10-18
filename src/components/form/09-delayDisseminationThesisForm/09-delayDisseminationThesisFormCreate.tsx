@@ -62,7 +62,7 @@ const DelayDisseminationThesisFormCreate = () => {
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		console.log("values:", values);
+	
 		const url = qs.stringifyUrl({
 			url: process.env.NEXT_PUBLIC_URL + `/api/09DelayDisseminationThesisForm`,
 		});
@@ -96,7 +96,7 @@ const DelayDisseminationThesisFormCreate = () => {
 				studentID: user.id,
 			});
 		}
-	}, [user, reset]);
+	}, [user, reset, form]);
 	useEffect(() => {
 		const today = new Date();
 		if (user && user.role === "STUDENT") {
@@ -106,7 +106,7 @@ const DelayDisseminationThesisFormCreate = () => {
 				date: today,
 			});
 		}
-	}, [user, reset]);
+	}, [user, reset, form]);
 	const handleCancel = () => {
 		setLoading(false);
 		setIsOpen(false);

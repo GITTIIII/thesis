@@ -56,7 +56,7 @@ export default function ThesisProgressFormTable({ formData, user }: { user: IUse
 		if (user.role == "ADMIN" && user.position == "ADVISOR") {
 			setMyStudent(true);
 		}
-	}, [myStudent]);
+	}, [myStudent, user.position, user.role]);
 
 	return (
 		<>

@@ -48,7 +48,7 @@ export default function ThesisExamAssessmentFormTable({ formData, user }: { user
 				fetchApproveForm(formData.studentID);
 			});
 		}
-	}, []);
+	}, [filteredData]);
 
 	const handleDownload = async (formData: IThesisExamAssessmentForm) => {
 		if (formData.instituteCommitteeID) {

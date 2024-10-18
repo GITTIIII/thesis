@@ -130,7 +130,7 @@ const ThesisProgressFormUpdate = ({
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		console.log(values);
+		
 		setLoading(true);
 		if (
 			(values.advisorSignUrl == "" && values.dateAdvisor != undefined) ||
@@ -182,7 +182,7 @@ const ThesisProgressFormUpdate = ({
 			...form.getValues(),
 			id: formData.id,
 		});
-	}, [formData]);
+	}, [form, formData, reset]);
 
 	const handleCancel = () => {
 		setLoading(false);
@@ -195,14 +195,14 @@ const ThesisProgressFormUpdate = ({
 			handleCancel();
 			const firstErrorField = errorKeys[0] as keyof typeof errors;
 			const firstErrorMessage = errors[firstErrorField]?.message;
-			console.log(errors);
+		
 			toast({
 				title: "เกิดข้อผิดพลาด",
 				description: firstErrorMessage,
 				variant: "destructive",
 			});
 		}
-	}, [errors]);
+	}, [errors, toast]);
 
 	return (
 		<Form {...form}>

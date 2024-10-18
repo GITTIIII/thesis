@@ -93,7 +93,7 @@ const ThesisProgressFormUpdate = ({
 	});
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
-		console.log(values);
+	
 		setLoading(true);
 		if (checkForZero(processPlans!)) {
 			toast({
@@ -106,7 +106,7 @@ const ThesisProgressFormUpdate = ({
 			return;
 		}
 		const checkSum = checkPlannedWorkSum(processPlans!);
-		console.log(checkSum);
+		
 		if (!checkSum[0]) {
 			toast({
 				title: "เกิดข้อผิดพลาด",
@@ -171,7 +171,7 @@ const ThesisProgressFormUpdate = ({
 			id: formData.id,
 			percentage: formData?.percentage ? formData?.percentage : 0,
 		});
-	}, [formData]);
+	}, [form, formData, reset]);
 
 	const handleCancel = () => {
 		setLoading(false);
@@ -184,14 +184,14 @@ const ThesisProgressFormUpdate = ({
 			handleCancel();
 			const firstErrorField = errorKeys[0] as keyof typeof errors;
 			const firstErrorMessage = errors[firstErrorField]?.message;
-			console.log(errors);
+			
 			toast({
 				title: "เกิดข้อผิดพลาด",
 				description: firstErrorMessage,
 				variant: "destructive",
 			});
 		}
-	}, [errors]);
+	}, [errors, toast]);
 
 	return (
 		<Form {...form}>

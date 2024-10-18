@@ -96,7 +96,7 @@ const ThesisExamAssessmentFormCreate = ({ user, approvedForm }: { user: IUser; a
 				date: today,
 			});
 		}
-	}, [user, reset]);
+	}, [user, reset, form]);
 
 	const handleCancel = () => {
 		setLoading(false);
@@ -109,14 +109,14 @@ const ThesisExamAssessmentFormCreate = ({ user, approvedForm }: { user: IUser; a
 			handleCancel();
 			const firstErrorField = errorKeys[0] as keyof typeof errors;
 			const firstErrorMessage = errors[firstErrorField]?.message;
-			console.log(errors);
+		
 			toast({
 				title: "เกิดข้อผิดพลาด",
 				description: firstErrorMessage,
 				variant: "destructive",
 			});
 		}
-	}, [errors]);
+	}, [errors, toast]);
 
 	return (
 		<Form {...form}>

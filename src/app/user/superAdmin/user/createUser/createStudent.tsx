@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -50,11 +51,10 @@ const formSchema = z.object({
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 export default function CreateStudent() {
-
-  const { data: instituteData = [] } = useSWR<IInstitute[]>(process.env.NEXT_PUBLIC_URL + "/api/institute", fetcher);
-  const { data: schoolData = [] } = useSWR<ISchool[]>(process.env.NEXT_PUBLIC_URL + "/api/school", fetcher);
-  const { data: programData = [] } = useSWR<IProgram[]>(process.env.NEXT_PUBLIC_URL + "/api/program", fetcher);
-  const { data: allAdvisor = [] } = useSWR<IUser[]>(process.env.NEXT_PUBLIC_URL + "/api/getAdvisor", fetcher);
+	const { data: instituteData = [] } = useSWR<IInstitute[]>(process.env.NEXT_PUBLIC_URL + "/api/institute", fetcher);
+	const { data: schoolData = [] } = useSWR<ISchool[]>(process.env.NEXT_PUBLIC_URL + "/api/school", fetcher);
+	const { data: programData = [] } = useSWR<IProgram[]>(process.env.NEXT_PUBLIC_URL + "/api/program", fetcher);
+	const { data: allAdvisor = [] } = useSWR<IUser[]>(process.env.NEXT_PUBLIC_URL + "/api/getAdvisor", fetcher);
 
 	const [loading, setLoading] = useState(false);
 	const { toast } = useToast();
@@ -83,7 +83,7 @@ export default function CreateStudent() {
 
 	const onSubmit = async (values: z.infer<typeof formSchema>) => {
 		setLoading(true);
-		console.log(values);
+
 		const url = qs.stringifyUrl({
 			url: process.env.NEXT_PUBLIC_URL + `/api/user`,
 		});
